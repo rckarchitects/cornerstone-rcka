@@ -1,0 +1,97 @@
+<?php
+
+header('Content-type: text/calendar; charset=utf-8');
+header('Content-Disposition: attachment; filename="holidays.ics"');
+
+include("../inc_files/inc_action_functions.php");
+
+$database_read = file_get_contents("../secure/database.inc");
+$database_read_array = explode("\n", $database_read);
+$database_location = $database_read_array[0];
+$database_username = $database_read_array[1];
+$database_password = $database_read_array[2];
+$database_name = $database_read_array[3];
+$settings_style = $database_read_array[6];
+
+$conn = mysql_connect("$database_location", "$database_username", "$database_password");
+mysql_select_db("$database_name", $conn);
+ 
+// 2. Define helper functions
+ 
+// Converts a unix timestamp to an ics-friendly format
+// NOTE: "Z" means that this timestamp is a UTC timestamp. If you need
+// to set a locale, remove the "\Z" and modify DTEND, DTSTAMP and DTSTART
+// with TZID properties (see RFC 5545 section 3.3.5 for info)
+//
+// Also note that we are using "g" instead of "H" because iCalendar's Time format
+// requires 24-hour time (see RFC 5545 section 3.3.12 for info).
+function dateToCal($timestamp) {
+  return date('Ymd\T\0\0\0\0\0\0\Z', $timestamp);
+}
+ 
+// Escapes a string of characters
+function escapeString($string) {
+  return preg_replace('/([\,;])/','\\\$1', $string);
+}
+ 
+// 3. Echo out the ics file's contents
+
+echo "BEGIN:VCALENDAR\r\n";
+echo "VERSION:2.0\r\n";
+echo "PRODID:Cornerstone\r\n";
+echo "CALSCALE:GREGORIAN\r\n";
+echo "X-WR-CALNAME:Holiday Calendar\r\n";
+echo "X-WR-TIMEZONE:Europe/London\r\n";
+
+$lower_limit = time() - 2419200;
+$upper_limit = time() + 2419200;
+
+$sql_holidays = "SELECT * FROM intranet_user_holidays, intranet_user_details WHERE holiday_user = user_id AND holiday_timestamp > $lower_limit ORDER BY holiday_timestamp";
+$result_holidays = mysql_query($sql_holidays, $conn) or die(mysql_error());
+
+while ($array_holidays = mysql_fetch_array($result_holidays)) {
+
+	$address = "RCKa";
+	$uri = "http://intranet.rcka.co.uk/calendars/holiday.ics";
+	$user_initials = $array_holidays['user_initials'];
+	
+	$holiday_approved = $array_holidays['holiday_approved'];
+	if ($holiday_approved > 0) { unset($holiday_approved); } else { $holiday_approved = "PENDING APPROVAL"; }
+	
+	$holiday_length = $array_holidays['holiday_length'];
+	if ($holiday_length == 0.5) { $holiday_length = " (Half Day)"; } else { unset($holiday_length); }
+	
+	$user_name_first = $array_holidays['user_name_first'];
+	$user_name_second = $array_holidays['user_name_second'];
+	$user_name_complete = $user_name_first . " " . $user_name_second . " Holiday" . $holiday_length;
+	
+	$summary = $user_initials . " Holiday" . $holiday_length;
+	$description = $user_name_complete;
+	
+	$uid = md5 ( $user_initials . $array_holidays['holiday_timestamp'] );
+	
+	$datestamp_start = $array_holidays['holiday_timestamp'];
+	$datestamp_end = $array_holidays['holiday_timestamp'] + 86400;
+	
+	$dateend = date("Y",$datestamp_end) . date("m",$datestamp_end) . date("d",$datestamp_end);// . "T" . "000000Z";
+	$datestart = date("Y",$datestamp_start) . date("m",$datestamp_start) . date("d",$datestamp_start);// . "T" . "000000Z";
+
+	echo "BEGIN:VEVENT\r\n";
+	echo "DTEND:" . $dateend ."\r\n";
+	echo "UID:" . $uid . "\n";
+	echo "DTSTAMP:" . dateToCal(time()) ."\r\n";
+	echo "LOCATION:" . escapeString($holiday_approved) ."\r\n";
+	echo "DESCRIPTION:" . escapeString($description) ."\r\n";
+	echo "URL;VALUE=URI:" . escapeString($uri) ."\r\n";
+	echo "SUMMARY:" . escapeString($summary) ."\r\n";
+	//echo "DTSTART:" . dateToCal($array_holidays['holiday_timestamp']) ."\r\n";
+	echo "DTSTART:" . $datestart ."\r\n";
+	echo "END:VEVENT\r\n";
+
+}
+
+
+echo "END:VCALENDAR";
+
+
+?>

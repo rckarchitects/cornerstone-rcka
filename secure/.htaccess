@@ -1,0 +1,4 @@
+AuthType Basic
+AuthName "Access for /intranet/secure" 
+AuthUserFile /kunden/homepages/46/d122298981/htpasswd
+require user rcka

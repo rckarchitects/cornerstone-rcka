@@ -1,0 +1,2 @@
+AddType x-mapp-php5 .php5 .ics .csv
+AddHandler x-mapp-php5 .php5 .ics .csv
