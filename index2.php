@@ -67,7 +67,7 @@ include "secure/prefs.php";
 
 $nowtime = time() - 43200;
 
-		$sql5 = "SELECT user_id, user_name_first, user_name_second, holiday_date, holiday_timestamp, holiday_paid, holiday_length FROM intranet_user_details, intranet_user_holidays WHERE holiday_user = user_id AND holiday_timestamp BETWEEN $nowtime AND " . ($nowtime + (2 * 604800)) ." ORDER BY holiday_timestamp, user_name_second";
+		$sql5 = "SELECT user_id, user_name_first, user_name_second, holiday_date, holiday_timestamp, holiday_paid, holiday_length, holiday_approved FROM intranet_user_details, intranet_user_holidays WHERE holiday_user = user_id AND holiday_timestamp BETWEEN $nowtime AND " . ($nowtime + (2 * 604800)) ." ORDER BY holiday_timestamp, user_name_second";
 		$result5 = mysql_query($sql5, $conn) or die(mysql_error());
 		if (mysql_num_rows($result5) > 0) {
 			$holidaymessage = "<p>The following people have holidays within the next fortnight:</p>";
@@ -86,6 +86,8 @@ $nowtime = time() - 43200;
 					$holiday_length = $array5['holiday_length'];
 					$holiday_paid = $array5['holiday_paid'];
 					$holiday_date = $array5['holiday_date'];
+					$holiday_approved = $array5['holiday_approved'];
+					if ($holiday_approved == NULL) { $holiday_approved1 = "<span style=\"color: red;\">"; $holiday_approved2 = "</span>";  } else { unset($holiday_approved1); unset($holiday_approved2); }
 					if ($current_date != $holiday_date) {
 						$holidaymessage = $holidaymessage . "<li>" . TimeFormatDay($holiday_timestamp) . ": ";
 					} else { 
@@ -94,7 +96,7 @@ $nowtime = time() - 43200;
 					
 					if ($holiday_length < 1) { $holiday_length = " (Half Day)"; } else { unset($holiday_length); }
 					
-					$holidaymessage = $holidaymessage . $user_name_first . " " . $user_name_second . $holiday_length ;
+					$holidaymessage = $holidaymessage . $holiday_approved1 . $user_name_first . " " . $user_name_second . $holiday_length . $holiday_approved2 ;
 					
 					$current_date = $holiday_date;
 			}
