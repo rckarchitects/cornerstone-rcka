@@ -38,7 +38,7 @@ $colb = 1;
 while ($array = mysql_fetch_array($result)) {
 		if ($cola == 1) { echo "<tr>"; $cola = 2; } else { $cola = 1; }
 		$ts_expense_verified = $array['ts_expense_verified'];
-		echo "<td><a href=\"index2.php?page=timesheet_expense_list_verified&amp;time=$ts_expense_verified\">".TimeFormatDetailed($ts_expense_verified)."</a>&nbsp;<a href=\"http://intranet.rcka.co.uk/pdf_expense_verified_list.php?time=$ts_expense_verified\"><img src=\"images/button_pdf.png\" alt=\"Export as PDF\" /></a></td>";
+		echo "<td><a href=\"index2.php?page=timesheet_expense_list_verified&amp;time=$ts_expense_verified\">".TimeFormatDetailed($ts_expense_verified)."</a>&nbsp;<a href=\"". $pref_location ."/pdf_expense_verified_list.php?time=$ts_expense_verified\"><img src=\"images/button_pdf.png\" alt=\"Export as PDF\" /></a></td>";
 		if ($colb == 2) { echo "</tr>"; $colb = 1; } else { $colb = 2; }
 	}
 	

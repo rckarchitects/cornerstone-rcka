@@ -124,7 +124,7 @@ if (mysql_num_rows($result_holiday_list) > 0) {
 
 echo "<h2>Calendar Address</h2>";
 echo "<p>You can add the following calendar location to Outlook:</p>";
-echo "<blockquote>http://intranet.rcka.co.uk/calendars/holidays.ics</bloackquote>";
+echo "<blockquote>" . $pref_location . "/calendars/holidays.ics</bloackquote>";
 
 
 

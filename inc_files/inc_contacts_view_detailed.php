@@ -282,7 +282,6 @@ if ($contact_company > 0) {
 	
 	// Any file notes or phone records which relate to this client?
 	
-	
 	$sql_blog = "SELECT blog_id, blog_date, blog_title FROM intranet_projects_blog WHERE blog_contact = '$contact_id' ORDER BY blog_date";
 	$result_blog = mysql_query($sql_blog, $conn);
 	if (mysql_num_rows($result_blog) > 0) {
@@ -330,7 +329,7 @@ if ($contact_company > 0) {
 		
 		if ($set_id != $current_set) {
 			
-			echo "<tr><td><a href=\"index2.php?page=datebook_view_day&amp;time=$set_date\">" . TimeFormat($set_date) . "</a></td><td><a href=\"http://intranet.rcka.co.uk/index2.php?page=project_view&amp;proj_id=$proj_num\">$proj_num $proj_name</a></td><td><a href=\"index2.php?page=drawings_issue_list&set_id=$set_id&amp;proj_id=$proj_id\">$set_reason</a></td></tr>";
+			echo "<tr><td><a href=\"index2.php?page=datebook_view_day&amp;time=$set_date\">" . TimeFormat($set_date) . "</a></td><td><a href=\"" . $pref_location . "/index2.php?page=project_view&amp;proj_id=$proj_num\">$proj_num $proj_name</a></td><td><a href=\"index2.php?page=drawings_issue_list&set_id=$set_id&amp;proj_id=$proj_id\">$set_reason</a></td></tr>";
 		
 		}
 		

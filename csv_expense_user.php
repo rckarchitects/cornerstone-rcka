@@ -8,7 +8,7 @@ echo "<?xml version=\"1.0\" encoding=\"iso-8859-15\"?>
 <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
 <html xmlns=\"http://www.w3.org/1999/xhtml\">
 <head>
-<title>RCKa Intranet System - P11d Schedule</title>
+<title>$pref_practice - Expenses</title>
 <link rel=\"shortcut icon\" href=\"favicon.ico\" />
 <meta http-equiv=\"pragma\" content=\"no-cache\" />
 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-15\" />
@@ -30,7 +30,7 @@ echo "<?xml version=\"1.0\" encoding=\"iso-8859-15\"?>
 ";
 
 function ColumnHead($input) {
-echo "<tr><th>ID</th><th>Date</th><th colspan=\"2\">Description</th><th>Category</th><th>Value</th><th>Paid by $input <br />but not yet reimbursed</th><th>Paid by $input<br />and already reimbursed</th><th>Paid by RCKa directly</th></tr>";
+echo "<tr><th>ID</th><th>Date</th><th colspan=\"2\">Description</th><th>Category</th><th>Value</th><th>Paid by $input <br />but not yet reimbursed</th><th>Paid by $input<br />and already reimbursed</th><th>Paid by $pref_practice directly</th></tr>";
 }
 
 
@@ -235,7 +235,7 @@ echo "<tr><th>ID</th><th>Date</th><th colspan=\"2\">Description</th><th>Category
 
 if ($_GET[year] == "all") { $show_period = "From the beginning of time, "; } else { $show_period = "In financial year beginning ".date("j M Y",$time_begin).", "; }
 
-echo "<h1>Summary</h1><p style=\"font-size: 13pt\">$show_period $user_name_first $user_name_second has <strong>".CashFormat($col1 - $total_queried)."</strong> of personal expenses, <strong>".CashFormat($col3 + $col4)."</strong> of which has already been paid by RCKa, leaving <strong>".CashFormat($col2)."</strong> outstanding to be reimbursed.";
+echo "<h1>Summary</h1><p style=\"font-size: 13pt\">$show_period $user_name_first $user_name_second has <strong>".CashFormat($col1 - $total_queried)."</strong> of personal expenses, <strong>".CashFormat($col3 + $col4)."</strong> of which has already been paid by $pref_practice, leaving <strong>".CashFormat($col2)."</strong> outstanding to be reimbursed.";
 
 if ($total_queried > 0) { echo "There is <strong>".CashFormat($total_queried)."</strong> of expenses which have been queried, which are excluded from these figures. "; }
 

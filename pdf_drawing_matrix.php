@@ -255,7 +255,7 @@ while ($array_drawings = mysql_fetch_array($result_drawings)) {
 		if (mysql_num_rows($result_issued) > 0) { $pdf->SetTextColor(0, 0, 0); } else { $pdf->SetTextColor(150, 150, 150); $not_issued = "*Drawings shown in light grey have not yet been issued."; $drawing_number = $drawing_number . "*"; }
 		
 		
-		$link = "http://intranet.rcka.co.uk/public_drawing_issue.php?drawing_id=" . $drawing_id . "&hash=" . md5($drawing_number);
+		$link = $pref_practice . "/public_drawing_issue.php?drawing_id=" . $drawing_id . "&hash=" . md5($drawing_number);
 	
 
 	if ($current_drawing != $drawing_id) {

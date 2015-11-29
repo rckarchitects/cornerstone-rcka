@@ -77,7 +77,6 @@ if ($user_usertype_current > 3) {
 if ($user_usertype_current >= 4) {
 	print "<a href=\"#\" onclick=\"itemSwitch(6); return false;\" class=\"menu_tab\">Expenses</a>";
 if ( $module_invoices == 1) { print "<a href=\"#\" onclick=\"itemSwitch(7); return false;\" class=\"menu_tab\">Invoices</a>"; }
-	print "<a href=\"#\" onclick=\"itemSwitch(9); return false;\" class=\"menu_tab\">Website</a>";
 }
 
 print "<a href=\"#\" onclick=\"itemSwitch(3); return false;\" class=\"menu_tab\">Particulars</a>";
@@ -326,36 +325,6 @@ if ($user_usertype_current > 2) {
 }
 
 
-// Website text
-
-if ($user_usertype_current > 2) {
-
-echo "<div id=\"item_switch_9\">";
-echo "<h2>Website entry details</h2>";
-
-include_once("secure/database_website.inc");
-$sql_web = "SELECT * FROM rcka_projects where project_num = '$proj_num' LIMIT 1";
-$result_web = mysql_query($sql_web, $conn_web);
-$array_web = mysql_fetch_array($result_web);
-$project_id = $array_web['project_id'];
-$project_num = htmlspecialchars($array_web['project_num']);
-$project_title = $array_web['project_title'];
-$project_location = $array_web['project_location'];
-$project_desc = $array_web['project_desc'];
-
-if (mysql_num_rows($result_web) > 0) {
-
-echo "<fieldset><legend>$project_title ($project_num) <a href=\"index2.php?page=project_web_edit&amp;project_num=$project_num\"><img src=\"images/button_edit.png\"></a></legend>";
-echo "<p><strong>$project_location</strong></p>";
-echo "<blockquote>$project_desc</blockquote>";
-
-echo "</fieldset>";
-
-} else { echo "<p>-- None found --</p>"; }
-
-echo "</div>";
-
-}
 
 if ($_GET[show] == "contacts") { $show_contact = "block"; $show_default = "none"; } else { $show_contact = "none"; $show_default = "block";  }
 
@@ -372,8 +341,7 @@ if ($user_usertype_current > 2) {
 				print "
 				document.getElementById(\"item_switch_5\").style.display = \"none\";
 				document.getElementById(\"item_switch_6\").style.display = \"none\";
-				document.getElementById(\"item_switch_7\").style.display = \"none\";	
-				document.getElementById(\"item_switch_9\").style.display = \"none\";				
+				document.getElementById(\"item_switch_7\").style.display = \"none\";			
 				";
 }
 		

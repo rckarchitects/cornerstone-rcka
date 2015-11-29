@@ -100,7 +100,7 @@ $count = 0;
 	
 	if (($current_namefirst != $contact_namefirst) AND ($current_namesecond != $contact_namesecond) AND ($current_company AND $contact_company) AND ($contact_email != NULL)) {
 	
-			echo "<tr><td>$count</td><td>" . $company_name . "</td><td>" . $contact_namefirst . "</td><td>" . $contact_namesecond . "</td><td>" . $contact_email . "</td><td>$contact_include</td><td>$marketing</td><td><a href=\"http://intranet.rcka.co.uk/index2.php?page=contacts_edit&amp;contact_id=$contact_id&amp;status=edit\">[edit]</a></td></tr>";
+			echo "<tr><td>$count</td><td>" . $company_name . "</td><td>" . $contact_namefirst . "</td><td>" . $contact_namesecond . "</td><td>" . $contact_email . "</td><td>$contact_include</td><td>$marketing</td><td><a href=\"" . $pref_location . "/index2.php?page=contacts_edit&amp;contact_id=$contact_id&amp;status=edit\">[edit]</a></td></tr>";
 			
 	}
 	

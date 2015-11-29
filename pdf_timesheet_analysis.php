@@ -312,7 +312,7 @@ $pdf->AddFont($format_font,'',$format_font_2);
 			$pdf->addPage();			
 			}
 			
-			$proj_link = "http://intranet.rcka.co.uk/timesheet_pdf_2.php?proj_id=" . $proj_id;
+			$proj_link = $pdf_location . "/timesheet_pdf_2.php?proj_id=" . $proj_id;
 			
 			$pdf->Cell(0,8,'',0,1);
 			

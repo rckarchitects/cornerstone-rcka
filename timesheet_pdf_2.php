@@ -247,8 +247,6 @@ $hours_total = 0;
 					$pdf->SetDrawColor(220,220,220);
 					$pdf->Cell(0,1,'',T,1);
 					
-					$pref_location = "http://intranet.rcka.co.uk/";
-					
 					$ts_link = $pref_location . "popup_timesheet.php?week=" . BeginWeek($ts_entry) . "&ts_id=" . $ts_id . "&user_view=" . $user_id;
 					
 						$pdf->Cell(20,4,$entry_day,0, 0, L, 0, $ts_link);

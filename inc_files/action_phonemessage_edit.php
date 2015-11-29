@@ -72,27 +72,6 @@ if ($message_id > 0) {
 		'$message_taken'
 		)";
 		
-		// Send an email to the user if requested
-		
-		if ($_POST[message_email] == "yes") {
-		
-					$sql = "SELECT user_id, user_name_first, user_name_second FROM intranet_user_details WHERE user_id != '$message_for_user' LIMIT 1";
-		
-					$contact_name = $_GET[contact_name];
-					$contact_address = $_GET[contact_address];
-					$contact_number = $_GET[contact_number];
-					$contact_email = $_GET[contact_email];
-					$contact_message = $_GET[contact_message];
-
-					$to = "contact@rcka.co.uk";
-
-					$subject = "Telephone message from RCKa Intranet";
-					$mailtxt = "Contact from RCKa Website\nName: $contact_name\nAddress: $contact_address\nEmail: $contact_email\nTelephone: $contact_number\nMessage:\n$contact_message";
-					$headers="From: RCKa Website <" + $to + ">";
-
-					 // mail($to, $subject, $mailtxt, $headers);
-		
-		}
 		
 		$result = mysql_query($sql_add, $conn) or die(mysql_error());
 		$actionmessage = "Telephone message added successfully.";

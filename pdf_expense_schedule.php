@@ -209,8 +209,10 @@ if ($_POST[user_id_only] != NULL) { $user_id_only = " AND user_id = ".$_POST[use
 		
 		$pdf->SetXY(10,$y);
 		
+		$link = $pdf_location . "index2.php?page=timesheet_expense_view&ts_expense_id=" . $ts_expense_id;
+		
 		$pdf->SetFont($format_font,'',7);
-		$pdf->Cell(10,$cellheight,$ts_expense_id,0,0,L,$bg,"http://intranet.rcka.co.uk/index2.php?page=timesheet_expense_view&ts_expense_id=$ts_expense_id");
+		$pdf->Cell(10,$cellheight,$ts_expense_id,0,0,L,$bg,$link);
 		$pdf->SetFont($format_font,'',9);
 		$pdf->Cell(20,$cellheight,$ts_expense_date,0,0,L,$bg);
 		$pdf->Cell(15,$cellheight,$proj_num,0,0,L,$bg);

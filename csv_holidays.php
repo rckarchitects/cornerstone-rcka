@@ -8,7 +8,7 @@ echo "<?xml version=\"1.0\" encoding=\"iso-8859-15\"?>
 <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
 <html xmlns=\"http://www.w3.org/1999/xhtml\">
 <head>
-<title>RCKa Intranet System - P11d Schedule</title>
+<title>$pref_practice - Holidays</title>
 <link rel=\"shortcut icon\" href=\"favicon.ico\" />
 <meta http-equiv=\"pragma\" content=\"no-cache\" />
 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-15\" />

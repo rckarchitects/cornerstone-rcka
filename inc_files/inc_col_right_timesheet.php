@@ -13,6 +13,7 @@ if ($user_usertype_current > 3) { print "<li><a href=\"index2.php?page=timesheet
 if ($user_usertype_current > 3) { print "<li><a href=\"index2.php?page=timesheet_rates_project\">Project Rates</a></li>"; }
 print "</ul>";
 
+
 // Expenses
 if ($user_usertype_current > 2) {
 print "<h1 class=\"heading_side\">Fees</h1>";
@@ -43,18 +44,18 @@ $nowyear = date("Y") + 1;
 $nowyear = $nowyear - 1;
 
 print "<br /><span class=\"minitext\">
-<a href=\"http://intranet.rcka.co.uk/index2.php?page=timesheet_invoice_view_month&amp;month=1&amp;year=$nowyear&amp;type=date\">&nbsp;J&nbsp;</a>.
-<a href=\"http://intranet.rcka.co.uk/index2.php?page=timesheet_invoice_view_month&amp;month=2&amp;year=$nowyear&amp;type=date\">&nbsp;F&nbsp;</a>.
-<a href=\"http://intranet.rcka.co.uk/index2.php?page=timesheet_invoice_view_month&amp;month=3&amp;year=$nowyear&amp;type=date\">&nbsp;M&nbsp;</a>.
-<a href=\"http://intranet.rcka.co.uk/index2.php?page=timesheet_invoice_view_month&amp;month=4&amp;year=$nowyear&amp;type=date\">&nbsp;A&nbsp;</a>.
-<a href=\"http://intranet.rcka.co.uk/index2.php?page=timesheet_invoice_view_month&amp;month=5&amp;year=$nowyear&amp;type=date\">&nbsp;M&nbsp;</a>.
-<a href=\"http://intranet.rcka.co.uk/index2.php?page=timesheet_invoice_view_month&amp;month=6&amp;year=$nowyear&amp;type=date\">&nbsp;J&nbsp;</a>.
-<a href=\"http://intranet.rcka.co.uk/index2.php?page=timesheet_invoice_view_month&amp;month=7&amp;year=$nowyear&amp;type=date\">&nbsp;J&nbsp;</a>.
-<a href=\"http://intranet.rcka.co.uk/index2.php?page=timesheet_invoice_view_month&amp;month=8&amp;year=$nowyear&amp;type=date\">&nbsp;A&nbsp;</a>.
-<a href=\"http://intranet.rcka.co.uk/index2.php?page=timesheet_invoice_view_month&amp;month=9&amp;year=$nowyear&amp;type=date\">&nbsp;S&nbsp;</a>.
-<a href=\"http://intranet.rcka.co.uk/index2.php?page=timesheet_invoice_view_month&amp;month=10&amp;year=$nowyear&amp;type=date\">&nbsp;O&nbsp;</a>.
-<a href=\"http://intranet.rcka.co.uk/index2.php?page=timesheet_invoice_view_month&amp;month=11&amp;year=$nowyear&amp;type=date\">&nbsp;N&nbsp;</a>.
-<a href=\"http://intranet.rcka.co.uk/index2.php?page=timesheet_invoice_view_month&amp;month=12&amp;year=$nowyear&amp;type=date\">&nbsp;D&nbsp;</a>
+<a href=\"" . $pref_location . "/index2.php?page=timesheet_invoice_view_month&amp;month=1&amp;year=$nowyear&amp;type=date\">&nbsp;J&nbsp;</a>.
+<a href=\"" . $pref_location . "/index2.php?page=timesheet_invoice_view_month&amp;month=2&amp;year=$nowyear&amp;type=date\">&nbsp;F&nbsp;</a>.
+<a href=\"" . $pref_location . "/index2.php?page=timesheet_invoice_view_month&amp;month=3&amp;year=$nowyear&amp;type=date\">&nbsp;M&nbsp;</a>.
+<a href=\"" . $pref_location . "/index2.php?page=timesheet_invoice_view_month&amp;month=4&amp;year=$nowyear&amp;type=date\">&nbsp;A&nbsp;</a>.
+<a href=\"" . $pref_location . "/index2.php?page=timesheet_invoice_view_month&amp;month=5&amp;year=$nowyear&amp;type=date\">&nbsp;M&nbsp;</a>.
+<a href=\"" . $pref_location . "/index2.php?page=timesheet_invoice_view_month&amp;month=6&amp;year=$nowyear&amp;type=date\">&nbsp;J&nbsp;</a>.
+<a href=\"" . $pref_location . "/index2.php?page=timesheet_invoice_view_month&amp;month=7&amp;year=$nowyear&amp;type=date\">&nbsp;J&nbsp;</a>.
+<a href=\"" . $pref_location . "/index2.php?page=timesheet_invoice_view_month&amp;month=8&amp;year=$nowyear&amp;type=date\">&nbsp;A&nbsp;</a>.
+<a href=\"" . $pref_location . "/index2.php?page=timesheet_invoice_view_month&amp;month=9&amp;year=$nowyear&amp;type=date\">&nbsp;S&nbsp;</a>.
+<a href=\"" . $pref_location . "/index2.php?page=timesheet_invoice_view_month&amp;month=10&amp;year=$nowyear&amp;type=date\">&nbsp;O&nbsp;</a>.
+<a href=\"" . $pref_location . "/index2.php?page=timesheet_invoice_view_month&amp;month=11&amp;year=$nowyear&amp;type=date\">&nbsp;N&nbsp;</a>.
+<a href=\"" . $pref_location . "/index2.php?page=timesheet_invoice_view_month&amp;month=12&amp;year=$nowyear&amp;type=date\">&nbsp;D&nbsp;</a>
 </span>";
 }	
 print "</li></ul>";
