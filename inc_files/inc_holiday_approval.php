@@ -107,7 +107,7 @@ while ($counter_time < $beginnning_of_next_year) {
 	
 		if (date("w", $counter_time) == 6) {
 		$background = " style=\"background: rgba(200,200,200,0); height: 40px; color: #999\"";
-		echo "</tr><tr><td $background>" . date("W", $counter_time). "</td>";
+		echo "</tr><tr id=\"Week" . date("W", $counter_time) . "\"><td $background>" . date("W", $counter_time). "</td>";
 		}
 }
 

@@ -57,9 +57,10 @@ if ($_GET[drawing_id] == NULL) {
 	echo "<input type=\"radio\" name=\"choose_drawing_name\" id=\"radio_preset\" value=\"preset\" onChange=\"disablefield();\" checked=\"checked\" />&nbsp;";
 }
 		if ($_GET[drawing_id] == NULL) {
-		echo "<input type=\"text\" value=\"$drawing_number\" name=\"drawing_number_1\" maxlength=\"50\" style=\"text-align: right; width: 45px;\" id=\"text1.1\" disabled=\"disabled\" />";
+		echo "<input type=\"text\" value=\"$drawing_number\" name=\"drawing_number_1\" maxlength=\"50\" style=\"text-align: right; width: 45px;\" id=\"text1.1\" disabled=\"disabled\" readonly=\"readonly\" />";
 		echo "-";
 		echo "<select name=\"drawing_number_2\" id=\"text1.2\" disabled=\"disabled\" >";
+		
 		
 		$sql_tier1 = "SELECT class_num, class_name FROM intranet_drawings_standards_class WHERE class_tier = 1 ORDER BY class_order";
 		$result_tier1 = mysql_query($sql_tier1, $conn) or die(mysql_error());
@@ -73,55 +74,69 @@ if ($_GET[drawing_id] == NULL) {
 		echo "-";
 		
 		
+		
+		// Establish how many of the tier 3 drawing types we are expected to show.
+		
+		$sql_class = "SELECT class_num FROM intranet_drawings_standards_class WHERE class_tier = 2 ORDER BY class_order";
+		$result_class = mysql_query($sql_class, $conn) or die(mysql_error());
+		$array_class_count = array();
+		while ($array_class = mysql_fetch_array($result_class)){
+		$array_class_count[] = $array_class['class_num'];
+		}
+		
+
+		
+		
+		
 		// This is where we need to insert a <script> that filters the subsequent <select>
 		
-				echo "<script type=\"text/javascript\"> 
-				function hideClass(t){ 
-				if (document.getElementById('text1.3').value == \"SV\"){
-						document.getElementById('text1.41').style.display='';
-						document.getElementById('text1.42').style.display='none';
-						document.getElementById('text1.43').style.display='none';
-						document.getElementById('text1.44').style.display='none';
-						document.getElementById('text1.45').style.display='none';
-				} else if (document.getElementById('text1.3').value == \"ST\"){
-						document.getElementById('text1.41').style.display='none';
-						document.getElementById('text1.42').style.display='';
-						document.getElementById('text1.43').style.display='none';
-						document.getElementById('text1.44').style.display='none';
-						document.getElementById('text1.45').style.display='none';
-				} else if (document.getElementById('text1.3').value == \"GA\"){
-						document.getElementById('text1.41').style.display='none';
-						document.getElementById('text1.42').style.display='none';
-						document.getElementById('text1.43').style.display='';
-						document.getElementById('text1.44').style.display='none';
-						document.getElementById('text1.45').style.display='none';
-				} else if (document.getElementById('text1.3').value == \"AS\"){
-						document.getElementById('text1.41').style.display='none';
-						document.getElementById('text1.42').style.display='none';
-						document.getElementById('text1.43').style.display='none';
-						document.getElementById('text1.44').style.display='';
-						document.getElementById('text1.45').style.display='none';
-				} else if (document.getElementById('text1.3').value == \"DE\"){
-						document.getElementById('text1.41').style.display='none';
-						document.getElementById('text1.42').style.display='none';
-						document.getElementById('text1.43').style.display='none';
-						document.getElementById('text1.44').style.display='none';
-						document.getElementById('text1.45').style.display='';
+		
+		function HiddenTier4($array,$current) {
+			foreach ($array AS $sub) {
+				if ($sub == $current) {
+					echo "document.getElementById('text1.4" . $sub . "').style.display='';\n";
 				} else {
-						document.getElementById('text1.41').style.display='none';
-						document.getElementById('text1.42').style.display='none';
-						document.getElementById('text1.43').style.display='none';
-						document.getElementById('text1.44').style.display='none';
-						document.getElementById('text1.45').style.display='none';		
-					
+					echo "document.getElementById('text1.4" . $sub . "').style.display='none';\n";
 				}
-			} 
-		</script>";
+			}
+		}	
+	
+		function HideScript($array) {
+			$counter = 1;
+			echo "<script type=\"text/javascript\"> 
+				function hideClass(t){\n";
+				
+			foreach ($array AS $sub) {
+					if ($counter == 1) {
+						echo "if (document.getElementById('text1.3').value == \"$sub\"){\n";
+					} else {
+						echo "} else if (document.getElementById('text1.3').value == \"$sub\"){\n";
+					}
+					HiddenTier4($array,$sub);					
+					$counter++;
+			}
+			
+
+			echo "
+						} else {
+						";
+			
+			echo "	
+						}
+						} 
+						</script>";
+
+		}
+		
+		HideScript($array_class_count);
 		
 		echo "<select name=\"drawing_number_3\"  id=\"text1.3\" disabled=\"disabled\" onChange = \"hideClass(this);\">";
 		
 		$sql_tier2 = "SELECT class_num, class_name FROM intranet_drawings_standards_class WHERE class_tier = 2 ORDER BY class_order";
 		$result_tier2 = mysql_query($sql_tier2, $conn) or die(mysql_error());
+		
+		echo "<option value=\"\">- Select -</option>";
+		
 		while ($array_tier2 = mysql_fetch_array($result_tier2)) {
 		
 			echo "<option value=\"" . $array_tier2['class_num'] . "\">" . $array_tier2['class_num'] . " (" . str_replace ("\n", " - ", $array_tier2['class_name']) . ")</option>";
@@ -167,18 +182,28 @@ if ($_GET[drawing_id] == NULL) {
 		$sql_tier3 = "SELECT standard_num, standard_desc, standard_class FROM intranet_drawings_standards_all ORDER BY standard_class,standard_num";
 		$result_tier3 = mysql_query($sql_tier3, $conn) or die(mysql_error());
 		unset($standard_class);
-		$counter = 1;
 							
 					while ($array_tier3 = mysql_fetch_array($result_tier3)) {
 						if ($standard_class != $array_tier3['standard_class'] && $standard_class != NULL) { echo "</select>"; }
-						if ($standard_class != $array_tier3['standard_class']) { echo "<select name=\"drawing_number_4\" id=\"text1.4$counter\" disabled=\"disabled\"  onChange = \"changeDrawing(this);\" style=\"display: none\">"; $standard_class = $array_tier3['standard_class']; $counter++; }
+						if ($standard_class != $array_tier3['standard_class']) { echo "<select name=\"drawing_number_4". $array_tier3['standard_class'] ."\" id=\"text1.4" . $array_tier3['standard_class'] . "\" disabled=\"disabled\"  onChange = \"changeDrawing(this);\" style=\"display: none\">"; $standard_class = $array_tier3['standard_class'];}
 						echo "<option value=\"" . $array_tier3['standard_class']."-".$array_tier3['standard_num'] . "\">" . $array_tier3['standard_num'] . " (" . str_replace ("|", " - ", $array_tier3['standard_desc']) . ")</option>";
 						
 					}
 					echo "</select>";		
-					
-					
-					
+				
+		// Function to enable or disable tier 4 drawing numbers depending on tier 3 selection
+		function ExcludeTier4($array,$disabled) {
+			$counter = 1;
+			foreach ($array AS $sub) {
+				if ($disabled > 0) {
+					echo "document.getElementById('text1.4$sub').disabled='';\n";
+				} else {
+					echo "document.getElementById('text1.4$sub').disabled='disabled';\n";
+				}
+			}
+		}		
+		
+		
 					
 		
 		echo "<script type=\"text/javascript\"> 
@@ -186,30 +211,25 @@ if ($_GET[drawing_id] == NULL) {
 				if (document.getElementById('radio_custom').checked == 1){ 
 						document.getElementById('text1.1').disabled='disabled';
 						document.getElementById('text1.2').disabled='disabled';
-						document.getElementById('text1.3').disabled='disabled';
-						document.getElementById('text1.41').disabled='disabled';
-						document.getElementById('text1.42').disabled='disabled';
-						document.getElementById('text1.43').disabled='disabled';
-						document.getElementById('text3').disabled='disabled';
+						document.getElementById('text1.3').disabled='disabled';\n";
+						ExcludeTier4($array_class_count);
+						echo "document.getElementById('text3').disabled='disabled';
 						document.getElementById('text2').disabled='';
 				} else if (document.getElementById('radio_standard').checked == 1){ 
 						document.getElementById('text1.1').disabled='disabled';
 						document.getElementById('text1.2').disabled='disabled';
-						document.getElementById('text1.3').disabled='disabled';
-						document.getElementById('text1.41').disabled='disabled';
-						document.getElementById('text1.42').disabled='disabled';
-						document.getElementById('text1.43').disabled='disabled';
-						document.getElementById('text2').disabled='disabled';
+						document.getElementById('text1.3').disabled='disabled';\n";
+						ExcludeTier4($array_class_count);
+						echo "document.getElementById('text2').disabled='disabled';
 						document.getElementById('text3').disabled='';
 				} else {
 						document.getElementById('text1.1').disabled='';
 						document.getElementById('text1.2').disabled='';
-						document.getElementById('text1.3').disabled='';
-						document.getElementById('text1.41').disabled='';
-						document.getElementById('text1.42').disabled='';
-						document.getElementById('text1.43').disabled='';
-						document.getElementById('text2').disabled='disabled';
-						document.getElementById('text3').disabled='disabled'; 
+						document.getElementById('text1.3').disabled='';\n";
+						ExcludeTier4($array_class_count,1);
+						echo "document.getElementById('text2').disabled='disabled';
+						document.getElementById('text3').disabled='disabled';
+						
 				} 
 			} 
 		</script>";

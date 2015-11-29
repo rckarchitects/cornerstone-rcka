@@ -1,5 +1,8 @@
 <?php
  
+ 
+var_dump($_POST);
+ 
 // Begin to clean up the $_POST submissions
 
 $drawing_id = $_POST[drawing_id];
@@ -7,7 +10,22 @@ $drawing_number = CleanUp($_POST[drawing_number]);
 $drawing_number_1 = CleanUp($_POST[drawing_number_1]);
 $drawing_number_2 = CleanUp($_POST[drawing_number_2]);
 $drawing_number_3 = CleanUp($_POST[drawing_number_3]);
-$drawing_number_4 = CleanUp($_POST[drawing_number_4]);
+
+
+function FindDrawing4($array,$drawing_number_3) {
+	foreach ($array AS $input) {
+		if ( substr ($input,0,2) == $drawing_number_3 && $input != $drawing_number_3) { $output = explode ("-", $input); return $output[1]; }
+	}
+}
+
+if ($_POST[drawing_number_4] == NULL) {
+		$drawing_number_4 = FindDrawing4($_POST,$drawing_number_3);
+	} else {
+		$drawing_number_4 = CleanUp($_POST[drawing_number_4]);
+	}
+
+
+
 $drawing_project = CleanUp($_POST[drawing_project]);
 $drawing_author = $_POST[drawing_author];
 $drawing_scale = CleanNumber($_POST[drawing_scale]);
@@ -116,6 +134,7 @@ if ($drawing_id > 0) {
 		'$drawing_comment'
 		)";
 		
+		//echo $sql_add;
 		$result = mysql_query($sql_add, $conn) or die(mysql_error());
 		$actionmessage = "Drawing added successfully.";
 		$techmessage = $sql_add;
