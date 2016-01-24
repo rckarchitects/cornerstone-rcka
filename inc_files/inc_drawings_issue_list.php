@@ -50,16 +50,19 @@ $proj_id = $_GET[proj_id];
 			
 		echo "</table>";
 
-// Drawings issued as part of this set
+// Drawings issued as part of this set $set_id
 
-$sql_drawings = "SELECT * FROM intranet_drawings, intranet_drawings_issued LEFT JOIN intranet_drawings_revision ON revision_id = issue_revision WHERE drawing_id = issue_drawing AND issue_set = $set_id ORDER BY drawing_number";
+$sql_drawings = "SELECT * FROM intranet_drawings, intranet_drawings_issued LEFT JOIN intranet_drawings_revision ON revision_id = issue_revision WHERE drawing_id = issue_drawing AND drawing_project = issue_project AND issue_set = $set_id ORDER BY drawing_number";
+
 $result_drawings = mysql_query($sql_drawings, $conn) or die(mysql_error());
 
 		echo "<table>";
 		
-		echo "<tr><th style=\"width:25%\">Number</th><th style=\"width:20%\" colspan=\"2\">Rev.</th><th>Title</th></tr>";
+		echo "<tr><th style=\"width:25%\">Number</th><th style=\"width:20%\" colspan=\"2\">Rev.</th><th colspan=\"2\">Title</th></tr>";
 		
 		unset($current_drawing);
+		
+		unset($issue_id_prev);
 		
 		while ($array_drawings = mysql_fetch_array($result_drawings)) {
 
@@ -68,6 +71,8 @@ $result_drawings = mysql_query($sql_drawings, $conn) or die(mysql_error());
 			$drawing_number = $array_drawings['drawing_number'];
 			$drawing_description = str_replace("\n",", ",$array_drawings['drawing_description']);	
 			$revision_letter = $array_drawings['revision_letter'];
+			$issue_id = $array_drawings['issue_id'];
+			$issue_drawing = $array_drawings['issue_drawing'];
 			
 			if ($revision_letter == NULL ) {
 			$revision_letter = "-";
@@ -79,11 +84,18 @@ $result_drawings = mysql_query($sql_drawings, $conn) or die(mysql_error());
 			$revision_date = "-";
 			}
 			
+			//if (time() - ) {
+			//$delete_button = "<a href=\"index2.php?page=drawings_issue_list&amp;set_id=$set_id&amp;proj_id=$proj_id&amp;issue_drawing=$issue_drawing&amp;action=drawing_issue_item_delete#$issue_id_prev\"><img src=\"images\button_delete.png\" alt=\"Delete this entry\" /></a>";
+			//}
+			
+			
 			if ($current_drawing != $drawing_id) { 
-				echo "<tr><td><a href=\"index2.php?page=drawings_detailed&amp;drawing_id=$drawing_id&amp;proj_id=$proj_id\">$drawing_number</a><td>" . strtoupper($revision_letter) . "</td><td>$revision_date</td><td>$drawing_title</td></tr>";	
+				echo "<tr id=\"$issue_id\"><td><a href=\"index2.php?page=drawings_detailed&amp;drawing_id=$drawing_id&amp;proj_id=$proj_id\">$drawing_number</a><td>" . strtoupper($revision_letter) . "</td><td>$revision_date</td><td>$drawing_title</td><td>" . $delete_button . "</td></tr>";
 			}
 			
 			$current_drawing = $drawing_id;
+			
+			$issue_id_prev = $issue_id;
 		
 		}
 		

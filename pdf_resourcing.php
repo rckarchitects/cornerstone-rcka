@@ -214,7 +214,7 @@ DrawGrid();
 // Begin listing the projects
 
 	//$sql_proj = "SELECT * FROM intranet_projects, intranet_timesheet_fees WHERE ts_fee_project = proj_id AND proj_active = 1 AND proj_fee_track = 1 AND ts_fee_value > 0 ORDER BY proj_num, ts_fee_commence";
-	$sql_proj = "SELECT * FROM intranet_projects, intranet_timesheet_fees WHERE ts_fee_project = proj_id AND proj_fee_track = 1 AND ts_fee_prospect > 0 AND ts_fee_value > 0 AND (((UNIX_TIMESTAMP(ts_fee_commence) + ts_fee_time_end) > $capture_start) OR ((UNIX_TIMESTAMP(ts_datum_commence) + ts_datum_length) > $capture_start)) ORDER BY proj_num, ts_fee_commence";
+	$sql_proj = "SELECT * FROM intranet_projects, intranet_timesheet_fees WHERE ts_fee_project = proj_id AND proj_fee_track = 1 AND ts_fee_prospect > 0 AND ts_fee_value > 0 AND (((UNIX_TIMESTAMP(ts_fee_commence) + ts_fee_time_end) > $capture_start) OR ((UNIX_TIMESTAMP(ts_datum_commence) + ts_datum_length) > $capture_start)) AND proj_active = 1 ORDER BY proj_num, ts_fee_commence";
 	$result_proj = mysql_query($sql_proj, $conn) or die(mysql_error());
 	
 	$pdf->SetFont('Helvetica','',7);

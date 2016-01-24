@@ -92,7 +92,7 @@ $pdf->SetTextColor(0,0,0);
 
 // Begin the array through all users
 
-$sql = "SELECT * FROM intranet_user_details, intranet_timesheet LEFT JOIN intranet_timesheet_fees ON ts_project = ts_fee_stage WHERE ts_user = user_id AND ts_project = '$proj_submit' AND ts_entry BETWEEN '$time_submit_begin' AND '$time_submit_end' ORDER BY ts_stage_fee, ts_entry ";
+$sql = "SELECT * FROM intranet_user_details, intranet_timesheet LEFT JOIN intranet_timesheet_fees ON ts_project = ts_fee_stage WHERE ts_user = user_id AND ts_project = '$proj_submit' AND ts_entry BETWEEN '$time_submit_begin' AND '$time_submit_end' ORDER BY ts_stage_fee, ts_fee_time_begin";
 $result = mysql_query($sql, $conn) or die(mysql_error());
 
 $current_fee_stage = NULL;

@@ -40,6 +40,7 @@ function CleanUpAddress($input) {
 	$input = strip_tags($input);
 	$input = trim($input);
 	$input = htmlentities($input);
+	$input = addslashes($input);
 	return($input);
 }
 
@@ -71,6 +72,7 @@ function CleanUpNames($input) {
 	$input = strip_tags($input);
 	$input = trim($input);
 	$input = htmlentities($input);
+	$input = addslashes($input);
 	return($input);
 }
 

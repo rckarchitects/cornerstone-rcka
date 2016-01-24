@@ -1,8 +1,7 @@
 <?php
  
  
-var_dump($_POST);
- 
+
 // Begin to clean up the $_POST submissions
 
 $drawing_id = $_POST[drawing_id];

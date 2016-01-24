@@ -165,6 +165,11 @@ echo "<td><input type=\"submit\" value=\"Add New Entry\" /></td>";
 echo "</form>";
 echo "</tr>";
 
+echo "<tr><th colspan=\"8\">Placeholders</th></tr>";
+echo "<tr><td colspan=\"5\" style=\"text-align:right;\">[project name]</td><td colspan=\"3\"><i>Includes the name and number of the current project</i></td></tr>";
+echo "<tr><td colspan=\"5\" style=\"text-align:right;\">#*</td><td colspan=\"3\"><i>Includes date added to project checklist according to practice-specific requirements (eg. #78). Refer to project checklist for more information and relevant code.</i></td></tr>";
+
+
 echo "</table>";
 
 

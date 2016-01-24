@@ -120,7 +120,9 @@ echo "</tr></table>";
 		<input type=\"radio\" value=\"approve\" name=\"approve\" checked=\"checked\" />&nbsp;Approve<br />
 		<input type=\"radio\" value=\"delete\" name=\"approve\" />&nbsp;Delete<br/ >
 		<input type=\"radio\" value=\"to_paid\" name=\"approve\" />&nbsp;Make Paid Holiday<br />
-		<input type=\"radio\" value=\"to_unpaid\" name=\"approve\" />&nbsp;Make Unpaid Holiday</p><p>
+		<input type=\"radio\" value=\"to_unpaid\" name=\"approve\" />&nbsp;Make Unpaid Holiday<br />
+		<input type=\"radio\" value=\"to_half\" name=\"approve\" />&nbsp;Make Half Day<br />
+		<input type=\"radio\" value=\"to_full\" name=\"approve\" />&nbsp;Make Full Day</p><p>
 		<input type=\"hidden\" value=\"$_COOKIE[user]\" name=\"user_id\" />
 		<input type=\"submit\" value=\"Submit\" /></p></form>";
 	

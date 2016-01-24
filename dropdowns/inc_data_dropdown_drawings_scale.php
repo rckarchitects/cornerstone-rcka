@@ -3,7 +3,7 @@
 	$sql = "SELECT * FROM intranet_drawings_scale ORDER BY scale_desc";
 	$result = mysql_query($sql, $conn) or die(mysql_error());
 
-	print "<select class=\"inputbox\" name=\"$result_data\">";
+	print "<select class=\"inputbox\" name=\"$result_data\" id=\"$result_data\">";
 	$option_current = $$result_data;
 
 	while ($array = mysql_fetch_array($result)) {
