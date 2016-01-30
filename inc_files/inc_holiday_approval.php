@@ -51,7 +51,9 @@ while ($counter_time < $beginnning_of_next_year) {
 	$bankholidays_description = $array_bankholidays['bankholidays_description'];
 	
 	
-	if ($counter_year != $this_year) {
+	if (date("z",$counter_time) == date("z",time()) && date("Y",$counter_time) == date("Y",time()) ) {
+	$background = " style=\"background: rgba(200,200,0,1); height: 40px; color: #999\"";
+	} elseif ($counter_year != $this_year) {
 	$background = " style=\"background: rgba(200,200,200,0); height: 40px; color: #999\"";
 	} elseif ( $bankholidays_description != NULL) {
 	$background = " style=\"background: rgba(200,200,200,0.5); height: 40px; color: #999\"";
@@ -80,7 +82,8 @@ while ($counter_time < $beginnning_of_next_year) {
 				$holiday_paid = $array_holiday_list['holiday_paid'];
 				$user_id = $array_holiday_list['user_id'];
 				
-				if ($holiday_paid != 1) { $user_initials = "[" . $user_initials . "]"; }
+				if ($holiday_paid == 0) { $user_initials = "[" . $user_initials . "]"; }
+				elseif ($holiday_paid == 2) { $user_initials = $user_initials . "*"; }
 				
 				if ($holiday_length == 0.5) { $user_initials = $user_initials . " (half day)"; }
 				
@@ -121,6 +124,7 @@ echo "</tr></table>";
 		<input type=\"radio\" value=\"delete\" name=\"approve\" />&nbsp;Delete<br/ >
 		<input type=\"radio\" value=\"to_paid\" name=\"approve\" />&nbsp;Make Paid Holiday<br />
 		<input type=\"radio\" value=\"to_unpaid\" name=\"approve\" />&nbsp;Make Unpaid Holiday<br />
+		<input type=\"radio\" value=\"to_studyleave\" name=\"approve\" />&nbsp;Make Study Leave<br />
 		<input type=\"radio\" value=\"to_half\" name=\"approve\" />&nbsp;Make Half Day<br />
 		<input type=\"radio\" value=\"to_full\" name=\"approve\" />&nbsp;Make Full Day</p><p>
 		<input type=\"hidden\" value=\"$_COOKIE[user]\" name=\"user_id\" />
@@ -148,8 +152,8 @@ OR (user_user_added < $beginnning_of_this_year AND (user_user_ended = 0 OR user_
 $result_users = mysql_query($sql_users, $conn);
 echo "<table>";
 
-echo "<tr><th colspan=\"6\">User Details</th><th colspan=\"4\">$year Only</th><th colspan=\"2\">All Time</th></tr>";
-echo "<tr><th>Name</th><th>Date Started</th><th>Until</th><th>Years</th><th>Annual Allowance</th><th>Total Allowance</th><th>Allowance</th><th>Paid Holiday</th><th>Unpaid Holiday</th><th>Year Total</th><th>Holiday Taken</th><th>Holiday Remaining to end of $year</th></tr>";
+echo "<tr><th colspan=\"6\">User Details</th><th colspan=\"5\">$year Only</th><th colspan=\"2\">All Time</th></tr>";
+echo "<tr><th>Name</th><th>Date Started</th><th>Until</th><th>Years</th><th>Annual Allowance</th><th>Total Allowance</th><th>Allowance</th><th>Paid Holiday</th><th>Unpaid Holiday</th><th>Study Leave</th><th>Year Total</th><th>Holiday Taken</th><th>Holiday Remaining to end of $year</th></tr>";
 
 while ($array_users = mysql_fetch_array($result_users)) {
 
@@ -179,6 +183,7 @@ while ($array_users = mysql_fetch_array($result_users)) {
 	$holiday_unpaid = 0;
 	$holiday_total = 0;
 	$holiday_total_year = 0;
+	$study_leave_total = 0;
 	
 	$sql_count = "SELECT * FROM intranet_user_holidays WHERE holiday_user = $user_id AND holiday_year <= $year AND holiday_timestamp > $user_user_added ORDER BY holiday_timestamp";
 	$result_count = mysql_query($sql_count, $conn);
@@ -193,6 +198,7 @@ while ($array_users = mysql_fetch_array($result_users)) {
 					if ($holiday_year == $year) {
 					
 								if ($holiday_paid == 1) { $holiday_paid_total = $holiday_paid_total + $holiday_length; }
+								elseif ($holiday_paid == 2) { $study_leave_total = $study_leave_total + $holiday_length; }
 								else { $holiday_unpaid = $holiday_unpaid + $holiday_length; }
 								$holiday_total_year = $holiday_total_year + $holiday_length;
 
@@ -224,6 +230,7 @@ while ($array_users = mysql_fetch_array($result_users)) {
 	<td style=\"text-align:right;\">$year_allowance</td>
 	<td style=\"text-align:right;\">$holiday_paid_total</td>
 	<td style=\"text-align:right;\">$holiday_unpaid</td>
+	<td style=\"text-align:right;\">$study_leave_total</td>
 	<td style=\"text-align:right;\">$holiday_total_year</td>
 	<td style=\"text-align:right;\">$holiday_total</td>
 	<td style=\"text-align:right;\">$holiday_remaining</td>

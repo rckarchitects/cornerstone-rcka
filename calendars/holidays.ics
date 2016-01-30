@@ -58,6 +58,8 @@ while ($array_holidays = mysql_fetch_array($result_holidays)) {
 	$holiday_approved = $array_holidays['holiday_approved'];
 	if ($holiday_approved > 0) { unset($holiday_approved); } else { $holiday_approved = "PENDING APPROVAL"; }
 	
+	$holiday_paid = $array_holidays['holiday_paid'];
+	
 	$holiday_length = $array_holidays['holiday_length'];
 	if ($holiday_length == 0.5) { $holiday_length = " (Half Day)"; } else { unset($holiday_length); }
 	
@@ -65,7 +67,16 @@ while ($array_holidays = mysql_fetch_array($result_holidays)) {
 	$user_name_second = $array_holidays['user_name_second'];
 	$user_name_complete = $user_name_first . " " . $user_name_second . " Holiday" . $holiday_length;
 	
+if ($holiday_paid == 2) {
+	
+	$summary = $user_initials . " Study Leave" . $holiday_length;
+	
+	} else {
+
 	$summary = $user_initials . " Holiday" . $holiday_length;
+
+	}
+	
 	$description = $user_name_complete;
 	
 	$uid = md5 ( $user_initials . $array_holidays['holiday_timestamp'] );

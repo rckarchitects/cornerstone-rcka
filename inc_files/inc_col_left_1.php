@@ -37,7 +37,7 @@ if ($module_qms == "1") {
 print "<h1 class=\"heading_side\">Quality Management</h1>";
 print "<ul class=\"button_left\">";
 echo "<li><a href=\"index2.php?page=qms_view\">View QMS</a>&nbsp;<a href=\"pdf_qms.php\"><img src=\"images/button_pdf.png\" alt=\"PDF Version of QMS\" /></a></li>";
-if ($user_usertype_current > 4) { 
+if ($user_usertype_current > 2) { 
 	echo "<li><a href=\"index2.php?page=qms_edit\">Edit QMS</a></li>";
 }
 print "</ul>";
