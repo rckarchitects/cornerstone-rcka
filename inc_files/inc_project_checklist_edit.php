@@ -47,7 +47,7 @@ echo "<h1>Project Checklist for $proj_num $proj_name</h1>";
 
 echo "<p class=\"menu_bar\"><a href=\"pdf_project_checklist.php?proj_id=$proj_id\" class=\"menu_tab\">PDF <img src=\"images/button_pdf.png\" /></a><a href=\"index2.php?page=project_checklist&amp;proj_id=$proj_id\" class=\"menu_tab\">Back to list</a></p>";
 
-$sql_checklist = "SELECT * FROM intranet_project_checklist_items LEFT JOIN intranet_project_checklist ON checklist_item = item_id AND checklist_project = $proj_id ORDER BY item_group, item_order, checklist_date DESC, item_name";
+$sql_checklist = "SELECT * FROM intranet_project_checklist_items LEFT JOIN intranet_project_checklist ON checklist_item = item_id AND checklist_project = $proj_id ORDER BY item_group, item_order, checklist_date, item_name";
 
 $result_checklist = mysql_query($sql_checklist, $conn) or die(mysql_error());
 
@@ -68,7 +68,7 @@ echo "
 ";
 
 if (!$item) {
-	echo "<form action=\"index2.php?page=project_checklist_edit&amp;proj_id=$proj_id\" method=\"post\">";
+	echo "<form action=\"index2.php?page=project_checklist_edit&amp;proj_id=$proj_id\" method=\"post\" enctype=\"multipart/form-data\">";
 	echo "<input type=\"hidden\" name=\"action\" value=\"checklist_update\" />";
 }
 
@@ -183,7 +183,8 @@ if (mysql_num_rows($result_checklist) > 0) {
 	
 	//echo "<td $bg>";
 	
-	//echo "<input type=\"file\" name=\"fileToUpload\" id=\"$item_id\" $bg>";
+	
+	//echo "<input type=\"file\" name=\"fileToUpload[$item_id]\" id=\"$item_id\" $bg>";
 	
 	
 	//echo "</td>";

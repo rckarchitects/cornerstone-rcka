@@ -22,7 +22,7 @@ $company_city = CleanUp($_POST[company_city]);
 $company_county = CleanUp($_POST[company_county]);
 $company_postcode = CleanUpPostcode($_POST[company_postcode]);
 $company_country = $_POST[company_country];
-$company_web = ltrim ( "http://", $_POST[company_web] );
+$company_web = ltrim ( $_POST[company_web], "http://" );
 $company_notes = $_POST[company_notes];
 
 // Construct the MySQL instruction to add these entries to the database

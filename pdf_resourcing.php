@@ -379,7 +379,7 @@ DrawGrid();
 			
 		}
 		
-	$test = StaffCost($current_time,"");
+	//$test = StaffCost($current_time,"");
 		
 	$x = 0;
 	$y = $pdf->GetY() + 5;

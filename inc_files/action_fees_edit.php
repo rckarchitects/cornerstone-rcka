@@ -14,6 +14,8 @@ unset($alertmessage);
 		$ts_fee_commence = $_POST[ts_fee_commence];
 		$ts_fee_prospect = $_POST[ts_fee_prospect];
 		
+		$ts_fee_proj_change = $_POST[ts_fee_proj_change];
+		
 		if ($ts_fee_commence == 0) { $ts_fee_commence = BeginWeek ( time() ); }
 		
 		$choose = CleanNumber($_POST[choose]);
@@ -137,6 +139,24 @@ unset($alertmessage);
 		}
 		
 
+		
+		// Now update the timesheet system and fees database if the fee stage has been moved to another projects
+		
+		if ($ts_fee_proj_change != $ts_fee_project && $ts_fee_id > 0) {
+			
+			$sql_fee_update = "UPDATE intranet_timesheet_fees SET ts_fee_project = $ts_fee_proj_change, ts_fee_pre = NULL WHERE ts_fee_project = $ts_fee_project AND ts_fee_id = $ts_fee_id LIMIT 1";
+			echo "<p>$sql_fee_update</p>";
+			
+			$sql_fee_update_link = "UPDATE intranet_timesheet_fees SET ts_fee_pre = NULL WHERE ts_fee_project = $ts_fee_project AND ts_fee_lag = $ts_fee_id LIMIT 1";
+			echo "<p>$sql_fee_update_link</p>";
+			
+			$sql_timesheet_update = "UPDATE intranet_timesheet SET ts_project = $ts_fee_proj_change WHERE ts_project = $ts_fee_project AND ts_stage_fee = $ts_fee_id";
+			echo "<p>$sql_timesheet_update</p>";
+			
+			
+		}
+		
+		
 
 // Check that the required values have been entered, and alter the page to show if these values are invalid
 

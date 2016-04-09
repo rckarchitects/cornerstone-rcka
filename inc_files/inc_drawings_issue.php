@@ -171,7 +171,7 @@ $result_issued_to = mysql_query($sql_issued_to, $conn) or die(mysql_error());
 		
 		// Javascript to limit the type of drawing issues
 		
-		$issue_method_list = array("Email","CD", "Post", "Basecamp", "Woobius", "Planning Portal");
+		$issue_method_list = array("Email","CD", "Post", "Basecamp", "Woobius", "Planning Portal", "Google Drive","Dropbox","FTP");
 		sort($issue_method_list);
 		
 		$issue_format_list = array("PDF", "DGN", "DWG", "DXF", "Hard Copy","RVT");

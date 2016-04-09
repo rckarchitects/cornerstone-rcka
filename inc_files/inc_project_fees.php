@@ -1,8 +1,24 @@
 <?php
 
-if ($_POST[proj_id] > 0) { print "<h1>Project Fee Stages</h1>"; $proj_id = $_POST[proj_id]; }
+function GetProjectInfo($proj_id) {
+	if ($proj_id != NULL) {
+		GLOBAL $conn;
+		$sql = "SELECT proj_num, proj_name FROM intranet_projects WHERE proj_id = $proj_id";
+		$result = mysql_query($sql, $conn) or die(mysql_error());
+		$array = mysql_fetch_array($result);
+		$proj_num = $array['proj_num'];
+		$proj_name = $array['proj_name'];
+		$proj_title = $proj_num . " " . $proj_name;
+		echo "<a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">" . $proj_title . "</a>";
+	}
+}
+
+if ($_POST[proj_id] > 0) { $proj_id = $_POST[proj_id]; echo "<h2>"; GetProjectInfo($proj_id); echo "</h2>"; }
 elseif ($_GET[proj_id] > 0) { $proj_id = $_GET[proj_id]; }
 elseif ($_POST[ts_fee_id] > 0) { $proj_id = $_POST[ts_fee_id]; }
+
+
+
 
 // Check if we're updating the current fee stage
 
@@ -41,7 +57,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		
 		echo "<form method=\"post\" action=\"index2.php?page=project_fees&amp;proj_id=$proj_id\">";
 		
-		print "<tr><th colspan=\"2\">Stage</th><th>Begin Date</th><th>End Date</th><th";
+		print "<tr><th colspan=\"2\">Stage</th><th>Begin Date</th><th>End Date</th><th>Likelihood</th><th";
 		if ($user_usertype_current > 2) { print " colspan=\"3\""; }
 		print ">Fee for Stage</th></tr>";
 		
@@ -68,6 +84,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 								$ts_fee_project = $array['ts_fee_project'];
 								$ts_fee_stage = $array['ts_fee_stage'];
 								$ts_fee_target = 1 / $array['ts_fee_target'];
+								$ts_fee_prospect = $array['ts_fee_prospect'];
 								// $proj_id = $array['proj_id']; 					We don't need this, do we?
 								$proj_value = $array['proj_value'];
 								$proj_fee_percentage = $array['proj_fee_percentage'];
@@ -131,8 +148,17 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 								
 								$fee_factored = $ts_fee_calc * $ts_fee_target; $fee_target = "<br />(Target Cost: " . MoneyFormat($fee_factored). " / " .  number_format(((1 / $ts_fee_target) * 100) - 100 ) . "%)"; $target_cost_total = $target_cost_total + $fee_factored;
 								
+								if ($ts_fee_prospect == 0) { $ts_fee_likelihood = "Dead"; }
+								elseif ($ts_fee_prospect == 10) { $ts_fee_likelihood = "Unlikely"; }
+								elseif ($ts_fee_prospect == 25) { $ts_fee_likelihood = "Possible"; }
+								elseif ($ts_fee_prospect == 50) { $ts_fee_likelihood = "Neutral"; }
+								elseif ($ts_fee_prospect == 75) { $ts_fee_likelihood = "Probable"; }
+								else { $ts_fee_likelihood = "Definite"; }
 								
-								print "<tr><td><input type=\"radio\" name=\"fee_stage_current\" value=\"$ts_fee_id\" $ts_fee_id_selected /> </td><td style=\"$highlight\">$ts_fee_text</td><td style=\"$highlight\">".$prog_begin_print."</td><td style=\"$highlight\">".$prog_end_print."</td><td  style=\"$highlight; text-align: right;\">".MoneyFormat($ts_fee_calc) . $fee_target ."</td>\n";
+								$ts_fee_prospect = $ts_fee_likelihood . "&nbsp;(" . $ts_fee_prospect . "%)";
+								
+								
+								print "<tr><td><input type=\"radio\" name=\"fee_stage_current\" value=\"$ts_fee_id\" $ts_fee_id_selected /> </td><td style=\"$highlight\">$ts_fee_text</td><td style=\"$highlight\">".$prog_begin_print."</td><td style=\"$highlight\">".$prog_end_print."</td><td style=\"$highlight\">".$ts_fee_prospect."</td><td  style=\"$highlight; text-align: right;\">".MoneyFormat($ts_fee_calc) . $fee_target ."</td>\n";
 								echo "<td>".$proj_duration_print."</td>";
 								if ($user_usertype_current > 2) { print "<td style=\"$highlight\"><a href=\"index2.php?page=timesheet_fees_edit&amp;ts_fee_id=$ts_fee_id\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a></td>"; }
 								print "</tr>";

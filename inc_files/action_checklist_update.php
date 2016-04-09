@@ -10,6 +10,9 @@
 	$array_checklist_user = $_POST['checklist_user'];
 	$array_checklist_link = $_POST['checklist_link'];
 	
+	$target_dir = "docstore/";
+	
+	
 
 $counter = 0;
 
@@ -27,6 +30,9 @@ while ($counter < count($array_item_id)) {
 	$checklist_comment = addslashes ( $array_checklist_comment[$counter] );
 	$checklist_user = $array_checklist_user[$counter];
 	$checklist_link = addslashes ( $array_checklist_link[$counter] );
+	
+	
+	//move_uploaded_file ($_FILES['uploadFile'] ['tmp_name'];
 	
 	if ($checklist_id == NULL) { $checklist_id = "0"; }
 

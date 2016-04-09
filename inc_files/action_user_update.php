@@ -3,9 +3,9 @@
 if ($_POST[user_id] != "") { $user_id = $_POST[user_id]; }
 else { $user_id = ""; }
 
-	if ($_GET[update_user_password] == "yes") {
-			$user_password = md5($_GET[user_password]);
-			$update_password = ", user_password = '$user_password', ";
+	if ($_POST[update_user_password] == "yes" && $_POST[update_user_password] != NULL) {
+			$user_password = md5($_POST[user_password]);
+			$update_password = ", user_password = '$user_password' ";
 	} else {
 			unset($update_password);		
 	}

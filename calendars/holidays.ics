@@ -71,6 +71,10 @@ if ($holiday_paid == 2) {
 	
 	$summary = $user_initials . " Study Leave" . $holiday_length;
 	
+	elseif ($holiday_paid == 3) {
+		
+	$summary = $user_initials . " Jury Service" . $holiday_length;
+	
 	} else {
 
 	$summary = $user_initials . " Holiday" . $holiday_length;

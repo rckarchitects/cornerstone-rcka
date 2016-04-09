@@ -24,9 +24,9 @@ if ($ts_fee_id != NULL) {
 		$ts_datum_commence = $array['ts_datum_commence'];
 		$ts_datum_length = $array['ts_datum_length'];
 		
-		print "<h1>Edit Fee Stage</h1>";
-		// print "<p class=\"menu_bar\">Menu goes here</p>";
-		print "<input type=\"hidden\" name=\"ts_fee_id\" value=\"$ts_fee_id\" />";
+		echo "<h1>Edit Fee Stage</h1>";
+		// echo "<p class=\"menu_bar\">Menu goes here</p>";
+		echo "<input type=\"hidden\" name=\"ts_fee_id\" value=\"$ts_fee_id\" />";
 		
 } else {
 
@@ -43,12 +43,12 @@ if ($ts_fee_id != NULL) {
 		
 		if ($_GET[proj_id] != NULL) { $proj_id_page = $_GET[proj_id]; }
 		
-		print "<h1>Add Fee Stage</h1>";
+		echo "<h1>Add Fee Stage</h1>";
 		
 
 }
 
-print "<form action=\"index2.php?page=project_fees\" method=\"post\">";
+echo "<form action=\"index2.php?page=project_fees\" method=\"post\">";
 
 // Begin the invoice entry system
 
@@ -62,12 +62,12 @@ print "<form action=\"index2.php?page=project_fees\" method=\"post\">";
 
 	if ($ts_fee_project > 0) { $ts_fee_project_selected = $ts_fee_project; } elseif ($_GET[proj_id] > 0) { $ts_fee_project_selected = $_GET[proj_id]; }
 	
-print "<fieldset><legend>Project</legend>";
+echo "<fieldset><legend>Project</legend>";
 
 
 if ($ts_fee_project == "") {
 
-print "<p><select name=\"ts_fee_project\">";
+echo "<p><select name=\"ts_fee_project\">";
 
 	if ($ts_project > 0) {
 		$sql = "SELECT * FROM intranet_projects order by proj_num";
@@ -80,44 +80,45 @@ print "<p><select name=\"ts_fee_project\">";
 	$proj_name = $array['proj_name'];
 	$proj_active = $array['proj_active'];
 	$proj_id = $array['proj_id'];
-	print "<option value=\"$proj_id\"";
-		if ($proj_id == $ts_fee_project_selected) { print " selected=\"selected\""; }
-	print ">$proj_num $proj_name</option>";
+	echo "<option value=\"$proj_id\"";
+		if ($proj_id == $ts_fee_project_selected) { echo " selected=\"selected\""; }
+	echo ">$proj_num $proj_name</option>";
 	}
-	print "</select></p>";
+	echo "</select></p>";
 	
 } else {
 
-	$sql = "SELECT proj_num, proj_name FROM intranet_projects WHERE proj_id = '$ts_fee_project'";
+	$sql = "SELECT proj_num, proj_name, proj_id FROM intranet_projects WHERE proj_id = '$ts_fee_project'";
 	$result = mysql_query($sql, $conn) or die(mysql_error());
 	$array = mysql_fetch_array($result);
-	print "<p><strong>".$array['proj_num']." ".$array['proj_name']."</strong><input type=\"hidden\" name=\"ts_fee_project\" value=\"$ts_fee_project\" /><input type=\"hidden\" name=\"proj_id\" value=\"$ts_fee_project\" /></p>";
+	echo "<p><strong>".$array['proj_num']." ".$array['proj_name']."</strong><input type=\"hidden\" name=\"ts_fee_project\" value=\"$ts_fee_project\" /><input type=\"hidden\" name=\"proj_id\" value=\"$ts_fee_project\" /></p>";
+	$proj_id = $array['proj_id'];
 	
 }
 
 echo "</fieldset>";
 
-print "<fieldset><legend>Details</legend><p>";
+echo "<fieldset><legend>Details</legend><p>";
 		
 	// Removed 9 July 2011
 
-	// print "<span class=\"minitext\">(if applicable)</span><br />";
+	// echo "<span class=\"minitext\">(if applicable)</span><br />";
 
-		// print "<select name=\"ts_fee_stage\">";
+		// echo "<select name=\"ts_fee_stage\">";
 		// $sql = "SELECT riba_id, riba_letter, riba_desc FROM riba_stages order by riba_order";
 		// $result = mysql_query($sql, $conn) or die(mysql_error());
-		// print "<option value=\"\"";
-			// if ($ts_fee_stage == NULL) { print " selected=\"selected\""; }
-		// print ">-- None --</option>";
+		// echo "<option value=\"\"";
+			// if ($ts_fee_stage == NULL) { echo " selected=\"selected\""; }
+		// echo ">-- None --</option>";
 		// while ($array = mysql_fetch_array($result)) {
 				// $riba_id = $array['riba_id'];
 				// $riba_letter = $array['riba_letter'];
 				// $riba_desc = $array['riba_desc'];
-				// print "<option value=\"$riba_id\"";
-				// if ($ts_fee_stage == $riba_id) { print " selected=\"selected\""; $ts_fee_text_default = $riba_letter."&nbsp;-&nbsp;".$riba_desc; }
-				// print ">$riba_letter&nbsp;$riba_desc</option>";
+				// echo "<option value=\"$riba_id\"";
+				// if ($ts_fee_stage == $riba_id) { echo " selected=\"selected\""; $ts_fee_text_default = $riba_letter."&nbsp;-&nbsp;".$riba_desc; }
+				// echo ">$riba_letter&nbsp;$riba_desc</option>";
 		// }
-		// print "</select></p>";
+		// echo "</select></p>";
 
 	echo "<h3>Prospect</h3><p>";
 	
@@ -138,21 +139,21 @@ print "<fieldset><legend>Details</legend><p>";
 		
 	// Text field
 
-		print "<h3>Description</h3><p>";
-		print "<span class=\"minitext\">(if applicable)</span>";
-		print "<br /><input type=\"text\" name=\"ts_fee_text\" value=\"$ts_fee_text\" maxlength=\"60\" size=\"60\" /></p>";
+		echo "<h3>Description</h3><p>";
+		echo "<span class=\"minitext\">(if applicable)</span>";
+		echo "<br /><input type=\"text\" name=\"ts_fee_text\" value=\"$ts_fee_text\" maxlength=\"60\" size=\"60\" /></p>";
 		
 		echo "<h3>Comment</h3><p>";
 		echo "<textarea name=\"ts_fee_comment\" style=\"width: 90%; height: 50px;\">" . $ts_fee_comment . "</textarea></p>";
 		
 		echo "</fieldset>";
 
-	print "<fieldset><legend>Fee Type</legend>";
-	print "<h3>Fixed Fee for Stage</h3><p><input type=\"radio\" value=\"value\" name=\"choose\"";
-	if ($ts_fee_value > 0) { print " checked=\"checked\" "; }
-	print " />&nbsp;(&pound;) <input type=\"text\" name=\"ts_fee_value\" size=\"24\" value=\"";
-		print NumberFormat($ts_fee_value);
-	print "\" /></p>";
+	echo "<fieldset><legend>Fee Type</legend>";
+	echo "<h3>Fixed Fee for Stage</h3><p><input type=\"radio\" value=\"value\" name=\"choose\"";
+	if ($ts_fee_value > 0) { echo " checked=\"checked\" "; }
+	echo " />&nbsp;(&pound;) <input type=\"text\" name=\"ts_fee_value\" size=\"24\" value=\"";
+		echo NumberFormat($ts_fee_value);
+	echo "\" /></p>";
 	
 	echo "<h3>Profit Target</h3>";
 	
@@ -161,14 +162,32 @@ print "<fieldset><legend>Details</legend><p>";
 					if ($ts_fee_target == 1.0 ) { $fee_target = " selected=\"selected\""; } else { unset($fee_target); }
 					echo "<option value=\"1.0\" $fee_target>Cost / Nil Profit</option>";
 					
+					if ($ts_fee_target == 1.05 ) { $fee_target = " selected=\"selected\""; } else { unset($fee_target); }
+					echo "<option value=\"1.05\" $fee_target>5% Profit</option>";
+					
 					if ($ts_fee_target == 1.10) { $fee_target = " selected=\"selected\""; } else { unset($fee_target); }
 					echo "<option value=\"1.10\" $fee_target>10% Profit</option>";
+					
+					if ($ts_fee_target == 1.15) { $fee_target = " selected=\"selected\""; } else { unset($fee_target); }
+					echo "<option value=\"1.15\" $fee_target>15% Profit</option>";
+					
+					if ($ts_fee_target == 1.20) { $fee_target = " selected=\"selected\""; } else { unset($fee_target); }
+					echo "<option value=\"1.20\" $fee_target>20% Profit</option>";
 					
 					if ($ts_fee_target == 1.25) { $fee_target = " selected=\"selected\""; } else { unset($fee_target); }
 					echo "<option value=\"1.25\" $fee_target>25% Profit</option>";
 					
 					if ($ts_fee_target == 1.30) { $fee_target = " selected=\"selected\""; } else { unset($fee_target); }
 					echo "<option value=\"1.30\" $fee_target>30% Profit</option>";
+					
+					if ($ts_fee_target == 1.35) { $fee_target = " selected=\"selected\""; } else { unset($fee_target); }
+					echo "<option value=\"1.35\" $fee_target>35% Profit</option>";
+					
+					if ($ts_fee_target == 1.40) { $fee_target = " selected=\"selected\""; } else { unset($fee_target); }
+					echo "<option value=\"1.40\" $fee_target>40% Profit</option>";
+					
+					if ($ts_fee_target == 1.45) { $fee_target = " selected=\"selected\""; } else { unset($fee_target); }
+					echo "<option value=\"1.45\" $fee_target>45% Profit</option>";
 					
 					if ($ts_fee_target == 1.5 OR $ts_fee_target == NULL) { $fee_target = " selected=\"selected\""; } else { unset($fee_target); }
 					echo "<option value=\"1.5\" $fee_target>50% Profit</option>";
@@ -180,19 +199,19 @@ print "<fieldset><legend>Details</legend><p>";
 	echo "</fieldset>";
 
 
-	print "<fieldset><legend>Duration</legend>";
-	print "<h3>Duration of Stage in weeks (whole numbers only)</h3>";
-	print "<p><input type=\"text\" name=\"ts_fee_duration\" maxlength=\"2\" value=\"$ts_fee_duration\" /> weeks</p>";
+	echo "<fieldset><legend>Duration</legend>";
+	echo "<h3>Duration of Stage in weeks (whole numbers only)</h3>";
+	echo "<p><input type=\"text\" name=\"ts_fee_duration\" maxlength=\"2\" value=\"$ts_fee_duration\" /> weeks</p>";
 	
-	print "<h3>Preceding Stage</h3><p>";
+	echo "<h3>Preceding Stage</h3><p>";
 
-	print "<select name=\"ts_fee_pre\">";
+	echo "<select name=\"ts_fee_pre\">";
 	
 // Default if a fee stage has already been entered for this entry
 
 $sql5 = "SELECT * FROM intranet_timesheet_fees WHERE ts_fee_project = '$ts_fee_project' AND ts_fee_id != '$ts_fee_id' ORDER BY ts_fee_time_begin";
 $result5 = mysql_query($sql5, $conn) or die(mysql_error());
-print "<option value=\"\">-- Fixed Date (Below) --</option>";
+echo "<option value=\"\">-- Fixed Date (Below) --</option>";
 while ($array5 = mysql_fetch_array($result5)) {
 	$ts_fee_text = $array5['ts_fee_text'];
 	$ts_fee_id_loop = $array5['ts_fee_id'];
@@ -203,12 +222,12 @@ while ($array5 = mysql_fetch_array($result5)) {
 				$array3 = mysql_fetch_array($result3);
 				$ts_fee_text = $array3['riba_letter']." - ".$array3['riba_desc'];
 		}
-	print "<option value=\"$ts_fee_id_loop\"";
-		if ($ts_fee_pre == $ts_fee_id_loop) { print " selected=\"selected\""; }
-	print ">$ts_fee_text</option>";
+	echo "<option value=\"$ts_fee_id_loop\"";
+		if ($ts_fee_pre == $ts_fee_id_loop) { echo " selected=\"selected\""; }
+	echo ">$ts_fee_text</option>";
 }
 
-print "</select>";
+echo "</select>";
 
 echo "<p><input type=\"number\" value=\"$ts_fee_pre_lag\" name=\"ts_fee_pre_lag\" />&nbsp;Enter lag (+/-) in weeks from previous stage.</p>";
 
@@ -247,12 +266,32 @@ if ($ts_fee_id > 0) {
 	echo "</fieldset>";
 
 }
+
+
+	
+		echo "<fieldset><legend>Change Project</legend>";
+		echo "<p>You can move this fee stage to another project by selecting it from below. Note that this will break any links with other fee stages in the current project.</p>";
+
+		$sql6 = "SELECT proj_num, proj_name, proj_id FROM intranet_projects WHERE proj_active = 1 ORDER BY proj_num DESC";
+				$result6 = mysql_query($sql6, $conn) or die(mysql_error());
+				echo "<select name=\"ts_fee_proj_change\">";
+				while ($array6 = mysql_fetch_array($result6)) {
+					$proj_id_change = $array6['proj_id'];
+					$proj_num_change = $array6['proj_num'];
+					$proj_name_change = $array6['proj_name'];
+					echo "<option value=\"$proj_id_change\"";
+						if ($proj_id_change == $proj_id) { echo " selected=\"selected\""; }
+					echo ">$proj_num_change - $proj_name_change</option>";
+		
+				}
+
+	echo "</select></fieldset>";
 	
 
 	// Close the table
 
-	print "<p><input type=\"hidden\" name=\"ts_fee_id\" value=\"$ts_fee_id\" /><input type=\"hidden\" name=\"action\" value=\"fees_edit\" /><input type=\"submit\" value=\"Submit\" class=\"inputsubmit\" /></p>";
-	print "</form>";
+	echo "<p><input type=\"hidden\" name=\"ts_fee_id\" value=\"$ts_fee_id\" /><input type=\"hidden\" name=\"action\" value=\"fees_edit\" /><input type=\"submit\" value=\"Submit\" class=\"inputsubmit\" /></p>";
+	echo "</form>";
 
 
 ?>

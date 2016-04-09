@@ -139,13 +139,28 @@ while ($array_drawings = mysql_fetch_array($result_drawings)) {
 	if ($array_drawings['revision_date'] != 0) { $revision_date = TimeFormat($array_drawings['revision_date']); } else { $revision_date = "-"; }
 	
 
-	if ($current_drawing != $drawing_id) {
-	
+	if ($current_drawing != $drawing_id) { 
+		
+		if ($revision_letter == "*") { $pdf->SetTextColor(150, 150, 150); } else { $pdf->SetTextColor(0, 0, 0); }
+		
 		$pdf->Cell(60,5,$drawing_number,T,0,L,$fill);
 		$pdf->Cell(25,5,$drawing_date,T,0,L,$fill);
 		$pdf->MultiCell(0,5,$drawing_title,T,L,$fill);
 		
-		if ($revision_letter != "-") {  $pdf->SetFont($format_font,'',8); $pdf->Cell(50,5,'',0,0,L,$fill); $pdf->Cell(10,5,$revision_letter,0,0,L,$fill); $pdf->Cell(25,5,$revision_date,0,0,L,$fill); $pdf->MultiCell(0,5,$revision_desc,0,L,$fill); $pdf->SetFont($format_font,'',9); }
+		if ($revision_letter == "*") {	
+				$back_y = $pdf->GetY() - 2.5;
+				$back_x = $pdf->GetX();
+				$new_x = $back_x + 190;
+				$pdf->SetDrawColor(150, 150, 150);
+				$pdf->SetLineWidth(0.1);
+				$pdf->Line($back_x,$back_y,$new_x,$back_y);
+				$pdf->SetDrawColor(0, 0, 0);
+				$new_y = $back_y + 2.5;
+				$pdf->SetXY($back_x,$new_y);
+				$pdf->SetLineWidth(0.3);
+		}
+		
+		if ($revision_letter != "-") {  $pdf->SetFont($format_font,'',8); $pdf->Cell(50,4,'',0,0,L,$fill); $pdf->Cell(10,4,$revision_letter,0,0,L,$fill); $pdf->Cell(25,4,$revision_date,0,0,L,$fill); $pdf->MultiCell(0,4,$revision_desc,0,L,$fill); $pdf->SetFont($format_font,'',9); }
 		
 		if ($fill == 0) { $fill = 1; } else { $fill = 0; }
 

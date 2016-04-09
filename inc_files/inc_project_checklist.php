@@ -61,7 +61,7 @@ if ($_GET[display_order] == "stage") {
 	
 	if ($showhidden != "yes") { $sqlhidden = " WHERE checklist_required != 1 "; } else { unset($sqlhidden); }
 
-	$sql_checklist = "SELECT * FROM intranet_project_checklist_items LEFT JOIN intranet_project_checklist ON checklist_item = item_id AND checklist_project = $proj_id $sqlhidden ORDER BY item_group, item_order, checklist_date DESC, item_name";
+	$sql_checklist = "SELECT * FROM intranet_project_checklist_items LEFT JOIN intranet_project_checklist ON checklist_item = item_id AND checklist_project = $proj_id $sqlhidden ORDER BY item_group, item_order, checklist_date, item_name";
 	
 }
 
