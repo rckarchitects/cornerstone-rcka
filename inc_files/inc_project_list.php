@@ -88,42 +88,9 @@ if ($active == "0") { $project_active = " AND proj_active = 0";
 } elseif ($active == "all") { $project_active = " AND proj_fee_track = 1 ";
 } else { $project_active = " AND proj_active = 1 "; }
 
-// Advance any projects if selected
-
-if ($_GET[move] != NULL) {
-$sql_stage = "SELECT riba_id FROM riba_stages WHERE riba_stage_include = 1 ORDER BY riba_order";
-$result_stage = mysql_query($sql_stage, $conn) or die(mysql_error());
-	while ($array_stage = mysql_fetch_array($result_stage)) {
-	$riba_stage[] = $array_stage['riba_id'];
-	}
-
-	$key = array_search($_GET[stage_current], $riba_stage);
-	$key_prev = $key - 1;
-	$key_next = $key + 1;
-	
-	if ($_GET[move] == "prev") { $key_move = $riba_stage[$key_prev]; }
-	elseif ($_GET[move] == "next") { $key_move = $riba_stage[$key_next]; }
-	
-$sql_shift = "UPDATE intranet_projects SET proj_riba = '$key_move' WHERE proj_id = '$_GET[proj_id]' LIMIT 1";
-$result_shift = mysql_query($sql_shift, $conn) or die(mysql_error());
-}
-
-// This bit has been removed by the last update
-
-// Work out the top and bottom of the list of RIBA stages
-
-// $sql_riba = "SELECT riba_id FROM riba_stages WHERE riba_stage_include = 1 ORDER BY riba_order";
-// $result_riba = mysql_query($sql_riba, $conn) or die(mysql_error());
-// $rows_total = mysql_num_rows($result_riba);
-// $rows_total = $rows_total - 1;
-// while ($array_riba = mysql_fetch_array($result_riba)) {
-// $riba_counter[] = $array_riba['riba_id'];
-// }
-// $riba_begin = $riba_counter[0];
-// $riba_end = $riba_counter[$rows_total];
 
 
-// Let's see if we can create an array which shows the recent projects worked on by the user
+// Create an array which shows the recent projects worked on by the user
 
 $timesheet_period = 16; // weeks
 $timesheet_period = $timesheet_period * 604800;
@@ -143,45 +110,50 @@ $sql = "SELECT *, UNIX_TIMESTAMP(ts_fee_commence) FROM intranet_user_details, in
 $result = mysql_query($sql, $conn) or die(mysql_error());
 
 
-		print "<p class=\"submenu_bar\">";
+		echo "<p class=\"submenu_bar\">";
 		
 		if ($_GET[active] != NULL) {
-			echo "<a href=\"index2.php\" class=\"submenu_bar\">Recent Projects</a>";
+			echo "<a href=\"index2.php\" class=\"submenu_bar\">My Projects</a>";
 		} else {
-			echo "<a href=\"index2.php?active=current&listorder=\" class=\"submenu_bar\">Active Projects</a>";
+			echo "<a href=\"index2.php?active=current&listorder=\" class=\"submenu_bar\">All Active Projects</a>";
 		}
 				
-		print "<a href=\"index2.php?active=all&amp;listorder=$listorder\" class=\"submenu_bar\">All Projects</a>";
-		print "<a href=\"index2.php?active=0&amp;listorder=$listorder\" class=\"submenu_bar\">Inactive Projects</a>";
+		echo "<a href=\"index2.php?active=all&amp;listorder=$listorder\" class=\"submenu_bar\">All Projects</a>";
+		echo "<a href=\"index2.php?active=0&amp;listorder=$listorder\" class=\"submenu_bar\">Inactive Projects</a>";
 		
 		if ($user_usertype_current > 3) {
-			print "<a href=\"index2.php?page=project_edit&amp;status=add\" class=\"submenu_bar\">Add Project (+)</a>";
+			echo "<a href=\"index2.php?page=project_edit&amp;status=add\" class=\"submenu_bar\">Add Project (+)</a>";
 		}
 		
 		if ($user_usertype_current > 3) {
-			// print "<a href=\"index2.php?page=project_analysis\" class=\"submenu_bar\">Project Analysis</a>";
+			// echo "<a href=\"index2.php?page=project_analysis\" class=\"submenu_bar\">Project Analysis</a>";
 			}
-		print "<a href=\"index2.php?page=project_blog_edit&amp;status=add\" class=\"submenu_bar\">Add Journal Entry (+)</a>";
-		print "</p>";
+		echo "<a href=\"index2.php?page=project_blog_edit&amp;status=add\" class=\"submenu_bar\">Add Journal Entry (+)</a>";
+		echo "</p>";
 		
 		
 		
 		if ($_GET[active] == "current") { 
-			print "<h2>All Active Projects</h2>";
+			echo "<h2>All Active Projects</h2>";
 		} else {
-			print "<h2>Recent Projects</h2>";
+			echo "<h2>My Projects</h2>";
 		}
 
 
 		if (mysql_num_rows($result) > 0) {
 
-		print "<table summary=\"Lists of projects\">";
-		print "<tr><td colspan=\"3\">Project</td>";
-			
-		print "<td colspan=\"3\">Current Stage</td>";
+		echo "<table summary=\"Lists of projects\">";
 		
-		print "</td>";
-		print "<td colspan=\"2\">Leader</td></tr>";
+		if ($_GET[active] == "current") { 
+			echo "<tr><td colspan=\"4\" style=\"width: 40%;\">Project</td>";
+		} else {
+			echo "<tr><td colspan=\"3\">Project</td>";
+		}
+			
+		echo "<td colspan=\"3\">Current Stage</td>";
+		
+		echo "</td>";
+		echo "<td colspan=\"2\">Leader</td></tr>";
 
 		while ($array = mysql_fetch_array($result)) {
 		
@@ -193,6 +165,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		$proj_contact_namesecond = $array['proj_contact_namesecond'];
 		$proj_company_name = $array['proj_company_name'];
 		$proj_fee_type = $array['proj_fee_type'];
+		$proj_desc = $array['proj_desc'];
 		$riba_id = $array['riba_id'];
 		$riba_desc = $array['riba_desc'];
 		$riba_letter = $array['riba_letter'];
@@ -230,17 +203,19 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 								if ($array_projectcheck[1]!= NULL) { $row_color = "background-color: " . $array_projectcheck[1] . ";"; } else { unset($row_color); } 
 								if ($array_projectcheck[0]!= NULL) { $row_text = "<br />" . $array_projectcheck[0]; } else { unset($row_text); } 
 
-											print "<tr><td $row_color_style><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">".ProjActive($proj_active,$proj_num)."</a>";
+											echo "<tr><td $row_color_style><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">".ProjActive($proj_active,$proj_num)."</a>";
 											
 											
 
-											print "</td><td style=\"width: 24px; text-align: center; $row_color\">";
+											echo "</td><td style=\"width: 24px; text-align: center; $row_color\">";
 
 											if ($user_usertype_current > 3 OR $user_id_current == $proj_rep_black) {
-											print "<a href=\"index2.php?page=project_edit&amp;proj_id=$proj_id&amp;status=edit\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a>&nbsp;";
+											echo "<a href=\"index2.php?page=project_edit&amp;proj_id=$proj_id&amp;status=edit\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a>&nbsp;";
 											}
 
-											print "</td><td $alert_task $row_color_style>".ProjActive($proj_active,$proj_name).$add_task."</td>";
+											echo "</td><td $alert_task $row_color_style >".ProjActive($proj_active,$proj_name).$add_task . "</td>";
+											
+											if ($_GET[active] == "current") { echo "<td><span class=\"minitext\">" . $proj_desc . "</span></td>"; }
 											
 											// Project Stage
 											
@@ -268,7 +243,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 														<td style=\"text-align: center; $row_color\"><a href=\"pdf_project_sheet.php?proj_id=$proj_id\"><img src=\"images/button_pdf.png\" alt=\"Project Detailed (PDF)\" /></a></td>";
 
 
-											print "</tr>";
+											echo "</tr>";
 											
 											
 	
@@ -276,11 +251,11 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 
 		}
 
-		print "</table>";
+		echo "</table>";
 
 		} else {
 
-		print "There are no live projects on the system";
+		echo "There are no live projects on the system";
 
 		}
 		

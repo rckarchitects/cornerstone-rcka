@@ -308,11 +308,13 @@ if ($contact_company > 0) {
 	echo "</textarea>";
 	
 	
-	echo "</fielddset>";
+	echo "</fieldset>";
 	
 	// List any drawing issues to this contact
 	
-	$sql_drawing = "SELECT * FROM intranet_drawings_issued, intranet_drawings_issued_set LEFT JOIN intranet_projects ON proj_id = set_project WHERE issue_contact = $contact_id AND issue_set = set_id ORDER BY set_date DESC";
+	//$sql_drawing = "SELECT * FROM intranet_drawings_issued, intranet_drawings_issued_set LEFT JOIN intranet_projects ON proj_id = set_project WHERE issue_contact = $contact_id AND issue_set = set_id ORDER BY set_date DESC";
+	
+	$sql_drawing = "SELECT * FROM intranet_drawings_issued_set, intranet_projects, intranet_drawings_issued LEFT JOIN contacts_companylist ON company_id = issue_company WHERE proj_id = set_project AND issue_contact = $contact_id AND issue_set = set_id ORDER BY set_date DESC";
 	
 	$current_set = 0;
 	
@@ -320,16 +322,22 @@ if ($contact_company > 0) {
 	if (mysql_num_rows($result_drawing) > 0) {
 		echo "<fieldset><legend>Drawing Issue</legend>";
 		echo "<table>";
+		
+		echo "<tr><th>Date</th><th>Project</th><th>Company</th><th>Reason for Issue</th></tr>";
+		
 		while ($array_drawing = mysql_fetch_array($result_drawing)) {
 		$set_id = $array_drawing['set_id'];
 		$set_date = $array_drawing['set_date'];
 		$set_reason = $array_drawing['set_reason'];
+		$proj_id = $array_drawing['proj_id'];
 		$proj_num = $array_drawing['proj_num'];
 		$proj_name = $array_drawing['proj_name'];
+		$company_id = $array_drawing['company_id'];
+		$company_name = $array_drawing['company_name'];
 		
 		if ($set_id != $current_set) {
 			
-			echo "<tr><td><a href=\"index2.php?page=datebook_view_day&amp;time=$set_date\">" . TimeFormat($set_date) . "</a></td><td><a href=\"" . $pref_location . "/index2.php?page=project_view&amp;proj_id=$proj_num\">$proj_num $proj_name</a></td><td><a href=\"index2.php?page=drawings_issue_list&set_id=$set_id&amp;proj_id=$proj_id\">$set_reason</a></td></tr>";
+			echo "<tr><td><a href=\"index2.php?page=datebook_view_day&amp;time=$set_date\">" . TimeFormat($set_date) . "</a></td><td><a href=\"" . $pref_location . "/index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></td><td><a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">$company_name</a></td><td><a href=\"index2.php?page=drawings_issue_list&set_id=$set_id&amp;proj_id=$proj_id\">$set_reason</a></td></tr>";
 		
 		}
 		

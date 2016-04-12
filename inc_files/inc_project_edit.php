@@ -3,16 +3,16 @@
 // First, determine the title of the page
 
 if($_GET[proj_id] != NULL) {
-print "<h1>Edit Project</h1>";
+echo "<h1>Edit Project</h1>";
 } else {
-print "<h1>Add New Project</h1>";
+echo "<h1>Add New Project</h1>";
 }
 
-print "<p class=\"menu_bar\">";
-print "<a href=\"#\" onclick=\"itemSwitch(1); return false;\" class=\"menu_tab\">Main</a>";
-print "<a href=\"#\" onclick=\"itemSwitch(2); return false;\" class=\"menu_tab\">Client</a>";
-print "<a href=\"#\" onclick=\"itemSwitch(3); return false;\" class=\"menu_tab\">Particulars</a>";
-print "</p>";
+echo "<p class=\"menu_bar\">";
+echo "<a href=\"#\" onclick=\"itemSwitch(1); return false;\" class=\"menu_tab\">Main</a>";
+echo "<a href=\"#\" onclick=\"itemSwitch(2); return false;\" class=\"menu_tab\">Client</a>";
+echo "<a href=\"#\" onclick=\"itemSwitch(3); return false;\" class=\"menu_tab\">Particulars</a>";
+echo "</p>";
 
 // Now populate the variables with either the failed results from the $_POST submission or from the database if we're editing an existing project
 
@@ -84,7 +84,7 @@ $proj_planning_ref = $array['proj_planning_ref'];
 $proj_buildingcontrol_ref = $array['proj_buildingcontrol_ref'];
 $proj_fee_percentage = $array['proj_fee_percentage'];
 
-print "<form method=\"post\" action=\"index2.php?page=project_view&amp;status=edit&amp;proj_id=$proj_id\">";
+echo "<form method=\"post\" action=\"index2.php?page=project_view&amp;status=edit&amp;proj_id=$proj_id\">";
 
 } elseif($status == "add") {
 
@@ -155,13 +155,13 @@ if ($_POST[proj_num] == NULL) {
 }
 
 
-print "<form method=\"post\" action=\"index2.php\">";
+echo "<form method=\"post\" action=\"index2.php\">";
 
 }
 
-print "<div id=\"item_switch_1\">";
+echo "<div id=\"item_switch_1\">";
 
-print "
+echo "
 <h2>Project Details</h2>
 <p class=\"minitext\">Fields marked * are required.</p>
 <p>Project Number*<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_num\" maxlength=\"8\" value=\"$proj_num\" />$newnum</p>
@@ -174,58 +174,56 @@ print "
 <p>County<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_address_county\" maxlength=\"50\" value=\"$proj_address_county\" /></p>
 <p>Postcode<br /><input type=\"text\" class=\"inputbox\" size=\"54\" maxlength=\"50\" name=\"proj_address_postcode\" value=\"$proj_address_postcode\" /></p>";
 
-print "<p>Country<br />";
+echo "<p>Country<br />";
 include("inc_files/inc_data_project_address_country.php");
-print "</p>";
+echo "</p>";
 
-// Now print the admin only options if applicable
+// Now echo the admin only options if applicable
 
 if ($user_usertype_current > 2) {
 
-print "<h2>Project Status</h2>";
+echo "<h2>Project Status</h2>";
 
-print "<p>Should this project be included in cost summaries?<br />";
-print "<input type=\"radio\" name=\"proj_account_track\" value=\"1\"";
-if ($proj_account_track == "1" OR $proj_account_track == "") {print " checked"; }
-print " />&nbsp;Yes<br /><input type=\"radio\" name=\"proj_account_track\" value=\"0\"";
-if ($proj_account_track == "0") {print " checked"; }
-print " />";
-print "&nbsp;No</p>";
+echo "<p>Should this project be included in cost summaries?<br />";
+echo "<input type=\"radio\" name=\"proj_account_track\" value=\"1\"";
+if ($proj_account_track == "1" OR $proj_account_track == "") {echo " checked"; }
+echo " />&nbsp;Yes<br /><input type=\"radio\" name=\"proj_account_track\" value=\"0\"";
+if ($proj_account_track == "0") {echo " checked"; }
+echo " />";
+echo "&nbsp;No</p>";
 
-print "<p>Project Active?<br />";
-print "<input type=\"radio\" name=\"proj_active\" value=\"1\"";
-if ($proj_active == "1" OR $proj_active == "") {print " checked"; }
-print " />&nbsp;Yes<br /><input type=\"radio\" name=\"proj_active\" value=\"0\"";
-if ($proj_active == "0") {print " checked"; }
-print " />";
-print "&nbsp;No</p>";
+echo "<p>Project Active?<br />";
+echo "<input type=\"radio\" name=\"proj_active\" value=\"1\"";
+if ($proj_active == "1" OR $proj_active == "") {echo " checked"; }
+echo " />&nbsp;Yes<br /><input type=\"radio\" name=\"proj_active\" value=\"0\"";
+if ($proj_active == "0") {echo " checked"; }
+echo " />";
+echo "&nbsp;No</p>";
 
-print "<p>Fee-Earning Project?<br />";
-print "<input type=\"radio\" name=\"proj_fee_track\" value=\"1\"";
-if ($proj_fee_track == "1" OR $proj_fee_track == "") {print " checked"; }
-print " />&nbsp;Yes<br /><input type=\"radio\" name=\"proj_fee_track\" value=\"0\"";
-if ($proj_fee_track == "0") {print " checked"; }
-print " />";
-print "&nbsp;No</p>";
+echo "<p>Fee-Earning Project?<br />";
+echo "<input type=\"radio\" name=\"proj_fee_track\" value=\"1\"";
+if ($proj_fee_track == "1" OR $proj_fee_track == "") {echo " checked"; }
+echo " />&nbsp;Yes<br /><input type=\"radio\" name=\"proj_fee_track\" value=\"0\"";
+if ($proj_fee_track == "0") {echo " checked"; }
+echo " />";
+echo "&nbsp;No</p>";
 
-print "<p>Project Leader<br />";
+echo "<p>Project Leader<br />";
 include ("inc_files/inc_data_project_leader.php");
-print "</p>";
+echo "</p>";
 
 }
 
-print "<p><input type=\"submit\" value=\"Submit\" class=\"inputsubmit\" /></p>";
-
-print "</div>";
+echo "</div>";
 
 // Client details
 
-print "<div id=\"item_switch_2\">";
+echo "<div id=\"item_switch_2\">";
 
-print "<h2>Client Details</h2>
+echo "<h2>Client Details</h2>
 <p>Client Name (1.0)<br />";
 include("inc_files/inc_data_project_contacts.php");
-print "</p>
+echo "</p>
 <p>Accounts Name<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_client_accounts_name\" maxlength=\"50\" value=\"$proj_client_accounts_name\" /></p>
 <p>Accounts Phone<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_client_accounts_phone\" maxlength=\"50\" value=\"$proj_client_accounts_phone\" /></p>
 <p>Accounts Fax<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_client_accounts_fax\" maxlength=\"50\" value=\"$proj_client_accounts_fax\" /></p>
@@ -234,11 +232,9 @@ print "</p>
 
 ";
 
-print "<p><input type=\"submit\" value=\"Submit\" class=\"inputsubmit\" /></p>";
+echo "</div><div id=\"item_switch_3\">";
 
-print "</div><div id=\"item_switch_3\">";
-
-print "
+echo "
 
 <h2>Project Particulars</h2>
 
@@ -249,50 +245,46 @@ print "
 <p>Proposal Issued</p>";
 include("inc_files/inc_data_project_date_proposal.php");
 
-print "<p>Date of Appointment</p>";
+echo "<p>Date of Appointment</p>";
 include("inc_files/inc_data_project_date_appointment.php");
 
-print "<p>Project Start</p>";
+echo "<p>Project Start</p>";
 include("inc_files/inc_data_project_timestart.php");
 
-print "<p>Project Complete</p>";
+echo "<p>Project Complete</p>";
 include("inc_files/inc_data_project_timecomplete.php");
 
-print "<p>Project Description<br /><textarea name=\"proj_desc\" class=\"inputbox\" cols=\"54\" rows=\"8\">$proj_desc</textarea></p>
+echo "<p>Project Description<br /><textarea name=\"proj_desc\" class=\"inputbox\" cols=\"54\" rows=\"8\">$proj_desc</textarea></p>
 <p>Procurement Method<br />";
-include("inc_files/inc_data_project_procurement.php"); print "</p>";
+include("inc_files/inc_data_project_procurement.php"); echo "</p>";
 
-print "<p>Contract Value (approx.)<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_value\" maxlength=\"12\" value=\"$proj_value\" /></p>";
+echo "<p>Contract Value (approx.)<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_value\" maxlength=\"12\" value=\"$proj_value\" /></p>";
 
-print "<p>Total Fee (all stages)<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_fee_percentage\" maxlength=\"12\" value=\"$proj_fee_percentage\" /></p>";
+echo "<p>Total Fee (all stages)<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_fee_percentage\" maxlength=\"12\" value=\"$proj_fee_percentage\" /></p>";
 
-print "<p>Value Type<br />";
+echo "<p>Value Type<br />";
 
-include("inc_files/inc_data_project_value.php"); print "</p>";
+include("inc_files/inc_data_project_value.php"); echo "</p>";
 
-// We're omitting this (9 July 2011) to switch to bespoke project stages
-
-// print "<p>Beginning RIBA Stage<br />"; include("inc_files/inc_data_project_dropdown_riba_begin.php"); print "</p>";
-// print "<p>Current RIBA Stage<br />"; include("inc_files/inc_data_project_dropdown_riba_stages.php"); print "</p>";
-// print "<p>Concluding RIBA Stage<br />"; include("inc_files/inc_data_project_dropdown_riba_conclude.php"); print "</p>";
-
-// print "<p><input type=\"submit\" value=\"Submit\" class=\"inputsubmit\" /></p>";
-
-print "</div>";
+echo "</div>";
 
 // Hidden values 
 
-if($status == "add") {
-print "<input type=\"hidden\" value=\"project_add\" name=\"action\" />";
+if ($status == "add") {
+echo "<input type=\"hidden\" value=\"project_add\" name=\"action\" />";
 } elseif($status == "edit") {
-print "<input type=\"hidden\" value=\"project_edit\" name=\"action\" />";
-print "<input type=\"hidden\" value=\"$proj_id\" name=\"proj_id\" />";
+echo "<input type=\"hidden\" value=\"project_edit\" name=\"action\" />";
+echo "<input type=\"hidden\" value=\"$proj_id\" name=\"proj_id\" />";
 }
+
+echo "<p><input type=\"submit\" value=\"Submit\" class=\"inputsubmit\" /></p>";
 
 echo "</form>";
 
 
-print "
+
+
+echo "
 		<script type=\"text/javascript\">
 		document.getElementById(\"item_switch_1\").style.display = \"$main_show\";
 		document.getElementById(\"item_switch_2\").style.display = \"none\";

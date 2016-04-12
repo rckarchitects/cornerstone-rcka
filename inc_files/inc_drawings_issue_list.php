@@ -103,16 +103,24 @@ $result_drawings = mysql_query($sql_drawings, $conn) or die(mysql_error());
 		
 // Recipients of drawings
 
-$sql_contacts = "SELECT * FROM contacts_disciplinelist, contacts_contactlist, intranet_contacts_project, intranet_drawings_issued
+$sql_contacts = "SELECT * FROM contacts_contactlist, intranet_contacts_project, intranet_drawings_issued
 LEFT JOIN contacts_companylist
 ON company_id = issue_company
 WHERE issue_set = $set_id
 AND issue_contact = contact_id
-AND contact_proj_role = discipline_id
 AND contact_proj_contact = contacts_contactlist.contact_id
 AND contact_proj_project = $proj_id
-ORDER BY discipline_order, company_name, contact_namesecond
+ORDER BY company_name, contact_namesecond
 ";
+
+$sql_contacts = "SELECT * FROM contacts_contactlist, intranet_contacts_project, intranet_drawings_issued
+LEFT JOIN contacts_companylist
+ON company_id = issue_company
+WHERE issue_set = $set_id
+AND issue_contact = contact_id
+ORDER BY company_name, contact_namesecond
+";
+
 $result_contacts = mysql_query($sql_contacts, $conn) or die(mysql_error());
 
 unset($current_contact);

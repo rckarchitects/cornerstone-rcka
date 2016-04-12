@@ -1,12 +1,21 @@
 <?php
 
+// Check the IP address of the user
+
+include("inc_files/inc_ipcheck.php");
+
 // Perform the top-of-page security check
 
 include "inc_files/inc_checkcookie.php";
 
+$usercheck = $_POST[usercheck];
+$checkform_user = $_POST[checkform_user];
+
+
+
 // Preferences
 
-include "secure/prefs.php";
+include_once "secure/prefs.php";
 
 // Check for any outstanding timesheets
 	
@@ -15,7 +24,7 @@ include "secure/prefs.php";
 		
 		if ( $_COOKIE[timesheetcomplete] < 75) { 
 		
-		$timesheetaction = "<h1 class=\"heading_alert\">Timesheets</h1><p>Your timesheets are only " . $timesheetcomplete . "% complete - <a href = \"popup_timesheet.php\">please fill them out</a>!</p><p>If your timesheet drops below " . $settings_timesheetlimit . "% complete, you will not be able to access the intranet.<br / ><a href=\"index2.php?page=timesheet_incomplete_list\">Click here for a list of incomplete days</a>.";
+		$timesheetaction = "<h1 class=\"heading_alert\">Timesheets</h1><p>Your timesheets are only " . $timesheetcomplete . "% complete - <a href = \"popup_timesheet.php\">please fill them out</a>. If your timesheet drops below " . $settings_timesheetlimit . "% complete, you will not be able to access the intranet.<br / ><a href=\"index2.php?page=timesheet_incomplete_list\"><span class=\"minitext\">Click here for a list of incomplete days</span></a>.";
 		// echo "<a href=\"index2.php?page=timesheets_incomplete_list\">Click here</a> to view your incomplete days</a>";
 		echo "</p>"; 
 		
@@ -87,6 +96,9 @@ $nowtime = time() - 43200;
 					$holiday_paid = $array5['holiday_paid'];
 					$holiday_date = $array5['holiday_date'];
 					$holiday_approved = $array5['holiday_approved'];
+					
+					$calendar_link = "index2.php?page=holiday_approval&amp;year=" . date("Y",$holiday_timestamp) . "#Week" . date("W", $holiday_timestamp);
+					
 					if ($holiday_approved == NULL) { $holiday_approved1 = "<span style=\"color: red;\">"; $holiday_approved2 = "</span>";  } else { unset($holiday_approved1); unset($holiday_approved2); }
 					if ($current_date != $holiday_date) {
 						$holidaymessage = $holidaymessage . "<li>" . TimeFormatDay($holiday_timestamp) . ": ";
@@ -96,7 +108,7 @@ $nowtime = time() - 43200;
 					
 					if ($holiday_length < 1) { $holiday_length = " (Half Day)"; } else { unset($holiday_length); }
 					
-					$holidaymessage = $holidaymessage . $holiday_approved1 . $user_name_first . " " . $user_name_second . $holiday_length . $holiday_approved2 ;
+					$holidaymessage = $holidaymessage . "<a href=\"$calendar_link\">" . $holiday_approved1 . $user_name_first . " " . $user_name_second . $holiday_length . $holiday_approved2 . "</a>"; ;
 					
 					$current_date = $holiday_date;
 			}
@@ -111,12 +123,7 @@ $nowtime = time() - 43200;
 		
 		
 
-$usercheck = $_POST[usercheck];
-$checkform_user = $_POST[checkform_user];
 
-// Check the IP address of the user
-
-include("inc_files/inc_ipcheck.php");
 
 // If there are any actions required, perform them now by including the relevant 'action' file
 
