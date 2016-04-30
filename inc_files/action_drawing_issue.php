@@ -1,17 +1,6 @@
 <?php
 
-$issue_date_day = CleanUp($_POST[issue_date_day]);
-$issue_date_month = CleanUp($_POST[issue_date_month]);
-$issue_date_year = CleanUp($_POST[issue_date_year]);
-
-if (checkdate($issue_date_month, $issue_date_day, $issue_date_year) != TRUE) {
-	$alertmessage = "The date entered is invalid."; $page_redirect = "drawings_detailed";
-} else {
-
-$issue_date_second = 0;
-$issue_date_minute = 0;
-$issue_date_hour = 12;
-$issue_date = mktime ( $issue_date_hour, $issue_date_minute, $issue_date_second, $issue_date_month, $issue_date_day, $issue_date_year);
+$issue_date = AssessDays ($_POST[set_date] );
 
 $issue_set = time();
 
@@ -50,7 +39,8 @@ $sql_set = "INSERT INTO intranet_drawings_issued_set (
 					set_comment,
 					set_timestamp,
 					set_method,
-					set_format
+					set_format,
+					set_checked
 					) values (
 					'NULL',
 					'$issue_date',
@@ -60,7 +50,8 @@ $sql_set = "INSERT INTO intranet_drawings_issued_set (
 					'$issue_comment',
 					'$issue_timestamp',
 					'$issue_method',
-					'$issue_format'					
+					'$issue_format',
+					'$set_checked'
 					)";
 					
 $result_set = mysql_query($sql_set, $conn) or die(mysql_error());
@@ -128,7 +119,5 @@ $issue_set = mysql_insert_id();
 		
 
 $actionmessage = "The drawing issue was added successfully.";
-
-}
 
 ?>

@@ -35,10 +35,15 @@ $proj_id = $_GET[proj_id];
 		
 		echo "</p>";
 		
-		echo "<table>";
+
 			
-			echo "<tr><th colspan=\"5\">Project</th></tr>";
-			echo "<tr><td colspan=\"5\"><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></td></tr>";
+			echo "<fieldset><legend>Project</legend>";
+			echo "<a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></fieldset>";
+			
+			echo "<fieldset><legend>Details</legend>";
+			
+			echo "<table>";
+			
 			echo "<tr><th style=\"width: 20%;\">Date of issue</th><th style=\"width: 20%;\">Purpose</th><th style=\"width: 25%;\">Method</th><th style=\"width: 20%;\">Format</th><th style=\"width: 20%;\">Issued By</th></tr>";	
 			echo "<tr><td><a href=\"index2.php?page=datebook_view_day&amp;time=$set_date\">$print_date</a></td><td>$set_reason</td><td>$set_method</td><td>$set_format</td><td>$user_name_first $user_name_second</td></tr>";
 			
@@ -49,6 +54,8 @@ $proj_id = $_GET[proj_id];
 
 			
 		echo "</table>";
+		
+		echo "</fieldset>";
 
 // Drawings issued as part of this set $set_id
 
@@ -56,9 +63,9 @@ $sql_drawings = "SELECT * FROM intranet_drawings, intranet_drawings_issued LEFT 
 
 $result_drawings = mysql_query($sql_drawings, $conn) or die(mysql_error());
 
-		echo "<table>";
+		echo "<fieldset><legend>Drawings</legend><table>";
 		
-		echo "<tr><th style=\"width:25%\">Number</th><th style=\"width:20%\" colspan=\"2\">Rev.</th><th colspan=\"2\">Title</th></tr>";
+		echo "<tr><th style=\"width:25%\">Number</th><th style=\"width:20%\">Rev.</th><th>Rev. Date</th><th colspan=\"2\">Title</th></tr>";
 		
 		unset($current_drawing);
 		
@@ -99,7 +106,7 @@ $result_drawings = mysql_query($sql_drawings, $conn) or die(mysql_error());
 		
 		}
 		
-		echo "</table>";
+		echo "</table></fieldset>";
 		
 // Recipients of drawings
 
@@ -125,7 +132,7 @@ $result_contacts = mysql_query($sql_contacts, $conn) or die(mysql_error());
 
 unset($current_contact);
 
-echo "<table>";
+echo "<fieldset><legend>Recipients</legend><table>";
 
 echo "<tr><th style=\"width: 25%\">Recipient</th><th>Company</th><th>Role</th></tr>";
 
@@ -147,7 +154,7 @@ while ($array_contacts = mysql_fetch_array($result_contacts)) {
 	
 	}
 	
-echo "</table>";
+echo "</table></fieldset>";
 		
 	
 } else {

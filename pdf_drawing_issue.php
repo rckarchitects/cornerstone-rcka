@@ -59,8 +59,21 @@ $set_reason = $array_set['set_reason'];
 $set_method = $array_set['set_method'];
 $set_format = $array_set['set_format'];
 $set_comment = $array_set['set_comment'];
+$set_checked = $array_set['set_checked'];
 
-$user_name = $array_set['user_name_first'] . " " . $array_set['user_name_second'];
+
+if ($set_checked > 0) {
+
+$sql_set_checked = "SELECT user_initials FROM intranet_user_details WHERE user_id = $set_checked LIMIT 1";
+$result_set_checked = mysql_query($sql_set_checked, $conn) or die(mysql_error());
+$array_set_checked = mysql_fetch_array($result_set_checked);
+$user_initials = $array_set_checked['user_initials'];
+
+} else { unset($user_name_checked) ;}
+
+$user_name = $array_set['user_initials'];
+
+
 	
 	$sheet_title = "Drawing Issue Sheet";
 	$pdf->SetXY(10,45);
@@ -78,17 +91,21 @@ $user_name = $array_set['user_name_first'] . " " . $array_set['user_name_second'
 	$pdf->SetDrawColor(0, 0, 0);
 	$pdf->SetFont("Helvetica",'B',8);	
 	$pdf->Cell(40,5,"Purpose of Issue",0,0,L,0);
-	$pdf->Cell(40,5,"Method of Issue",0,0,L,0);
-	$pdf->Cell(40,5,"Format",0,0,L,0);
-	$pdf->Cell(40,5,"Issued By",0,0,L,0);
+	$pdf->Cell(30,5,"Method of Issue",0,0,L,0);
+	$pdf->Cell(30,5,"Format",0,0,L,0);
+	$pdf->Cell(30,5,"Issued By",0,0,L,0);
+	$pdf->Cell(30,5,"Checked By",0,0,L,0);
 	$pdf->Cell(30,5,"ID",0,1,L,0);
 	$pdf->SetTextColor(0, 0, 0);
 	$pdf->SetLineWidth(0.4);
 	$pdf->SetFont($format_font,'',10);	
 	$pdf->Cell(40,7.5,$set_reason,T,0,L,0);
-	$pdf->Cell(40,7.5,$set_method,T,0,L,0);
-	$pdf->Cell(40,7.5,$set_format,T,0,L,0);
-	$pdf->Cell(40,7.5,$user_name,T,0,L,0);
+	$pdf->Cell(30,7.5,$set_method,T,0,L,0);
+	$pdf->Cell(30,7.5,$set_format,T,0,L,0);
+	$pdf->Cell(30,7.5,$user_name,T,0,L,0);
+	if ($user_name_checked == NULL) { $user_name_checked = "None"; $pdf->SetTextColor(255,0,0); }
+	$pdf->Cell(30,7.5,$user_name_checked,T,0,L,0);
+	$pdf->SetTextColor(0,0,0);
 	$pdf->Cell(30,7.5,$set_id,T,1,L,0);
 	$pdf->Cell(0,0.5,'',T,1,L,0);
 	$pdf->SetLineWidth(0.4);

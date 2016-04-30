@@ -158,7 +158,7 @@ $result_issued_to = mysql_query($sql_issued_to, $conn) or die(mysql_error());
 // Drawing issue details
 		
 		
-		echo "<h2>Issue Details</h2>";
+		echo "<fieldset><legend>Issue Details</legend>";
 		$issue_reason_list = array("Comment","Preliminary","Information","Planning","Building Control","Tender","Coordination","Contract","Construction","Client Issue","Final Design","As Instructed");
 		echo "<p>Reason for Issue<br /><select name=\"issue_reason\">";
 		$count = 0;
@@ -167,9 +167,9 @@ $result_issued_to = mysql_query($sql_issued_to, $conn) or die(mysql_error());
 			echo "<option value=\"$issue_reason_list[$count]\">$issue_reason_list[$count]</option>";
 			$count++;
 		}
-		echo "</select></p>";
+		echo "</select></fieldset>";
 		
-		// Javascript to limit the type of drawing issues
+		echo "<fieldset><legend>Issue Method</legend>";
 		
 		$issue_method_list = array("Email","CD", "Post", "Basecamp", "Woobius", "Planning Portal", "Google Drive","Dropbox","FTP");
 		sort($issue_method_list);
@@ -177,58 +177,73 @@ $result_issued_to = mysql_query($sql_issued_to, $conn) or die(mysql_error());
 		$issue_format_list = array("PDF", "DGN", "DWG", "DXF", "Hard Copy","RVT");
 		sort($issue_method_list);
 		
-			echo "<script type=\"text/javascript\"> 
-			function disablefield(){ 
-				if (document.getElementById('issue_method').checked == 'Hard Copy'){
-						document.getElementById('Hard Copy').disabled='';
-						document.getElementById('PDF').disabled='disabled';
-						document.getElementById('DGN').disabled='disabled';
-						document.getElementById('DWG').disabled='disabled';
-						document.getElementById('DXF').disabled='disabled';
-					} else{
-						document.getElementById('PDF').disabled='';
-						document.getElementById('DGN').disabled='';
-						document.getElementById('DWG').disabled='';
-						document.getElementById('DXF').disabled='';
-						document.getElementById('Hard Copy').disabled='disabled'; 
-				} 
-			} 
-		</script>";
+		if (count($issue_method_list) > count($issue_format_list)) { $total = count($issue_method_list); } else { $total = count($issue_format_list); }
 		
-		echo "<div>";
-		
-		
-		echo "<p style=\"float: left; margin-right: 20px;\">Issue Method<br />";
 		$count = 0;
+		
+		echo "<table style=\"width: 50%;\"><tr><th colspan=\"2\">Issue Method</th><th colspan=\"2\">Issue Format</th></tr>";
 		$total = count($issue_method_list);
 		while ($count < $total) {		
-			echo "<input type=\"radio\" name=\"issue_method\" id=\"$issue_method_list[$count]\" value=\"$issue_method_list[$count]\"";
-		if ($count == "2") { echo " checked=\"checked\""; }
-		echo " onChange=\"disablefield();\" />&nbsp;$issue_method_list[$count]<br />";
+			echo "<tr><td style=\"width: 20px; text-align: center\">";
+			
+			if (count($issue_method_list) > $count) {
+				echo "<input type=\"radio\" name=\"issue_method\" id=\"$issue_method_list[$count]\" value=\"$issue_method_list[$count]\" required=\"required\" />";
+			}
+			
+			echo "<td>$issue_method_list[$count]</td><td style=\"width: 20px; text-align: center\">";
+			
+			if (count($issue_format_list) > $count) {
+				echo "<input type=\"radio\" name=\"issue_format\" id=\"$issue_format_list[$count]\" value=\"$issue_format_list[$count]\" required=\"required\" />";
+				
+			}
+			
+			echo "<td>$issue_format_list[$count]</td></tr>";
+			
+			
+
 			$count++;
 		}
-		echo "</p>";
 		
-		echo "<p>Issue Format<br />";
-		$count = 0;
-		$total = count($issue_method_list);
-		while ($count < $total) {		
-			echo "<input type=\"radio\" name=\"issue_format\" id=\"$issue_format_list[$count]\" value=\"$issue_format_list[$count]\"";
-		if ($count == "0") { echo " checked=\"checked\""; }
-		echo " />&nbsp;$issue_format_list[$count]<br />";
-			$count++;
+		echo "</table></fieldset>";
+		
+		// Add dropdown to select user that is checking drawings (excludes the current user)
+		
+		echo "<fieldset><legend>Checked By</legend>";
+		
+		
+		
+		$sql_checked = "SELECT user_name_first, user_name_second, user_id FROM intranet_user_details WHERE user_id != $_COOKIE[user] AND user_active = 1 ORDER BY user_name_second";
+
+		$result_checked = mysql_query($sql_checked, $conn) or die(mysql_error());
+		
+		echo "<select name=\"set_checked\">";
+		
+		echo "<option value=\"\">-- None --</option>";
+		
+		while ($array_checked = mysql_fetch_array($result_checked)) {
+		
+
+			echo "<option value=\"" . $array_checked['user_id'] . "\"/>" . $array_checked['user_name_first'] . "&nbsp;" . $array_checked['user_name_second'] . "</option>";
+		
+		
 		}
-		echo "</p>";
 		
-		echo "</div>";
+		echo "</select></fieldset>";
+
 		
-		echo "<p>Comment<br /><textarea name=\"issue_comment\" cols=\"36\" rows=\"6\"></textarea></p>";
+		echo "<fieldset><legend>Comment</legend><textarea name=\"issue_comment\" cols=\"36\" rows=\"6\"></textarea></fieldset>";
 		
-		if ($issue_date != NULL) { $issue_date_day = date("j", $issue_date); } else { $issue_date_day = date("j", time()); }
-		if ($issue_date != NULL) { $issue_date_month = date("n", $issue_date); } else { $issue_date_month = date("n", time()); }
-		if ($issue_date != NULL) { $issue_date_year = date("Y", $issue_date); } else { $issue_date_year = date("Y", time()); }
+		echo "<fieldset><legend>Issue Date</legend>";
 		
-		echo "<p><input type=\"hidden\" name=\"action\" value=\"drawing_issue\" /><input type=\"hidden\" name=\"issue_date\" value=\"".time()."\" /><input type=\"hidden\" value=\"$proj_id\" name=\"issue_project\" /><p>Issue Date<br />&nbsp;Day:&nbsp;<input type=\"text\" value=\"$issue_date_day\" name=\"issue_date_day\" size=\"4\" />&nbsp;Month:&nbsp;<input type=\"text\" value=\"$issue_date_month\" name=\"issue_date_month\" size=\"4\" />&nbsp;Year:&nbsp;<input type=\"text\" value=\"$issue_date_year\" name=\"issue_date_year\"  size=\"4\" /></p><p><input type=\"submit\" value=\"Issue Drawings\" /></p>";
+		$issue_date_value = date("Y",time()) . "-" . date("m",time()) . "-" . date("t",time());
+		
+		echo "<input type=\"date\" value=\"$issue_date_value\" name=\"set_date\" /></fieldset>";
+		
+	
+		echo "<p><input type=\"submit\" value=\"Issue Drawings\" /></p>";
+		
+		
+		echo "<input type=\"hidden\" name=\"action\" value=\"drawing_issue\" /><input type=\"hidden\" name=\"issue_date\" value=\"".time()."\" /><input type=\"hidden\" value=\"$proj_id\" name=\"issue_project\" />";
 		
 		echo "</form>";
 
