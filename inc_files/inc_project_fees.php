@@ -45,7 +45,7 @@ print "<p class=\"submenu_bar\">";
 
 print "</p>";
 
-print "<h2>Project Fee Stages</h2>";
+print "<h2>Project Fee Stages for <a href=\"\">$proj_num $proj_name</a></h2>";
 
 $sql = "SELECT * FROM intranet_timesheet_fees, intranet_projects WHERE ts_fee_project = '$proj_id' AND proj_id = ts_fee_project ORDER BY ts_fee_commence, ts_fee_text";
 $result = mysql_query($sql, $conn) or die(mysql_error());
@@ -183,18 +183,18 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		
 		if ($user_usertype_current > 3) { 
 		
-				print "<tr><td colspan=\"4\"><strong>Total Fee for All Stages</strong></td><td style=\"text-align: right;\" colspan=\"3\"><strong>".MoneyFormat($fee_total)."</strong></td></tr>";
+				print "<tr><td colspan=\"5\"><strong>Total Fee for All Stages</strong></td><td style=\"text-align: right;\" colspan=\"3\"><strong>".MoneyFormat($fee_total)."</strong></td></tr>";
 				
 				$profit = (( $fee_total / $target_cost_total ) - 1) * 100;
 				
 				$target_fee_percentage = number_format ($profit,2);
 				
-				print "<tr><td colspan=\"4\"><strong>Target Cost for All Stages</strong></td><td style=\"text-align: right;\" colspan=\"3\"><strong>".MoneyFormat($target_cost_total). " (" . $target_fee_percentage . "% Profit Overall)</strong></td></tr>";
+				print "<tr><td colspan=\"5\"><strong>Target Cost for All Stages</strong></td><td style=\"text-align: right;\" colspan=\"3\"><strong>".MoneyFormat($target_cost_total). " (" . $target_fee_percentage . "% Profit Overall)</strong></td></tr>";
 
 		
 		}
 		
-		echo "<tr><td colspan=\"7\"><input type=\"submit\" value=\"Update Current Fee Stage\" /></td></tr>";
+		echo "<tr><td colspan=\"8\"><input type=\"submit\" value=\"Update Current Fee Stage\" /></td></tr>";
 		
 		echo "</form>";
 		

@@ -235,7 +235,7 @@ $result_issued_to = mysql_query($sql_issued_to, $conn) or die(mysql_error());
 		
 		echo "<fieldset><legend>Issue Date</legend>";
 		
-		$issue_date_value = date("Y",time()) . "-" . date("m",time()) . "-" . date("t",time());
+		$issue_date_value = date("Y",time()) . "-" . date("m",time()) . "-" . date("d",time());
 		
 		echo "<input type=\"date\" value=\"$issue_date_value\" name=\"set_date\" /></fieldset>";
 		

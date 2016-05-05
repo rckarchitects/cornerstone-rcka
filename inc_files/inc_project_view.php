@@ -64,122 +64,125 @@ $country_printable_name = $array['country_printable_name'];
 
 $proj_tenant_1 = $array['proj_tenant_1'];
 
-print "<h1>".$proj_num."&nbsp;".$proj_name."</h1>";
+echo "<h1>".$proj_num."&nbsp;".$proj_name."</h1>";
 
-print "<p class=\"menu_bar\">";
-print "<a href=\"#\" onclick=\"itemSwitch(1); return false;\" class=\"menu_tab\">Main</a>";
-print "<a href=\"#\" onclick=\"itemSwitch(2); return false;\" class=\"menu_tab\">Client</a>";
-print "<a href=\"#\" onclick=\"itemSwitch(4); return false;\" class=\"menu_tab\">Contacts</a>";
-print "<a href=\"#\" onclick=\"itemSwitch(8); return false;\" class=\"menu_tab\">Tasks</a>";
+echo "<p class=\"menu_bar\">";
+echo "<a href=\"#\" onclick=\"itemSwitch(1); return false;\" class=\"menu_tab\">Main</a>";
+echo "<a href=\"#\" onclick=\"itemSwitch(2); return false;\" class=\"menu_tab\">Client</a>";
+echo "<a href=\"#\" onclick=\"itemSwitch(4); return false;\" class=\"menu_tab\">Contacts</a>";
+echo "<a href=\"#\" onclick=\"itemSwitch(8); return false;\" class=\"menu_tab\">Tasks</a>";
 if ($user_usertype_current > 3) {
-	print "<a href=\"#\" onclick=\"itemSwitch(5); return false;\" class=\"menu_tab\">Fees</a>";
+	echo "<a href=\"#\" onclick=\"itemSwitch(5); return false;\" class=\"menu_tab\">Fees</a>";
 }
 if ($user_usertype_current >= 4) {
-	print "<a href=\"#\" onclick=\"itemSwitch(6); return false;\" class=\"menu_tab\">Expenses</a>";
-if ( $module_invoices == 1) { print "<a href=\"#\" onclick=\"itemSwitch(7); return false;\" class=\"menu_tab\">Invoices</a>"; }
+	echo "<a href=\"#\" onclick=\"itemSwitch(6); return false;\" class=\"menu_tab\">Expenses</a>";
+if ( $module_invoices == 1) { echo "<a href=\"#\" onclick=\"itemSwitch(7); return false;\" class=\"menu_tab\">Invoices</a>"; }
 }
 
-print "<a href=\"#\" onclick=\"itemSwitch(3); return false;\" class=\"menu_tab\">Particulars</a>";
-print "</p>";
+echo "<a href=\"#\" onclick=\"itemSwitch(3); return false;\" class=\"menu_tab\">Particulars</a>";
+echo "</p>";
 
 
-print "<div id=\"item_switch_1\">";
+echo "<div id=\"item_switch_1\">";
 
 // Project Page Menu
-print "<p class=\"submenu_bar\">";
+echo "<p class=\"submenu_bar\">";
 	if ($user_usertype_current > 3 OR $user_id_current == $proj_rep_black) {
-		print "<a href=\"index2.php?page=project_edit&amp;status=edit&amp;proj_id=$proj_id\" class=\"submenu_bar\">Edit</a>";
+		echo "<a href=\"index2.php?page=project_edit&amp;status=edit&amp;proj_id=$proj_id\" class=\"submenu_bar\">Edit</a>";
 	}
 	if ($user_usertype_current > 0) {
-		print "<a href=\"index2.php?page=project_blog_edit&amp;status=add&amp;proj_id=$proj_id\" class=\"submenu_bar\">Add Project Journal Entry</a>";
+		echo "<a href=\"index2.php?page=project_blog_edit&amp;status=add&amp;proj_id=$proj_id\" class=\"submenu_bar\">Add Project Journal Entry</a>";
 	}
-	print "<a href=\"index2.php?page=tasklist_edit&amp;proj_id=$proj_id\" class=\"submenu_bar\">Add Project Task</a>";
+	echo "<a href=\"index2.php?page=tasklist_edit&amp;proj_id=$proj_id\" class=\"submenu_bar\">Add Project Task</a>";
 	if ($user_usertype_current > 2) {
-		print "<a href=\"pdf_project_sheet.php?proj_id=$proj_id\" class=\"submenu_bar\">Project Sheet&nbsp;<img src=\"images/button_pdf.png\" alt=\"Output project sheet to PDF\" /></a>";
+		echo "<a href=\"pdf_project_sheet.php?proj_id=$proj_id\" class=\"submenu_bar\">Project Sheet&nbsp;<img src=\"images/button_pdf.png\" alt=\"Output project sheet to PDF\" /></a>";
 	}
 	if ($user_usertype_current > 1) {
-		print "<a href=\"index2.php?page=drawings_list&amp;proj_id=$proj_id\" class=\"submenu_bar\">View Drawings</a>";
+		echo "<a href=\"index2.php?page=drawings_list&amp;proj_id=$proj_id\" class=\"submenu_bar\">View Drawings</a>";
 	}
 	if ($user_usertype_current > 1) {
-		print "<a href=\"index2.php?page=project_checklist&amp;proj_id=$proj_id\" class=\"submenu_bar\">Project Checklist</a>";
+		echo "<a href=\"index2.php?page=project_checklist&amp;proj_id=$proj_id\" class=\"submenu_bar\">Project Checklist</a>";
+	}
+	if ($user_usertype_current > 1) {
+		echo "<a href=\"index2.php?page=project_planningcondition_list&amp;proj_id=$proj_id\" class=\"submenu_bar\">Planning Tracker</a>";
 	}
 	
-print "</p>";
+echo "</p>";
 
-					print "<h2>Project Information</h2>";
+					echo "<h2>Project Information</h2>";
 
-					print "<table summary=\"Project Information\">";
+					echo "<table summary=\"Project Information\">";
 
-					print "<tr><td style=\"width: 40%;\">Site Address</td><td>";
+					echo "<tr><td style=\"width: 40%;\">Site Address</td><td>";
 
-					if ($proj_address_1 != "") { print $proj_address_1."<br />"; }
-					if ($proj_address_2 != "") {print $proj_address_2."<br />"; }
-					if ($proj_address_3 != "") {print $proj_address_3."<br />"; }
-					if ($proj_address_town != "") {print $proj_address_town."<br />"; }
-					if ($proj_address_county != "") {print $proj_address_county."<br />"; }
+					if ($proj_address_1 != "") { echo $proj_address_1."<br />"; }
+					if ($proj_address_2 != "") {echo $proj_address_2."<br />"; }
+					if ($proj_address_3 != "") {echo $proj_address_3."<br />"; }
+					if ($proj_address_town != "") {echo $proj_address_town."<br />"; }
+					if ($proj_address_county != "") {echo $proj_address_county."<br />"; }
 					if ($proj_address_postcode != "") {
 					    $proj_address_postcode_link = PostcodeFinder($proj_address_postcode);
-					    print "<a href=\"".$proj_address_postcode_link."\">".$proj_address_postcode."</a><br />";
+					    echo "<a href=\"".$proj_address_postcode_link."\">".$proj_address_postcode."</a><br />";
 					    }
-					if ($country_printable_name != "") {print $country_printable_name."<br />"; }
+					if ($country_printable_name != "") {echo $country_printable_name."<br />"; }
 
-					print "</td></tr>";
+					echo "</td></tr>";
 
-					if ($proj_date_start > 0) { print "<tr><td  >Project Start Date</td><td  >$proj_date_start</td></tr>"; }
-					if ($proj_date_complete > 0) { print "<tr><td  >Project Completion Date</td><td  >$proj_date_complete</td></tr>"; }
+					if ($proj_date_start > 0) { echo "<tr><td  >Project Start Date</td><td  >$proj_date_start</td></tr>"; }
+					if ($proj_date_complete > 0) { echo "<tr><td  >Project Completion Date</td><td  >$proj_date_complete</td></tr>"; }
 
-					if ($proj_desc != "") { print "<tr><td  >Project Description</td><td  >$proj_desc</td></tr>"; }
+					if ($proj_desc != "") { echo "<tr><td  >Project Description</td><td  >$proj_desc</td></tr>"; }
 
 					if ($proj_riba_begin > 0) {
-					print "<tr><td  >Starting RIBA Work Stage</td><td  >";
+					echo "<tr><td  >Starting RIBA Work Stage</td><td  >";
 					include("inc_files/inc_data_project_riba_begin.php");
-					print "</td></tr>";
+					echo "</td></tr>";
 					}
 
 					if ($proj_riba > 0) {
-					print "<tr><td >Current RIBA Work Stage</td><td  >";
+					echo "<tr><td >Current RIBA Work Stage</td><td  >";
 					include("inc_files/inc_data_project_riba_stages.php");
-					print "</td></tr>";
+					echo "</td></tr>";
 					}
 
 					if ($proj_riba_conclude > 0) {
-					print "<tr><td>Concluding RIBA Work Stage</td><td  >";
+					echo "<tr><td>Concluding RIBA Work Stage</td><td  >";
 					include("inc_files/inc_data_project_riba_conclude.php");
-					print "</td></tr>";
+					echo "</td></tr>";
 					}
 
 					if ($proj_procure > 0) {
-					print "<tr><td>Procurement Method</td><td>$proj_procure</td></tr>";
+					echo "<tr><td>Procurement Method</td><td>$proj_procure</td></tr>";
 					}
 
 					if ($proj_value != 0) {
 					$proj_value_show = MoneyFormat($proj_value);
-					print "<tr><td>Contract Value</td><td><a href=\"index2.php?page=timesheet_value_view&amp;proj_id=$proj_id\">$proj_value_show</a></td></tr>";
+					echo "<tr><td>Contract Value</td><td><a href=\"index2.php?page=timesheet_value_view&amp;proj_id=$proj_id\">$proj_value_show</a></td></tr>";
 					}
 					
 					if ($proj_fee_percentage > 0) {
-					print "<tr><td>Fee Percentage</td><td>".$proj_fee_percentage."%</td></tr>";
-					print "<tr><td>Total Fee<br /><span class=\"minitext\">(Assuming 100% of fee)</span></td><td>".MoneyFormat(($proj_value * ($proj_fee_percentage / 100)))."</td></tr>";
+					echo "<tr><td>Fee Percentage</td><td>".$proj_fee_percentage."%</td></tr>";
+					echo "<tr><td>Total Fee<br /><span class=\"minitext\">(Assuming 100% of fee)</span></td><td>".MoneyFormat(($proj_value * ($proj_fee_percentage / 100)))."</td></tr>";
 					}
 
-					print "</table>";
+					echo "</table>";
 
-print "</div><div id=\"item_switch_2\">";
+echo "</div><div id=\"item_switch_2\">";
 
 		// Project Page Menu
-		print "<p class=\"submenu_bar\">";
+		echo "<p class=\"submenu_bar\">";
 			if ($user_usertype_current > 3 OR $user_id_current == $proj_rep_black) {
-				print "<a href=\"index2.php?page=project_edit&amp;status=edit&amp;proj_id=$proj_id\" class=\"submenu_bar\">Edit</a>";
+				echo "<a href=\"index2.php?page=project_edit&amp;status=edit&amp;proj_id=$proj_id\" class=\"submenu_bar\">Edit</a>";
 			}
 			if ($user_usertype_current > 1) {
-				print "<a href=\"index2.php?page=project_blog_edit&amp;status=add&amp;proj_id=$proj_id\" class=\"submenu_bar\">Add Project Journal Entry</a>";
+				echo "<a href=\"index2.php?page=project_blog_edit&amp;status=add&amp;proj_id=$proj_id\" class=\"submenu_bar\">Add Project Journal Entry</a>";
 			}
-		print "</p>";
+		echo "</p>";
 
 					// Pull the details from the contact database
 
-					print "<h2>Client</h2>";
-					print "<table summary=\"Client Details\">";
+					echo "<h2>Client</h2>";
+					echo "<table summary=\"Client Details\">";
 
 						$sql_contact = "SELECT * FROM contacts_contactlist WHERE contact_id = '$proj_client_contact_id' LIMIT 1";
 						$result_contact = mysql_query($sql_contact, $conn);
@@ -216,35 +219,35 @@ print "</div><div id=\"item_switch_2\">";
 							}
 							
 							if ($proj_client_contact_id > 0) {
-								print "<tr><td style=\"width: 40%;\">Invoices / Accounts</td><td >$print_client_name</td></tr>";
+								echo "<tr><td style=\"width: 40%;\">Invoices / Accounts</td><td >$print_client_name</td></tr>";
 							}
 				
 					
-					print "</table>";
+					echo "</table>";
 
-print "</div><div id=\"item_switch_3\">";
+echo "</div><div id=\"item_switch_3\">";
 
 		// Project Page Menu
-		print "<p class=\"submenu_bar\">";
+		echo "<p class=\"submenu_bar\">";
 			if ($user_usertype_current > 0 OR $user_id_current == $proj_rep_black) {
-				print "<a href=\"index2.php?page=project_edit&amp;status=edit&amp;proj_id=$proj_id\" class=\"submenu_bar\">Edit</a>";
+				echo "<a href=\"index2.php?page=project_edit&amp;status=edit&amp;proj_id=$proj_id\" class=\"submenu_bar\">Edit</a>";
 			}
 			if ($user_usertype_current > 1) {
-				print "<a href=\"index2.php?page=project_blog_edit&amp;status=add&amp;proj_id=$proj_id\" class=\"submenu_bar\">Add Project Journal Entry</a>";
+				echo "<a href=\"index2.php?page=project_blog_edit&amp;status=add&amp;proj_id=$proj_id\" class=\"submenu_bar\">Add Project Journal Entry</a>";
 			}
-		print "</p>";
+		echo "</p>";
 
 					if ($proj_date_start > 0 OR $proj_date_complete > 0 OR $proj_date_proposal > 0 OR $proj_date_appointment > 0) {
-							print "<h2>Project Dates</h2><table summary=\"Project Dates\">";
-							if ($proj_date_proposal > 0) { print "<tr><td style=\"width: 40%;\">Date of Proposal</td><td>".TimeFormat($proj_date_proposal)."</td></tr>"; }
-							if ($proj_date_appointment > 0) { print "<tr><td style=\"width: 40%;\">Date of Appointment</td><td>".TimeFormat($proj_date_appointment)."</td></tr>"; }
-							if ($proj_date_start > 0) { print "<tr><td style=\"width: 40%;\">Start Date</td><td>".TimeFormat($proj_date_start)."</td></tr>"; }
-							if ($proj_date_complete > 0) { print "<tr><td style=\"width: 40%;\">Completion Date</td><td>".TimeFormat($proj_date_complete)."</td></tr>"; }
-							print "</table>";
+							echo "<h2>Project Dates</h2><table summary=\"Project Dates\">";
+							if ($proj_date_proposal > 0) { echo "<tr><td style=\"width: 40%;\">Date of Proposal</td><td>".TimeFormat($proj_date_proposal)."</td></tr>"; }
+							if ($proj_date_appointment > 0) { echo "<tr><td style=\"width: 40%;\">Date of Appointment</td><td>".TimeFormat($proj_date_appointment)."</td></tr>"; }
+							if ($proj_date_start > 0) { echo "<tr><td style=\"width: 40%;\">Start Date</td><td>".TimeFormat($proj_date_start)."</td></tr>"; }
+							if ($proj_date_complete > 0) { echo "<tr><td style=\"width: 40%;\">Completion Date</td><td>".TimeFormat($proj_date_complete)."</td></tr>"; }
+							echo "</table>";
 					}		
 					
 
-					print "<h2>Project Particulars</h2><table summary=\"Project Particulars\">";
+					echo "<h2>Project Particulars</h2><table summary=\"Project Particulars\">";
 
 					if ($array['proj_date_start'] != NULL) { $proj_date_start = date("jS F Y", $array['proj_date_start']); } else { unset($proj_date_start); }
 					if ($array['proj_date_compelte'] != NULL) { $proj_date_complete = date("jS F Y", $array['proj_date_complete']); } else { unset($proj_date_complete); }
@@ -259,7 +262,7 @@ print "</div><div id=\"item_switch_3\">";
 						$proj_procure = $array_procure['procure_title'];
 					}
 
-					print "<tr><td style=\"width: 40%;\">Project Leader</td><td>";
+					echo "<tr><td style=\"width: 40%;\">Project Leader</td><td>";
 
 					// Get the user details
 
@@ -271,56 +274,56 @@ print "</div><div id=\"item_switch_3\">";
 						$name_second = $array_proj_leader['user_name_second'];
 						$user_email = $array_proj_leader['user_email'];
 						
-						print "<a href=\"index2.php?page=user_view&amp;user_id=111\">".$name_first." ".$name_second."</a>";
+						echo "<a href=\"index2.php?page=user_view&amp;user_id=111\">".$name_first." ".$name_second."</a>";
 
-						if ($user_email != NULL) { print "<a href=\"mailto:".$user_email."\"><img src=\"images/button_email.png\" alt=\"Send email to $name_first&nbsp;$name_second \" /></a>"; }
+						if ($user_email != NULL) { echo "<a href=\"mailto:".$user_email."\"><img src=\"images/button_email.png\" alt=\"Send email to $name_first&nbsp;$name_second \" /></a>"; }
 
-					print "</td></tr>
+					echo "</td></tr>
 					<tr><td>Database ID</td><td  >$proj_id</td></tr>
 					<tr><td>Active</td><td  >";
 					if ($proj_active == 0) {
-					print "No";
+					echo "No";
 					} else {
-					print "Yes";
+					echo "Yes";
 					}
-					print "</td></tr>";
+					echo "</td></tr>";
 
-					print "</table>";
+					echo "</table>";
 
-print "</div><div id=\"item_switch_4\">";
+echo "</div><div id=\"item_switch_4\">";
 
 
 		// Project Page Menu
-		print "<p class=\"submenu_bar\">";
+		echo "<p class=\"submenu_bar\">";
 			if ($user_usertype_current > 3 OR $user_id_current == $proj_rep_black) {
-				print "<a href=\"index2.php?page=project_edit&amp;status=edit&amp;proj_id=$proj_id\" class=\"submenu_bar\">Edit</a>";
+				echo "<a href=\"index2.php?page=project_edit&amp;status=edit&amp;proj_id=$proj_id\" class=\"submenu_bar\">Edit</a>";
 			}
 			if ($user_usertype_current > 1) {
-				print "<a href=\"index2.php?page=project_blog_edit&amp;status=add&amp;proj_id=$proj_id\" class=\"submenu_bar\">Add Project Journal Entry</a>";
+				echo "<a href=\"index2.php?page=project_blog_edit&amp;status=add&amp;proj_id=$proj_id\" class=\"submenu_bar\">Add Project Journal Entry</a>";
 			}
-		print "</p>";
+		echo "</p>";
 
 include("inc_files/inc_project_contacts.php");
 
-print "</div>";
+echo "</div>";
 
 if ($user_usertype_current > 2) {
 
-			print "<div id=\"item_switch_5\">";
+			echo "<div id=\"item_switch_5\">";
 				include("inc_files/inc_project_fees.php");
-			print "</div>";
+			echo "</div>";
 
-			print "<div id=\"item_switch_6\">";
+			echo "<div id=\"item_switch_6\">";
 				include("inc_files/inc_project_expenses.php");
-			print "</div>";
+			echo "</div>";
 
-			print "<div id=\"item_switch_7\">";
+			echo "<div id=\"item_switch_7\">";
 				include("inc_files/inc_project_invoices.php");
-			print "</div>";
+			echo "</div>";
 			
-			print "<div id=\"item_switch_8\">";
+			echo "<div id=\"item_switch_8\">";
 				include("inc_files/inc_project_tasks.php");
-			print "</div>";
+			echo "</div>";
 			
 }
 
@@ -328,7 +331,7 @@ if ($user_usertype_current > 2) {
 
 if ($_GET[show] == "contacts") { $show_contact = "block"; $show_default = "none"; } else { $show_contact = "none"; $show_default = "block";  }
 
-print "
+echo "
 		<script type=\"text/javascript\">
 		document.getElementById(\"item_switch_1\").style.display = \"$show_default\";
 		document.getElementById(\"item_switch_2\").style.display = \"none\";
@@ -338,14 +341,14 @@ print "
 		";
 		
 if ($user_usertype_current > 2) {
-				print "
+				echo "
 				document.getElementById(\"item_switch_5\").style.display = \"none\";
 				document.getElementById(\"item_switch_6\").style.display = \"none\";
 				document.getElementById(\"item_switch_7\").style.display = \"none\";			
 				";
 }
 		
-		print "</script>";
+		echo "</script>";
 
 
 ?>
