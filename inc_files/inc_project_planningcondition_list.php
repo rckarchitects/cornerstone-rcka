@@ -16,6 +16,9 @@
 	
 	echo "<h1>Planning Conditions for <a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></h1>";
 	
+	
+	ProjectSwitcher ("project_planningcondition_list",$proj_id);
+	
 
 	
 	$sql_conditions = "SELECT * FROM intranet_projects_planning LEFT JOIN contacts_companylist ON company_id = condition_responsibility WHERE condition_project = $proj_id ORDER BY condition_ref, condition_number";

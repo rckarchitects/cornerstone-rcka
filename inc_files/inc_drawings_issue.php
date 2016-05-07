@@ -171,7 +171,7 @@ $result_issued_to = mysql_query($sql_issued_to, $conn) or die(mysql_error());
 		
 		echo "<fieldset><legend>Issue Method</legend>";
 		
-		$issue_method_list = array("Email","CD", "Post", "Basecamp", "Woobius", "Planning Portal", "Google Drive","Dropbox","FTP");
+		$issue_method_list = array("Email","CD", "Post", "Basecamp", "Woobius", "Planning Portal", "Google Drive","Dropbox","FTP","4Projects");
 		sort($issue_method_list);
 		
 		$issue_format_list = array("PDF", "DGN", "DWG", "DXF", "Hard Copy","RVT");

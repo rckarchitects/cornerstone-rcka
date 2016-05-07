@@ -14,8 +14,8 @@ function GetProjectInfo($proj_id) {
 }
 
 if ($_POST[proj_id] > 0) { $proj_id = $_POST[proj_id]; echo "<h2>"; GetProjectInfo($proj_id); echo "</h2>"; }
-elseif ($_GET[proj_id] > 0) { $proj_id = $_GET[proj_id]; }
-elseif ($_POST[ts_fee_id] > 0) { $proj_id = $_POST[ts_fee_id]; }
+elseif ($_GET[proj_id] > 0) { $proj_id = $_GET[proj_id]; echo "<h2>"; GetProjectInfo($proj_id); echo "</h2>"; }
+elseif ($_POST[ts_fee_id] > 0) { $proj_id = $_POST[ts_fee_id]; echo "<h2>"; GetProjectInfo($ts_fee_id); echo "</h2>"; }
 
 
 
@@ -45,7 +45,9 @@ print "<p class=\"submenu_bar\">";
 
 print "</p>";
 
-print "<h2>Project Fee Stages for <a href=\"\">$proj_num $proj_name</a></h2>";
+print "<h4>Project Fee Stages</h4>";
+
+ProjectSwitcher ("project_fees",$proj_id);
 
 $sql = "SELECT * FROM intranet_timesheet_fees, intranet_projects WHERE ts_fee_project = '$proj_id' AND proj_id = ts_fee_project ORDER BY ts_fee_commence, ts_fee_text";
 $result = mysql_query($sql, $conn) or die(mysql_error());
@@ -85,7 +87,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 								$ts_fee_stage = $array['ts_fee_stage'];
 								$ts_fee_target = 1 / $array['ts_fee_target'];
 								$ts_fee_prospect = $array['ts_fee_prospect'];
-								// $proj_id = $array['proj_id']; 					We don't need this, do we?
+								$ts_fee_pre_lag = $array['ts_fee_pre_lag']; 
 								$proj_value = $array['proj_value'];
 								$proj_fee_percentage = $array['proj_fee_percentage'];
 								$proj_riba = $array['proj_riba'];
@@ -139,6 +141,8 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 								
 								if ($prog_begin > 0) { $prog_begin_print = "<a href=\"index2.php?page=datebook_view_day&amp;time=$prog_begin\">".TimeFormat($prog_begin)."</a>"; } else { $prog_begin_print = "-"; }
 								if ($prog_end > 0) { $prog_end_print = "<a href=\"index2.php?page=datebook_view_day&amp;time=$prog_end\">".TimeFormat($prog_end)."</a>"; } else { $prog_end_print = "-"; }
+								
+								if ($ts_fee_pre_lag != 0) { $prog_begin_print = $prog_begin_print . "<br /><span class=\"minitext\">[+" . round($ts_fee_pre_lag / 604800) . " weeks]"; }
 								
 								$proj_duration = $prog_end - $prog_begin;
 								if ($proj_duration > 0) { $proj_duration_print = round($proj_duration / 604800)." weeks<br />(" . $percent_complete . "%)"; } else { $proj_duration_print = " - "; }

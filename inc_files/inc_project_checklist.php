@@ -25,27 +25,8 @@ if ($showhidden == "yes") {
 echo "</p>";
 
 
-echo "<form action=\"index2.php\" method=\"get\">";
-echo "<p><input type=\"hidden\" name=\"page\" value=\"project_checklist\" />";
 
-$sql_switcher = "SELECT proj_id, proj_name, proj_num FROM intranet_projects WHERE proj_active > 0 ORDER BY proj_num DESC";
-$result_switcher = mysql_query($sql_switcher, $conn) or die(mysql_error());
-echo "<select onchange=\"this.form.submit()\" name=\"proj_id\">";
-while ($array_switcher = mysql_fetch_array($result_switcher)) {
-	$proj_id_switcher = $array_switcher['proj_id'];
-	$proj_num_switcher = $array_switcher['proj_num'];
-	$proj_name_switcher = $array_switcher['proj_name'];
-	if ($_GET[proj_id] == $proj_id_switcher) { $select = " selected=\"selected\" "; } else { unset($select); }
-	echo "<option value=\"$proj_id_switcher\" $select>$proj_num_switcher $proj_name_switcher</option>";
-}
-echo "</select>";
-echo "</p>";
-
-
-echo "</form>";
-
-
-
+ProjectSwitcher ("project_checklist",$proj_id);
 
 
 

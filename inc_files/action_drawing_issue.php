@@ -23,6 +23,7 @@ $issue_method = $_POST['issue_method'];
 $issue_format = $_POST['issue_format'];
 $issue_comment = $_POST['issue_comment'];
 $issue_project = $_POST['issue_project'];
+$issue_checked = $_POST['set_checked'];
 
 if ($_POST[issue_reason] == NULL) { $issue_reason = CleanUp($_POST[issue_revision_other]); } else { $issue_reason = $_POST[issue_reason]; }
 
@@ -51,7 +52,7 @@ $sql_set = "INSERT INTO intranet_drawings_issued_set (
 					'$issue_timestamp',
 					'$issue_method',
 					'$issue_format',
-					'$set_checked'
+					'$issue_checked'
 					)";
 					
 $result_set = mysql_query($sql_set, $conn) or die(mysql_error());
