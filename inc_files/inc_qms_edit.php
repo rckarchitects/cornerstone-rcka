@@ -25,11 +25,20 @@ if ($_POST[qms_id]) {
 		
 }
 
-if ($_GET[now] == "insert" && $_GET[s1] > 0 && $_GET[s2] > 0 && $_GET[s3] > 0 && $_GET[s4] > 0 ) {
+if ($_GET[now] == "insert" && $_GET[s4] != NULL) {
 	
-	$sql_insert = "UPDATE intranet_qms SET qms_toc4 = qms_toc4 + 1 WHERE qms_toc4 > $_GET[s4] AND qms_toc3 = $_GET[s3] AND qms_toc2 = $_GET[s2] AND qms_toc1 = $_GET[s1]";
+	$sql_insert1 = "UPDATE intranet_qms SET qms_toc4 = qms_toc4 + 1 WHERE qms_toc4 > $_GET[s4] AND qms_toc3 = $_GET[s3] AND qms_toc2 = $_GET[s2] AND qms_toc1 = $_GET[s1]";
+	$result = mysql_query($sql_insert1, $conn) or die(mysql_error());
 	
-	echo "<p>$sql_insert</p>";
+	echo "<p>$sql_insert1 <br />Rows Updated: " . mysql_affected_rows() . "</p>";
+	
+	$new_s4 = $_GET[s4] + 1;
+	$time = time();
+	
+	$sql_insert2 = "INSERT INTO intranet_qms (qms_toc1, qms_toc2, qms_toc3, qms_toc4, qms_timestamp, qms_user, qms_access) VALUES ($_GET[s1], $_GET[s2], $_GET[s3], $new_s4, $time, $_COOKIE[user], $user_usertype_current )";
+	$result = mysql_query($sql_insert2, $conn) or die(mysql_error());
+	
+	echo "<p>$sql_insert2 <br />Rows Updated: " . mysql_affected_rows() . "</p>";
 	
 } elseif ($_GET[now] == "insert" && $_GET[s1] > 0 && $_GET[s2] > 0 && $_GET[s3] > 0 && $_GET[s4] == 0 ) {
 	
@@ -42,6 +51,49 @@ if ($_GET[now] == "insert" && $_GET[s1] > 0 && $_GET[s2] > 0 && $_GET[s3] > 0 &&
 
 
 echo "<h1>Edit QMS<h1>";
+
+echo "	<script type=\"text/javascript\">
+		<!--//
+			function ChangeBG(idunit)
+				{
+					
+					var a = document.getElementById(idunit);
+					a.style.background = \"rgba(255,0,0,0.25)\";
+					var b = document.getElementById('s1');
+					b.disabled = true;
+					var c = document.getElementById('s2');
+					c.disabled = true;
+					var e = document.getElementById('s3');
+					e.disabled = true;
+					var f = document.getElementById('qms_toc1');
+					f.disabled = true;
+					var g = document.getElementById('qms_toc2');
+					g.disabled = true;
+					var h = document.getElementById('qms_toc3');
+					h.disabled = true;
+					var i = document.getElementById('qms_toc4');
+					i.disabled = true;
+					var j = document.getElementById('addnewentry');
+					j.disabled = true;
+					var k = document.getElementById('qms_text');
+					k.disabled = true;
+					var l = document.getElementById('button_1');
+					l.disabled = true;
+					var m = document.getElementById('button_2');
+					m.disabled = true;
+					var n = document.getElementById('button_3');
+					n.disabled = true;
+					var o = document.getElementById('button_4');
+					o.disabled = true;
+
+					var s = document.getElementsByClassName('HideLink');
+					var t;
+						for (t = 0; t < s.length; t++) {
+						s[t].style.visibility = 'hidden';
+					}
+				}
+		//-->
+		</script>";
 
 // First create the form that allows us to switch the section of the QMS
 
@@ -62,10 +114,9 @@ echo "<h1>Edit QMS<h1>";
 					
 					echo "<p><input type=\"hidden\" name=\"page\" value=\"qms_edit\" />";
 					
-					
 					$sql = "SELECT * FROM intranet_qms WHERE qms_toc1 > 0 AND qms_toc2 = 0 AND qms_toc3 = 0 AND qms_toc4 = 0 ORDER BY qms_toc1";
 					$result = mysql_query($sql, $conn) or die(mysql_error());
-					echo "<select name=\"s1\" onchange=\"this.form.submit()\">";
+					echo "<select name=\"s1\" id=\"s1\" onchange=\"this.form.submit()\">";
 					if ($s1 == 0) { $selected = " selected=\"selected\" "; } else { unset($selected); }
 					while ($array = mysql_fetch_array($result)) {
 						$qms_toc1 = $array['qms_toc1'];
@@ -79,7 +130,7 @@ echo "<h1>Edit QMS<h1>";
 					$sql = "SELECT * FROM intranet_qms WHERE qms_toc2 > 0 AND qms_toc1 = '$s1' AND qms_toc3 = 0 AND qms_toc4 = 0 ORDER BY qms_toc2";
 					$result = mysql_query($sql, $conn) or die(mysql_error());
 					if (mysql_num_rows($result) > 0) {
-						echo "<select name=\"s2\" onchange=\"this.form.submit()\">";
+						echo "<select name=\"s2\" id=\"s2\" onchange=\"this.form.submit()\">";
 						if ($s2 == NULL) { $s2 = 1;}
 						while ($array = mysql_fetch_array($result)) {
 						$qms_toc2 = $array['qms_toc2'];
@@ -94,7 +145,7 @@ echo "<h1>Edit QMS<h1>";
 					$sql = "SELECT * FROM intranet_qms WHERE qms_toc3 > 0 AND qms_toc1 = '$s1' AND qms_toc2 = '$s2' AND qms_toc4 = 0 ORDER BY qms_toc3";
 					$result = mysql_query($sql, $conn) or die(mysql_error());
 					if (mysql_num_rows($result) > 0) {
-						echo "<select name=\"s3\" onchange=\"this.form.submit()\">";
+						echo "<select name=\"s3\" id=\"s3\" onchange=\"this.form.submit()\">";
 						if ($s3 == NULL) { $s3 = 1;}
 						while ($array = mysql_fetch_array($result)) {
 						$qms_toc3 = $array['qms_toc3'];
@@ -145,26 +196,26 @@ if ($user_usertype_current < $qms_access) {
 	
 }
 
-echo "<tr id=\"$qms_id\">";
-echo "<td rowspan=\"2\">$qms_id<input type=\"hidden\" name=\"qms_id[$qms_id]\" value=\"$qms_id\" /><input type=\"hidden\" name=\"qms_text_check[$qms_id]\" value=\"" . addslashes($qms_text) . "\" /><input type=\"hidden\" name=\"qms_toc1_check[$qms_id]\" value=\"$qms_toc1\" /><input type=\"hidden\" name=\"qms_toc2_check[$qms_id]\" value=\"$qms_toc2\" /><input type=\"hidden\" name=\"qms_toc3_check[$qms_id]\" value=\"$qms_toc3\" /><input type=\"hidden\" name=\"qms_toc4_check[$qms_id]\" value=\"$qms_toc4\" /><input type=\"hidden\" name=\"qms_type_check[$qms_id]\" value=\"$qms_type\" /></td>";
-echo "<td><input type=\"text\" value=\"$qms_toc1\" name=\"qms_toc1[$qms_id]\" style=\"width: 40px;\" $readonly /></td>";
-echo "<td><input type=\"text\" value=\"$qms_toc2\" name=\"qms_toc2[$qms_id]\" style=\"width: 40px;\" $readonly /></td>";
-echo "<td><input type=\"text\" value=\"$qms_toc3\" name=\"qms_toc3[$qms_id]\" style=\"width: 40px;\" $readonly /></td>";
-echo "<td><input type=\"text\" value=\"$qms_toc4\" name=\"qms_toc4[$qms_id]\" style=\"width: 40px;\" $readonly /></td>";
-echo "<td rowspan=\"2\"><textarea name=\"qms_text[$qms_id]\" style=\"min-width:500px; height: 100px;\" $readonly >$qms_text</textarea>";
+echo "<tr>";
+echo "<td rowspan=\"2\" id=\"$qms_id\">$qms_id<input type=\"hidden\" name=\"qms_id[$qms_id]\" value=\"$qms_id\" /><input type=\"hidden\" name=\"qms_text_check[$qms_id]\" value=\"" . addslashes($qms_text) . "\" /><input type=\"hidden\" name=\"qms_toc1_check[$qms_id]\" value=\"$qms_toc1\" /><input type=\"hidden\" name=\"qms_toc2_check[$qms_id]\" value=\"$qms_toc2\" /><input type=\"hidden\" name=\"qms_toc3_check[$qms_id]\" value=\"$qms_toc3\" /><input type=\"hidden\" name=\"qms_toc4_check[$qms_id]\" value=\"$qms_toc4\" /><input type=\"hidden\" name=\"qms_type_check[$qms_id]\" value=\"$qms_type\" /></td>";
+echo "<td><input type=\"text\" value=\"$qms_toc1\" name=\"qms_toc1[$qms_id]\" style=\"width: 40px;\" $readonly onchange=\"ChangeBG('$qms_id')\" /></td>";
+echo "<td><input type=\"text\" value=\"$qms_toc2\" name=\"qms_toc2[$qms_id]\" style=\"width: 40px;\" $readonly onchange=\"ChangeBG('$qms_id')\" /></td>";
+echo "<td><input type=\"text\" value=\"$qms_toc3\" name=\"qms_toc3[$qms_id]\" style=\"width: 40px;\" $readonly onchange=\"ChangeBG('$qms_id')\" /></td>";
+echo "<td><input type=\"text\" value=\"$qms_toc4\" name=\"qms_toc4[$qms_id]\" style=\"width: 40px;\" $readonly onchange=\"ChangeBG('$qms_id')\" /></td>";
+echo "<td rowspan=\"2\"><textarea name=\"qms_text[$qms_id]\" style=\"min-width:500px; height: 100px;\" $readonly onchange=\"ChangeBG('$qms_id')\" >$qms_text</textarea>";
 if ($qms_type == NULL) { $checked = " checked=\"checked\" ";} else { unset($checked); }
 if ($qms_type == "code") { $checked1 = " checked=\"checked\" ";} else { unset($checked1); }
 if ($qms_type == "comp") { $checked2 = " checked=\"checked\" ";} else { unset($checked2); }
 if ($qms_type == "image") { $checked3 = " checked=\"checked\" ";} else { unset($checked3); }
 if ($qms_type == "check") { $checked4 = " checked=\"checked\" ";} else { unset($checked4); }
-echo "<td colspan=\"2\" rowspan=\"2\"><input type=\"radio\" value=\"\" name=\"qms_type[$qms_id]\" $checked $readonly_radio />&nbsp;None<br /><input type=\"radio\" value=\"code\" name=\"qms_type[$qms_id]\" $checked1 $readonly_radio />&nbsp;Code<br /><input type=\"radio\" value=\"comp\" name=\"qms_type[$qms_id]\" $checked2 $readonly_radio />&nbsp;Complete<br /><input type=\"radio\" value=\"image\" name=\"qms_type[$qms_id]\" $checked3 $readonly_radio />&nbsp;Image<br /><input type=\"radio\" value=\"check\" name=\"qms_type[$qms_id]\" $checked4 $readonly_radio />&nbsp;Checkbox</td>";
+echo "<td colspan=\"2\" rowspan=\"2\"><input type=\"radio\" value=\"\" name=\"qms_type[$qms_id]\" $checked $readonly_radio onclick=\"ChangeBG('$qms_id')\" />&nbsp;None<br /><input type=\"radio\" value=\"code\" name=\"qms_type[$qms_id]\" $checked1 $readonly_radio onclick=\"ChangeBG('$qms_id')\" />&nbsp;Code<br /><input type=\"radio\" value=\"comp\" name=\"qms_type[$qms_id]\" $checked2 $readonly_radio onclick=\"ChangeBG('$qms_id')\" />&nbsp;Complete<br /><input type=\"radio\" value=\"image\" name=\"qms_type[$qms_id]\" $checked3 $readonly_radio onclick=\"ChangeBG('$qms_id')\" />&nbsp;Image<br /><input type=\"radio\" value=\"check\" name=\"qms_type[$qms_id]\" $checked4 $readonly_radio onclick=\"ChangeBG('$qms_id')\" />&nbsp;Checkbox</td>";
 echo "</tr>";
 
 echo "<tr><td colspan=\"4\"><span class=\"minitext\">" . date("d M Y", $qms_timestamp) . "</span></td></tr>";
 
-if ($qms_toc4 > 0) { echo "<tr><td colspan=\"6\"></td><td colspan=\"2\"><a href=\"index2.php?page=qms_edit&amp;s1=$qms_toc1&amp;s2=$qms_toc2&amp;s3=$qms_toc3&amp;s4=$qms_toc4&amp;now=insert#$qms_id\">[insert new line below]</a></td></tr>"; }
+if ($qms_toc4 > 0) { echo "<tr><td colspan=\"6\"></td><td colspan=\"2\"><a href=\"index2.php?page=qms_edit&amp;s1=$qms_toc1&amp;s2=$qms_toc2&amp;s3=$qms_toc3&amp;s4=$qms_toc4&amp;now=insert#$qms_id\" class=\"HideLink\">[insert new line below]</a></td></tr>"; }
 
-if ($qms_toc3 > 0 && $qms_toc4 == 0) { echo "<tr><td colspan=\"6\"></td><td colspan=\"2\"><a href=\"index2.php?page=qms_edit&amp;s1=$qms_toc1&amp;s2=$qms_toc2&amp;s3=$qms_toc3&amp;now=insert#$qms_id\">[insert new section below]</a></td></tr>"; }
+if ($qms_toc3 > 0 && $qms_toc4 == 0) { echo "<tr><td colspan=\"6\"></td><td colspan=\"2\"><a href=\"index2.php?page=qms_edit&amp;s1=$qms_toc1&amp;s2=$qms_toc2&amp;s3=$qms_toc3&amp;now=insert#$qms_id\" class=\"HideLink\">[insert new section below]</a></td></tr>"; }
 
 
 
@@ -172,7 +223,7 @@ if ($qms_toc3 > 0 && $qms_toc4 == 0) { echo "<tr><td colspan=\"6\"></td><td cols
 	
 }
 
-echo "<tr><td colspan=\"6\"></td><td colspan=\"2\"><input type=\"submit\" value=\"Update\" /></td></tr>";
+echo "<tr><td colspan=\"6\"></td><td colspan=\"2\"><input type=\"submit\" value=\"Update\" />&nbsp;<input type=\"reset\" value=\"Reset\" /></td></tr>";
 
 echo "</form>";
 
@@ -202,13 +253,13 @@ echo "<tr><th colspan=\"8\">Add New Entry</th></tr>";
 echo "<tr id=\"new\">";
 echo "<form action=\"index2.php?page=qms_edit&amp;s1=$s1&amp;s2=$s2&amp;s3=$s3&amp;s4=$s4#$qms_id\" method=\"post\"><input type=\"hidden\" name=\"action\" value=\"add\">";
 echo "<td>(New)</td>";
-echo "<td><input type=\"text\" value=\"$qms_toc1\" name=\"qms_toc1\" style=\"width: 40px;\" /></td>";
-echo "<td><input type=\"text\" value=\"$qms_toc2\" name=\"qms_toc2\" style=\"width: 40px;\" /></td>";
-echo "<td><input type=\"text\" value=\"$qms_toc3\" name=\"qms_toc3\" style=\"width: 40px;\" /></td>";
-echo "<td><input type=\"text\" value=\"$qms_toc4\" name=\"qms_toc4\" style=\"width: 40px;\" /></td>";
-echo "<td><textarea name=\"qms_text\" style=\"min-width:500px; height: 100px;\"></textarea>";
-echo "<td><input type=\"radio\" value=\"code\" name=\"qms_type\" />&nbsp;Code<br /><input type=\"radio\" value=\"comp\" name=\"qms_type\" />&nbsp;Complete<br /><input type=\"radio\" value=\"image\" name=\"qms_type\" />&nbsp;Image<br /><input type=\"radio\" value=\"check\" name=\"qms_type\" />&nbsp;Checkbox</td>";
-echo "<td><input type=\"submit\" value=\"Add New Entry\" /></td>";
+echo "<td><input type=\"text\" value=\"$qms_toc1\" name=\"qms_toc1\" style=\"width: 40px;\" id=\"qms_toc1\" /></td>";
+echo "<td><input type=\"text\" value=\"$qms_toc2\" name=\"qms_toc2\" style=\"width: 40px;\" id=\"qms_toc2\" /></td>";
+echo "<td><input type=\"text\" value=\"$qms_toc3\" name=\"qms_toc3\" style=\"width: 40px;\" id=\"qms_toc3\" /></td>";
+echo "<td><input type=\"text\" value=\"$qms_toc4\" name=\"qms_toc4\" style=\"width: 40px;\" id=\"qms_toc4\" /></td>";
+echo "<td><textarea name=\"qms_text\" style=\"min-width:500px; height: 100px;\" id=\"qms_text\"></textarea>";
+echo "<td><input type=\"radio\" value=\"code\" name=\"qms_type\" id=\"button_1\" />&nbsp;Code<br /><input type=\"radio\" value=\"comp\" name=\"qms_type\" id=\"button_2\" />&nbsp;Complete<br /><input type=\"radio\" value=\"image\" name=\"qms_type\" id=\"button_3\" />&nbsp;Image<br /><input type=\"radio\" value=\"check\" name=\"qms_type\" id=\"button_4\" />&nbsp;Checkbox</td>";
+echo "<td><input type=\"submit\" value=\"Add New Entry\" id=\"addnewentry\" /></td>";
 echo "</form>";
 echo "</tr>";
 

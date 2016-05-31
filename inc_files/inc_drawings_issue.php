@@ -159,7 +159,7 @@ $result_issued_to = mysql_query($sql_issued_to, $conn) or die(mysql_error());
 		
 		
 		echo "<fieldset><legend>Issue Details</legend>";
-		$issue_reason_list = array("Comment","Preliminary","Information","Planning","Building Control","Tender","Coordination","Contract","Construction","Client Issue","Final Design","As Instructed");
+		$issue_reason_list = array("Draft","Comment","Planning","Building Control","Information","Tender","Contract","Preliminary","Coordination","Construction","Client Issue","Final Design","As Instructed");
 		echo "<p>Reason for Issue<br /><select name=\"issue_reason\">";
 		$count = 0;
 		$total = count($issue_reason_list);
