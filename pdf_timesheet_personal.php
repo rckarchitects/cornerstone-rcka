@@ -1,6 +1,7 @@
 <?php
 
 include "inc_files/inc_checkcookie.php";
+include_once "secure/prefs.php";
 
 if ($_COOKIE[user] == NULL) { header ("Location: index2.php"); } else {
 

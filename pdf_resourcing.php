@@ -360,20 +360,36 @@ DrawGrid();
 		function StaffCost($time,$prop) {
 			
 			GLOBAL $conn;
+			GLOBAL $pdf;
 			$start = $time;
 			$end = $time + 604800;
-			$sql_staff = "SELECT user_timesheet_hours, user_user_rate, user_prop, user_prop_target FROM intranet_user_details WHERE user_user_added < $start AND ( user_user_ended > $start OR user_user_ended IS NULL OR user_user_ended = 0 ) OR (user_user_added < $start AND user_user_ended > $start)";
+			//$sql_staff = "SELECT user_timesheet_hours, user_user_rate, user_prop, user_prop_target FROM intranet_user_details WHERE user_user_added < $start AND ( user_user_ended > $start OR user_user_ended IS NULL OR user_user_ended = 0 ) OR (user_user_added < $start AND user_user_ended > $start)";
+			$sql_staff = "SELECT user_id, user_name_first, user_timesheet_hours, user_user_rate, user_prop, user_prop_target FROM intranet_user_details WHERE (user_user_added < $end) AND (user_user_ended > $start OR user_user_ended = 0)";
+			
+			
+			
 			$result_staff = mysql_query($sql_staff, $conn) or die(mysql_error());
 			$weekly_cost = 0;
+			//$start_print = date ("d M Y", $start); $pdf->Ln(5); $pdf->Cell(0,4,$start_print,1,1); $pdf->MultiCell(0,5,$sql_staff); // remove
+			unset($array_total_cost);
 			while ($array_staff = mysql_fetch_array($result_staff)) {
+				$user_id = $array_staff['user_id'];
 				$user_timesheet_hours = $array_staff['user_timesheet_hours'];
 				$user_user_rate = $array_staff['user_user_rate'];
 				$user_prop = $array_staff['user_prop'];
 				$user_prop_target = $array_staff['user_prop_target'];
+				if ($user_prop == 0 OR $user_prop == NULL) { $user_prop = $user_prop_target; }
 				if ($prop != "target")	{ $user_prop_multiplier = $user_prop / $user_prop_target; } else { $user_prop_multiplier = 1; }
-				if ($user_prop == 0 OR $user_prop == NULL) { $user_prop = 1; }
-				$weekly_cost = $weekly_cost + (($user_timesheet_hours * $user_prop_multiplier * $user_user_rate) * ( 1 - $user_prop));
+				$this_user = (($user_timesheet_hours * $user_prop_multiplier * $user_user_rate) * ( 1 - $user_prop));
+				$weekly_cost = $weekly_cost + $this_user;
+				
+				//$array_total_cost[] = $this_user; //remove
+							
+				//$print = $user_id . ": " . round ($this_user); $pdf->Cell(15,4,$print,1,0); // remove
+				
 			}
+			
+			//$weekly_cost = array_sum($array_total_cost); //remove
 			
 			return($weekly_cost);
 			
@@ -414,9 +430,9 @@ DrawGrid();
 		while ($x <= 220) {
 			$x = $x + $colwidth;
 			$staffcost = StaffCost($beginweek);
-			$total = "£" . number_format ( $staffcost );
-			$staffcost_1[] = $staffcost;
+			$total = "£" . number_format ( $staffcost );			
 			$pdf->Cell($colwidth,3,$total,0,0,R);
+			$staffcost_1[] = $staffcost;
 			$beginweek = $beginweek + 604800;
 		}	
 
@@ -457,8 +473,10 @@ DrawGrid();
 		$pdf->Cell(40,5,"Target Profit",0,0,L);
 		$pdf->SetFont('Helvetica','',6);
 		$counter = 0;
+		$array_grossprofit = array();
 		while ($x <= 220) {
 			$x = $x + $colwidth;
+			$array_grossprofit[] = $array_profit[$counter] - $array_total[$counter];
 			$total = "£" . number_format ( $array_profit[$counter] - $array_total[$counter] );
 			$pdf->Cell($colwidth,5,$total,0,0,R);
 			$counter++;
@@ -491,11 +509,14 @@ DrawGrid();
 		
 		// List all of the upcoming holidays for each person
 		
+		
 		$start = $time;
 		
 		$x = 10;
 		$y = $pdf->GetY() + 15;
 		$pdf->SetXY($x,$y);
+		
+		if ($pdf->GetY() > 170) { $pdf->addPage(L); DrawGrid(); }
 		
 function CheckHols($date, $user_id, $start) {
 	
@@ -595,11 +616,16 @@ function CheckHols($date, $user_id, $start) {
 	$axis_y_max_1 = max ($weekdiff_array);
 	$axis_y_min_1 = min ($weekdiff_array);
 	
+	
 	$axis_y_max_2 = max ($array_netprofit);
 	$axis_y_min_2 = min ($array_netprofit);
 	
+	
 	if ($axis_y_max_1 > $axis_y_max_2) { $axis_y_max = $axis_y_max_1; } else { $axis_y_max = $axis_y_max_2; }
 	if ($axis_y_min_1 < $axis_y_min_2) { $axis_y_min = $axis_y_min_1; } else { $axis_y_min = $axis_y_min_2; }
+	
+	$max_value = "£" . number_format ($axis_y_max);
+	$min_value = "£" . number_format ($axis_y_min);
 	
 	$pdf->SetDrawColor(0);
 	
@@ -612,15 +638,25 @@ function CheckHols($date, $user_id, $start) {
 	$range = $axis_y_max - $axis_y_min;
 	$ratio = $height / $range;
 	// Datum line
-	$pdf->Cell(0,5,"£0",0,0);
+	$pdf->SetXY(($x - 20),($y - 2.5));
+	$pdf->Cell(20,5,"£0",0,0,R);
+	$pdf->SetXY($x,$y);
 	$pdf->Line($x,$y,280,$y);
 	
 	// Maximum line
 	$pdf->SetDrawColor(200);
+	$pdf->SetXY($x,$y);
+	$start_y = $y - ($ratio * $axis_y_max);
+	$pdf->SetXY(30,($start_y - 2.5));
+	$pdf->Cell(20,5,$max_value,0,0,R);
 	$start_y = $y - ($ratio * $axis_y_max);
 	$pdf->Line($x,$start_y,280,$start_y);
 	
 	// Minimum line
+	$pdf->SetXY($x,$y);
+	$start_y = $y - ($ratio * $axis_y_min);
+	$pdf->SetXY(30,($start_y - 2.5));
+	$pdf->Cell(20,5,$min_value,0,0,R);
 	$start_y = $y - ($ratio * $axis_y_min);
 	$pdf->Line($x,$start_y,280,$start_y);
 	
@@ -643,7 +679,7 @@ function CheckHols($date, $user_id, $start) {
 	
 	$color = array(0.47,0.75,0.94);
 	$pdf->SetDrawColor($color[0] * 255, $color[1] * 255, $color[2] * 255);
-	$pdf->SetLineWidth(0.1);
+	$pdf->SetLineWidth(0.3);
 	
 	$y = $zero;
 	$pdf->SetY($zero);
@@ -657,8 +693,23 @@ function CheckHols($date, $user_id, $start) {
 			$counter++;
 		}
 
+	$x = 55;
 
-// and send to output
+	$color = array(0.80,0.80,0.80);
+	$pdf->SetDrawColor($color[0] * 255, $color[1] * 255, $color[2] * 255);
+	$pdf->SetLineWidth(0.3);
+	
+	$y = $zero;
+	$pdf->SetY($zero);
+	
+	$counter = 0;
+		while ($x <= 270) {
+			$y_fee_start = $y - ($ratio * $array_grossprofit[$counter]);
+			$y_fee_end = $y - ($ratio * $array_grossprofit[$counter + 1]);
+			$pdf->Line($x,$y_fee_start,$x + $colwidth,$y_fee_end);
+			$x = $x + $colwidth;
+			$counter++;
+		}
 
 // and send to output
 

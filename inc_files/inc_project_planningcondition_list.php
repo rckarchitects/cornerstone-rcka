@@ -1,6 +1,9 @@
 <?php
 
 
+	echo "<h1>Planning Conditions for <a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></h1>";
+	ProjectSwitcher ("project_planningcondition_list",$proj_id);
+
 	$sql_proj = "SELECT proj_id, proj_num, proj_name FROM intranet_projects WHERE proj_id = $proj_id LIMIT 1";
 	$result_proj = mysql_query($sql_proj, $conn) or die(mysql_error());
 	$array_proj = mysql_fetch_array($result_proj);
@@ -14,10 +17,10 @@
 		
 	}
 	
-	echo "<h1>Planning Conditions for <a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></h1>";
 	
 	
-	ProjectSwitcher ("project_planningcondition_list",$proj_id);
+	
+	
 	
 
 	
@@ -29,6 +32,9 @@
 			echo "<a href=\"index2.php?page=project_planningcondition_list&amp;proj_id=$proj_id&amp;showdetail=1\" class=\"submenu_bar\">Detailed List</a>";
 		}
 		echo "<a href=\"index2.php?page=project_planningcondition_edit&amp;proj_id=$proj_id\" class=\"submenu_bar\">Add Planning Condition&nbsp;<img src=\"images/button_new.png\" alt=\"Add Planning Condition\" /></a>";
+		
+		echo "<a href=\"pdf_planning_conditions.php?proj_id=$proj_id\" class=\"submenu_bar\">Printable PDF&nbsp;<img src=\"images/button_pdf.png\" alt=\"PDF version\" /></a>";
+		
 		echo "</p>";
 	
 	if (mysql_num_rows($result_conditions) > 0) {

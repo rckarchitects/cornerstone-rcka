@@ -48,6 +48,7 @@ function UserForm ($user_id) {
 	$user_holidays = $array['user_holidays'];
 	$user_initials = $array['user_initials'];
 	$user_prop_target = $array['user_prop_target'];
+	$user_timesheet_hours = $array['user_timesheet_hours'];
 	
 	echo "<form method=\"post\" action=\"index2.php?page=user_view&amp;user_id=$user_id\">";
 	
@@ -121,7 +122,8 @@ function UserForm ($user_id) {
 		if ($user_active == 1 OR $user_id == NULL) { echo "checked=checked "; }
 		echo "/>&nbsp;User Active</p>";
 		echo "<p>Holiday Allowance<br /><input type=\"text\" name=\"user_holidays\" value=\"$user_holidays\" maxlength=\"6\" size=\"32\" type=\"number\" /></p>";
-		echo "<p>Hourly Rate (excluding overheads)<br /><input type=\"text\" name=\"user_user_rate\" value=\"$user_user_rate\" maxlength=\"12\" size=\"32\" type=\"number\" /></p>";
+		echo "<p>Hourly Rate (excluding overheads)<br /><input name=\"user_user_rate\" value=\"$user_user_rate\" maxlength=\"12\" size=\"32\" type=\"number\" /></p>";
+		echo "<p>Hours per Week<br /><input type=\"number\" name=\"user_timesheet_hours\" value=\"$user_timesheet_hours\" size=\"32\"  /></p>";
 		echo "<p><input type=\"checkbox\" name=\"user_user_timesheet\" value=\"1\"";
 		if ($user_user_timesheet == 1 OR $user_id == NULL) { echo "checked=checked "; }
 		echo "/>&nbsp;Require Timesheets</p>";

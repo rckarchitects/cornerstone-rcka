@@ -6,6 +6,8 @@ if ($_GET[proj_id] == NULL) { header ("Location: index2.php"); }
 
 elseif ($_GET[issue_set] == NULL) { header ("Location: index2.php?proj_id=$_GET[proj_id]"); } else { $issue_set = $_GET[issue_set]; $proj_id = $_GET[proj_id]; }
 
+include "secure/prefs.php";
+
 //  Use FDPI to get the template
 
 define('FPDF_FONTPATH','fpdf/font/');

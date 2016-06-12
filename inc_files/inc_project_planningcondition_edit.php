@@ -26,7 +26,7 @@ if ($_GET[proj_id] != NULL OR $_POST[proj_id] != NULL) {
 				$condition_project = $array_condition[condition_project];
 				$condition_ref = $array_condition[condition_ref];
 				$condition_number = $array_condition[condition_number];
-				$condition_decision_date = $array_condition[condition_decision_date];
+				$condition_decision_date_edit = $array_condition[condition_decision_date];
 				$condition_type = $array_condition[condition_type];
 				$condition_text = $array_condition[condition_text];
 				$condition_responsibility = $array_condition[condition_responsibility];
@@ -53,7 +53,7 @@ if ($_GET[proj_id] != NULL OR $_POST[proj_id] != NULL) {
 	
 	
 	
-	if ($condition_decision_date == NULL) { $condition_decision_date = $_POST[condition_decision_date]; }
+	if ($condition_decision_date_edit == NULL) { $condition_decision_date_edit = $_POST[condition_decision_date]; }
 	if ($condition_ref == NULL) { $condition_ref = addslashes ( $_POST[condition_ref] ); }
 	if ($condition_link == NULL) {  $condition_link = addslashes ( $_POST[condition_link] ); }
 	if ($condition_type == NULL) {  $condition_type = $_POST[condition_type]; }
@@ -84,7 +84,7 @@ if ($_GET[proj_id] != NULL OR $_POST[proj_id] != NULL) {
 	
 	echo "<h3>Planning Decision date</h3>";
 	
-	echo "<p><input type=\"date\" value=\"$condition_decision_date\" name=\"condition_decision_date\" required /></p>";
+	echo "<p><input type=\"date\" value=\"$condition_decision_date_edit\" name=\"condition_decision_date\" required /></p>";
 	
 	echo "<h3>Link to Decision Notice</h3>";
 	
