@@ -35,7 +35,8 @@ if ($_GET[proj_id] != NULL OR $_POST[proj_id] != NULL) {
 				$condition_note = $array_condition[condition_note];
 				$condition_submitted = $array_condition[condition_submitted];
 				$condition_approved = $array_condition[condition_approved];
-				$condition_link = $array_condition[condition_link];			
+				$condition_link = $array_condition[condition_link];
+				$condition_submitted_ref = $array_condition[condition_submitted_ref];
 				
 			}
 	
@@ -148,6 +149,10 @@ if ($_GET[proj_id] != NULL OR $_POST[proj_id] != NULL) {
 	echo "<h3>Condition Submitted Date</h3>";
 	
 	echo "<p><input type=\"date\" value=\"$condition_submitted\" name=\"condition_submitted\" /></p>";
+	
+	echo "<h3>Condition Submitted Reference</h3>";
+	
+	echo "<p><input type=\"text\" value=\"$condition_submitted_ref\" name=\"condition_submitted_ref\" maxlength=\"20\" /> Enter here the applicaton reference for the condition discharge once submitted.</p>";
 	
 	echo "<h3>Condition Approved Date</h3>";
 	

@@ -236,7 +236,10 @@ $pdf->useTemplate($tplidx);
 				if ($company_name != NULL) {
 					$company_name = "Responsibility: " . $company_name;
 				}
-				$pdf->Cell(0,5,$company_name,B,1,'',true);
+				$pdf->Cell(90,5,$company_name,B,0,'',true);
+				if ($array_conditions['condition_submitted_ref']) { $condition_submitted_ref = "Ref: " . $array_conditions['condition_submitted_ref']; } else { unset($condition_submitted_ref); }
+				$pdf->Cell(0,5,$condition_submitted_ref,B,1,'',true);
+				
 				
 				StyleBody(10);
 				$pdf->ln(2.5);

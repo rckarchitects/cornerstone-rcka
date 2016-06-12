@@ -54,6 +54,8 @@
 				$condition_submitted = "- None -"; $background = " style=\"background: rgba(255,0,0,0.5);\" ";
 			}
 			
+			if ($array_conditions['condition_submitted_ref']) { $condition_submitted = $condition_submitted . "<br />(Ref. " . $array_conditions['condition_submitted_ref'] . ")"; }
+			
 			if ($array_conditions['condition_submitted'] != "0000-00-00" && $array_conditions['condition_approved'] != "0000-00-00") { $background = " style=\"background: rgba(0,255,0,0.5);\" "; }
 			
 			if (!$background) { $background = " style=\"background: rgba(150,150,150,0.5);\" "; }

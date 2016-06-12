@@ -14,6 +14,7 @@ $condition_edit_note = strip_tags ( trim ( addslashes ( $_POST[condition_note] )
 $condition_edit_submitted = $_POST[condition_submitted];
 $condition_edit_approved = $_POST[condition_approved];
 $condition_edit_link = trim ( addslashes ( $_POST[condition_link] ) );
+$condition_edit_submitted_ref = trim ( addslashes ( $_POST[condition_submitted_ref]));
 
 
 
@@ -33,7 +34,8 @@ if ($condition_edit_id > 0) {
 		condition_note = '$condition_edit_note',
 		condition_submitted = '$condition_edit_submitted',
 		condition_approved = '$condition_edit_approved',
-		condition_link = '$condition_edit_link'
+		condition_link = '$condition_edit_link',
+		condition_submitted_ref = '$condition_edit_submitted_ref'
 		WHERE condition_id = '$condition_edit_id'
 		LIMIT 1";
 		
@@ -61,7 +63,8 @@ if ($condition_edit_id > 0) {
 		condition_note,
 		condition_submitted,
 		condition_approved,
-		condition_link
+		condition_link,
+		condition_submitted_ref
 		) values (
 		'NULL',
 		'$condition_edit_project',
@@ -76,7 +79,8 @@ if ($condition_edit_id > 0) {
 		'$condition_edit_note',
 		'$condition_edit_submitted',
 		'$condition_edit_approved',
-		'$condition_edit_link'
+		'$condition_edit_link',
+		'$condition_submitted_ref'
 		)";
 		
 		//echo "<p>" . $sql_add . "</p>";
