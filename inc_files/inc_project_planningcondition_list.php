@@ -49,7 +49,9 @@
 			
 			if ($array_conditions['condition_type'] == "Informative Only") {
 				$condition_submitted = "- n/a -"; 
-			} elseif ($array_conditions['condition_submitted'] != "0000-00-00") { $condition_submitted = date( "j M Y", AssessDays ( $array_conditions['condition_submitted'] ) ); 
+			} elseif ($array_conditions['condition_submitted'] != "0000-00-00") { $condition_submitted = date( "j M Y", AssessDays ( $array_conditions['condition_submitted'] ) );
+			} elseif ($array_conditions['condition_type'] == "Pre-Occupation" && $array_conditions['condition_submitted'] != "0000-00-00") { $condition_submitted = date( "j M Y", AssessDays ( $array_conditions['condition_submitted'] ) ); $background = " style=\"background: rgba(255,255,0,0.5);\" ";
+			} elseif ($array_conditions['condition_type'] == "Pre-Occupation" && $array_conditions['condition_submitted'] == "0000-00-00") { $condition_submitted = "- None -";  $background = " style=\"background: rgba(255,255,0,0.5);\" ";
 			} else {
 				$condition_submitted = "- None -"; $background = " style=\"background: rgba(255,0,0,0.5);\" ";
 			}

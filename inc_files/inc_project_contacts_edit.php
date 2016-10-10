@@ -11,13 +11,22 @@ $contact_proj_contact = $array_check['contact_proj_contact'];
 $contact_proj_role = $array_check['contact_proj_role'];
 $contact_proj_note = $array_check['contact_proj_note'];
 $contact_proj_company = $array_check['contact_proj_company'];
-}
+$contact_id = $array_check['contact_proj_contact'];
 
-if ($_GET[contact_proj_id] > 0) {
-print "<h2>Edit Project Contacts</h2>";
+// work out the CURRENT company to see if the contact has changed
+
+$sql_check_previous = "SELECT contact_company FROM contacts_contactlist WHERE contact_id = '$contact_id' LIMIT 1 ";
+$result_check_previous = mysql_query($sql_check_previous, $conn) or die(mysql_error());
+$array_check_previous = mysql_fetch_array($result_check_previous);
+$contact_company_previous = $array_check_previous['contact_company'];
+
+
+
+
+echo "<h2>Edit Project Contacts</h2>";
 echo "<form method=\"post\" action=\"index2.php?page=project_contacts&amp;proj_id=$_GET[proj_id]\">";
 } else {
-print "<h2>Add Project Contacts</h2>";
+echo "<h2>Add Project Contacts</h2>";
 echo "<form method=\"post\" action=\"index2.php?page=project_view&amp;proj_id=$_GET[proj_id]&amp;status=edit&amp;show=contacts\">";
 }
 
@@ -25,7 +34,7 @@ echo "<table><tr><td colspan=\"2\">Contact Name</td></tr>";
 $sql_contact = "SELECT contact_id, contact_namefirst, contact_namesecond, contact_company, company_name, company_postcode, company_id FROM contacts_contactlist LEFT JOIN contacts_companylist ON contacts_contactlist.contact_company = contacts_companylist.company_id ORDER BY contact_namesecond, contact_namefirst";
 
 $result_contact = mysql_query($sql_contact, $conn) or die(mysql_error());
-print "<tr><td colspan=\"2\"><select name=\"contact_proj_contact\">";
+echo "<tr><td colspan=\"2\"><select name=\"contact_proj_contact\">";
 
 	while ($array_contact = mysql_fetch_array($result_contact)) {
 
@@ -33,6 +42,7 @@ print "<tr><td colspan=\"2\"><select name=\"contact_proj_contact\">";
 		$company_id = $array_contact['company_id'];
 		$contact_namefirst = $array_contact['contact_namefirst'];
 		$contact_namesecond = $array_contact['contact_namesecond'];
+		$contact_company = $array_contact['contact_company'];
 		$contact_postcode = $array_contact['contact_postcode'];
 		$company_name = $array_contact['company_name'];
 		$company_postcode = $array_contact['company_postcode'];
@@ -53,8 +63,8 @@ echo "</td></tr>";
 
 if ($_GET[contact_proj_id] > 0) {
 
-			if ($contact_proj_company != $contact_company) {
-			echo "<tr><td colspan=\"2\"><p><strong>Note:</strong><br />The contact listed for this project is no longer with the company which undertook the work on this project. Please ensure that the company listed below is correct.</p></td></tr>";
+			if ($contact_proj_company != $contact_company_previous) {
+			echo "<tr><td colspan=\"2\"><p><strong>$contact_proj_company / $contact_company_previous <br />Note:</strong><br />The contact listed for this project is no longer with the company which undertook the work on this project. Please ensure that the company listed below is correct.</p></td></tr>";
 			}
 
 			// Contact company

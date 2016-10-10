@@ -187,14 +187,19 @@ $pdf->useTemplate($tplidx);
 			
 			while ($array_conditions = mysql_fetch_array($result_conditions)) {
 				
-				if ($array_conditions['condition_type'] == "Informative Only") { $condition_approved = "Not approved";} elseif ($array_conditions['condition_approved'] != "0000-00-00") { $condition_approved = date( "j M Y", AssessDays ( $array_conditions['condition_approved'] ) ); } else { $condition_approved = "Not approved"; }
+				if ($pdf->GetY() > 200) { $pdf->addPage();}
+				
+				if ($array_conditions['condition_type'] == "Informative Only") { $condition_approved = "Not required";} elseif ($array_conditions['condition_approved'] != "0000-00-00") { $condition_approved = date( "j M Y", AssessDays ( $array_conditions['condition_approved'] ) ); } elseif ($array_conditions['condition_submitted'] != "0000-00-00") { $condition_approved = "Submitted"; } else { $condition_approved = "Not approved"; }
 				
 				if ($array_conditions['condition_type'] == "Informative Only") {
 				$condition_submitted = "Not applicable";  $pdf->SetFillColor(225,225,225);
 					} elseif ($array_conditions['condition_submitted'] != "0000-00-00") { $condition_submitted = date( "j M Y", AssessDays ( 			$array_conditions['condition_submitted'] ) ); $pdf->SetFillColor(254,240,120);
+					} elseif ($array_conditions['condition_type'] == "Pre-Occupation" && $array_conditions['condition_submitted'] != "0000-00-00") { $condition_submitted = date( "j M Y", AssessDays ( $array_conditions['condition_submitted'] ) );   $pdf->SetFillColor(255,255,120);
+					} elseif ($array_conditions['condition_type'] == "Pre-Occupation" && $array_conditions['condition_submitted'] == "0000-00-00") { $condition_submitted = "- None -";  $pdf->SetFillColor(255,255,120);
 					} else {
 						$condition_submitted = "Not submitted"; $pdf->SetFillColor(254,120,120);
 					}
+					
 					
 				if ($array_conditions['condition_submitted'] != "0000-00-00" && $array_conditions['condition_approved'] != "0000-00-00") { $pdf->SetFillColor(200,254,150); }
 
@@ -215,8 +220,11 @@ $pdf->useTemplate($tplidx);
 					$pdf->SetFont('Helvetica','b',12);
 					
 					$condition_ref_print = "Planning Reference: " . $array_conditions['condition_ref'];
-					
-					$pdf->Cell(105,7.5,$condition_ref_print,B,0);
+					if ($array_conditions['condition_link'] != NULL) {
+					$pdf->Cell(105,7.5,$condition_ref_print,B,0,L,false,$array_conditions['condition_link']);
+					} else {
+					$pdf->Cell(105,7.5,$condition_ref_print,B,0);	
+					}
 					$pdf->Cell(0,7.5,$condition_decision_date,B,1);
 					
 					StyleBody(10);
@@ -265,7 +273,6 @@ $pdf->useTemplate($tplidx);
 				
 				$current_ref = $array_conditions['condition_ref'];
 				
-				if ($pdf->GetY() > 200) { $pdf->addPage();}
 						
 			}
 			
@@ -275,5 +282,13 @@ $pdf->useTemplate($tplidx);
 
 // and send to output
 
-$pdf->Output();
+$file_date = time();
+
+$file_name = $proj_num."_".Date("Y",$file_date)."-".Date("m",$file_date)."-".Date("d",$file_date)."_Planning_Tracker.pdf";
+
+$pdf_title = $pref_practice . " Planning Tracker: " . $proj_num . " " . $proj_name . "_" . Date("Y",$file_date)."-".Date("m",$file_date)."-".Date("d",$file_date);
+
+$pdf->SetTitle($pdf_title);
+
+$pdf->Output($file_name,I);
 ?>

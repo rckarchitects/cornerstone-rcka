@@ -1,5 +1,23 @@
 <?php
 
+require_once 'secure/rollbar.php';
+
+$config = array(
+    // required
+    'access_token' => '79f4496bab774563862a8da48e15cf19',
+    // optional - environment name. any string will do.
+    'environment' => 'production',
+    // optional - path to directory your code is in. used for linking stack traces.
+    'root' => '/Users/brian/www/myapp'
+);
+Rollbar::init($config);
+
+// installs global error and exception handlers
+Rollbar::init(array('access_token' => '79f4496bab774563862a8da48e15cf19'));
+
+
+date_default_timezone_set ( 'Europe/London ' );
+
 include("inc_action_functions.php");
 
 if ($_GET[time] != NULL) { $time = CleanNumber($_GET[time]); setcookie("lastdayview", $time);  } else { $time = time(); }
@@ -12,7 +30,6 @@ header("Location: login.php");
 
 } else {
 
-//date_default_timezone_set ('Europe/London');
 
 
 // Get the database variables from file

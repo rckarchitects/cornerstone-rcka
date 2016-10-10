@@ -106,7 +106,7 @@ if ($_GET[s1] != NULL) { echo "<blockquote>"; }
 if ($s1 == 0) {
 	
 	
-			$sql_contents = "SELECT * FROM intranet_qms WHERE qms_toc4 = 0 ORDER BY qms_toc1, qms_toc2, qms_toc3";
+			$sql_contents = "SELECT * FROM intranet_qms WHERE qms_toc4 = 0 AND qms_toc3 = 0 AND qms_toc2 = 0 ORDER BY qms_toc1, qms_toc2, qms_toc3";
 			$result_contents = mysql_query($sql_contents, $conn) or die(mysql_error());
 			
 			echo "<h2>Contents</h2>";
@@ -122,11 +122,11 @@ if ($s1 == 0) {
 					$qms_toc4 = $array_contents['qms_toc4'];
 					$qms_text = "<a href=\"index2.php?page=qms_view&amp;s1=$qms_toc1&amp;s2=$qms_toc2&amp;sub=compguide&amp;qms_id=$qms_id#$qms_id\">" . $array_contents['qms_text'] . "</a>";
 				
-					if ($qms_toc3 > 0) { echo "<tr><td style=\"width: 20px;\"></td><td style=\"width: 20px;\"></td><td>" . $qms_toc1. "." . $qms_toc2. "." . $qms_toc3 . "</td><td colspan=\"2\">$qms_text</td></tr>"; }
+					//if ($qms_toc3 > 0) { echo "<tr><td style=\"width: 20px;\"></td><td style=\"width: 20px;\"></td><td>" . $qms_toc1. "." . $qms_toc2. "." . $qms_toc3 . "</td><td colspan=\"2\">$qms_text</td></tr>"; }
 
-					elseif ($qms_toc2 > 0) { echo "<tr><td style=\"width: 20px;\"></td><td colspan=\"2\">" . $qms_toc1. "." . $qms_toc2 . "</td><td>$qms_text</td><td><a href=\"pdf_qms.php?s1=$qms_toc1&amp;s2=$qms_toc2\"><img src=\"images/button_pdf.png\" alt=\"PDF\" /></a></td></tr>"; }
+					//elseif ($qms_toc2 > 0) { echo "<tr><td style=\"width: 20px;\"></td><td colspan=\"2\">" . $qms_toc1. "." . $qms_toc2 . "</td><td>$qms_text</td><td><a href=\"pdf_qms.php?s1=$qms_toc1&amp;s2=$qms_toc2\"><img src=\"images/button_pdf.png\" alt=\"PDF\" /></a></td></tr>"; }
 
-					elseif ($qms_toc1 > 0) { echo "<tr><td colspan=\"3\">" . $qms_toc1 . "</td><td>$qms_text</td><td><a href=\"pdf_qms.php?s1=$qms_toc1\"><img src=\"images/button_pdf.png\" alt=\"PDF\" /></a></td></tr>"; }	
+					if ($qms_toc1 > 0) { echo "<tr><td>" . $qms_toc1 . "</td><td>$qms_text</td><td><a href=\"pdf_qms.php?s1=$qms_toc1\"><img src=\"images/button_pdf.png\" alt=\"PDF\" /></a></td></tr>"; }	
 				
 			}
 			
@@ -153,8 +153,10 @@ if ($s1 == 0) {
 					$qms_timestamp = $array['qms_timestamp'];
 					
 					if ($user_usertype_current > 4) {
-						$edit_clause = "<a href=\"index2.php?page=qms_edit&amp;s1=" . $qms_toc1 . "&amp;s2=" . $qms_toc2 . "\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a>";
+						$edit_clause = "<a href=\"index2.php?page=qms_edit&amp;s1=" . $qms_toc1 . "&amp;s2=" . $qms_toc2 . "\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a>&nbsp;";
 					} else { unset($edit_clause); }
+					
+					$edit_clause = $edit_clause ."<a href=\"pdf_qms.php?s1=$qms_toc1&amp;s2=$qms_toc2\"><img src=\"images/button_pdf.png\" alt=\"PDF\" /></a>";
 					
 					if ($qms_id == $_GET[qms_id]) { $bg = " style=\"background: rgba(20, 201, 201, 0.25); padding: 6px 6px 6px 6px;\" "; } else { unset($bg); }
 

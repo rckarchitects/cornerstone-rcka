@@ -37,7 +37,7 @@ contact_proj_company
 
 $result = mysql_query($sql_add, $conn) or die(mysql_error());
 
-$actionmessage = "The project contact was added successfully.\n".$sql_company;
+$actionmessage = "The project contact was added successfully";
 
 $techmessage = $sql_add;
 

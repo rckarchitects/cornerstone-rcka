@@ -50,7 +50,7 @@ $holiday_count = CheckHolidays($holiday_day_start,$holiday_day_back,"no",$user_i
 
 $holiday_remaining = $holiday_remaining - $holiday_count;
 
-echo "<p>This will leave you with " . $holiday_remaining . " remaining holidays this year.</p>";
+//echo "<p>This will leave you with " . $holiday_remaining . " remaining holidays this year.</p>";
 
 
 		echo "<p><form action=\"index2.php?page=holiday_request\" method=\"post\"><input type=\"hidden\" name=\"action\" value=\"holiday_request\" /><input type=\"hidden\" name=\"assess\" value=\"2\" /><input type=\"hidden\" value=\"$time_begin\" name=\"holiday_begin\" /><input type=\"hidden\" value=\"$_POST[holiday_length]\" name=\"holiday_length\" /><input type=\"hidden\" value=\"$time_back\" name=\"holiday_back\" /><input type=\"hidden\" value=\"$user_id\" name=\"user_id\" /><input type=\"hidden\" value=\"$paid\" name=\"paid\" /><input type=\"submit\" value=\"Confirm\" /></p>";
@@ -61,8 +61,14 @@ echo "</fieldset>";
 
 if ($_POST[assess] == 2) {
 echo "<fieldset><legend>Holiday Request Confirmed</legend>";
+
+echo "<p>You have requested the following days holiday:</p>";
+
 $holiday_count = CheckHolidays($_POST[holiday_begin],$_POST[holiday_back],"yes",$user_id, $_POST[holiday_length],$paid);
 $holiday_remaining = $user_holidays - $holiday_count;
+
+echo "<p>Please note that your holiday request cannot be confirmed until it has been approved in writing.</p><p><a href=\"pdf_holiday_request.php\">Please click here</a> to download the request form.</p>";
+
 echo "</fieldset>";
 }
 

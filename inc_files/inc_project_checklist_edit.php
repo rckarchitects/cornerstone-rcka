@@ -75,7 +75,7 @@ if (!$item) {
 
 
 echo "<table>";
-echo "<tr><th>Item</th><th>Required</th><th>Date Completed</th><th>Comment</th><th>Link to File</th><th colspan=\"2\">File Upload</th></tr>";
+echo "<tr><th>Item</th><th>Required</th><th>Date Completed / Deadline</th><th>Comment</th><th>Link to File</th><th colspan=\"2\">File Upload</th></tr>";
 
 $current_item = 0;
 
@@ -92,10 +92,12 @@ if (mysql_num_rows($result_checklist) > 0) {
 	$item_notes = $array_checklist['item_notes'];
 	$item_order = $array_checklist['item_order'];
 	$item_stage = $array_checklist['item_stage'];
+	$item_deadline = $array_checklist['item_deadline'];
 	
 	$checklist_id = $array_checklist['checklist_id'];
 	$checklist_required = $array_checklist['checklist_required'];
 	$checklist_date	= $array_checklist['checklist_date'];
+	$checklist_deadline	= $array_checklist['checklist_deadline'];
 	$checklist_comment = htmlentities ( $array_checklist['checklist_comment']);
 	$checklist_user = $_COOKIE[user];
 	$checklist_link	= $array_checklist['checklist_link'];
@@ -161,7 +163,11 @@ if (mysql_num_rows($result_checklist) > 0) {
 	echo "</td>";
 
 	if (!$item) {
-		echo "<td $bg><input name=\"checklist_date[]\" type=\"date\" value=\"$checklist_date\" $bg /></td>";
+		if ($item_deadline == 1) {
+			echo "<td $bg><input name=\"checklist_date[]\" type=\"date\" value=\"$checklist_date\" $bg /><br /><input name=\"checklist_deadline[]\" type=\"date\" value=\"$checklist_deadline\" $bg /></td>";
+		} else {
+			echo "<td $bg><input name=\"checklist_date[]\" type=\"date\" value=\"$checklist_date\" $bg /><input name=\"checklist_deadline[]\" type=\"hidden\" value=\"\"/></td>";
+		}
 		echo "<td $bg><input name=\"checklist_comment[]\" value=\"$checklist_comment\" $bg /></td>";
 		echo "<td $bg><input name=\"checklist_link[]\" value=\"$checklist_link\" $bg /></td>";
 		echo "<td style=\"min-width: 20px;\">";

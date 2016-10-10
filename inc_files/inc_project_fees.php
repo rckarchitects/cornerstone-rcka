@@ -118,8 +118,6 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 								
 								$fee_total = $fee_total + $ts_fee_calc;
 								
-								if ($proj_riba == $riba_id) { $highlight = "background-color: #$settings_alertcolor;"; } else { unset($highlight); }
-								
 								//  This bit needs re-writing to cross out any completed stages	
 								// if ($proj_riba > $riba_order) { $highlight = $highlight."text-decoration: line-through;"; }
 								
@@ -147,7 +145,9 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 								$proj_duration = $prog_end - $prog_begin;
 								if ($proj_duration > 0) { $proj_duration_print = round($proj_duration / 604800)." weeks<br />(" . $percent_complete . "%)"; } else { $proj_duration_print = " - "; }
 								
-								if ($ts_fee_id == $proj_riba) { $ts_fee_id_selected = " checked=\"checked\""; } else { unset($ts_fee_id_selected); }
+								if ($ts_fee_id == $proj_riba) { $ts_fee_id_selected = " checked=\"checked\""; $highlight = " background: rgba(200,200,200,0.5);"; } else { unset($ts_fee_id_selected); unset($highlight); }
+								
+								if ($prog_end < time()) { $highlight = $highlight . " text-decoration: line-through;"; }
 								
 								
 								$fee_factored = $ts_fee_calc * $ts_fee_target; $fee_target = "<br />(Target Cost: " . MoneyFormat($fee_factored). " / " .  number_format(((1 / $ts_fee_target) * 100) - 100 ) . "%)"; $target_cost_total = $target_cost_total + $fee_factored;
@@ -162,8 +162,8 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 								$ts_fee_prospect = $ts_fee_likelihood . "&nbsp;(" . $ts_fee_prospect . "%)";
 								
 								
-								print "<tr><td><input type=\"radio\" name=\"fee_stage_current\" value=\"$ts_fee_id\" $ts_fee_id_selected /> </td><td style=\"$highlight\">$ts_fee_text</td><td style=\"$highlight\">".$prog_begin_print."</td><td style=\"$highlight\">".$prog_end_print."</td><td style=\"$highlight\">".$ts_fee_prospect."</td><td  style=\"$highlight; text-align: right;\">".MoneyFormat($ts_fee_calc) . $fee_target ."</td>\n";
-								echo "<td>".$proj_duration_print."</td>";
+								print "<tr><td style=\"$highlight\"><input type=\"radio\" name=\"fee_stage_current\" value=\"$ts_fee_id\" $ts_fee_id_selected /> </td><td style=\"$highlight\">$ts_fee_text</td><td style=\"$highlight\">".$prog_begin_print."</td><td style=\"$highlight\">".$prog_end_print."</td><td style=\"$highlight\">".$ts_fee_prospect."</td><td  style=\"$highlight; text-align: right;\">".MoneyFormat($ts_fee_calc) . $fee_target ."</td>\n";
+								echo "<td style=\"$highlight\">".$proj_duration_print."</td>";
 								if ($user_usertype_current > 2) { print "<td style=\"$highlight\"><a href=\"index2.php?page=timesheet_fees_edit&amp;ts_fee_id=$ts_fee_id\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a></td>"; }
 								print "</tr>";
 								
@@ -180,6 +180,8 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 								
 								$counter++;
 								$prog_begin = $prog_begin + $ts_fee_time_end;
+								
+								unset($highlight);
 								
 							}
 	

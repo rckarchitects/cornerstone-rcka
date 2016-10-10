@@ -127,6 +127,10 @@ while ($array_checklist = mysql_fetch_array($result_checklist)) {
 				$current_y = $pdf->GetY(); if ($current_y > 250) { $pdf->addPage(); }
 				$pdf->Cell(0,3,'',0,1,L,0); $pdf->Cell(0,5,$item_group,B,1,L,0);
 				$pdf->SetFont($format_font,'',7);
+		} else {
+			
+				if ($current_y > 250) { $pdf->addPage(); }
+				
 		}
 		
 		$border = T;

@@ -48,8 +48,11 @@ if ($_GET[revision_id] > 0) { $rev_begin = $rev_count[0]; } else { $rev_begin = 
 
 $rev_total = count($revision_letters);
 
-echo "<p>Revision Letter (Currently: " . strtoupper ( $revision_letter ) . ")<br /> ";
-echo "<select name=\"revision_letter\">";
+echo "<p>Revision Letter";
+if ($revision_letter) {
+	echo " (Currently: " . strtoupper ( $revision_letter ) . ")";
+}
+echo "<br /><select name=\"revision_letter\">";
 while ($rev_begin < $rev_total) {
 	if ($revision_letter == $revision_letters[$rev_begin]) { $selected = " selected=\"selected\" "; } else { unset($selected); } 
 echo "<option value=\"$revision_letters[$rev_begin]\" $selected >" . strtoupper($revision_letters[$rev_begin]) . " " . ($revision_code[$rev_begin]) . "</option>";

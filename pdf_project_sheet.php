@@ -8,6 +8,8 @@ if ($_GET[proj_id] != NULL) { $proj_id = $_GET[proj_id]; } else { header ("Locat
 
 include "inc_files/inc_checkcookie_logincheck.php";
 
+include "inc_files/inc_checkcookie.php";
+
 //  Use FDPI to get the template
 
 define('FPDF_FONTPATH','fpdf/font/');
@@ -43,9 +45,10 @@ $pdf->useTemplate($tplidx);
 			$print_string = $input;
 			if ($input != NULL) {
 			StyleBody(9);
-			$pdf->SetTextColor(150, 150, 150);
+			$pdf->SetTextColor(0, 0, 0);
 			$pdf->MultiCell(90,3,$print_string,0, L, false);
 			$pdf->MultiCell(90,1,'',0, L, false);
+
 			}
 		}
 		
@@ -57,14 +60,15 @@ $pdf->useTemplate($tplidx);
 			Global $y_right;
 			if ($y_current > 230 AND $x_current > 75) { $pdf->addPage(); $x_current = 10; $y_current = 15; }
 			$pdf->SetXY($x_current,$y_current);
-			$pdf->SetFont('Helvetica','b',13);
-			$pdf->SetTextColor(150, 150, 150);
+			$pdf->SetFont('Helvetica','b',10);
+			$pdf->SetTextColor(0, 0, 0);
 			$pdf->SetX($x_current);
-			$pdf->SetDrawColor(220,220,220);
+			$pdf->SetDrawColor(0,0,0);
 			$pdf->SetLineWidth(0.3);
 			$pdf->MultiCell(90,5,$title,B, L, false);
 			$pdf->MultiCell(90,1,'',0, L, false);
 			Notes($notes);
+			$pdf->Ln(1);
 			StyleBody(10);
 			$pdf->SetX($x_current);
 			$pdf->MultiCell(90,4,$text,0, L, false);
@@ -108,72 +112,57 @@ $pdf->useTemplate($tplidx);
 
 	$project_counter = 1;
 	$page_count = 1;
+	
+$current_date = TimeFormat(time());
+$proj_id = CleanUp($_GET[proj_id]);
 
-	$pdf->SetY(35);
-	$pdf->SetFont('Helvetica','b',24);
-
-	$pdf->SetTextColor($format_bg_r, $format_bg_g, $format_bg_b);
-	$pdf->Cell(0,10,"Project Summary Sheet");
-
+$sql_proj = "SELECT * FROM intranet_projects WHERE proj_id = $proj_id LIMIT 1";
+$result_proj = mysql_query($sql_proj, $conn) or die(mysql_error());
+$array_proj = mysql_fetch_array($result_proj);
+$proj_num = $array_proj['proj_num'];
+$proj_name = $array_proj['proj_name'];
+$proj_desc = $array_proj['proj_desc'];
+	
+	$sheet_title = "Project Contacts";
+	$pdf->SetXY(10,45);
+	$pdf->SetFont($format_font,'',24);
 	$pdf->SetTextColor(0, 0, 0);
-	$pdf->SetY(50);
-	$pdf->SetFont('Helvetica','b',18);
+	$pdf->SetDrawColor(0, 0, 0);
+	$pdf->Cell(0,10,$sheet_title);
+	$pdf->SetXY(10,55);
+	$pdf->SetFont($format_font,'',14);
+	
+	$sheet_subtitle = $proj_num." ".$proj_name;
+	$sheet_date = "Current at ". $current_date;
+	$pdf->Cell(0,7.5,$sheet_subtitle,0,1,L,0);
+	$pdf->SetFont($format_font,'',12);
+	$pdf->Cell(0,5,$sheet_date,0,1,L,0);
+	$pdf->SetXY(10,70);
+	
+	$pdf->SetLineWidth(0.5);
 
-// Determine name of project
-
-	$sql = "SELECT * FROM intranet_projects WHERE proj_id = '$proj_id'";
-	$result = mysql_query($sql, $conn) or die(mysql_error());
-	$array = mysql_fetch_array($result);
-
-	$proj_num = $array['proj_num'];
-	$proj_name = $array['proj_name'];
-	$proj_desc = $array['proj_desc'];
-	$proj_address_1 = $array['proj_address_1'];
-	$proj_address_2 = $array['proj_address_2'];
-	$proj_address_3 = $array['proj_address_3'];
-	$proj_address_town = $array['proj_address_town'];
-	$proj_address_county = $array['proj_address_county'];
-	$proj_address_postcode = $array['proj_address_postcode'];
-	$proj_client_contact_id = $array['proj_client_contact_id'];
-
-	$proj_planning_ref = $array['proj_planning_ref'];
-	$proj_buildingcontrol_ref = $array['proj_buildingcontrol_ref'];
-
-	$print_title = $proj_num." ".$proj_name;
-
-	$pdf->SetFillColor(220, 220, 220);
-	$pdf->MultiCell(0,8,$print_title,0, L, 1);
-
-// Printed by, and on...
-
-	$pdf->SetFont($format_font,'',10);
-
-	$sql = "SELECT user_name_first, user_name_second FROM intranet_user_details WHERE user_id = $_COOKIE[user]";
-	$result = mysql_query($sql, $conn) or die(mysql_error());
-	$array = mysql_fetch_array($result);
-
-	$user_name_first = $array['user_name_first'];
-	$user_name_second = $array['user_name_second'];
-
-	$printed_on = "Generated ".date("r")." by ".$user_name_first." ".$user_name_second;
-
-	$pdf->Cell(0,6,$printed_on,0, 1, L, 1);
-
-	$pdf->SetFillColor(255, 255, 255);
-
-	$y_current = 70;
+	$y_current = 80;
 	$x_current = 10;
 
 // Project Address
 
+	$proj_address_1 = $array_proj['proj_address_1'];
+	$proj_address_2 = $array_proj['proj_address_2'];
+	$proj_address_3 = $array_proj['proj_address_3'];
+	$proj_address_town = $array_proj['proj_address_town'];
+	$proj_address_county = $array_proj['proj_address_county'];
+	$proj_address_postcode = $array_proj['proj_address_postcode'];
+	$proj_client_contact_id = $array_proj['proj_client_contact_id'];
+	$proj_planning_ref = $array_proj['proj_planning_ref'];
+	$proj_buildingcontrol_ref = $array_proj['proj_buildingcontrol_ref'];
 
-		$proj_address = $proj_address.AddLine($proj_address_1);
-		$proj_address = $proj_address.AddLine($proj_address_2);
-		$proj_address = $proj_address.AddLine($proj_address_3);
-		$proj_address = $proj_address.AddLine($proj_address_town);
-		$proj_address = $proj_address.AddLine($proj_address_county);
-		$proj_address = $proj_address.AddLine($proj_address_postcode);
-		StyleHeading("Site Address",$proj_address);
+	$proj_address = $proj_address.AddLine($proj_address_1);
+	$proj_address = $proj_address.AddLine($proj_address_2);
+	$proj_address = $proj_address.AddLine($proj_address_3);
+	$proj_address = $proj_address.AddLine($proj_address_town);
+	$proj_address = $proj_address.AddLine($proj_address_county);
+	$proj_address = $proj_address.AddLine($proj_address_postcode);
+	StyleHeading("Site Address",$proj_address);
 	
 // Project Description
 		if ($proj_desc == NULL) { $proj_desc = "-- None --"; }
@@ -181,7 +170,7 @@ $pdf->useTemplate($tplidx);
 	
 	// Client details
 	
-	$sql_client = "SELECT * FROM contacts_contactlist LEFT JOIN contacts_companylist ON company_id = contact_company WHERE contact_id = '$proj_client_contact_id' LIMIT 1";
+	$sql_client = "SELECT * FROM contacts_contactlist, intranet_contacts_project LEFT JOIN contacts_companylist ON company_id = contact_proj_company WHERE contact_proj_project = $proj_id AND contact_id = '$proj_client_contact_id' LIMIT 1";
 	$result_client = mysql_query($sql_client, $conn) or die(mysql_error());
 	$array_client = mysql_fetch_array($result_client);
 
@@ -240,7 +229,7 @@ $pdf->useTemplate($tplidx);
 	
 	// Begin the contact array
 	
-	$sql_contacts = "SELECT * FROM  contacts_disciplinelist, contacts_contactlist, intranet_contacts_project LEFT JOIN contacts_companylist ON contact_proj_company = company_id WHERE contact_proj_project = '$proj_id' AND contact_id = contact_proj_contact AND discipline_id = contact_discipline ORDER BY discipline_order, discipline_ref,  company_name, contact_namesecond";
+	$sql_contacts = "SELECT * FROM  contacts_disciplinelist, contacts_contactlist, intranet_contacts_project LEFT JOIN contacts_companylist ON contact_proj_company = company_id WHERE contact_proj_project = '$proj_id' AND contact_id = contact_proj_contact AND discipline_id = contact_proj_role ORDER BY discipline_order, discipline_ref,  company_name, contact_namesecond";
 	$result_contacts = mysql_query($sql_contacts, $conn) or die(mysql_error());
 	
 		$count = 0;

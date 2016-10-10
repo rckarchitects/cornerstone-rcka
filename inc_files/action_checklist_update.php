@@ -9,6 +9,7 @@
 	$array_checklist_comment = $_POST['checklist_comment'];
 	$array_checklist_user = $_POST['checklist_user'];
 	$array_checklist_link = $_POST['checklist_link'];
+	$array_checklist_deadline = $_POST['checklist_deadline'];
 	
 	$target_dir = "docstore/";
 	
@@ -30,6 +31,7 @@ while ($counter < count($array_item_id)) {
 	$checklist_comment = addslashes ( $array_checklist_comment[$counter] );
 	$checklist_user = $array_checklist_user[$counter];
 	$checklist_link = addslashes ( $array_checklist_link[$counter] );
+	$checklist_deadline = $array_checklist_deadline[$counter];
 	
 	
 	//move_uploaded_file ($_FILES['uploadFile'] ['tmp_name'];
@@ -53,7 +55,8 @@ while ($counter < count($array_item_id)) {
 				checklist_project = '$checklist_project',
 				checklist_comment = '$checklist_comment',
 				checklist_user = '$checklist_user',
-				checklist_link = '$checklist_link'
+				checklist_link = '$checklist_link',
+				checklist_deadline = '$checklist_deadline'
 				WHERE checklist_id = $checklist_id AND checklist_project = $checklist_project
 				LIMIT 1";
 			
@@ -70,7 +73,8 @@ while ($counter < count($array_item_id)) {
 				checklist_project,
 				checklist_comment,
 				checklist_user,
-				checklist_link
+				checklist_link,
+				checklist_deadline
 				) VALUES (
 				NULL,
 				$item_id,
@@ -80,10 +84,13 @@ while ($counter < count($array_item_id)) {
 				'$checklist_project',
 				'$checklist_comment',
 				'$checklist_user',
-				'$checklist_link'
+				'$checklist_link',
+				'$checklist_deadline'
 				)";
 	
 	}
+	
+	//echo "<p>$sql_checklist_update</p>";
 	
 	
 				

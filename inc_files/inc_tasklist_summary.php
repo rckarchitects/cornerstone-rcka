@@ -1,18 +1,24 @@
 <?php
 
-print "<p class=\"submenu_bar\"><a href=\"index2.php?page=tasklist_edit\" class=\"submenu_bar\">Add New Task</a></p>";
+echo "<p class=\"submenu_bar\"><a href=\"index2.php?page=tasklist_edit\" class=\"submenu_bar\">Add New Task</a>";
 
 // Determine the date a week ago
 
 $date_lastweek = time() - 604800;
 
-$sql = "SELECT * FROM intranet_tasklist, intranet_projects WHERE tasklist_project = proj_id  AND tasklist_person = $_COOKIE[user] AND tasklist_percentage < 100 order by proj_num, tasklist_due";
+if ($_GET[order] == "time") { $order = " tasklist_due DESC"; echo "<a href=\"index2.php?page=tasklist_view&amp;subcat=user\" class=\"submenu_bar\">List by project</a>"; } else { $order = " proj_num, tasklist_due"; echo "<a href=\"index2.php?page=tasklist_view&amp;subcat=user&amp;order=time\" class=\"submenu_bar\">List by time</a>"; }
+
+echo "</p>";
+
+$sql = "SELECT * FROM intranet_tasklist, intranet_projects WHERE tasklist_project = proj_id  AND tasklist_person = $_COOKIE[user] AND tasklist_percentage < 100 order by $order";
 
 $result = mysql_query($sql, $conn) or die(mysql_error());
 
 if (mysql_num_rows($result) > 0) {
 
 $counter = 1;
+
+if ($_GET[order] == "time") { echo "<table summary=\"Outstandings tasks\">"; }
 
 while ($array = mysql_fetch_array($result)) {
   
@@ -23,6 +29,7 @@ $tasklist_percentage = $array['tasklist_percentage'];
 $tasklist_completed = $array['tasklist_completed'];
 
 $tasklist_due = $array['tasklist_due'];
+$tasklist_soon = $array['tasklist_due'] - 604800;
 
 					if ($tasklist_due > 0) { $tasklist_due_date = "Due <a href=\"index2.php?page=datebook_view_day&amp;time=$tasklist_due\">".TimeFormat($tasklist_due)."</a>"; } else { $tasklist_due_date = ""; }
 					$tasklist_person = $array['tasklist_person'];
@@ -31,15 +38,20 @@ $tasklist_due = $array['tasklist_due'];
 					$proj_fee_track = $array['proj_fee_track'];
 					
 					
-					if ($proj_id != $proj_id_repeat AND $counter > 1) { print "</table>"; unset($proj_id_repeat); }
+					
+					if ($proj_id != $proj_id_repeat && $counter > 1 && $_GET[order] != "time") { echo "</table>"; unset($proj_id_repeat); }
 					if ($proj_id != $proj_id_repeat) {
-					   		print "<h2>";
+						if ($_GET[order] != "time") {
 							if ($proj_fee_track == "1") {
-							print "<a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\" name=\"view_task_$proj_id\">$proj_num&nbsp;$proj_name</a>";
+								echo "<h3><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\" name=\"view_task_$proj_id\">$proj_num&nbsp;$proj_name</a>";
 							} else {
-							print $proj_num."&nbsp;".$proj_name;
+								echo "<h3>" . $proj_num."&nbsp;".$proj_name . "</h3>";
 							}
-							print "</h2><table summary=\"Outstanding tasks for $proj_num\">";
+						}
+						
+							if ($_GET[order] != "time") {
+								echo "<table summary=\"Outstandings tasks for $proj_num\">";
+							}
 					}
 					
 					$proj_id_repeat = $proj_id;
@@ -55,23 +67,33 @@ $tasklist_due = $array['tasklist_due'];
 					$user_name_second = $array2['user_name_second'];
 					$user_id = $array2['user_id'];
 					
-					if ($tasklist_due < time() AND $tasklist_completed < 100 AND $tasklist_due > 0) { $alert = "style=\"background-color: #".$settings_alertcolor."\""; } else { $alert = ""; }
+					if ($tasklist_due < time() AND $tasklist_completed < 100 AND $tasklist_due > 0) {
+						$alert = "style=\"background-color: rgba(255,0,0,0.5)\" ";
+					} elseif ($tasklist_soon < time() AND $tasklist_completed < 100 AND $tasklist_due > 0) {
+						$alert = " style=\"background-color: rgba(255,255,120,0.5)\" ";
+					} else {
+						$alert = "";
+					}
 					
-					print "<tr><td width=\"5%\" ".$alert.">";
-					print $counter.".</td><td width=\"40%\" ".$alert."><a href=\"index2.php?page=tasklist_detail&amp;tasklist_id=".$tasklist_id."\">".$tasklist_notes."</a>";
+					echo "<tr><td width=\"5%\" ".$alert.">";
+					echo $counter.".</td><td width=\"40%\" ".$alert.">";
+					
+					if ($_GET[order] == "time") { echo "<strong>" . $proj_num . "&nbsp;" . $proj_name . "</strong><br />"; }
+					
+					echo "<a href=\"index2.php?page=tasklist_detail&amp;tasklist_id=".$tasklist_id."\">" . $tasklist_notes . "</a>";
 				
-					print "</td><td width=\"20%\" ".$alert.">";
-					print $tasklist_due_date;
+					echo "</td><td width=\"20%\" ".$alert.">";
+					echo $tasklist_due_date;
 					
 					// If completed, put the completed date down
 					
 					if ($tasklist_percentage == 100 AND $tasklist_completed != "") {
-					print "<span class=\"minitext\">, completed ".TimeFormat($tasklist_completed)."</span>";
+					echo "<span class=\"minitext\">, completed ".TimeFormat($tasklist_completed)."</span>";
 					}
 					
 
 					
-					print "</td><td ".$alert.">";
+					echo "</td><td ".$alert.">";
 					
 					// Insert the percentage bar	
 						
@@ -87,13 +109,13 @@ $tasklist_due = $array['tasklist_due'];
 					elseif ($tasklist_percentage == 90 ) { $tasklist_percentage_graph = "tasklist_percent_090.gif"; }
 					elseif ($tasklist_percentage == 100 ) { $tasklist_percentage_graph = "tasklist_percent_100.gif"; }
 					
-					// Print the bar chart and make it clickable if it belongs to the current user
+					// echo the bar chart and make it clickable if it belongs to the current user
 					
 					if ($user_id == $_COOKIE[user]) {
 					
 							if ($_GET[subcat] != NULL) { $task_subcat = CleanUp($_GET[subcat]); } else { $task_subcat = "user"; }
 					
-							print "
+							echo "
 							<img src=\"images/$tasklist_percentage_graph\" width=\"225\" height=\"17\" border=\"0\" alt=\"\" usemap=\"#task_$tasklist_id\" />
 							<map name=\"task_$tasklist_id\">
 							<area shape=\"rect\" alt=\"\" coords=\"201,1,219,9\" href=\"index2.php?page=tasklist_view&amp;action=tasklist_change_percent&amp;tasklist_id=$tasklist_id&amp;tasklist_percent=100&amp;subcat=$task_subcat#view_task_$tasklist_id\" />
@@ -112,23 +134,23 @@ $tasklist_due = $array['tasklist_due'];
 							
 					} else {
 					
-							print "<br />
+							echo "<br />
 							<img src=\"images/$tasklist_percentage_graph\" width=\"225\" height=\"17\" border=\"0\" alt=\"\" />";
 					
 					}
 					
-					print "</td></tr>";
+					echo "</td></tr>";
 					
 					if ($proj_id != $proj_id_repeat) { $counter = 1; unset($proj_id_repeat); } else { $counter++;  }
 	}
 	
-print "</table>";
+echo "</table>";
 
 } else {
 
-print "<h2>Tasks</h2>";
+echo "<h2>Tasks</h2>";
 
-	print "<p>You have no active tasks on the system.</p>";
+	echo "<p>You have no active tasks on the system.</p>";
 
 }
 

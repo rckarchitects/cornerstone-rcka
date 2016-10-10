@@ -8,7 +8,7 @@
 		$array_recover = mysql_fetch_array($result_recover);
 		
 		$answer_id_recover = $array_recover['answer_id'];
-		$answer_response_recover = addslashes ( $array_recover['answer_response'] );
+		$answer_response_recover = $array_recover['answer_response'];
 		$answer_id_edited_recover = $array_recover['answer_id_edited'];
 		$answer_time_edited_recover = $array_recover['answer_time_edited'];
 						
@@ -41,8 +41,8 @@ unset($alertmessage);
 // Begin to clean up the $_POST submissions
 
 		$answer_id = CleanNumber($_POST[answer_id]);
-		$answer_response = addslashes ( strip_tags($_POST[answer_response],"<p><ul><li><ol><strong><b><i><italic><u>") );
-		$answer_feedback = addslashes ( strip_tags($_POST[answer_feedback],"<p><ul><li><ol><strong><b><i><italic><u>") );
+		$answer_response = strip_tags($_POST[answer_response],"<p><ul><li><ol><strong><b><i><italic><u>");
+		$answer_feedback = strip_tags($_POST[answer_feedback],"<p><ul><li><ol><strong><b><i><italic><u>");
 		$word_count = WordCount(strip_tags($answer_response));
 		
 		$answer_complete = $_POST[answer_complete];

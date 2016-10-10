@@ -80,7 +80,7 @@ $nowtime = time() - 43200;
 		$result5 = mysql_query($sql5, $conn) or die(mysql_error());
 		if (mysql_num_rows($result5) > 0) {
 			$holidaymessage = "<p>The following people have holidays within the next fortnight:</p>";
-			$holidaymessage = $holidaymessage . "<p><ul>";
+			$holidaymessage = $holidaymessage . "<p><ul class=\"button_left\">";
 			$current_date = 0;
 			while ($array5 = mysql_fetch_array($result5)) {
 			
@@ -116,7 +116,21 @@ $nowtime = time() - 43200;
 		}
 		
 		
-		
+	// Check for any checklist deadlines today
+	
+		$today_date = date("Y-m-d", time());
+
+		$sql5 = "SELECT * FROM intranet_projects, intranet_project_checklist LEFT JOIN intranet_project_checklist_items ON checklist_item = item_id  WHERE proj_id = checklist_project AND checklist_deadline = '$today_date' ORDER BY item_group, item_order, checklist_date, item_name";
+		$result5 = mysql_query($sql5, $conn) or die(mysql_error());
+		if (mysql_num_rows($result5) > 0) {
+			$checklist_today = "<table>";
+			while ($array5 = mysql_fetch_array($result5)) {
+			$checklist_today = $checklist_today . "<tr><td style=\"width: 30%;\"><a href=\"index2.php?page=project_checklist&amp;proj_id=" . $array5['proj_id'] . "#" . $array5['item_id'] . "\">" . $array5['item_name'] . "</a></td><td>" . $array5['proj_num'] . " " . $array5['proj_name'] . "</td></tr>";
+			}
+			$checklist_today = $checklist_today . "</table>";
+		} else {
+			unset($checklist_today);			
+		}
 		
 		
 		
@@ -191,6 +205,8 @@ if (file_exists($logo)) {
 	if ($invoicemessage != "" AND $_GET[page] == NULL) { echo "<h1 class=\"heading_alert\">Invoices To Be Issued Today</h1>$invoicemessage"; }
 	
 	if ($holidaymessage != "" AND $_GET[page] == NULL) { echo "<h1 class=\"heading_alert\">Holidays</h1>$holidaymessage"; }
+	
+	if ($checklist_today != NULL) { echo "<h1 class=\"heading_alert\">Checklist Deadlines Today</h1>$checklist_today"; }
 	
 	if ($alertmessage != "") { print "<h1 class=\"heading_alert\">Error</h1><p>$alertmessage</p>"; }
 	

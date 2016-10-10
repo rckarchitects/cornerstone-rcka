@@ -122,6 +122,7 @@ echo "</tr></table>";
 		
 		echo "<p>
 		<input type=\"radio\" value=\"approve\" name=\"approve\" checked=\"checked\" />&nbsp;Approve<br />
+		<input type=\"radio\" value=\"unapprove\" name=\"approve\" />&nbsp;Unapprove<br />
 		<input type=\"radio\" value=\"delete\" name=\"approve\" />&nbsp;Delete<br/ >
 		<input type=\"radio\" value=\"to_paid\" name=\"approve\" />&nbsp;Make Paid Holiday<br />
 		<input type=\"radio\" value=\"to_unpaid\" name=\"approve\" />&nbsp;Make Unpaid Holiday<br />
@@ -154,8 +155,8 @@ OR (user_user_added < $beginnning_of_this_year AND (user_user_ended = 0 OR user_
 $result_users = mysql_query($sql_users, $conn);
 echo "<table>";
 
-echo "<tr><th colspan=\"6\">User Details</th><th colspan=\"6\">$year Only</th><th colspan=\"2\">All Time</th></tr>";
-echo "<tr><th>Name</th><th>Date Started</th><th>Until</th><th>Years</th><th>Annual Allowance</th><th>Total Allowance</th><th>Allowance</th><th>Paid Holiday</th><th>Unpaid Holiday</th><th>Study Leave</th><th>Jury Service</th><th>Year Total</th><th>Holiday Taken</th><th>Holiday Remaining to end of $year</th></tr>";
+echo "<tr><th colspan=\"6\">User Details</th><th colspan=\"7\">$year Only</th><th colspan=\"2\">All Time</th></tr>";
+echo "<tr><th>Name</th><th>Date Started</th><th>Until</th><th>Years</th><th>Annual Allowance</th><th>Total Allowance</th><th>Allowance</th><th>Paid Holiday Taken</th><th>Paid Year Remaining</th><th>Unpaid Holiday</th><th>Study Leave</th><th>Jury Service</th><th>Year Total</th><th>Holiday Taken</th><th>Holiday Remaining to end of $year</th></tr>";
 
 while ($array_users = mysql_fetch_array($result_users)) {
 
@@ -221,7 +222,11 @@ while ($array_users = mysql_fetch_array($result_users)) {
 		
 	$holiday_remaining = $holiday_allowance - $holiday_total;
 	
-	$length =  round((($user_user_ended - $user_user_added) / 31556908.8), 2); 
+	$length =  round((($user_user_ended - $user_user_added) / 31556908.8), 2);
+	
+	$holiday_year_remaining = $year_allowance - $holiday_paid_total;
+	
+	if ($holiday_remaining < 0) { $holiday_remaining_print = "<span style=\"color: red; font-weight: bold;\">" . $holiday_remaining . "</span>"; } else { $holiday_remaining_print = "<span style=\"font-weight: bold;\">" . $holiday_remaining . "</span>"; }
 		
 	echo "
 	<tr>
@@ -231,14 +236,15 @@ while ($array_users = mysql_fetch_array($result_users)) {
 	<td>$length</td>
 	<td style=\"text-align:right;\">$user_holidays</td>
 	<td style=\"text-align:right;\">$holiday_allowance</td>
-	<td style=\"text-align:right;\">$year_allowance</td>
-	<td style=\"text-align:right;\">$holiday_paid_total</td>
-	<td style=\"text-align:right;\">$holiday_unpaid</td>
-	<td style=\"text-align:right;\">$study_leave_total</td>
-	<td style=\"text-align:right;\">$jury_service_total</td>
-	<td style=\"text-align:right;\">$holiday_total_year</td>
+	<td style=\"text-align:right; background: rgba(0,0,0,0.2);\">$year_allowance</td>
+	<td style=\"text-align:right; background: rgba(0,0,0,0.2);\">$holiday_paid_total</td>
+	<td style=\"text-align:right; background: rgba(0,0,0,0.3);\">$holiday_year_remaining</td>
+	<td style=\"text-align:right; background: rgba(0,0,0,0.2);\">$holiday_unpaid</td>
+	<td style=\"text-align:right; background: rgba(0,0,0,0.2);\">$study_leave_total</td>
+	<td style=\"text-align:right; background: rgba(0,0,0,0.2);\">$jury_service_total</td>
+	<td style=\"text-align:right; background: rgba(0,0,0,0.3);\">$holiday_total_year</td>
 	<td style=\"text-align:right;\">$holiday_total</td>
-	<td style=\"text-align:right;\">$holiday_remaining</td>
+	<td style=\"text-align:right;\">$holiday_remaining_print</td>
 	</tr>";
 	
 	if ($_GET[showuser] == $user_id) {

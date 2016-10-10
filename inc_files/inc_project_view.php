@@ -32,24 +32,6 @@ $proj_date_appointment = $array['proj_date_appointment'];
 $proj_date_commence = $array['proj_date_start'];
 $proj_date_complete = $array['proj_date_complete'];
 
-$proj_consult_41 = $array['proj_consult_41'];
-$proj_consult_42 = $array['proj_consult_42'];
-$proj_consult_43 = $array['proj_consult_43'];
-$proj_consult_6 = $array['proj_consult_6'];
-$proj_consult_7 = $array['proj_consult_7'];
-$proj_consult_8 = $array['proj_consult_8'];
-$proj_consult_9 = $array['proj_consult_9'];
-$proj_consult_10 = $array['proj_consult_10'];
-$proj_consult_11 = $array['proj_consult_11'];
-$proj_consult_12 = $array['proj_consult_12'];
-$proj_consult_13 = $array['proj_consult_13'];
-$proj_consult_14 = $array['proj_consult_14'];
-$proj_consult_15 = $array['proj_consult_15'];
-$proj_consult_16 = $array['proj_consult_16'];
-$proj_consult_17 = $array['proj_consult_17'];
-$proj_consult_18 = $array['proj_consult_18'];
-$proj_consult_19 = $array['proj_consult_19'];
-
 $proj_planning_ref = $array['proj_planning_ref'];
 $proj_buildingcontrol_ref = $array['proj_buildingcontrol_ref'];
 $proj_fee_percentage = $array['proj_fee_percentage'];
@@ -133,23 +115,6 @@ echo "</p>";
 
 					if ($proj_desc != "") { echo "<tr><td  >Project Description</td><td  >$proj_desc</td></tr>"; }
 
-					if ($proj_riba_begin > 0) {
-					echo "<tr><td  >Starting RIBA Work Stage</td><td  >";
-					include("inc_files/inc_data_project_riba_begin.php");
-					echo "</td></tr>";
-					}
-
-					if ($proj_riba > 0) {
-					echo "<tr><td >Current RIBA Work Stage</td><td  >";
-					include("inc_files/inc_data_project_riba_stages.php");
-					echo "</td></tr>";
-					}
-
-					if ($proj_riba_conclude > 0) {
-					echo "<tr><td>Concluding RIBA Work Stage</td><td  >";
-					include("inc_files/inc_data_project_riba_conclude.php");
-					echo "</td></tr>";
-					}
 
 					if ($proj_procure > 0) {
 					echo "<tr><td>Procurement Method</td><td>$proj_procure</td></tr>";

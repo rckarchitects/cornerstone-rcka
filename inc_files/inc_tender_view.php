@@ -49,6 +49,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		$answer_time_edited = $array['answer_time_edited'];
 		$answer_lock = $array['answer_lock'];
 		$tender_id = $array['tender_id'];
+		$tender_client = $array['tender_client'];
 		$tender_name = $array['tender_name'];
 		$tender_date = $array['tender_date'];
 		$tender_type = $array['tender_type'];
@@ -69,21 +70,25 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		if ($counter == 0) {
 			echo "<h1>$tender_name ($tender_type)</h1>";
 			
-			print "<p class=\"submenu_bar\">";
+			echo "<p class=\"submenu_bar\">";
 			if ($user_usertype_current > 2) {
 				echo "<a href=\"index2.php?page=tender_view&amp;question=add&amp;tender_id=$tender_id\" class=\"submenu_bar\">Add Question</a>";
 			}
 			if ($_GET[edit_question] == NULL) { echo "<a href=\"popup_tender.php?tender_id=$tender_id\" class=\"submenu_bar\">Printable View</a>"; }
-			print "</p>";
+			echo "</p>";
 			
 			if ($tender_instructions!= NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<h2>Submission Instructions</h2><blockquote>". $tender_instructions . "</blockquote>"; }
 			
+			if ($tender_client != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<h2>Client</h2><blockquote>". $tender_client . "</blockquote>"; }
+			
 			if ($tender_source != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<h2>Source of Tender</h2><blockquote>". TextPresent($tender_source) . "</blockquote>"; }
 			
+			echo "<h2>Submission Deadline</h2><blockquote>".TimeFormatDetailed($tender_date)."</blockquote>";
 			
-		print "<h2>Submission Deadline: ".TimeFormatDetailed($tender_date)."</h2>";
-		print "<table summary=\"Lists of questions and responses\">";
-		if ($_GET[question] == "add") { EditForm('','','','','',$tender_id); echo "</th></tr>"; }
+			echo "<h2>Responses</h2>";
+			
+			echo "<table summary=\"Lists of questions and responses\">";
+			if ($_GET[question] == "add") { EditForm('','','','','',$tender_id); echo "</th></tr>"; }
 		}
 		
 		if ($answer_response == NULL) { $answer_response = "-- Not answered --"; $bgcolor="background-color: red"; $message = "Incomplete";
@@ -152,7 +157,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		
 		if ($word_count_total > 0) { echo "<tr><td><strong>Total Word Count:</strong></td><td><strong>" . number_format($word_count_total) . "</strong></td></tr>"; }
 
-		print "</table>";
+		echo "</table>";
 		
 		if (mysql_num_rows($result) == 0) {
 		$sql = "SELECT * FROM intranet_tender WHERE tender_id = '$_GET[tender_id]' LIMIT 1";

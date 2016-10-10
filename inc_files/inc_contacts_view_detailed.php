@@ -7,7 +7,7 @@
 	header("Location:index2.php");
 	}
 
-	$sql_contact = "SELECT * FROM contacts_contactlist WHERE contact_id = '$select_contact_id' LIMIT 1";
+	$sql_contact = "SELECT * FROM contacts_contactlist LEFT JOIN intranet_user_details ON user_id = contact_added_by WHERE contact_id = '$select_contact_id' LIMIT 1";
 	$result_contact = mysql_query($sql_contact, $conn);
 	$array_contact = mysql_fetch_array($result_contact);
 	
@@ -35,6 +35,9 @@
 	$contact_phone = $array_contact['contact_telephone'];
 	$contact_fax = $array_contact['contact_fax'];
 	$contact_include = $array_contact['contact_include'];
+	
+	$user_name_first = $array_contact['user_name_first'];
+	$user_name_second = $array_contact['user_name_second'];
 	
 	$contact_added_date = "Added ".date("jS M y",$contact_added);
 	
@@ -72,57 +75,57 @@
 			print "<a href=\"vcard.php?contact_id=$contact_id\" class=\"menu_tab\">VCard</a></p>";
 			
 			$contact_name = $contact_namefirst." ".$contact_namesecond;
-			if ($contact_title != '0') { $contact_name = $contact_name . ", $contact_title"; }
+			if ($contact_title) { $contact_name = $contact_name . ", $contact_title"; }
 			if ($contact_department != NULL) { $contact_name = $contact_name." (".$contact_department.")"; }
 			
 			$label_address = urlencode($contact_name)."|".urlencode($contact_address)."|".urlencode($contact_city)."|".urlencode($contact_county)."|".urlencode($contact_postcode)."|".urlencode($contact_country);
-	print "<fieldset><legend>".$contact_name;
+	echo "<fieldset><legend>".$contact_name;
 
 	
 	if ($contact_address != NULL) { echo "&nbsp;<a href=\"http://labelstudio.redcitrus.com/?address=$label_address\"><img src=\"images/button_pdf.png\" alt=\"Address Labels\" /></a>"; }
 	echo "</legend>";
 	
 		  // Begin setting out the table
-		  print "<table>"; 	
+		  echo "<table>"; 	
 		  
 		  // Email address
-		  print "<tr><td style=\"width: 20px;\" class=\"color\">E</td><td class=\"color\">";
-		  if ($contact_email != NULL) { print "<a href=\"mailto:$contact_email\">$contact_email</a>"; } else { print "--"; }
-		  print "</td>";
+		  echo "<tr><td style=\"width: 20px;\" class=\"color\">E</td><td class=\"color\">";
+		  if ($contact_email != NULL) { echo "<a href=\"mailto:$contact_email\">$contact_email</a>"; } else { echo "--"; }
+		  echo "</td>";
 		  
-		  print "<td rowspan=\"4\" style=\"width: 20px;\">A</td>";
+		  echo "<td rowspan=\"4\" style=\"width: 20px;\">A</td>";
 	
-		  print "<td rowspan=\"4\" style=\"width: 55%;\" class=\"color\">";
+		  echo "<td rowspan=\"4\" style=\"width: 55%;\" class=\"color\">";
 
 			$checkaddress = 0;
           	if ($contact_postcode != NULL) { $postcode = PostcodeFinder($contact_postcode); $checkaddress = 1; }
 		  	if ($contact_address != NULL) { print nl2br($contact_address); $checkaddress = 1;  }
-			if ($contact_city != NULL) { print "<br />".$contact_city; $checkaddress = 1;  }
-			if ($contact_county != NULL) { print "<br />".$contact_county; $checkaddress = 1;  }
-			if ($contact_postcode != NULL) { print "<br /><a href=\"$postcode\">".$contact_postcode."</a>"; $checkaddress = 1;  }
+			if ($contact_city != NULL) { echo "<br />".$contact_city; $checkaddress = 1;  }
+			if ($contact_county != NULL) { echo "<br />".$contact_county; $checkaddress = 1;  }
+			if ($contact_postcode != NULL) { echo "<br /><a href=\"$postcode\">".$contact_postcode."</a>"; $checkaddress = 1;  }
 			
 			if ($checkaddress == 0) { echo "--"; } else { $checkaddress = 0; }
 	
-			print "</td></tr>";
+			echo "</td></tr>";
 			
 			// Print the Phone Number
-			print "<tr><td class=\"color\">T</td><td class=\"color\">";
-			if ($contact_telephone != NULL) { print $contact_telephone."&nbsp; [direct]"; } else if ($contact_telephone_home != NULL) { print $contact_telephone_home."&nbsp; [home]"; } else { print "--"; }
-			print "</td></tr>";
+			echo "<tr><td class=\"color\">T</td><td class=\"color\">";
+			if ($contact_telephone != NULL) { print $contact_telephone."&nbsp; [direct]"; } else if ($contact_telephone_home != NULL) { print $contact_telephone_home."&nbsp; [home]"; } else { echo "--"; }
+			echo "</td></tr>";
 
-			print "<tr><td class=\"color\">F</td><td class=\"color\">";
-			if ($contact_fax != NULL) { print $contact_fax; } else { print "--"; }
-			print "</td></tr>";
+			echo "<tr><td class=\"color\">F</td><td class=\"color\">";
+			if ($contact_fax != NULL) { print $contact_fax; } else { echo "--"; }
+			echo "</td></tr>";
 
-			print "<tr><td class=\"color\">M</td><td class=\"color\">";
-			if ($contact_mobile != NULL) { print $contact_mobile; } else { print "--"; }
-			print "</td></tr>";
+			echo "<tr><td class=\"color\">M</td><td class=\"color\">";
+			if ($contact_mobile != NULL) { print $contact_mobile; } else { echo "--"; }
+			echo "</td></tr>";
 			
 			if ($contact_include > 0) { $marketing = ".&nbsp;This person is listed as a marketing contact."; } else { unset($marketing); }
 			
-			print "<tr><td colspan=\"4\">Contact added: <a href=\"index2.php?page=datebook_view_day&amp;time=$contact_added\">".date("j M y", $contact_added)."</a>$marketing</td></tr>";
+			echo "<tr><td colspan=\"4\"><span class=\"minitext\">Contact added: <a href=\"index2.php?page=datebook_view_day&amp;time=$contact_added\">".date("j M Y", $contact_added)."</a> by $user_name_first $user_name_second $marketing</span></td></tr>";
 		
-			print "</table>";
+			echo "</table>";
 			echo "</fieldset>";
 	
 	
@@ -152,22 +155,22 @@ if ($contact_company > 0) {
 
 	
 			$label_address = urlencode($contact_name)."|".urlencode($company_name)."|".urlencode($company_address)."|".urlencode($company_city)."|".urlencode($company_county)."|".urlencode($company_postcode)."|".urlencode($company_country);
-	print "<fieldset><legend><a href=\"index2.php?page=contacts_company_view&amp;company_id=$contact_company\">$company_name</a>";
+	echo "<fieldset><legend><a href=\"index2.php?page=contacts_company_view&amp;company_id=$contact_company\">$company_name</a>";
 	
 	if ($company_address != NULL) { echo "&nbsp;<a href=\"http://labelstudio.redcitrus.com/?address=$label_address\"><img src=\"images/button_pdf.png\" alt=\"Address Labels\" /></a>"; }
 	echo "</legend>";
 	
 		  // Begin setting out the table
-		  print "<table width=\"100%\" cellpadding=\"2\">"; 	
+		  echo "<table width=\"100%\" cellpadding=\"2\">"; 	
 		  
 		  // Email address
-		  print "<tr><td style=\"width: 20px;\" class=\"color\">W</td><td class=\"color\">";
-		  if ($company_web != NULL) { print "<a href=\"http://$company_web\">$company_web</a>"; } else { print "--"; }
-		  print "</td>";
+		  echo "<tr><td style=\"width: 20px;\" class=\"color\">W</td><td class=\"color\">";
+		  if ($company_web != NULL) { echo "<a href=\"http://$company_web\">$company_web</a>"; } else { echo "--"; }
+		  echo "</td>";
 		  
-		  print "<td rowspan=\"3\" style=\"width: 20px;\">A</td>";
+		  echo "<td rowspan=\"3\" style=\"width: 20px;\">A</td>";
 	
-		  print "<td rowspan=\"3\" style=\"width: 55%;\" class=\"color\">";
+		  echo "<td rowspan=\"3\" style=\"width: 55%;\" class=\"color\">";
 		  
 		  $print_address = NULL;
 		  
@@ -176,20 +179,20 @@ if ($contact_company > 0) {
 			if ($company_city != NULL) { $print_address = $print_address . "<br />".$company_city; }
 			if ($company_county != NULL) { $print_address = $print_address . "<br />".$company_county; }
 			echo $print_address;
-			if ($company_postcode != NULL) { print "<br /><a href=\"$postcode\">".$company_postcode."</a>"; }
+			if ($company_postcode != NULL) { echo "<br /><a href=\"$postcode\">".$company_postcode."</a>"; }
 	
-			print "</td></tr>";
+			echo "</td></tr>";
 			
 			// Print the Phone Number
-			print "<tr><td class=\"color\">T</td><td class=\"color\">";
-			if ($company_phone != NULL) { print $company_phone; } else { print "--"; }
-			print "</td></tr>";
+			echo "<tr><td class=\"color\">T</td><td class=\"color\">";
+			if ($company_phone != NULL) { print $company_phone; } else { echo "--"; }
+			echo "</td></tr>";
 
-			print "<tr><td class=\"color\">F</td><td class=\"color\">";
-			if ($company_fax != NULL) { print $company_fax; } else { print "--"; }
-			print "</td></tr>";
+			echo "<tr><td class=\"color\">F</td><td class=\"color\">";
+			if ($company_fax != NULL) { print $company_fax; } else { echo "--"; }
+			echo "</td></tr>";
 		
-			print "</table>";
+			echo "</table>";
 			
 			echo "</fieldset>";
 	
@@ -300,9 +303,19 @@ if ($contact_company > 0) {
 	
 	echo "<textarea id=\"address\" onClick=\"SelectAll('address')\" style=\"width: 50%; height: 100px;\">";
 	
-	if ($contact_namefirst && $contact_namesecond) { echo $contact_namefirst . " " . $contact_namesecond . "\n"; }
-	if ($company_name) { echo $company_name . "\n"; }	
-	echo str_replace ("<br />" , "\n" , $print_address) . "\n";
+	if ($contact_namefirst && $contact_namesecond) { echo $contact_namefirst . " " . $contact_namesecond; }
+	if ($company_name) { echo "\n" . $company_name; }
+	
+	echo "\n";
+
+	$print_address  = preg_replace( "/\r|\n/", "<br />", $print_address );
+
+	$address_array = explode ("<br />",$print_address);
+	
+	foreach ($address_array AS $address_line) {
+		if (strlen ( $address_line ) > 1 ) { echo $address_line . "\n"; }
+	}
+	
 	if ($company_postcode) { echo $company_postcode; } elseif ($contact_postcode) { echo $contact_postcode; }
 	
 	echo "</textarea>";
@@ -311,8 +324,6 @@ if ($contact_company > 0) {
 	echo "</fieldset>";
 	
 	// List any drawing issues to this contact
-	
-	//$sql_drawing = "SELECT * FROM intranet_drawings_issued, intranet_drawings_issued_set LEFT JOIN intranet_projects ON proj_id = set_project WHERE issue_contact = $contact_id AND issue_set = set_id ORDER BY set_date DESC";
 	
 	$sql_drawing = "SELECT * FROM intranet_drawings_issued_set, intranet_projects, intranet_drawings_issued LEFT JOIN contacts_companylist ON company_id = issue_company WHERE proj_id = set_project AND issue_contact = $contact_id AND issue_set = set_id ORDER BY set_date DESC";
 	

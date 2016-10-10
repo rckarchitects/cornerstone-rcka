@@ -1,7 +1,7 @@
 <?php
 
-			function ProjActive($input,$input2) {
-			if ($input != "1") { $output = "<del>$input2</del>"; } else { $output = $input2; }
+			function ProjActive($input,$input2,$proj_id) {
+			if ($input != "1") { $output = "<del><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$input2</a></del>"; } else { $output = "<a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$input2</a>"; }
 			return $output;
 			}
 			
@@ -37,7 +37,7 @@
 					$user_cost = $user_percent * $cost_remaining_all;
 					$hours_remaining_user = round ( $user_cost / $user_user_rate );
 					
-					$cost_percentage = $ts_cost_factored_all / ( $ts_fee_value / $ts_fee_target);
+							$cost_percentage = $ts_cost_factored_all / ( $ts_fee_value / $ts_fee_target);
 					
 					$cost_percentage_cost = $ts_cost_factored_all / $ts_fee_value;
 
@@ -85,7 +85,7 @@ if ($_GET[listorder] != NULL) { $listorder = $_GET[listorder];}
 
 $active = CleanUp($_GET[active]);
 if ($active == "0") { $project_active = " AND proj_active = 0";
-} elseif ($active == "all") { $project_active = " AND proj_fee_track = 1 ";
+} elseif ($active == "all") { unset($project_active);
 } else { $project_active = " AND proj_active = 1 "; }
 
 
@@ -190,7 +190,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		$sql_task = "SELECT tasklist_id FROM intranet_tasklist WHERE tasklist_project = $proj_id AND tasklist_person = $user_id_current AND tasklist_percentage < 100 ORDER BY tasklist_due DESC";
 		$result_task = mysql_query($sql_task, $conn) or die(mysql_error());
 		$project_tasks_due = mysql_num_rows($result_task);
-		if ( $project_tasks_due > 0) { $alert_task = "style=\"font-weight: bold;\""; $add_task = "<br /><span class=\"minitext\"><a href=\"index2.php?page=tasklist_project&amp;proj_id=$proj_id&amp;show=user\">You have $project_tasks_due pending task(s) for this project</a></span>"; } else { $alert_task = NULL; $add_task = NULL; }
+		if ( $project_tasks_due > 0) { $add_task = "<br /><span class=\"minitext\"><a href=\"index2.php?page=tasklist_project&amp;proj_id=$proj_id&amp;show=user\">You have $project_tasks_due pending task(s) for this project</a></span>"; } else { $add_task = NULL; }
 		
 		if ($ts_fee_text != NULL) { $current_stage = $ts_fee_text; } elseif ($proj_fee_type == NULL) { $current_stage = "--"; } elseif ($riba_id == NULL) { $current_stage = "Prospect"; } else { $current_stage = $riba_letter." - ".$riba_desc; }
 		
@@ -203,7 +203,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 								if ($array_projectcheck[1]!= NULL) { $row_color = "background-color: " . $array_projectcheck[1] . ";"; } else { unset($row_color); } 
 								if ($array_projectcheck[0]!= NULL) { $row_text = "<br />" . $array_projectcheck[0]; } else { unset($row_text); } 
 
-											echo "<tr><td $row_color_style><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">".ProjActive($proj_active,$proj_num)."</a>";
+											echo "<tr><td $row_color_style><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">".ProjActive($proj_active,$proj_num,$proj_id)."</a>";
 											
 											
 
@@ -213,7 +213,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 											echo "<a href=\"index2.php?page=project_edit&amp;proj_id=$proj_id&amp;status=edit\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a>&nbsp;";
 											}
 
-											echo "</td><td $alert_task $row_color_style >".ProjActive($proj_active,$proj_name).$add_task . "</td>";
+											echo "</td><td $alert_task $row_color_style >".ProjActive($proj_active,$proj_name,$proj_id).$add_task . "</td>";
 											
 											if ($_GET[active] == "current") { echo "<td><span class=\"minitext\">" . $proj_desc . "</span></td>"; }
 											

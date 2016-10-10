@@ -6,7 +6,7 @@ unset($alertmessage);
 
 		$answer_id = CleanNumber($_POST[answer_id]);
 		$answer_words = CleanNumber($_POST[answer_words]);
-		$answer_question = $_POST[answer_question];
+		$answer_question = addslashes ( $_POST[answer_question] );
 		$answer_ref = CleanUp($_POST[answer_ref]);
 		$answer_tender_id = CleanNumber($_POST[answer_tender_id]);
 		$answer_weighting = CleanUp($_POST[answer_weighting]);

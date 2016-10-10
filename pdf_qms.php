@@ -2,6 +2,8 @@
 
 include "inc_files/inc_checkcookie.php";
 
+include_once "secure/prefs.php";
+
 //  Use FDPI to get the template
 
 define('FPDF_FONTPATH','fpdf/font/');
@@ -239,14 +241,11 @@ $sql = "SELECT * FROM intranet_qms $s1 $s2 ORDER BY qms_toc1, qms_toc2, qms_toc3
 					
 }
 
-	
-
-
 
 
 // and send to output
 
-$file_name = $proj_num."_".Date("Y",$blog_date)."-".Date("m",$blog_date)."-".Date("d",$blog_date)."_".$blog_type.".pdf";
+$file_name = $pref_practice . "_QMS_".Date("Y",time())."-".Date("m",time())."-".Date("d",time()).".pdf";
 
 $pdf->Output($file_name,I);
 

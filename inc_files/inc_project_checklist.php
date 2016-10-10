@@ -95,6 +95,7 @@ if (mysql_num_rows($result_checklist) > 0) {
 	$checklist_link	= $array_checklist['checklist_link'];
 	$checklist_item	= $array_checklist['checklist_item'];
 	$checklist_timestamp = time();
+	$checklist_deadline = $array_checklist['checklist_deadline'];
 	//$checklist_project = $proj_id;
 	
 	if ($item_group != $group) { echo "<tr><td colspan=\"7\"><strong>$item_group</strong></td></tr>"; }
@@ -104,9 +105,16 @@ if (mysql_num_rows($result_checklist) > 0) {
 		elseif ($checklist_required == 2 && ( $checklist_date != "0000-00-00" OR $checklist_date != NULL ) ) { $bg =  "style=\"background: rgba(0,255,0,0.4); \""; } // green
 		elseif ($checklist_required == 1) { $bg =  "style=\"background: rgba(200,200,200, 0.4); \""; } // grey
 		else { $bg =  "style=\"background: rgba(255,220,0, 0.4); \""; } // grey
+		
+		
+		
+		
+		if ($checklist_deadline != "0000-00-00" && $checklist_deadline != NULL) {
+			$checklist_date = $checklist_date . "<br /><span class=\"minitext\">Deadline: $checklist_deadline</span>";
+		}
 	
 	
-	echo "<tr><td $bg>";
+	echo "<tr id=\"$item_id\"><td $bg>";
 	//if ($item_name_current != $item_name) { 
 	
 	echo $item_name;

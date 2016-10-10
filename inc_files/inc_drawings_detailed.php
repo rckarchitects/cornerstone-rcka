@@ -114,13 +114,19 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		
 		//$sql_issued = "SELECT * FROM intranet_drawings_issued, intranet_drawings_issued_set, intranet_drawings LEFT JOIN intranet_drawings_revision ON revision_drawing = drawing_id WHERE issue_drawing = $drawing_id AND set_id = issue_set AND drawing_id = issue_drawing ORDER BY set_date DESC";
 		
-		$sql_issued = "SELECT * FROM intranet_drawings_issued_set, intranet_drawings, intranet_drawings_issued LEFT JOIN intranet_drawings_revision ON revision_id = issue_revision WHERE drawing_id = $drawing_id AND set_id = issue_set AND drawing_id = issue_drawing GROUP BY set_id ORDER BY set_date DESC";
+		$sql_issued = "SELECT * FROM intranet_drawings_issued_set, intranet_drawings, intranet_drawings_issued LEFT JOIN intranet_drawings_revision ON revision_id = issue_revision WHERE drawing_id = $drawing_id AND set_id = issue_set AND drawing_id = issue_drawing GROUP BY set_id ORDER BY set_date DESC, issue_revision DESC, set_id DESC";
 		
 		$result_issued = mysql_query($sql_issued, $conn) or die(mysql_error());
 		
-		echo "<table>";
+		echo "<h2>Drawing Issues</h2>";
 		
-			if (mysql_num_rows($result_issued) > 0) { echo "<h2>Drawing Issues</h2>"; }
+		
+		
+		if (mysql_num_rows($result_issued) > 0) {
+			
+			echo "<table>";
+			
+			echo "<tr><th>Issue Date</th><th>Issue Set</th><th>Revision</th><th colspan=\"2\">Issue Status</th></tr>";
 			
 			while ($array_issued = mysql_fetch_array($result_issued)) {
 			
@@ -128,17 +134,51 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 				$revision_letter = strtoupper($array_issued['revision_letter']);
 				$issue_set = $array_issued['issue_set'];
 				$set_reason = $array_issued['set_reason'];
+				$set_id = $array_issued['set_id'];
 				
 				if ($revision_letter == NULL) { $revision_letter = "-"; }
 				
-					echo "<tr><td>$revision_letter</td><td><a href=\"index2.php?page=datebook_view_day&amp;time=$set_date\">" . TimeFormat($set_date) . "</a></td><td><a href=\"index2.php?page=drawings_issue_list&amp;set_id=$issue_set&amp;proj_id=$proj_id\">$set_reason</a></td><td style=\"width: 20px;\">&nbsp;<a href=\"pdf_drawing_issue.php?issue_set=$issue_set&amp;proj_id=$proj_id\"><img src=\"images/button_pdf.png\" alt=\"PDF drawing issue sheet\" /></a></td></tr>";
+					echo "<tr><td><a href=\"index2.php?page=datebook_view_day&amp;time=$set_date\">" . TimeFormat($set_date) . "</a></td><td><a href=\"index2.php?page=drawings_issue_list&amp;set_id=$issue_set&amp;proj_id=$proj_id\">$set_id</a></td><td>$revision_letter</td><td><a href=\"index2.php?page=drawings_issue_list&amp;set_id=$issue_set&amp;proj_id=$proj_id\">$set_reason</a></td><td style=\"width: 20px;\">&nbsp;<a href=\"pdf_drawing_issue.php?issue_set=$issue_set&amp;proj_id=$proj_id\"><img src=\"images/button_pdf.png\" alt=\"PDF drawing issue sheet\" /></a></td></tr>";
 			
 					}
+					
+			echo "</table>";
 			
-		echo "</table>";
+		} else { echo "<p>This drawing has not been issued.</p>"; }  
+			
 		
 		
 		
+				// Drawing issue history
+				
+				
+				/* $sql_history = "SELECT * FROM intranet_drawings_issued_set, intranet_user_details, intranet_drawings_issued LEFT JOIN intranet_drawings_revision ON revision_id = issue_revision WHERE issue_set = set_id AND user_id = set_user AND issue_drawing = $_GET[drawing_id] ORDER BY set_date DESC";
+				$result_history = mysql_query($sql_history, $conn) or die(mysql_error());
+			
+				echo "<h2>Issue History</h2>";
+				
+				if (mysql_num_rows($result_history) > 0) {
+					
+					
+						
+						
+						echo "<table desc=\"Issue history for drawing $drawing_number\"><tr><th>Date</th><th>Revision</th><th>Reason</th><th>Issued by</th></tr>";
+						
+						
+				
+						while ($array_history = mysql_fetch_array($result_history)) {
+							
+							if ( $array_history['revision_id'] > 0) { $revision_letter = strtoupper ($array_history['revision_letter'] ); } else { $revision_letter = "-"; }
+							
+							echo "<tr><td>" . TimeFormat($array_history['set_date']) . "</td><td>" . $revision_letter . "</td><td><a href=\"index2.php?page=drawings_issue_list&amp;set_id=" . $array_history['set_id'] . "&amp;proj_id=" . $array_history['issue_project'] . "\">" . $array_history['set_reason'] . "</a></td><td>" . $array_history['user_initials'] . "</td></tr>";
+							
+						}
+					
+						
+						echo "</table>";
+				
+				
+				} else { echo "<p>This drawing has not been issued.</p>"; } */
 		
 		
 

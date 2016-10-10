@@ -52,15 +52,20 @@ echo "<option value=\"12\">December</option>";
 echo "</select>";
 echo "&nbsp;";
 echo "<select name=\"submit_year\" class=\"inputbox\">";
-echo "<option value=\"2004\">2004</option>";
-echo "<option value=\"2005\">2005</option>";
-echo "<option value=\"2006\">2006</option>";
-echo "<option value=\"2006\">2007</option>";
-echo "<option value=\"2006\">2008</option>";
-echo "<option value=\"2006\">2009</option>";
-echo "<option value=\"2006\">2010</option>";
-echo "</select>";
-echo "</p>";
+
+$sql_select_year = "SELECT ts_year FROM intranet_timesheet ORDER BY ts_year LIMIT 1";
+$result_select_year = mysql_query($sql_select_year, $conn) or die(mysql_error());
+$array_select_year = mysql_fetch_array($result_select_year);
+$year_start = $array_select_year['ts_year'];
+
+while ($year_start <= date("Y",time())) {
+	
+	echo "<option value=\"$year_start\">$year_start</option>";
+	$year_start++;
+	
+}
+
+echo "</select></p>";
 echo "<p>";
 echo "<input type=\"submit\" value=\"Go\" class=\"inputsubmit\" />";
 echo "</p>";

@@ -144,14 +144,22 @@ unset($alertmessage);
 		
 		if ($ts_fee_proj_change != $ts_fee_project && $ts_fee_id > 0) {
 			
-			$sql_fee_update = "UPDATE intranet_timesheet_fees SET ts_fee_project = $ts_fee_proj_change, ts_fee_pre = NULL WHERE ts_fee_project = $ts_fee_project AND ts_fee_id = $ts_fee_id LIMIT 1";
-			echo "<p>$sql_fee_update</p>";
+			//THIS ISN'T WORKING
 			
-			$sql_fee_update_link = "UPDATE intranet_timesheet_fees SET ts_fee_pre = NULL WHERE ts_fee_project = $ts_fee_project AND ts_fee_lag = $ts_fee_id LIMIT 1";
-			echo "<p>$sql_fee_update_link</p>";
+			$sql_fee_update = "UPDATE intranet_timesheet_fees SET ts_fee_project = $ts_fee_proj_change, ts_fee_pre = NULL, ts_fee_pre_lag = 0 WHERE ts_fee_project = $ts_fee_project AND ts_fee_id = $ts_fee_id LIMIT 1";
+			$result_fee_update = mysql_query($sql_fee_update, $conn) or die(mysql_error());
+			$updated_rows = mysql_affected_rows();
+			//echo "<p>$sql_fee_update<br />$updated_rows affected rows</p>";
+			
+			$sql_fee_update_link = "UPDATE intranet_timesheet_fees SET ts_fee_pre = NULL, ts_fee_pre_lag = 0 WHERE ts_fee_project = $ts_fee_project AND ts_fee_pre = $ts_fee_id";
+			$result_fee_update_link = mysql_query($sql_fee_update_link, $conn) or die(mysql_error());
+			$updated_rows = mysql_affected_rows();
+			//echo "<p>$sql_fee_update_link<br />$updated_rows affected rows</p>";
 			
 			$sql_timesheet_update = "UPDATE intranet_timesheet SET ts_project = $ts_fee_proj_change WHERE ts_project = $ts_fee_project AND ts_stage_fee = $ts_fee_id";
-			echo "<p>$sql_timesheet_update</p>";
+			$result_timesheet_update = mysql_query($sql_timesheet_update, $conn) or die(mysql_error());
+			$updated_rows = mysql_affected_rows();
+			//echo "<p>$sql_timesheet_update<br />$updated_rows affected rows</p>";
 			
 			
 		}
