@@ -16,6 +16,7 @@ if ($tasks_overdue > 0 AND substr($_GET[page],0,8) != "tasklist") {
 	
 	$outstanding = 1;
 	$outstanding_tasks =  "<p class=\"body\">You have ".$tasks_overdue." ".$tasks_plural." outstanding. <a href=\"index2.php?page=tasklist_view&amp;subcat=user\">Click here</a> to view current task list.</p>";
+	
 }
 
 
@@ -39,7 +40,7 @@ if ($user_usertype_current > 3) {
 
 // Check if there are any upcoming tenders (within 4 weeks) (if the user has the correct credentials)
 
-$weeks = 3;
+$weeks = 2;
 $seconds = 60 * 60 * 24 * 7 * $weeks;
 
 if ($user_usertype_current > 2 AND substr($_GET[page],0,6) != "tender") {
@@ -49,9 +50,11 @@ if ($user_usertype_current > 2 AND substr($_GET[page],0,6) != "tender") {
 				$result6 = mysql_query($sql6, $conn) or die(mysql_error());
 				$tenders_soon = mysql_num_rows($result6);
 				
+				if ($tenders_soon > 1) { $tenders_soon = $tenders_soon . " tenders "; } else { $tenders_soon = $tenders_soon . " tender "; }
+				
 			if (mysql_num_rows($result6) > 0) {
 					
-				$outstanding_tender = "<p>The following tenders are due within the next $weeks weeks:</p><table summary=\"List of upcoming tenders\">";
+				$outstanding_tender = "<p>$tenders_soon due within the next $weeks weeks:</p><p>";
 
 				while ($array6 = mysql_fetch_array($result6)) {
 					$tender_id = $array6['tender_id'];
@@ -59,10 +62,10 @@ if ($user_usertype_current > 2 AND substr($_GET[page],0,6) != "tender") {
 					$tender_date = $array6['tender_date'];
 					$days_to_go = ($tender_date - $nowtime) / 86400;
 					$days_to_go = round($days_to_go);
-					$outstanding_tender = $outstanding_tender . "<tr><td><a href=\"index2.php?page=tender_view&amp;tender_id=$tender_id\">$tender_name</a></td><td>".TimeFormatDetailed($tender_date)."&nbsp;(".$days_to_go."&nbsp;days to go)</td></tr>";
+					$outstanding_tender = $outstanding_tender . "<p><a href=\"index2.php?page=tender_view&amp;tender_id=$tender_id\">$tender_name</a><i> ".TimeFormatDetailed($tender_date)."&nbsp;(".$days_to_go."&nbsp;days to go)</i></p>";
 
 				}				
-				$outstanding_tender = $outstanding_tender . "</table>";
+				$outstanding_tender = $outstanding_tender . "</p>";
 				$outstanding = 1;		
 			}
 
@@ -70,17 +73,18 @@ if ($user_usertype_current > 2 AND substr($_GET[page],0,6) != "tender") {
 
 if ($outstanding != NULL) {
 
-	print "<h1 class=\"heading_alert\">Outstanding Items</h1>";
+	if ($outstanding_tasks) { $timesheetaction = $timesheetaction . "<div class=\"warning\"><p><strong>Outstanding Tasks</strong></p>" . $outstanding_tasks . "</div>"; }
 	
-	echo $outstanding_tasks;
+	if ($outstanding_expenses) { $timesheetaction = $timesheetaction . "<div class=\"warning\"><p><strong>Outstanding Expenses</strong></p>" . $outstanding_expenses . "</div>"; }
 	
-	echo $outstanding_expenses;
-
-	echo $outstanding_tender;
+	if ($outstanding_tender) { $timesheetaction = $timesheetaction . "<div class=\"warning\"><p><strong>Outstanding Tenders</strong></p>" . $outstanding_tender . "</div>"; }
+	
+	$hidetime = time() + 86400;
+	$timesheetaction = $timesheetaction . "<div style=\"float: left;\"><form action=\"index2.php\" method=\"post\"><input type=\"image\" src=\"images/button_close.png\" style=\"background: transparent;\" alt=\"Hide\" /><input type=\"hidden\" name=\"hidealerts\" value=\"$hidetime\" /></form></div>";
 	
 } else {
 
-unset($outsanding);
+	unset($outstanding);
 
 }
 	

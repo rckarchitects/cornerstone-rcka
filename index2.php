@@ -17,21 +17,36 @@ $checkform_user = $_POST[checkform_user];
 
 include_once "secure/prefs.php";
 
+//Check for hiding the alerts box
+
+if ($_POST[hidealerts]) { setcookie("timesheethide",$_POST[hidealerts]); $hidealerts = "yes"; }
+
+// Check for details of any projects
+
+		
+		$proj_details = ProjectTitle();
+		$proj_id = $proj_details[0];
+		if ($proj_id) {
+			$proj_title = "<h1><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_details[1] $proj_details[2]</a></h1>";
+		} else {
+			unset($proj_title);
+		}
+
 // Check for any outstanding timesheets
 	
 		$timesheetcomplete = TimeSheetHours($_COOKIE[user],"");
 		
 		
-		if ( $_COOKIE[timesheetcomplete] < 75) { 
+		if ( $_COOKIE[timesheetcomplete] < 75) {
 		
-		$timesheetaction = "<h1 class=\"heading_alert\">Timesheets</h1><p>Your timesheets are only " . $timesheetcomplete . "% complete - <a href = \"popup_timesheet.php\">please fill them out</a>. If your timesheet drops below " . $settings_timesheetlimit . "% complete, you will not be able to access the intranet.<br / ><a href=\"index2.php?page=timesheet_incomplete_list\"><span class=\"minitext\">Click here for a list of incomplete days</span></a>.";
-		// echo "<a href=\"index2.php?page=timesheets_incomplete_list\">Click here</a> to view your incomplete days</a>";
-		echo "</p>"; 
+			$timesheetaction = $timesheetaction . "<div class=\"warning\"><p><strong>Timesheets</strong></p><p>Your timesheets are only " . $timesheetcomplete . "% complete - <a href = \"popup_timesheet.php\">please fill them out</a>. If your timesheet drops below " . $settings_timesheetlimit . "% complete, you will not be able to access the intranet.</p></div>";
 		
 		}
 		
+	
 		
-		// if ($timesheet_percentage_complete < $settings_timesheetlimit) { header("Location: popup_timesheet.php"); }
+		
+	//if ($timesheet_percentage_complete < $settings_timesheetlimit) { header("Location: popup_timesheet.php"); }
 
 // Check for any outstanding telephone messages
 	
@@ -72,48 +87,7 @@ include_once "secure/prefs.php";
 			$invoiceduemessage = $invoiceduemessage . "</table>";
 		}
 		
-// Check for any upcoming holidays
 
-$nowtime = time() - 43200;
-
-		$sql5 = "SELECT user_id, user_name_first, user_name_second, holiday_date, holiday_timestamp, holiday_paid, holiday_length, holiday_approved FROM intranet_user_details, intranet_user_holidays WHERE holiday_user = user_id AND holiday_timestamp BETWEEN $nowtime AND " . ($nowtime + (2 * 604800)) ." ORDER BY holiday_timestamp, user_name_second";
-		$result5 = mysql_query($sql5, $conn) or die(mysql_error());
-		if (mysql_num_rows($result5) > 0) {
-			$holidaymessage = "<p>The following people have holidays within the next fortnight:</p>";
-			$holidaymessage = $holidaymessage . "<p><ul class=\"button_left\">";
-			$current_date = 0;
-			while ($array5 = mysql_fetch_array($result5)) {
-			
-					if ($current_id != $user_id AND $current_id > 0) {
-						$holidaymessage = $holidaymessage . "</li>";
-					} 
-					
-					$user_id = $array5['user_id'];
-					$user_name_first = $array5['user_name_first'];
-					$user_name_second = $array5['user_name_second'];
-					$holiday_timestamp = $array5['holiday_timestamp'];
-					$holiday_length = $array5['holiday_length'];
-					$holiday_paid = $array5['holiday_paid'];
-					$holiday_date = $array5['holiday_date'];
-					$holiday_approved = $array5['holiday_approved'];
-					
-					$calendar_link = "index2.php?page=holiday_approval&amp;year=" . date("Y",$holiday_timestamp) . "#Week" . date("W", $holiday_timestamp);
-					
-					if ($holiday_approved == NULL) { $holiday_approved1 = "<span style=\"color: red;\">"; $holiday_approved2 = "</span>";  } else { unset($holiday_approved1); unset($holiday_approved2); }
-					if ($current_date != $holiday_date) {
-						$holidaymessage = $holidaymessage . "<li>" . TimeFormatDay($holiday_timestamp) . ": ";
-					} else { 
-						$holidaymessage = $holidaymessage . ", ";
-					}
-					
-					if ($holiday_length < 1) { $holiday_length = " (Half Day)"; } else { unset($holiday_length); }
-					
-					$holidaymessage = $holidaymessage . "<a href=\"$calendar_link\">" . $holiday_approved1 . $user_name_first . " " . $user_name_second . $holiday_length . $holiday_approved2 . "</a>"; ;
-					
-					$current_date = $holiday_date;
-			}
-			$holidaymessage = $holidaymessage . "</li></p></ul>";
-		}
 		
 		
 	// Check for any checklist deadlines today
@@ -150,30 +124,39 @@ include("inc_files/inc_header.php");
 
 // Display an alert box if there are telephone messages outstanding
 
-		if ($messages_outstanding > 0 AND $_GET[page] == NULL AND $phonemessageview < 2) { print "<body onload=\"PhoneMessageAlert()\">"; }
-		else { print "<body>"; }
+		if ($messages_outstanding > 0 AND $_GET[page] == NULL AND $phonemessageview < 2) { echo "<body onload=\"PhoneMessageAlert()\">"; }
+		else { echo "<body>"; }
 
 // Begin setting out the page
 
 $logo = "skins/" . $settings_style . "/images/logo.png";
 
-if (file_exists($logo)) {
-		print "<div id=\"maintitle\"><img src=\"$logo\" alt=\"$settings_name\" /></div>";
-} else {
-		print "<div id=\"maintitle\">$settings_name</div>";	
-}
+echo "<div id=\"maintitle\">";
 
-    print "<div id=\"mainpage\">";
+		echo "<a href=\"index2.php\" class=\"image\">";
+
+		if (file_exists($logo)) {
+				echo "<img src=\"$logo\" alt=\"$settings_name\" style=\"text-align: center;\" />";
+		} else {
+				echo $settings_name;
+		}
+
+		echo "</a>";
+
+echo "</div>";
+
+
+    echo "<div id=\"mainpage\">";
 
 // Column Left
 
-    print "<div id=\"column_left\">";
+    echo "<div id=\"column_left\">";
     include("inc_files/inc_col_left_1.php");
-    print "</div>";
+    echo "</div>";
 	
 // Column Right
 
-    print "<div id=\"column_right\">";
+    echo "<div id=\"column_right\">";
 	
 	// The following bit selects the appropriate right-hand column for the chosen page using the $_GET[page] variable, and defaults to the default version if  there is no page-specific menu
 	
@@ -188,41 +171,65 @@ if (file_exists($logo)) {
 	} else {
 	    include("inc_files/inc_col_right_1.php");
     }
-	print "</div>";
+	echo "</div>";
 	
 
     
 //Column Centre
 
-    print "<div id=\"column_centre\">";
+    echo "<div id=\"column_centre\">";
 	
 	$displaytime = time() + 30; //86400;
 	
-	if ($timesheetaction != NULL) { echo $timesheetaction; }
 	
 	if ($invoiceduemessage != "" AND $_GET[page] == NULL AND $_COOKIE[invoiceduemessage] == NULL AND $_POST[action] != "invoice_due_setcookie") { echo "<h1 class=\"heading_alert\">Invoices Overdue&nbsp;</h1>$invoiceduemessage<form action=\"index2.php\" method=\"post\"><input type=\"hidden\" value=\"".time()."\" name=\"invoiceduemessage\" /><input type=\"hidden\" name=\"action\" value=\"invoice_due_setcookie\" /><input type=\"submit\" value=\"Hide for 24 hours\" /></form>"; }
 	
-	if ($invoicemessage != "" AND $_GET[page] == NULL) { echo "<h1 class=\"heading_alert\">Invoices To Be Issued Today</h1>$invoicemessage"; }
+	if ($invoicemessage != "" AND $_GET[page] == NULL) { $timesheetaction = $timesheetaction . "<div class=\"warning\"><p><strong>Invoices To Be Issued Today</strong></p>$invoicemessage</div>"; }
 	
-	if ($holidaymessage != "" AND $_GET[page] == NULL) { echo "<h1 class=\"heading_alert\">Holidays</h1>$holidaymessage"; }
+	if ($checklist_today) { $timesheetaction = $timesheetaction . "<div class=\"warning\"><p><strong>Checklist Deadlines Today</strong></p>$checklist_today</div>"; }
 	
-	if ($checklist_today != NULL) { echo "<h1 class=\"heading_alert\">Checklist Deadlines Today</h1>$checklist_today"; }
+	if ($alertmessage) { $timesheetaction = $timesheetaction . "<div class=\"warning\"><p><strong>Error</strong></p><p>$alertmessage</p></div>"; }
 	
-	if ($alertmessage != "") { print "<h1 class=\"heading_alert\">Error</h1><p>$alertmessage</p>"; }
-	
-	if ($actionmessage != "") { print "<h1 class=\"heading_confirm\">Information</h1><p>$actionmessage</p>"; }
+	if ($actionmessage) { $timesheetaction = $timesheetaction . "<div class=\"warning\"><p><strong>Information</strong></p><p>$actionmessage</p></div>"; }
 	
 	
-	if ($techmessage != "" AND $settings_showtech == "1" AND $usertype_status == "admin") { print "<h1 class=\"heading_centre\">Support Messages</h1><p>$techmessage</p>"; }
+	if ($techmessage != "" AND $settings_showtech == "1" AND $usertype_status == "admin") { $timesheetaction = $timesheetaction . "<div class=\"warning\"><p><strong>Support Messages</strong></p><p>$techmessage</p></div>"; }
+	
+			// This includes the "outstanding" section, which alerts users to outstanding actions.
+	   if  ($alertmessage == NULL) { include("inc_files/inc_outstanding.php"); }
+	
+	
 
     if ($useraction == "defineuser") {
-    include("inc_files/inc_alertuser.php");
+		include("inc_files/inc_alertuser.php");
     }
+	
+	if (($timesheetaction && $_COOKIE[timesheethide] < time() && $hidealerts != "yes") ) { echo "<div>" . $timesheetaction . "</div>"; }
+	
+// Check for any upcoming holidays
+
+if ($_GET[page] == NULL) { 
+	
+	$today = TimeFormatDay(time());
+
+	echo "<h1>$today</h1>";
+
+	ListHolidays();
+	
+	
+	
+}
+
+
 
     if ($useraction != "defineuser") {
 	
-		// This includes the "outstanding" section, which alerts users to outstanding actions.
-	   if  ($alertmessage == NULL) { include("inc_files/inc_outstanding.php"); }
+	
+		// Add the project title, if there is one either through POST or GET
+		
+		if ($proj_title) { echo $proj_title; }
+	
+
 
 		// Include the relevant page if the $_GET[page] variable is not blank, otherwise deliver the default page
         if ($page_redirect != NULL) {
@@ -234,40 +241,38 @@ if (file_exists($logo)) {
         } else {
             $inc_file = "inc_files/inc_default.php";
         }
-	
-		
 		
 		if (file_exists($inc_file)) { include($inc_file); } else { include("inc_files/inc_default.php?$page_variables"); }
 		}
 	
-	// And now print some debugging information if the option is selected within the global options page
+	// And now echo some debugging information if the option is selected within the global options page
 	if ($settings_showtech > 0 AND $user_usertype_current > 3) {
-	if ($sql_add != "") { print "<p>Database entry:<br /><strong>$sql_add</strong></p>"; }
-	print "<h1>Technical Information</h1>";
-	print "<p>Included file:<br /><strong>&nbsp;".CleanUp($inc_file)."</strong></p>";
-	print "<p>Last Updated:<br /><strong>&nbsp;".date("r",filectime($inc_file))."</strong></p>";
-	print "<p>Server IP Address:<br /><strong>&nbsp;".CleanUp($_SERVER["SERVER_ADDR"])."</strong></p>";
-	print "<p>Server Name:<br /><strong>&nbsp;".CleanUp($_SERVER["SERVER_NAME"])."</strong></p>";
-	print "<p>Client IP Address:<br /><strong>&nbsp;".CleanUp($_SERVER["REMOTE_ADDR"])."</strong></p>";
-	print "<p>Script Name:<br /><strong>&nbsp;".CleanUp($_SERVER["SCRIPT_NAME"])."</strong></p>";
-	print "<p>Query String:<br /><strong>&nbsp;".CleanUp($_SERVER["QUERY_STRING"])."</strong></p>";
-	print "<p>PHP Version:<br /><strong>&nbsp;".phpversion ()."</strong></p>";
-	print "<p>Server Software:<br /><strong>&nbsp;".CleanUp($_SERVER["SERVER_SOFTWARE"])."</strong></p>";
-	if ($techmessage != NULL) { print "<p>$techmessage</p>"; }
+	if ($sql_add != "") { echo "<p>Database entry:<br /><strong>$sql_add</strong></p>"; }
+	echo "<h1>Technical Information</h1>";
+	echo "<p>Included file:<br /><strong>&nbsp;".CleanUp($inc_file)."</strong></p>";
+	echo "<p>Last Updated:<br /><strong>&nbsp;".date("r",filectime($inc_file))."</strong></p>";
+	echo "<p>Server IP Address:<br /><strong>&nbsp;".CleanUp($_SERVER["SERVER_ADDR"])."</strong></p>";
+	echo "<p>Server Name:<br /><strong>&nbsp;".CleanUp($_SERVER["SERVER_NAME"])."</strong></p>";
+	echo "<p>Client IP Address:<br /><strong>&nbsp;".CleanUp($_SERVER["REMOTE_ADDR"])."</strong></p>";
+	echo "<p>Script Name:<br /><strong>&nbsp;".CleanUp($_SERVER["SCRIPT_NAME"])."</strong></p>";
+	echo "<p>Query String:<br /><strong>&nbsp;".CleanUp($_SERVER["QUERY_STRING"])."</strong></p>";
+	echo "<p>PHP Version:<br /><strong>&nbsp;".phpversion ()."</strong></p>";
+	echo "<p>Server Software:<br /><strong>&nbsp;".CleanUp($_SERVER["SERVER_SOFTWARE"])."</strong></p>";
+	if ($techmessage != NULL) { echo "<p>$techmessage</p>"; }
 	}
 
-    print "</div>";
+    echo "</div>";
 	
-print "</div>";
+echo "</div>";
 
-print $alertscript;
+echo $alertscript;
 
 // Finish with the standard footer
 
-print "<div id=\"mainfooter\">powered by Cornerstone, version 0.1</div>";
+FooterBar();
 
-print "</body>";
-print "</html>";
+echo "</body>";
+echo "</html>";
 ?>
 
 

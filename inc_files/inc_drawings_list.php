@@ -1,30 +1,20 @@
 <?php
 
-if ($_GET[proj_id] != NULL) { $proj_id = CleanUp($_GET[proj_id]); } elseif ($_POST[proj_id] != NULL) { $proj_id = CleanUp($_POST[proj_id]); }
+if ($_GET[proj_id] != NULL) { $proj_id = intval($_GET[proj_id]); } elseif ($_POST[proj_id] != NULL) { $proj_id = intval($_POST[proj_id]); }
 
 
-
-$sql_project = "SELECT proj_num, proj_name FROM intranet_projects WHERE proj_id = $proj_id LIMIT 1";
-$result_project = mysql_query($sql_project, $conn) or die(mysql_error());
-$array_project = mysql_fetch_array($result_project);
-$proj_num = $array_project['proj_num'];
-$proj_name = $array_project['proj_name'];
-
-echo "<p class=\"submenu_bar\"><a href=\"pdf_drawing_list.php?proj_id=$proj_id\" class=\"submenu_bar\">Drawing Schedule&nbsp;<img src=\"images/button_pdf.png\" alt=\"Download drawing list as PDF\" /></a><a href=\"pdf_drawing_matrix.php?proj_id=$proj_id\" class=\"submenu_bar\">Drawing Matrix&nbsp;<img src=\"images/button_pdf.png\" alt=\"Download drawing matrix as PDF\" /></a></p>";
-
-print "<h2>Drawing List</h2>";
 
 if ($proj_id == NULL) {
 
-	echo"<p>No project selected.</p>";
+	echo"<h1>Error</h1><p>No project selected.</p>";
 
 } else {
 	
 	
+	echo "<h2>Drawing List</h2>";
 	
-	
-	
-	
+	echo "<p class=\"submenu_bar\"><a href=\"pdf_drawing_list.php?proj_id=$proj_id\" class=\"submenu_bar\">Drawing Schedule&nbsp;<img src=\"images/button_pdf.png\" alt=\"Download drawing list as PDF\" /></a><a href=\"pdf_drawing_matrix.php?proj_id=$proj_id\" class=\"submenu_bar\">Drawing Matrix&nbsp;<img src=\"images/button_pdf.png\" alt=\"Download drawing matrix as PDF\" /></a></p>";
+
 
 	
 	function ClassList($array_class_1,$array_class_2,$type) {
@@ -51,16 +41,15 @@ if ($proj_id == NULL) {
 	
 	$drawing_class = $_POST[drawing_class];
 	$drawing_type = $_POST[drawing_type];
-	echo "<form method=\"post\" action=\"index2.php?page=drawings_list&amp;proj_id=$proj_id&amp;drawing_class=$drawing_class&amp;drawing_type=$drawing_type\" >";
+	echo "<div><h3>Filter:</h3><form method=\"post\" action=\"index2.php?page=drawings_list&amp;proj_id=$proj_id&amp;drawing_class=$drawing_class&amp;drawing_type=$drawing_type\" >";
 	$array_class_1 = array("","SK","PL","TD","CN","CT","FD");
 	$array_class_2 = array("- All -","Sketch","Planning","Tender","Contract","Construction","Final Design");
-	echo "<p>Filter: ";
 	ClassList($array_class_1,$array_class_2,"drawing_class");
 	echo "&nbsp;";
 	$array_class_1 = array("","SV","ST","GA","AS","DE","DOC");
 	$array_class_2 = array("- All -","Survey","Site Location","General Arrangement","Assembly","Detail","Document");
 	ClassList($array_class_1,$array_class_2,"drawing_type");
-	echo "</p></form>";
+	echo "</form></div>";
 	
 	if ($drawing_class != NULL) { $drawing_class = " AND drawing_number LIKE '%-$drawing_class-%' "; } else { unset($drawing_class); }
 	if ($drawing_type != NULL) { $drawing_type = " AND drawing_number LIKE '%-$drawing_type-%' "; } else { unset($drawing_type); }
@@ -71,8 +60,8 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 
 		if (mysql_num_rows($result) > 0) {
 
-		print "<table summary=\"Lists all of the drawings for the project\">";
-		print "<tr><td><strong>Drawing Number</strong></td><td><strong>Title</strong></td><td><strong>Rev.</strong></td><td><strong>Scale</strong></td><td><strong>Paper</strong></td></tr>";
+		echo "<table summary=\"Lists all of the drawings for the project\">";
+		echo "<tr><td><strong>Drawing Number</strong></td><td><strong>Title</strong></td><td><strong>Rev.</strong></td><td><strong>Scale</strong></td><td><strong>Paper</strong></td></tr>";
 
 		while ($array = mysql_fetch_array($result)) {
 		$drawing_id = $array['drawing_id'];
@@ -94,23 +83,23 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		echo "<tr><td $background><a href=\"index2.php?page=drawings_detailed&amp;drawing_id=$drawing_id&proj_id=$proj_id\">$drawing_number</a>";
 		
 		if ($drawing_author == $_COOKIE[user] OR $user_usertype_current > 2) {
-			print "&nbsp;<a href=\"index2.php?page=drawings_edit&amp;drawing_id=$drawing_id&amp;proj_id=$proj_id&amp;drawing_edit=yes\"><img src=\"images/button_edit.png\" alt=\"Edit this drawing\" /></a>";
+			echo "&nbsp;<a href=\"index2.php?page=drawings_edit&amp;drawing_id=$drawing_id&amp;proj_id=$proj_id&amp;drawing_edit=yes\"><img src=\"images/button_edit.png\" alt=\"Edit this drawing\" /></a>";
 		}
 
-		print "</td><td $background>".nl2br($drawing_title)."</td><td $background>$revision_letter</td><td $background>$scale_desc</td><td $background>$paper_size</td>";
+		echo "</td><td $background>".nl2br($drawing_title)."</td><td $background>$revision_letter</td><td $background>$scale_desc</td><td $background>$paper_size</td>";
 
 
-		print "</tr>";
+		echo "</tr>";
 
 		}
 
-		print "</table>";
+		echo "</table>";
 		
 		
 
 		} else {
 
-		print "<p>No drawings found.</p>";
+		echo "<p>No drawings found.</p>";
 
 		}
 	

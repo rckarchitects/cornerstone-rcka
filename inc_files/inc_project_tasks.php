@@ -15,21 +15,11 @@ echo "<a href=\"index2.php?page=tasklist_project&amp;view=complete&amp;proj_id=$
 echo "</p>";
 
 if ($_GET[view] == "complete") {
-echo "<h2>Completed Tasks";
+echo "<h2>Completed Tasks</h2>";
 } else {
-echo "<h2>Outstanding Tasks";	
+echo "<h2>Outstanding Tasks</h2>";	
 }
 
-if ($proj_id != NULL) {
-$sql_proj = "SELECT proj_num, proj_name FROM intranet_projects WHERE proj_id = '$proj_id' LIMIT 1 ";
-$result_proj = mysql_query($sql_proj, $conn) or die(mysql_error());
-$array_proj = mysql_fetch_array($result_proj);
-$proj_num = $array_proj['proj_num'];
-$proj_name = $array_proj['proj_name'];
-echo " - ".$proj_num." ".$proj_name;
-}
-
-echo "</h2>";
 
 // Determine the date a week ago
 

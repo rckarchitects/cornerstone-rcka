@@ -21,9 +21,30 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		$proj_name = $array['proj_name'];
 		$drawing_author = $array['user_name_first']."&nbsp;".$array['user_name_second'];
 		
+				// Drawing issue menu
+					echo "<p class=\"submenu_bar\">";
+					echo "<a href=\"index2.php?page=drawings_list&amp;proj_id=$proj_id\" class=\"submenu_bar\"><< Drawing List</a>";
+					echo "<a href=\"index2.php?page=drawings_issue&proj_id=$proj_id\" class=\"submenu_bar\">Issue Drawings</a>";
+					echo "<a href=\"index2.php?page=drawings_revision_edit&amp;drawing_id=$drawing_id&amp;proj_id=$proj_id\" class=\"submenu_bar\">Add new revision</a>";
+					
+					// Allow this drawing to be deleted if it has not already been issued (in which case, it's too late)
+					
+					$sql_drawing_delete = "SELECT issue_id FROM intranet_drawings_issued WHERE issue_drawing = $drawing_id";
+					$result_drawing_delete = mysql_query($sql_drawing_delete, $conn) or die(mysql_error());
+					$drawing_issue_count = mysql_num_rows($result_drawing_delete);
+					if ($drawing_issue_count == 0) {
+					
+						echo "<a href=\"index2.php?page=drawings_list&amp;drawing_id=$drawing_id&amp;proj_id=$proj_id&amp;action=drawing_delete\" class=\"submenu_bar\"  onClick=\"javascript:return confirm('Are you sure you want to delete this drawing? Deleted drawings (and any revisions) will be permanently deleted and cannot be recovered. There are currently $drawing_count revisions of this drawing on the system.')\">Delete Drawing&nbsp;<img src=\"images/button_delete.png\" alt=\"Delete Drawing\" /></a>";
+					
+					}
+					
+					
+			echo "</p>";
 		
 		
-		echo "<h1>Drawing Details for $drawing_number</h1>";
+		
+		
+		echo "<h2>$drawing_number</h2>";
 
 		echo "<table summary=\"Lists the details for drawing $drawing_number\">";
 		
@@ -47,26 +68,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 
 		echo "</table>";
 		
-		// Drawing issue menu
-					echo "<p class=\"submenu_bar\">";
-					echo "<a href=\"index2.php?page=drawings_list&amp;proj_id=$proj_id\" class=\"submenu_bar\"><< Drawing List</a>";
-					echo "<a href=\"index2.php?page=drawings_issue&proj_id=$proj_id\" class=\"submenu_bar\">Issue Drawings</a>";
-					echo "<a href=\"index2.php?page=drawings_revision_edit&amp;drawing_id=$drawing_id&amp;proj_id=$proj_id\" class=\"submenu_bar\">Add new revision</a>";
-					
-					// Allow this drawing to be deleted if it has not already been issued (in which case, it's too late)
-					
-					$sql_drawing_delete = "SELECT issue_id FROM intranet_drawings_issued WHERE issue_drawing = $drawing_id";
-					$result_drawing_delete = mysql_query($sql_drawing_delete, $conn) or die(mysql_error());
-					$drawing_issue_count = mysql_num_rows($result_drawing_delete);
-					if ($drawing_issue_count == 0) {
-					
-						echo "<a href=\"index2.php?page=drawings_list&amp;drawing_id=$drawing_id&amp;proj_id=$proj_id&amp;action=drawing_delete\" class=\"submenu_bar\"  onClick=\"javascript:return confirm('Are you sure you want to delete this drawing? Deleted drawings (and any revisions) will be permanently deleted and cannot be recovered. There are currently $drawing_count revisions of this drawing on the system.')\">Delete Drawing&nbsp;<img src=\"images/button_delete.png\" alt=\"Delete Drawing\" /></a>";
-					
-					}
-					
-					
-			echo "</p>";
-		
+
 		
 		
 		echo "<h2>Revision History</h2>";
@@ -78,7 +80,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		if (mysql_num_rows($result_rev) > 0) {
 
 		echo "<table desc=\"Revision list for drawing $drawing_number\">
-<tr><td><strong>Rev.</strong></td><td><strong>Date</strong></td><td><strong>Description</strong></td><td><strong>Author</strong></td></tr>";
+<tr><th>Rev.</th><th>Date</th><th>Description</th><th>Author</th></tr>";
 		
 		while ($array_rev = mysql_fetch_array($result_rev)) {
 		$revision_id = $array_rev['revision_id'];

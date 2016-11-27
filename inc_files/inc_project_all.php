@@ -5,7 +5,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 
 $today = TimeFormat(time());
 
-print "<h1>$today</h1>";
+print "<h2>All Projects</h2>";
 
 // Add another menu if the project total is greater than 10
 
@@ -19,7 +19,7 @@ print "<h1>$today</h1>";
 			}
 		print "</p>";
 		
-		print "<h2>All Projects</h2>";
+		
 
 
 if (mysql_num_rows($result) > 0) {

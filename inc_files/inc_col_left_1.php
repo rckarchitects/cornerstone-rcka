@@ -1,136 +1,171 @@
 <?php
-include("inc_menu_settings.php");
 
-print "<h1 class=\"heading_side\">Contacts</h1>";
-print "<ul class=\"button_left\">";
-// print "<li><a href=\"index2.php?page=contacts_view\">View Contacts</a></li>";
-print "<li><span class=\"minitext\"><a href=\"index2.php?page=contacts_edit&amp;status=add\">[Add Contact]</a>&nbsp;<a href=\"index2.php?page=contacts_company_edit&amp;status=add\">[Add Company]</a><br /><a href=\"index2.php?page=contacts_discipline_list\">[List Disciplines]</a></span></li>";
 
-if ($user_usertype_current > 2) { 
-print "<li><span class=\"minitext\"><a href=\"index2.php?page=contacts_pdf_labels\">[Marketing Labels]</a></span></li>";
+echo "<div class=\"maintitle\"><a href=\"index2.php\" class=\"image\">";
+
+if (file_exists($logo)) {
+		echo "<img src=\"$logo\" alt=\"$settings_name\" style=\"text-align: center;\" />";
+} else {
+		echo $settings_name;
 }
 
-print "</ul>";
+echo "</a></div>";
 
-print "<h1 class=\"heading_side\">Datebook</h1>";
-print "<ul class=\"button_left\">";
-print "<li><a href=\"index2.php?page=datebook_view_day\">Today</a></li>";
-if ($_COOKIE[lastdayview] > 0) { print "<li><a href=\"index2.php?page=datebook_view_day&amp;time=$_COOKIE[lastdayview]\">".TimeFormat($_COOKIE[lastdayview])."</a></li>"; }
-print "</ul>";
+// Menu - System
+
+	$array_pages = array("index2.php","index2.php?page=admin_settings","backup.php","logout.php");
+	$array_title = array("Home","Configuration","Backup Database","Log Out");
+	$array_images = array("button_home.png","button_settings.png","button_save.png","button_logout.png");
+	$array_access = array(0,4,4,0);
+
+	SideMenu ("System", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
+	
+
+// Menu - Contacts
+
+if ($module_contacts == "1") {
+
+	$array_pages = array("index2.php?page=contacts_edit&amp;status=add","index2.php?page=contacts_company_edit&amp;status=add","index2.php?page=contacts_discipline_list","index2.php?page=contacts_pdf_labels");
+	$array_title = array("Add Contact","Add Company","List Disciplines","Marketing Labels");
+	$array_images = array("button_contact.png","button_contact.png","button_list.png","button_print.png");
+	$array_access = array(1,1,1,3);
+
+	SideMenu ("Contacts", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
+	
+}
+
+// Menu - Datebook
+
+	$array_pages = array("index2.php?page=datebook_view_day");
+	$array_title = array("Today");
+	$array_images = array("button_date.png");
+	$array_access = array(1);
+
+	SideMenu ("Datebook", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
+
+// Menu - Tasks
 
 if ($module_tasks == "1") {
-print "<h1 class=\"heading_side\">Task Management</h1>";
-print "<ul class=\"button_left\">";
-print "<li><a href=\"index2.php?page=tasklist_view\">View Tasks</a></li>";
-print "</ul>";
+
+	$array_pages = array("index2.php?page=tasklist_view");
+	$array_title = array("View My Tasks");
+	$array_images = array("button_list.png");
+	$array_access = array(1);
+
+	SideMenu ("Tasks", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
+
 }
+
+// Menu - Holidays
 
 if ($module_holidays == "1") {
-print "<h1 class=\"heading_side\">Holidays</h1>";
-print "<ul class=\"button_left\">";
-print "<li><a href=\"index2.php?page=holiday_request\">Holiday Request</a></li>";
-echo "<li><a href=\"index2.php?page=holiday_approval\">Holiday Calendar</a></li>";
-print "</ul>";
+	$array_pages = array("index2.php?page=holiday_request","index2.php?page=holiday_approval");
+	$array_title = array("Holiday Request","Holiday Calendar");
+	$array_images = array("button_calendar.png","button_calendar.png");
+	$array_access = array(1,1);
+
+	SideMenu ("Holidays", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 }
+
+// Menu - QMS
 
 if ($module_qms == "1") {
-print "<h1 class=\"heading_side\">Quality Management</h1>";
-print "<ul class=\"button_left\">";
-echo "<li><a href=\"index2.php?page=qms_view\">View QMS</a>&nbsp;<a href=\"pdf_qms.php\"><img src=\"images/button_pdf.png\" alt=\"PDF Version of QMS\" /></a></li>";
-if ($user_usertype_current > 2) { 
-	echo "<li><a href=\"index2.php?page=qms_edit\">Edit QMS</a></li>";
-}
-print "</ul>";
+
+	$array_pages = array("index2.php?page=qms_view","index2.php?page=qms_edit");
+	$array_title = array("View QMS","Edit QMS");
+	$array_images = array("button_list.png","button_edit.png");
+	$array_access = array(1,2);
+
+	SideMenu ("Quality Management", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
+	
 }
 
+// Menu - Timesheets
+
 if ($module_timesheets == "1") {
-print "<h1 class=\"heading_side\">Timesheets</h1>";
-print "<ul class=\"button_left\">";
-print "<li><a href=\"popup_timesheet.php\">Timesheets (Full Screen)</a></li>";
-if ($user_usertype_current > 3) { 
-print "<li><span class=\"minitext\"><a href=\"index2.php?page=timesheet_analysis\">Timesheet Analysis</a></span></li>";
-print "<li><span class=\"minitext\"><a href=\"pdf_timesheet_analysis.php\">Project Analysis (PDF)</a></span></li>";
-print "<li><span class=\"minitext\"><a href=\"pdf_resourcing.php\">Resourcing Analysis (PDF)</a></span></li>";
+
+	$array_pages = array("popup_timesheet.php","index2.php?page=timesheet_analysis","pdf_timesheet_analysis.php","pdf_resourcing.php","pdf_timesheet_personal.php","index2.php?page=timesheet_incomplete_list");
+	$array_title = array("Timesheets","Analysis","Projects","Resourcing","My Timesheets","List incomplete");
+	$array_images = array("button_fullscreen.png","button_analysis.png","button_pdf.png","button_pdf.png","button_pdf.png","button_list.png");
+	$array_access = array(1,4,4,4,1,1);
+
+	SideMenu ("Timesheets", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
+	
 }
-echo "<li><span class=\"minitext\"><a href=\"pdf_timesheet_personal.php\">My Timesheets (PDF)</a></span></li>";
-//echo "<li><span class=\"minitext\"><a href=\"index2.php?page=holiday_request\">Holiday Request</a></span></li>";
-echo "<li><span class=\"minitext\"><a href=\"index2.php?page=timesheet_incomplete_list\">List incomplete timesheets</a></span></li>";
-print "</ul>";
-}
+
+// Menu - Invoices
 
 if ($module_invoices == "1") {
 
+	$array_pages = array("index2.php?page=timesheet_invoice");
+	$array_title = array("Invoices");
+	$array_images = array("button_list.png");
+	$array_access = array(4);
 
-if ($user_usertype_current > 3) { print "<h1 class=\"heading_side\">Invoices</h1>"; print "<ul class=\"button_left\">"; print "<li><a href=\"index2.php?page=timesheet_invoice\">Invoices</a></li></ul>"; }
-
-print "<h1 class=\"heading_side\">Expenses</h1>";
-print "<ul class=\"button_left\">";
-print "<li><a href=\"index2.php?page=timesheet_expense_edit\">Add Expenses</a>&nbsp;<a href=\"popup_expenses.php\">[Quick Add]</a></li>";
-print "<li><a href=\"index2.php?page=timesheet_expense_list&amp;user_id=$user_id_current\">List My Expenses</a>";
-
-	$sql_expense = "SELECT ts_expense_id FROM intranet_timesheet_expense WHERE ts_expense_user = '$_COOKIE[user]' AND ( ts_expense_verified = 0 OR ts_expense_verified IS NULL )";
-	$result_expense = mysql_query($sql_expense, $conn) or die(mysql_error());
-	if (mysql_num_rows($result_expense) > 0){ echo "&nbsp;<a href=\"pdf_expense_claim.php?user_id=$_COOKIE[user]\"><img src=\"images/button_pdf.png\" alt=\"Expenses Claim\" /></a>"; }
-echo "</li>";
-print "</ul>";
-}
-
-
-if ($module_standards == "1") {
-
-echo "<h1 class=\"heading_side\">Office Standards</h1>";
-	print "<ul class=\"button_left\">";
-	$sql_standards = "SELECT * FROM intranet_standards_sections ORDER BY standard_section_number";
-	$result_standards = mysql_query($sql_standards, $conn);
-	while ($array_standards = mysql_fetch_array($result_standards)) {
-	$standard_section_id = $array_standards['standard_section_id'];
-	$standard_section_number = $array_standards['standard_section_number'];
-	$standard_section_title = $array_standards['standard_section_title'];
-	echo "<li><a href=\"index2.php?page=standards&amp;standard_section_id=" . $standard_section_id . "\">" . $standard_section_number . ".&nbsp;" . $standard_section_title . "</a></li>";
-}
-	
-	echo "<li><span class=\"minitext\"><a href=\"index2.php?page=standards\">View all</a></span></li>";
-	echo "</ul>";
-
-echo "<h1 class=\"heading_side\">Health &amp; Safety</h1>";
-	print "<ul class=\"button_left\">";
-	echo "<a href=\"library/lawleaflet.pdf\">Health & Safety Law:<br />What you need to know</a>";
-	echo "</ul>";
+	SideMenu ("Invoices", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 	
 }
 
+// Menu - Expenses
 
-if ($module_drawings == 1) {
-print "<h1 class=\"heading_side\">Drawings</h1>";
-print "<ul class=\"button_left\">";
-print "<li><a href=\"index2.php?page=drawings_view\">Manage Drawings</a></li>";
-print "</ul>";
+if ($module_expenses == "1") {
+
+	$array_pages = array("index2.php?page=timesheet_expense_edit","index2.php?page=timesheet_expense_list","index2.php?page=timesheet_expense_list&&amp;user_id=$_COOKIE[user]");
+	$array_title = array("Add Expenses","Oustanding Expenses","List My Expenses");
+	$array_images = array("button_new.png","button_list.png","button_list.png");
+	$array_access = array(1,4,1);
+
+	SideMenu ("Expenses", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
+
 }
+
+// Menu - Library
 
 if ($module_library == 1) {
-print "<h1 class=\"heading_side\">Library</h1>";
-print "<ul class=\"button_left\">";
-echo "<li><a href=\"index2.php?page=library_index\">Document Library</a></li>";
-print "</ul>";
+
+	$array_pages = array("index2.php?page=library_index");
+	$array_title = array("Document Library");
+	$array_images = array("button_library.png");
+	$array_access = array(1);
+
+	SideMenu ("Library", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
+
 }
+
+// Menu - Tenders
 
 if ($module_tenders == 1) {
-print "<h1 class=\"heading_side\">Tenders</h1>";
-print "<ul class=\"button_left\">";
-echo "<li><a href=\"index2.php?page=tender_list\">Tenders</a></li>";
-print "</ul>";
+
+	$array_pages = array("index2.php?page=tender_list");
+	$array_title = array("Tenders");
+	$array_images = array("button_list.png");
+	$array_access = array(3);
+
+	SideMenu ("Tenders", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
+	
 }
 
-if ($user_usertype_current > 3) {
-	print "<h1 class=\"heading_side\">Miscellaneous</h1>";
-	print "<ul class=\"button_left\">";
-	print "<li><a href=\"index2.php?page=info_usertypes\">User Types</a></li>";
-	if ($user_usertype_current == 5) { print "<li><a href=\"index2.php?page=php_info\">System Configuration</a></li>"; }
-	print "</ul>";
+// Menu - Phone Messages
+
+if ($module_phonemessages == 1) {
+
+	$array_pages = array("index2.php?page=phonemessage_edit&amp;status=new","index2.php?page=phonemessage_view&amp;status=view");
+	$array_title = array("New Message","View All");
+	$array_images = array("button_message.png","button_list.png");
+	$array_access = array(2,2);
+
+	SideMenu ("Messages", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
+	
 }
 
-if ($module_phonemessage == 1) {
-include("inc_files/inc_menu_phonemessage.php");
-}
+// Menu - System Information
+
+	$array_pages = array("index2.php?page=info_usertypes");
+	$array_title = array("User Types");
+	$array_images = array("button_list.png");
+	$array_access = array(5);
+
+	SideMenu ("System Information", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
+
 
 ?>

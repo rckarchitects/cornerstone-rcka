@@ -9,6 +9,46 @@ $currency_junk = array("£","€");
 
 $text_remove = array("Ã","Â");
 
+function SearchPanel() {
+	
+	echo "<span class=\"heading_side_right\">Search</span>";
+	echo "<div id=\"searchform\">";
+	
+	echo "<form action=\"index2.php?page=search\" method=\"post\">";
+
+	if ($_POST[tender_search] == "yes") { $checked = " checked = \"checked\" "; } else { unset($checked) ; }
+
+	echo "<p><input type=\"search\" name=\"keywords\" value=\"$_POST[keywords]\" id=\"txtfld\" onClick=\"SelectAll('txtfld');\" />&nbsp;<input type=\"submit\" value=\"Go\" /></p><p><input type=\"checkbox\" name=\"tender_search\" value=\"yes\" $checked />&nbsp;<span class=\"minitext\">Search tenders?</span>";
+	echo "</form></div>";
+	
+	
+}
+
+function ProjectTitle() {
+
+	GLOBAL $conn;
+	
+	if ($_GET[proj_id] > 0) { $proj_id = intval($_GET[proj_id]); }
+	elseif ($_POST[proj_id] > 0) { $proj_id = intval($_POST[proj_id]); }
+	else { unset($proj_id); }
+	
+	if ($proj_id > 0) {
+	
+		$sql = "SELECT proj_name, proj_num FROM intranet_projects WHERE proj_id = $proj_id LIMIT 1";
+		$result = mysql_query($sql, $conn) or die(mysql_error());
+		$array = mysql_fetch_array($result);
+		$proj_num = $array['proj_num'];
+		$proj_name = $array['proj_name'];
+		
+		$output = array($proj_id,$proj_num,$proj_name);
+		return $output;
+		
+	}
+
+	
+
+
+}
 
 function ProjectSwitcher ($page,$proj_id) {
 	
@@ -91,7 +131,6 @@ function PresentText($input) {
 	$input = ereg_replace('[a-zA-Z]+://(([.]?[a-zA-Z0-9_/-?&%\'])*)','<u>\\1</u> <a href="\\0" target="_blank"><img src="images/button_internet.png" /></a>',$input);
 	return $input;
 	}
-
 
 function CleanUpNames($input) {
 	$input = str_replace($removestrings_all, "", $input);
@@ -280,7 +319,6 @@ function InvoiceDueDays($invoice_text, $invoice_due, $invoice_date) {
 	return $invoice_text;
 }
 
-
 function AssessDays($input,$hour) {
 	
 		if ($hour == NULL) { $hour = 12; }
@@ -331,12 +369,11 @@ echo $input;
 
 }
 
-		function WordCount($input) {
-		$output = str_word_count(strip_tags($input));
-		return $output;
-		}
+function WordCount($input) {
+	$output = str_word_count(strip_tags($input));
+	return $output;
+}
 		
-
 function ShowSkins($input) {
 $input = "/".$input;
 $array_skins = scandir($input);
@@ -350,10 +387,39 @@ function DayLink($input) {
 
 }
 
+function SideMenu ($title, $array_pages, $array_title, $array_access, $user_usertype_current, $array_images, $align) {
 
+$current_page = $_SERVER['QUERY_STRING'];
 
+	$min_level = min($array_access);
+	
+	if ($align == "r") { $class = "_right"; } else { $class = "_left"; }
+	
+	if ($min_level < $user_usertype_current ) {
 
+			
+			$count = 0;
+			
+			echo "<span id=\"heading_$title\" class=\"heading_side$class\"
+				onMouseUp=\"document.getElementById('" . $title . $count . "').style.display='block'; document.getElementById('heading_" . $title . "').style.display='none'; document.getElementById('subheading_" . $title . "').style.display='block'\" style=\"cursor: pointer;\">$title</span>";
+			echo "<span id=\"subheading_$title\" class=\"heading_side$class\"
+				onMouseUp=\"document.getElementById('" . $title . $count . "').style.display='none'; document.getElementById('heading_" . $title . "').style.display='block'; document.getElementById('subheading_" . $title . "').style.display='none'\" style=\"display: none; cursor: pointer;\">$title</span>";
+			echo "<ul id=\"" . $title . $count . "\" class=\"menu_side$class\" style=\"display: none;\">";
+			foreach ($array_pages as $page) {
+				if (($user_usertype_current >= $array_access[$count]) && ( $current_page != $array_pages[$count] )) {
+					if ($array_images[$count]) { $image = "<img src=\"images/$array_images[$count]\" alt=\"$array_title[$count]\" />&nbsp;"; } else { unset($image); } 
+					if ($array_pages[$count]) { $link = "<a class=\"menu_side$class\" href=\"$array_pages[$count]\">" . $image . $array_title[$count] . "</a>"; } else { unset($link); } 					
+					echo "<li>" . $link . "</li>";
+				} elseif ($user_usertype_current >= $array_access[$count]) {
+					echo "<li><span class=\"menu_side$class\">$array_title[$count]</span></li>";
+				}
+				$count++;
+			}
+			echo "</ul>";
+			
+	}
 
+}
 
 function TimeSheetHours($user_id,$display) {
 
@@ -439,7 +505,6 @@ if ($user_user_ended > 0) { $end_time = $user_user_ended; } else { $end_time = t
 
 }
 
-
 function UserHolidays($user_id,$text) {
 
 	GLOBAL $database_location;
@@ -498,21 +563,6 @@ function UserHolidays($user_id,$text) {
 	
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function TimeSheetListIncomplete($user_id) {
 
 GLOBAL $database_location;
@@ -563,16 +613,6 @@ mysql_select_db("$database_name", $conn);
 
 }
 
-
-
-
-
-
-
-
-
-
-
 function UserDropdown($input_user) {
 
 GLOBAL $conn;
@@ -604,7 +644,6 @@ GLOBAL $conn;
 	echo "</select>";
 	
 }
-
 
 function TextAreaEdit_OLD() {
 
@@ -648,9 +687,9 @@ function EditForm($answer_id,$answer_question,$answer_ref,$answer_words,$answer_
 				TextAreaEdit();
 						
 				echo "<a name=\"$answer_id\"></a><form action=\"index2.php?page=tender_view&amp;tender_id=$tender_id#$answer_id\" method=\"post\">
-					<tr><th style=\"width: 10%;\" name=\"$answer_id\">";
+					<tr><td style=\"width: 10%;\" name=\"$answer_id\">";
 					echo "Ref: <br />";
-					echo "<input type=\"text\" name=\"answer_ref\" value=\"$answer_ref\" size=\"4\"></th><th>";
+					echo "<input type=\"text\" name=\"answer_ref\" value=\"$answer_ref\" size=\"4\" required=\"required\"></td><td>";
 					if ($answer_id == NULL) { echo "Add question:<br />"; } else { echo "Edit question below:<br />"; }
 					echo "<textarea style=\"width: 100%; height: 360px;\" name=\"answer_question\">$answer_question</textarea>
 					<br />Words allowed:&nbsp;<input type=\"text\" maxlength=\"4\" name=\"answer_words\" value=\"$answer_words\" />&nbsp;Weighting:<input type=\"text\" maxlength=\"10\" name=\"answer_weighting\" value=\"$answer_weighting\" /> 
@@ -663,5 +702,61 @@ function EditForm($answer_id,$answer_question,$answer_ref,$answer_words,$answer_
 				";
 }
 
+function ListHolidays() {
 
-?>
+	global $conn;
+	
+	echo "<h2>Upcoming Holidays</h2>";
+	
+	$nowtime = time() - 43200;
+
+		$sql5 = "SELECT user_id, user_name_first, user_name_second, holiday_date, holiday_timestamp, holiday_paid, holiday_length, holiday_approved FROM intranet_user_details, intranet_user_holidays WHERE holiday_user = user_id AND holiday_timestamp BETWEEN $nowtime AND " . ($nowtime + (2 * 604800)) ." ORDER BY holiday_timestamp, user_name_second";
+		$result5 = mysql_query($sql5, $conn) or die(mysql_error());
+		if (mysql_num_rows($result5) > 0) {
+			$current_date = 0;
+			
+			$holidaymessage = $holidaymessage . "<table>";
+			while ($array5 = mysql_fetch_array($result5)) {
+			
+					if ($current_id != $user_id AND $current_id > 0) {
+						$holidaymessage = $holidaymessage . "</td></tr>";
+					} 
+					
+					$user_id = $array5['user_id'];
+					$user_name_first = $array5['user_name_first'];
+					$user_name_second = $array5['user_name_second'];
+					$holiday_timestamp = $array5['holiday_timestamp'];
+					$holiday_length = $array5['holiday_length'];
+					$holiday_paid = $array5['holiday_paid'];
+					$holiday_date = $array5['holiday_date'];
+					$holiday_approved = $array5['holiday_approved'];
+					
+					$calendar_link = "index2.php?page=holiday_approval&amp;year=" . date("Y",$holiday_timestamp) . "#Week" . date("W", $holiday_timestamp);
+					
+					if ($holiday_approved == NULL) { $holiday_approved1 = "<span style=\"color: red;\">"; $holiday_approved2 = "</span>";  } else { unset($holiday_approved1); unset($holiday_approved2); }
+					if ($current_date != $holiday_date) {
+						$holidaymessage = $holidaymessage . "<tr><td>" . TimeFormatDay($holiday_timestamp) . "</td><td>";
+					} else { 
+						$holidaymessage = $holidaymessage . ", ";
+					}
+					
+					if ($holiday_length < 1) { $holiday_length = " (Half Day)"; } else { unset($holiday_length); }
+					
+					$holidaymessage = $holidaymessage . "<a href=\"$calendar_link\">" . $holiday_approved1 . $user_name_first . " " . $user_name_second . $holiday_length . $holiday_approved2 . "</a>"; ;
+					
+					$current_date = $holiday_date;
+			}
+			
+			$holidaymessage = $holidaymessage . "</td></tr></table>";
+		}
+
+	echo $holidaymessage;
+
+
+}
+
+function FooterBar() {
+	
+	echo "<div id=\"mainfooter\">powered by <a href=\"https://github.com/rckarchitects/cornerstone-rcka/wiki/Welcome-to-Cornerstone\">RCKa Cornerstone</a></div>";
+	
+}

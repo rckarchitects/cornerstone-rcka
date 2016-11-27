@@ -1,6 +1,6 @@
 <?php
 
-print "<h1>Project Analysis</h1>";
+print "<h2>Project Analysis as of ".TimeFormat(time())."</h2>";
 
 		$sql_riba = "SELECT riba_id, riba_letter FROM riba_stages order by riba_order";
 		$result_riba = mysql_query($sql_riba, $conn) or die(mysql_error());
@@ -28,9 +28,6 @@ $riba_columns = mysql_num_rows($result_riba);
 			}
 		print "</p>";
 		
-// Page sub title
-		
-		print "<h2>Project Analysis as of ".TimeFormat(time())."</h2>";
 
 // Table header
 

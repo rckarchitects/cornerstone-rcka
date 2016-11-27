@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 print "<p class=\"heading_side\">Contact Search</p>";
 

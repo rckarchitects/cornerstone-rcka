@@ -1,61 +1,85 @@
 <?php
 
-echo "<h1 class=\"heading_side\">Internet Feed</h1>";
-echo "<ul class=\"button_left\"><li><a href=\"index2.php?page=feeds\">Internet Feeds</a></li></ul>";
 
-echo "<h1 class=\"heading_side\">Journal</h1>";
-echo "<ul class=\"button_left\"><li><a href=\"index2.php?page=project_blog_edit&amp;status=add\">Add Journal Entry</a></li></ul>";
-
-include_once("inc_files/inc_menu_search.php");
-
-print "
-<p id=\"navigation\" class=\"menu_bar\">
-<a href=\"#\" onclick=\"menuSwitch(1); return false;\">Team</a> |
-<a href=\"#\" onclick=\"menuSwitch(2); return false;\">Office</a> |
-<a href=\"#\" onclick=\"menuSwitch(3); return false;\">Info.</a> |
-<a href=\"#\" onclick=\"menuSwitch(4); return false;\">Health &amp; Safety</a> |
-</p>
-";
-
-print "<div id=\"page_element_2\">";
-print "<h1 class=\"heading_side\">Office</h1>";
-	include("inc_files/inc_menu_address.php");
-print "</div>";
-
-print "<div id=\"page_element_1\">";
-print "<h1 class=\"heading_side\">Team</h1>";
-include("inc_files/inc_menu_team.php");
-print "</div>";
-
-print "<div id=\"page_element_3\">";
-print "<h1 class=\"heading_side\">Practice</h1>";
-echo "<ul class=\"button_left\">";
-
-	echo "<li><strong>Company Information</strong></li>";
-
-	include_once("secure/sidebar_company.inc");
-
-echo "</ul>";
-print "</div>";
+// Menu - Search
 
 
-print "<div id=\"page_element_4\">";
-print "<h1 class=\"heading_side\">H&amp;S</h1>";
 
-	include_once("secure/sidebar_hands.inc");
-
-echo "</div>";
-
-echo "
-		<script type=\"text/javascript\">
-		document.getElementById(\"page_element_1\").style.display = \"block\";
-		document.getElementById(\"page_element_2\").style.display = \"none\";
-		document.getElementById(\"page_element_3\").style.display = \"none\";
-		document.getElementById(\"page_element_4\").style.display = \"none\";
-		</script>
-";
+SearchPanel();
 
 
-?>
+// Menu - Web Feeds
+
+	$array_pages = array("index2.php?page=feeds&type=news","index2.php?page=feeds&type=competitions");
+	$array_title = array("BD News","BD Competitions");
+	$array_images = array("button_news.png","button_news.png");
+	$array_access = array(0,0);
+				
+	SideMenu ("News Feeds", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images, "r");
+
+// Menu - Journal
+
+	$array_pages = array("index2.php?page=project_blog_edit&amp;status=add");
+	$array_title = array("Add Journal Entry");
+	$array_images = array("button_new.png");
+	$array_access = array(1);
+				
+	SideMenu ("Journal", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images, "r");
+	
+// Menu - Address
+
+	$settings_companyname = htmlentities($settings_companyname) . "<br />" . nl2br(htmlentities($settings_companyaddress));
+
+	$array_pages = array("");
+	$array_title = array($settings_companyname);
+	$array_images = array("");
+	$array_access = array(1);
+	
+	if($settings_companytelephone) { $array_title[] = "T&nbsp;".$settings_companytelephone; $array_pages[] = ""; }
+	if($settings_companyfax) { $array_title[] = "F&nbsp;". $settings_companyfax; $array_pages[] = ""; }
+	if($settings_companyweb) { $array_title[] = "W&nbsp;" . $settings_companyweb; $array_pages[] = ""; }
+				
+	SideMenu ("Address", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images, "r");	
+	
+// Menu - Team
+
+	$sql = "SELECT * FROM intranet_user_details WHERE user_active = 1 order by user_name_second";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+
+	$array_pages = array();
+	$array_title = array();
+	$array_access = array();
+	$array_images = array();
+
+	while ($array = mysql_fetch_array($result)) {
+
+		$user_name_first = $array['user_name_first'];
+		$user_name_second = $array['user_name_second'];
+		$user_num_mob = $array['user_num_mob'];
+		$user_num_home = $array['user_num_home'];
+		$user_num_extension = $array['user_num_extension'];
+		$user_email = $array['user_email'];
+		$user_id = $array['user_id'];
+		$user_usertype = $array['user_usertype'];
+		
+		$user_name = $user_name_first . " " . $user_name_second;
+		if ($user_num_mob) { $user_name = $user_name . "<br />" . $user_num_mob; }
+		
+		if ($user_usertype_current > 4) { $user_name = $user_name . "&nbsp;[" . $user_usertype . "]"; }
+
+		$array_pages[] = "index2.php?page=user_view&amp;user_id=" . $user_id;
+		$array_title[] = $user_name;
+		$array_images[] = "";
+		$array_access[] = 1;
+				
+	}
+	
+
+	$array_pages[] = "index2.php?page=user_edit&amp;user_add=true";
+	$array_title[] = "Add New User";
+	$array_images[] = "button_new.png";
+	$array_access[] = 4;
+				
+	SideMenu ("Team", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images, "r");
 
 

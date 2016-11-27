@@ -12,7 +12,7 @@ $proj_id = $array_project['proj_id'];
 $proj_num = $array_project['proj_num'];
 $proj_name = $array_project['proj_name'];
 
-echo "<h1>Project Checklist for <a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></h1>";
+echo "<h2>Project Checklist</h2>";
 
 echo "<p class=\"menu_bar\"><a href=\"pdf_project_checklist.php?proj_id=$proj_id\" class=\"menu_tab\">PDF <img src=\"images/button_pdf.png\" /></a><a href=\"index2.php?page=project_checklist_edit&amp;proj_id=$proj_id\" class=\"menu_tab\">Edit <img src=\"images/button_edit.png\" /></a>";
 

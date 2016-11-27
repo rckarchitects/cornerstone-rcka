@@ -236,7 +236,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 											echo "</td><td $row_color_style><span class=\"minitext\">$current_stage $row_text</span></td>";
 											
 											echo "<td style=\"text-align: center; $row_color\">";
-													echo "<a href=\"index2.php?page=project_checklist&amp;proj_id=$proj_id\"><img src=\"images/ic_list_black_18dp.png\" alt=\"Checklist\" /></a>";
+													echo "<a href=\"index2.php?page=project_checklist&amp;proj_id=$proj_id\"><img src=\"images/button_list.png\" alt=\"Checklist\" /></a>";
 											echo "</td>";
 											
 											echo "<td $row_color_style><a href=\"index2.php?page=user_view&amp;user_id=$user_id\">$user_initials</a></td>

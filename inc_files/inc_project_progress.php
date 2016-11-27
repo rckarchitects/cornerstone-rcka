@@ -1,6 +1,6 @@
 <?php
 
-print "<h1>Project Status</h1>";
+print "<h2>Project Status</h2>";
 
 		$sql_riba = "SELECT riba_id, riba_letter FROM riba_stages order by riba_order";
 		$result_riba = mysql_query($sql_riba, $conn) or die(mysql_error());

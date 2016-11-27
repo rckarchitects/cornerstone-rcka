@@ -71,7 +71,7 @@ $pdf->MultiCell(0,6,$ts_print_title,0, L, 0);
 // Printed by, and on...
 
 $pdf->SetFont($format_font,'',12);
-$pdf->SetTextColor(180,180,180);
+$pdf->SetTextColor(0,0,0);
 
 $sql = "SELECT user_name_first, user_name_second FROM intranet_user_details WHERE user_id = $_COOKIE[user]";
 $result = mysql_query($sql, $conn) or die(mysql_error());
@@ -80,15 +80,20 @@ $array = mysql_fetch_array($result);
 $user_name_first = $array['user_name_first'];
 $user_name_second = $array['user_name_second'];
 
-$pdf->SetFont($format_font,'',7);
+$pdf->SetFont($format_font,'',8);
 
 $printed_on = "Generated ".date("r")." by ".$user_name_first." ".$user_name_second;
 
-$pdf->Cell(0,10,$printed_on,0, 1, L, 0);
+$pdf->SetFont($format_font,'',6);
+$pdf->Cell(0,4,$printed_on,0, 1, L, 0);
+$pdf->Ln();
+
+$legend = "Cost (Fa) = Factored cost\nCost (Ho) = Hourly cost\nCost (Fa Acc) = Factored accumulative cost\nCost (Ho Acc) = Hourly accumulative cost\n";
+
+$pdf->MultiCell(0,3,$legend);
 
 $pdf->SetFillColor(220, 220, 220);
 
-$pdf->SetTextColor(0,0,0);
 
 // Begin the array through all users
 
@@ -114,10 +119,12 @@ $hours_total = 0;
 		
 				$stage_total_print = "£" . number_format($stage_total,2);
 				$pdf->Cell(0,1,'',T,1);
-				$pdf->Cell(20,8,'Stage Total', 0, 0, L);
-				$pdf->Cell(20,8,$hours_total, 0, 0, R);
-				$pdf->Cell(48,8,$stage_total_print, 0, 1, R);
-				$pdf->Cell(0,3,'',0,1);
+				$pdf->Cell(20,4,'Stage Total', 0, 0, L);
+				$pdf->Cell(8,4,$hours_total, 0, 0, R);
+				$pdf->Cell(5,4,'hrs', 0, 0);
+				$pdf->Cell(38,4,'', 0, 0);
+				$pdf->Cell(20,4,$stage_total_print, 0, 1, R);
+				$pdf->Ln();
 				$stage_total = 0;
 				$hours_total= 0;
 				$running_cost_nf = 0;
@@ -126,9 +133,9 @@ $hours_total = 0;
 				$ts_fee_target_print = "Stage Cost (including profit at " . number_format($ts_fee_target_print,2) . "%)";
 				
 				$pdf->Cell(0,1,'',T,1);
-				$pdf->Cell(40,8,$ts_fee_target_print, 0, 0, L);
-				$pdf->Cell(48,8,$invoice_cost_print, 0, 1, R);
-				$pdf->Cell(0,3,'',0,1);
+				$pdf->Cell(71,4,$ts_fee_target_print, 0, 0, L);
+				$pdf->Cell(20,4,$invoice_cost_print, 0, 1, R);
+				$pdf->Ln();
 	
 		}
 		
@@ -153,6 +160,12 @@ $hours_total = 0;
 	$user_name =  $user_name_first . " " . $user_name_second;
 	$user_id = $array['user_id'];
 	$user_initials = $array['user_initials'];
+	$user_prop = $array['user_prop'];
+	$user_prop_target = $array['user_prop_target'];
+	
+	if ($user_prop) { $user_prop_actual = $user_prop; } elseif ($user_prop_target) { $user_prop_actual = $user_prop_target; } else { $user_prop_actual = 0; }
+	$user_prop_actual = (1 - $user_prop_actual);
+	
 	$ts_id = $array['ts_id'];
 	$ts_entry = $array['ts_entry'];
 	$ts_day = $array['ts_day'];
@@ -167,7 +180,7 @@ $hours_total = 0;
 	$ts_fee_id = $array['ts_fee_id'];
 	$ts_stage_fee = $array['ts_stage_fee'];
 	//$ts_rate = $array['ts_cost_factored'];
-	$ts_cost_factored = $array['ts_cost_factored'];
+	$ts_cost_factored = $array['ts_cost_factored'] * $user_prop_actual;
 	
 	$ts_cost_nf = $ts_rate * $ts_hours;
 	
@@ -195,7 +208,7 @@ $hours_total = 0;
 				StageTotal($stage_total);
 				StageFee($ts_stage_fee);
 			} elseif ($current_fee_stage != NULL) {
-				$pdf->SetFont($format_font,'',10);
+				$pdf->SetFont($format_font,'',8);
 				$pdf->Cell(20,7,'Total', T, 0, L);
 				$hours_total_print = number_format($hours_total);
 				$pdf->Cell(8,7,$hours_total_print, T, 0, R);
@@ -206,11 +219,21 @@ $hours_total = 0;
 		if ($_POST[separate_pages] == 1 && $current_fee_stage != NULL) { $pdf->AddPage(); }
 		
 		$current_y = $pdf->GetY();
-		if ($current_y > 260) { $pdf->addPage(); }
+		if ($current_y > 240) { $pdf->addPage(); }
 		
-		$pdf->SetFont($format_font,'',10);
+		$pdf->SetFont($format_font,'',8);
 		$pdf->Ln();
-		$pdf->Cell(0,7,$ts_fee_text, 0, 1, L, true);
+		$pdf->Cell(0,5,$ts_fee_text, 0, 1, L, true);
+		$pdf->SetFont($format_font,'',6, true);
+		$pdf->Cell(20,4,'Date',0,0,L, true);
+		$pdf->Cell(13,4,'Hours',0,0,C, true);
+		$pdf->Cell(15,4,'Cost (Fa)',0,0,R, true);
+		$pdf->Cell(15,4,'Cost (Ho)',0,0,R, true);
+		$pdf->Cell(8,4,'Initials',0,0,C, true);
+		$pdf->Cell(20,4,'Cost (Fa Acc)',0,0,R, true);
+		$pdf->Cell(20,4,'Cost (Ho Acc)',0,0,R, true);
+		$pdf->Cell(0,4,'Description',0,0,L, true);
+		$pdf->Ln();
 		$current_fee_stage = $ts_stage_fee;
 	}
 
@@ -268,22 +291,20 @@ $hours_total = 0;
 						
 					$pdf->Cell(0,1,'',0,1);
 					
-					$pdf->SetFont($format_font,'',10);
+					$pdf->SetFont($format_font,'',8);
 					
 	
 }
-
-
 
 			if ($_POST[separate_pages] != 1) {
 				StageTotal($stage_total);
 				StageFee($ts_stage_fee);
 			} else {
-				$pdf->SetFont($format_font,'',10);
-				$pdf->Cell(20,7,'Total', T, 0, L);
+				$pdf->SetFont($format_font,'',8);
+				$pdf->Cell(20,5,'Total', T, 0, L);
 				$hours_total_print = number_format($hours_total);
-				$pdf->Cell(8,7,$hours_total_print, T, 0, R);
-				$pdf->Cell(0,7,'hours', T, 1, L);
+				$pdf->Cell(8,5,$hours_total_print, T, 0, R);
+				$pdf->Cell(0,5,'hours', T, 1, L);
 				$hours_total = 0;
 			}
 			
@@ -297,18 +318,17 @@ $hours_total = 0;
 
 	if ($_POST[separate_pages] != 1) {
 
-			StageTotal($stage_total);
-
 			$cost_total_print = "£".number_format($running_cost,2);
 			
 			$total_cost_nf_print = "(£".number_format($total_cost_nf,2) . ")";
 
-			$pdf->SetFont($format_font,'',12);
-			$pdf->Cell(0,2,'',0, 1, L, 0);	
+			$pdf->SetFont($format_font,'',8);
+			$pdf->Ln();	
 			$pdf->SetFillColor(240,240,240);
-			$pdf->Cell(68,7,'Total Cost',0, 0, L, 0);
-			$pdf->Cell(20,7,$cost_total_print,0, 1, R, 0);
-			$pdf->Cell(20,7,$total_cost_nf_print,0, 1, R, 0);
+			$pdf->SetLineWidth(0.5);
+			$pdf->Cell(71,5,'Total Cost',0, 0, L, 0);
+			$pdf->Cell(20,5,$cost_total_print,0, 0, R, 0);
+			$pdf->Cell(20,5,$total_cost_nf_print,0, 1, R, 0);
 			
 			StageFee($ts_stage_fee);
 	

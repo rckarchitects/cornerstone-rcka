@@ -43,7 +43,7 @@ $tasklist_soon = $array['tasklist_due'] - 604800;
 					if ($proj_id != $proj_id_repeat) {
 						if ($_GET[order] != "time") {
 							if ($proj_fee_track == "1") {
-								echo "<h3><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\" name=\"view_task_$proj_id\">$proj_num&nbsp;$proj_name</a>";
+								echo "<h3><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\" name=\"view_task_$proj_id\">$proj_num&nbsp;$proj_name</a></h3>";
 							} else {
 								echo "<h3>" . $proj_num."&nbsp;".$proj_name . "</h3>";
 							}

@@ -1,10 +1,7 @@
 <?php
 
-if ($proj_id == NULL AND $_GET[proj_id] != NULL) { $proj_id = $_GET[proj_id]; }
 
-print "<h1>Hourly Rates</h1>";
-
-print "<h2>$proj_id</h2>";
+print "<h2>Hourly Rates</h2>";
 
 // Determine the date a week ago
 

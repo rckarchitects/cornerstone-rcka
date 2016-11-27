@@ -33,7 +33,9 @@ print "<body>";
 
 print "<div id=\"pagewrapper\">";
 
-if ($timesheetcomplete > $settings_timesheetlimit) { echo "<p><a href=\"index2.php\"><< back to intranet</a>"; }
+echo "<h1>Timesheet</h1>";
+
+if ($timesheetcomplete > $settings_timesheetlimit) { echo "<p class=\"menu_bar\"><a href=\"index2.php\" class=\"menu_tab\"><< back to intranet</a></p>"; }
 
 if ($user_usertype_current > 3 AND $TSFormat == "popup") {
 	
@@ -41,9 +43,10 @@ if ($user_usertype_current > 3 AND $TSFormat == "popup") {
 	$weeks_expired = $weeks_expired * 604800;
 	$weeks_expired = $ts_weekbegin - $weeks_expired;
 
-	echo "&nbsp;&nbsp;&nbsp;User:&nbsp;";
 	$sql_userlist = "SELECT user_initials, user_id, user_name_first, user_name_second FROM intranet_user_details WHERE (user_user_ended IS NULL OR user_user_ended = 0) AND (user_user_ended < $weeks_expired OR  user_user_ended IS NULL OR user_user_ended = 0) ORDER BY user_initials";
 	$result_userlist = mysql_query($sql_userlist, $conn);
+	
+	echo "<p class=\"submenu_bar\">";
 	while ($array_userlist = mysql_fetch_array($result_userlist)) {
 	$user_id = $array_userlist['user_id'];
 	$user_initials = $array_userlist['user_initials'];
@@ -54,15 +57,16 @@ if ($user_usertype_current > 3 AND $TSFormat == "popup") {
 	$user_datum = $user_user_added;
 	}
 	if ($user_id != $viewuser) {
-		echo "<a href=\"popup_timesheet.php?week=$ts_weekbegin&amp;user_view=$user_id\">$user_initials</a>";
+		echo "<a class=\"submenu_bar\" href=\"popup_timesheet.php?week=$ts_weekbegin&amp;user_view=$user_id\">$user_initials</a>";
 	} else {
-		echo "<strong>$user_initials</strong>";
+		echo "<span class=\"submenu_bar\">$user_initials</span>";
 	}
 	
-	echo " | ";
 	
 	
 	}
+	
+	echo "</p>";
 
 }
 
@@ -93,7 +97,7 @@ $link_lastweek = $ts_weekbegin - 604800;
 $link_nextweek = $ts_weekbegin + 604800;
 $link_nextmonth = $ts_weekbegin + 3024000;
 
-print "<h1>Timesheet - Week Beginning ".TimeFormat($ts_weekbegin) . "&nbsp;(" . $timesheetcomplete . "% complete)"; if ($_GET[user_view] > 0) { echo " for $user_name"; } echo " - Week " . $week_number . "</h1>";
+print "<h2>Week Beginning ".TimeFormat($ts_weekbegin) . "&nbsp;(" . $timesheetcomplete . "% complete)"; if ($_GET[user_view] > 0) { echo " for $user_name"; } echo " - Week " . $week_number . "</h2>";
 
 print "<p class=\"menu_bar\">";
 if ($user_view != NULL) { $user_filter = "&amp;user_view=" . $user_view; } else { $user_filter = NULL; }

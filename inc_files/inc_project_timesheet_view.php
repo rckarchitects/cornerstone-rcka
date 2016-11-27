@@ -10,7 +10,7 @@ $proj_id = $_GET[proj_id];
 	$proj_value = $array_proj['proj_value'];
 	$proj_fee_percentage = $array_proj['proj_fee_percentage'];
 
-print "<h1>Project Expenditure, $proj_num&nbsp;$proj_name</h1>";
+print "<h2>Project Expenditure</h2>";
 
 	print "<table summary=\"Schedule of expenditure\">";
 	print "<tr><td><strong>Stage</strong></td><td><strong>Fee for Stage</strong></td><td><strong>Time Expenditure</strong></td><td><strong>Invoiced</strong></td></tr>";

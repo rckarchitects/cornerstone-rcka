@@ -46,8 +46,6 @@ $country_printable_name = $array['country_printable_name'];
 
 $proj_tenant_1 = $array['proj_tenant_1'];
 
-echo "<h1>".$proj_num."&nbsp;".$proj_name."</h1>";
-
 echo "<p class=\"menu_bar\">";
 echo "<a href=\"#\" onclick=\"itemSwitch(1); return false;\" class=\"menu_tab\">Main</a>";
 echo "<a href=\"#\" onclick=\"itemSwitch(2); return false;\" class=\"menu_tab\">Client</a>";
@@ -273,23 +271,39 @@ include("inc_files/inc_project_contacts.php");
 echo "</div>";
 
 if ($user_usertype_current > 2) {
+	
+			if ($module_fees == 1) {
 
-			echo "<div id=\"item_switch_5\">";
-				include("inc_files/inc_project_fees.php");
-			echo "</div>";
-
-			echo "<div id=\"item_switch_6\">";
-				include("inc_files/inc_project_expenses.php");
-			echo "</div>";
-
-			echo "<div id=\"item_switch_7\">";
-				include("inc_files/inc_project_invoices.php");
-			echo "</div>";
+				echo "<div id=\"item_switch_5\">";
+					include("inc_files/inc_project_fees.php");
+				echo "</div>";
+				
+			}
 			
-			echo "<div id=\"item_switch_8\">";
-				include("inc_files/inc_project_tasks.php");
-			echo "</div>";
+			if ($module_expenses == 1) {
 			
+				echo "<div id=\"item_switch_6\">";
+					include("inc_files/inc_project_expenses.php");
+				echo "</div>";
+				
+			}
+			
+			if ($module_invoices == 1) {
+
+				echo "<div id=\"item_switch_7\">";
+					include("inc_files/inc_project_invoices.php");
+				echo "</div>";
+				
+			}
+			
+			if ($module_tasks == 1) {
+			
+				echo "<div id=\"item_switch_8\">";
+					include("inc_files/inc_project_tasks.php");
+				echo "</div>";
+					
+			}
+
 }
 
 

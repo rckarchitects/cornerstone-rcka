@@ -1,7 +1,7 @@
 <?php
 
 
-	echo "<h1>Planning Conditions for <a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></h1>";
+	echo "<h2>Planning Conditions</h2>";
 	ProjectSwitcher ("project_planningcondition_list",$proj_id);
 
 	$sql_proj = "SELECT proj_id, proj_num, proj_name FROM intranet_projects WHERE proj_id = $proj_id LIMIT 1";

@@ -2,7 +2,7 @@
 
 if ($_GET[proj_id] != NULL) {$proj_id = CleanNumber($_GET[proj_id]); } elseif ($_POST[blog_proj] != NULL) {$proj_id = CleanNumber($_POST[blog_proj]); } else { $proj_id = NULL; }
 
-print "<h1>Journal Entries</h1>";
+print "<h2>Journal Entries</h2>";
 
 $sql = "SELECT * FROM intranet_projects_blog, intranet_projects, intranet_user_details WHERE blog_proj = proj_id AND proj_id = '$proj_id' AND blog_user = user_id order by blog_date DESC";
 $result = mysql_query($sql, $conn) or die(mysql_error());
@@ -29,7 +29,6 @@ $user_id = $array_project['user_id'];
 		if ($page_next < $total_items) { print "<a href=\"index2.php?page=project_blog_list&amp;proj_id=$proj_id&amp;limit=$page_next\" class=\"submenu_bar\">Next Page</a>"; }
 		print "</p>";
 
-		print "<h2>$proj_num&nbsp;$proj_name</h2>";
 
 $nowtime = time();
 

@@ -10,10 +10,10 @@ $format_bg_b = "220";
 $format_font = "century";
 $format_font_2 = "Century.php";
 
+$user_id = intval($_GET[user_id]);
 
-if ($user_usertype_current <= 3 AND $_COOKIE[user] != $_GET[user_id]) { header ("Location: index2.php"); }
 
-if ($_GET[user_id] == NULL) { $user_id = $_COOKIE[user_id]; } else { $user_id = $_GET[user_id]; }
+if ($user_id == NULL) { header ("Location: index2.php"); }
 
 //  Use FDPI to get the template
 

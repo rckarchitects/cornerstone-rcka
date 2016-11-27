@@ -82,7 +82,11 @@ if ($_POST[assess] < 1) {
 
 			echo "<p>First Day Back in Office<br /><input name=\"holiday_day_back\" value=\"$_POST[holiday_day_back]\"  type=\"date\" required /></p>";
 			
-			echo "<p><input type=\"radio\" value=\"0.5\" name=\"holiday_length\" /> Half Day<br /><input type=\"radio\" value=\"1\" name=\"holiday_length\" checked=\"checked\" /> Full Day<br /><input type=\"checkbox\" value=\"1\" name=\"paid\" checked=\"checked\" />&nbsp;Paid Holiday Request</p>";
+			echo "<p><input type=\"radio\" value=\"0.5\" name=\"holiday_length\" /> Half Day<br /><input type=\"radio\" value=\"1\" name=\"holiday_length\" checked=\"checked\" /> Full Day</p><p>Holiday Type:
+			<br /><input type=\"radio\" value=\"0\" name=\"paid\" />&nbsp;Unpaid
+			<br /><input type=\"radio\" value=\"1\" name=\"paid\" checked=\"checked\" />&nbsp;Paid
+			<br /><input type=\"radio\" value=\"2\" name=\"paid\" />&nbsp;Study Leave
+			<br /><input type=\"radio\" value=\"3\" name=\"paid\" />&nbsp;Jury Service</p>";
 
 			echo "<p><input type=\"hidden\" name=\"user_id\" value=\"$user_id\" /><input type=\"hidden\" name=\"action\" value=\"holiday_request\" />";
 

@@ -18,11 +18,11 @@ $proj_id = $array['proj_id'];
 $proj_num = $array['proj_num'];
 $proj_name = $array['proj_name'];
 
+if (!$_GET[proj_id]) { echo "<h1><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></h1>"; }
+
 if ($blog_user != $user_id_current AND $blog_view == 1) { print "<h1 class=\"alert\">Error</h1>"; print "<p>You do not have sufficient privileges to view this entry.</p>"; }
 
 else {
-
-print "<h1>".$proj_num."&nbsp;".$proj_name."</h1>";
 
 // Project Page Menu
 print "<p class=\"submenu_bar\">";

@@ -44,7 +44,11 @@ print "<form method=\"post\" action=\"index2.php?page=drawings_detailed&amp;draw
 
 $rev_count = array_keys($revision_letters, $revision_letter);
 
-if ($_GET[revision_id] > 0) { $rev_begin = $rev_count[0]; } else { $rev_begin = $rev_count[0] + 1; }
+if ($user_usertype_current <= 3 ) {
+	if ($_GET[revision_id] > 0) { $rev_begin = $rev_count[0]; } else { $rev_begin = $rev_count[0] + 1; }
+} else {
+	$rev_begin = 0;
+}
 
 $rev_total = count($revision_letters);
 

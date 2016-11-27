@@ -28,7 +28,7 @@ if($status == "edit") {
 	$blog_date_month = date("n",$blog_date);
 	$blog_date_year = date("Y",$blog_date);
 	
-	print "<h1>Edit Existing Project Blog Entry</h1>";
+	print "<h2>Edit Existing Project Blog Entry</h2>";
 	
 	if ($blog_id > 0) {
 		echo "<form method=\"post\" action=\"index2.php?page=project_blog_list\">";
@@ -61,7 +61,7 @@ if($status == "edit") {
 	$blog_date_month = date("n",time());
 	$blog_date_year = date("Y",time());
 
-	print "<h1>Add New Project Blog Entry</h1>";
+	print "<h2>Add New Project Blog Entry</h2>";
 	
 	print "<form method=\"post\" action=\"index2.php?page=project_blog_list\">";
 

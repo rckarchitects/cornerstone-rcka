@@ -59,6 +59,8 @@ $actionmessage = "The entry for company <b>$company_name</b> was added successfu
 
 $company_id_added = mysql_affected_rows($result);
 
+$company_id = mysql_insert_id();
+
 $techmessage = $sql_add;
 
 }

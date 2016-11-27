@@ -32,7 +32,7 @@ $counter_time = $start;
 		
 		if ($weekend == "no" AND $bank_holiday == "no" AND $holidays_existingholidays == "no" AND $insert == "yes") {
 			
-			$sql_holidays = "INSERT INTO intranet_user_holidays (holiday_id, holiday_user, holiday_date, holiday_month, holiday_year, holiday_approved, holiday_timestamp, holiday_length, holiday_paid, holiday_datestamp) VALUES ( NULL, $user, " . date("j",$counter_time) . "," . date("n",$counter_time) . "," . date("Y",$counter_time) . ", NULL," . $counter_time . "," . $length . "," . $paid . ",'" . date("Y-m-d",$counter_time) . "')";
+			$sql_holidays = "INSERT INTO intranet_user_holidays (holiday_id, holiday_user, holiday_date, holiday_month, holiday_year, holiday_approved, holiday_timestamp, holiday_length, holiday_paid, holiday_datestamp, holiday_assigned) VALUES ( NULL, $user, " . date("j",$counter_time) . "," . date("n",$counter_time) . "," . date("Y",$counter_time) . ", NULL," . $counter_time . "," . $length . "," . $paid . ",'" . date("Y-m-d",$counter_time)  . "','" . date("Y",$counter_time) . "')";
 			
 			$result_holidays = mysql_query($sql_holidays, $conn);
 			echo "<li>" . date("l j F Y", $counter_time) . " </li>";

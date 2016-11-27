@@ -37,13 +37,7 @@ if ($_GET[action] == "checklist_delete_item") {
 
 $proj_id = $_GET[proj_id];
 
-$sql_project = "SELECT proj_num, proj_name FROM intranet_projects WHERE proj_id = $proj_id";
-$result_project = mysql_query($sql_project, $conn) or die(mysql_error());
-$array_project = mysql_fetch_array($result_project);
-$proj_num = $array_project['proj_num'];
-$proj_name = $array_project['proj_name'];
-
-echo "<h1>Project Checklist for $proj_num $proj_name</h1>";
+echo "<h2>Project Checklist</h2>";
 
 echo "<p class=\"menu_bar\"><a href=\"pdf_project_checklist.php?proj_id=$proj_id\" class=\"menu_tab\">PDF <img src=\"images/button_pdf.png\" /></a><a href=\"index2.php?page=project_checklist&amp;proj_id=$proj_id\" class=\"menu_tab\">Back to list</a></p>";
 
