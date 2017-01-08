@@ -111,7 +111,24 @@ $page_count = 1;
 
 // Begin the database collection
 
-if ($_POST[marketing] != NULL) { $marketing = " WHERE ( contact_include = $_POST[marketing] ) "; } else { $marketing = NULL; }
+$marketing = intval ($_POST[marketing]);
+
+// if ($marketing == 1) {
+	// $marketing = " WHERE ( contact_include = 1 OR contact_include = 3 ) AND (contact_postcode != NULL OR (contact_company > 0 AND company_postcode != NULL)) ";
+// } elseif ($marketing == 2) {
+	// $marketing = " WHERE ( contact_include = 2 ) ";
+// } elseif ($marketing == 3) {
+	// $marketing = " WHERE ( contact_include = 3 ) AND (contact_postcode != NULL OR (contact_company > 0 AND company_postcode != NULL)) ";
+// } else { unset($marketing); }
+
+
+if ($marketing == 1) {
+	$marketing = " WHERE ( contact_include = 1 OR contact_include = 3 ) ";
+} elseif ($marketing == 2) {
+	$marketing = " WHERE ( contact_include = 2 ) ";
+} elseif ($marketing == 3) {
+	$marketing = " WHERE ( contact_include = 3 ) ";
+} else { unset($marketing); }
 
 $sql_contact = "SELECT * FROM contacts_contactlist LEFT JOIN contacts_companylist ON contact_company = company_id $marketing ORDER BY company_name, contact_namesecond, contact_namefirst";
 $result_contact = mysql_query($sql_contact, $conn);

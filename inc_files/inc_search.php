@@ -37,7 +37,7 @@ if ($_POST[tender_search] != "yes") {
 $sql = "SELECT blog_id, blog_title, blog_date FROM intranet_projects_blog WHERE ".SearchTerms($keywords_array, "blog_text")." OR ".SearchTerms($keywords_array, "blog_title")." AND blog_view != 1 ORDER BY blog_date DESC";
 $result = mysql_query($sql, $conn) or die(mysql_error());
 	if (mysql_num_rows($result) == 0) {
-		echo "<tr><td colspan=\"2\">No results found for Journal Entries</td></tr>";
+		echo "<tr><td colspan=\"2\">- No results found for Journal Entries -</td></tr>";
 	} else {
 			while ($array = mysql_fetch_array($result)) {
 			$blog_id = $array['blog_id'];
@@ -57,7 +57,7 @@ echo "<table>";
 $sql = "SELECT contact_id, contact_namefirst, contact_namesecond, contact_company FROM contacts_contactlist WHERE ".SearchTerms($keywords_array, "contact_namefirst")." OR ".SearchTerms($keywords_array, "contact_namesecond")." OR ".SearchTerms($keywords_array, "contact_reference")." ORDER BY contact_namesecond";
 $result = mysql_query($sql, $conn) or die(mysql_error());
 	if (mysql_num_rows($result) == 0) {
-		echo "<tr><td colspan=\"2\">No results found for Contacts</td></tr>";
+		echo "<tr><td colspan=\"2\">- No results found for Contacts -</td></tr>";
 	} else {
 			while ($array = mysql_fetch_array($result)) {
 			$contact_id = $array['contact_id'];
@@ -65,7 +65,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 			$contact_namesecond = $array['contact_namesecond'];
 			$contact_company = $array['contact_company'];
 			echo "
-			<tr><td style=\"width: 30%;\"";
+			<tr><td style=\"width: 25%;\"";
 			if ($contact_company == NULL OR $contact_company == 0) { echo " colspan=\"2\" "; }
 			echo "><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=$contact_id\">$contact_namefirst&nbsp;$contact_namesecond</a></td>";
 			if ($contact_company > 0) { echo "<td>";$id = $contact_company; include("dropdowns/inc_data_contact_company.php"); echo "</td>"; }
@@ -83,17 +83,24 @@ echo "<table>";
 $sql = "SELECT company_id, company_name, company_postcode FROM contacts_companylist WHERE ".SearchTerms($keywords_array, "company_name")." OR ".SearchTerms($keywords_array, "company_address")." OR ".SearchTerms($keywords_array, "company_web")." OR ".SearchTerms($keywords_array, "company_notes")." OR ".SearchTerms($keywords_array, "company_web")." OR ".SearchTerms($keywords_array, "company_notes")." ORDER BY company_name";
 $result = mysql_query($sql, $conn) or die(mysql_error());
 	if (mysql_num_rows($result) == 0) {
-		echo "<tr><td colspan=\"2\">No results found for Companies</td></tr>";
+		echo "<tr><td colspan=\"2\">- No results found for Companies -</td></tr>";
 	} else {
 			while ($array = mysql_fetch_array($result)) {
 			$company_id = $array['company_id'];
-			$company_name = $array['company_name'];			
-			// 
+			$company_name = $array['company_name'];
+			$company_postcode = $array['company_postcode'];
 			
-			echo "
-			<tr><td colspan=\"2\"";
-			echo "><a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">$company_name</a></td>";
-			echo "</tr>";
+			if ($company_postcode) {
+				echo "<tr><td colspan=\"2\" style=\"width: 25%;\">";
+				echo "<a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">$company_name</a>";
+				echo "</td>";
+				echo "<td>$company_postcode</td>";
+				echo "</tr>";			
+			}	else	{
+				echo "<tr><td colspan=\"2\">";
+				echo "<a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">$company_name</a>";
+				echo "</td></tr>";
+			}
 	}
 }
 
@@ -105,7 +112,7 @@ $sql = "SELECT * FROM intranet_qms WHERE " . SearchTerms($keywords_array, "qms_t
 $result = mysql_query($sql, $conn) or die(mysql_error());
 
 	if (mysql_num_rows($result) == 0) {
-		echo "<tr><td colspan=\"2\">No results found for QMS</td></tr>";
+		echo "<tr><td colspan=\"2\">- No results found for QMS -</td></tr>";
 	} else {
 			while ($array = mysql_fetch_array($result)) {
 			$qms_id = $array['qms_id'];
@@ -132,7 +139,7 @@ $sql = "SELECT checklist_comment, checklist_project, proj_id, proj_num, proj_nam
 $result = mysql_query($sql, $conn) or die(mysql_error());
 
 	if (mysql_num_rows($result) == 0) {
-		echo "<tr><td colspan=\"2\">No results found for checklists</td></tr>";
+		echo "<tr><td colspan=\"2\">- No results found for checklists -</td></tr>";
 	} else {
 			while ($array = mysql_fetch_array($result)) {
 			$checklist_comment = $array['checklist_comment'];
@@ -166,7 +173,7 @@ $sql = "SELECT tasklist_id, tasklist_notes, tasklist_person, tasklist_percentage
 
 $result = mysql_query($sql, $conn) or die(mysql_error());
 	if (mysql_num_rows($result) == 0) {
-		echo "<tr><td colspan=\"2\">No results found for Tasks</td></tr>";
+		echo "<tr><td colspan=\"2\">- No results found for Tasks -</td></tr>";
 	} else {
 			while ($array = mysql_fetch_array($result)) {
 			$tasklist_id = $array['tasklist_id'];
@@ -176,11 +183,11 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 			$proj_id = $array['proj_id'];
 			$proj_num = $array['proj_num'];
 			echo "<tr><td style=\"width: 30%;\"><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">";
-			print $proj_num;
+			echo $proj_num;
 			echo "</a></td><td><a href=\"index2.php?page=tasklist_detail&amp;tasklist_id=$tasklist_id\">";
 			if ($tasklist_percentage == 100) { echo "<span style=\"text-decoration: line-through;\">"; }
 			elseif ($tasklist_due < time()) { echo "<span style=\"background-color: #$settings_alertcolor;\">"; }
-			print $tasklist_notes;
+			echo $tasklist_notes;
 			if ($tasklist_percentage == 100) { echo "</span>"; }
 			elseif ($tasklist_due < time()) { echo "</span>"; }
 			echo "</a></td></tr>";
@@ -207,7 +214,7 @@ $sql = "SELECT * FROM intranet_timesheet_expense LEFT JOIN intranet_timesheet_ex
 
 $result = mysql_query($sql, $conn) or die(mysql_error());
 	if (mysql_num_rows($result) == 0) {
-		echo "<tr><td colspan=\"2\">No results found for Expenses</td></tr>";
+		echo "<tr><td colspan=\"2\">- No results found for Expenses -</td></tr>";
 	} else {
 			while ($array = mysql_fetch_array($result)) {
 			$ts_expense_id = $array['ts_expense_id'];
@@ -217,7 +224,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 			$ts_expense_vat = $array['ts_expense_vat'];
 			$expense_cat_clearance = $array['expense_cat_clearance'];
 			if ($user_usertype_current >= $expense_cat_clearance) {
-				echo "<tr><td style=\"width: 30%;\"><a href=\"index2.php?page=datebook_view_day&amp;time=$ts_expense_date\">".TimeFormat($ts_expense_date)."</a><td style=\"width: 75%;\"><a href=\"index2.php?page=timesheet_expense_view&amp;ts_expense_id=$ts_expense_id\">$ts_expense_desc</a> [ID: $ts_expense_id]";
+				echo "<tr><td style=\"width: 25%;\"><a href=\"index2.php?page=datebook_view_day&amp;time=$ts_expense_date\">".TimeFormat($ts_expense_date)."</a><td style=\"width: 75%;\"><a href=\"index2.php?page=timesheet_expense_view&amp;ts_expense_id=$ts_expense_id\">$ts_expense_desc</a> [ID: $ts_expense_id]";
 				if ($ts_expense_notes != NULL) { echo "<br />($ts_expense_notes)"; }
 				echo "</tr>";
 			}

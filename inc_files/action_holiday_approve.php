@@ -111,6 +111,18 @@ if ($_POST[approve] == "delete") {
 		$holiday_counter++;		
 		}
 		
+}	 elseif ($_POST[approve] == "to_toil") {
+
+
+		while ($holiday_counter < count($holiday_id_array)) {
+
+						$sql2 = "UPDATE intranet_user_holidays SET holiday_approved = -1 WHERE holiday_id = $holiday_id_array[$holiday_counter] LIMIT 1";
+						$result = mysql_query($sql2, $conn) or die(mysql_error());
+					
+						
+		$holiday_counter++;		
+		}
+		
 }
 
 ?>

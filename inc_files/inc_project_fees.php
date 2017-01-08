@@ -46,7 +46,7 @@ if ($module_fees = 1) {
 
 				ProjectSwitcher ("project_fees",$proj_id);
 
-				$sql = "SELECT * FROM intranet_timesheet_fees, intranet_projects WHERE ts_fee_project = '$proj_id' AND proj_id = ts_fee_project ORDER BY ts_fee_commence, ts_fee_text";
+				$sql = "SELECT * FROM intranet_projects, intranet_timesheet_fees LEFT JOIN intranet_timesheet_group ON group_id = ts_fee_group WHERE ts_fee_project = '$proj_id' AND proj_id = ts_fee_project ORDER BY ts_fee_commence, ts_fee_text";
 				$result = mysql_query($sql, $conn) or die(mysql_error());
 
 
@@ -56,7 +56,7 @@ if ($module_fees = 1) {
 						
 						echo "<form method=\"post\" action=\"index2.php?page=project_fees&amp;proj_id=$proj_id\">";
 						
-						echo "<tr><th colspan=\"2\">Stage</th><th>Begin Date</th><th>End Date</th><th>Likelihood</th><th";
+						echo "<tr><th colspan=\"3\">Stage</th><th>Begin Date</th><th>End Date</th><th>Likelihood</th><th";
 						if ($user_usertype_current > 2) { echo " colspan=\"3\""; }
 						echo ">Fee for Stage</th></tr>";
 						
@@ -82,6 +82,7 @@ if ($module_fees = 1) {
 												$ts_fee_invoice = $array['ts_fee_invoice'];
 												$ts_fee_project = $array['ts_fee_project'];
 												$ts_fee_stage = $array['ts_fee_stage'];
+												$group_code = $array['group_code'];
 												$ts_fee_target = 1 / $array['ts_fee_target'];
 												$ts_fee_prospect = $array['ts_fee_prospect'];
 												$ts_fee_pre_lag = $array['ts_fee_pre_lag']; 
@@ -159,7 +160,7 @@ if ($module_fees = 1) {
 												$ts_fee_prospect = $ts_fee_likelihood . "&nbsp;(" . $ts_fee_prospect . "%)";
 												
 												
-												echo "<tr><td style=\"$highlight\"><input type=\"radio\" name=\"fee_stage_current\" value=\"$ts_fee_id\" $ts_fee_id_selected /> </td><td style=\"$highlight\">$ts_fee_text</td><td style=\"$highlight\">".$prog_begin_print."</td><td style=\"$highlight\">".$prog_end_print."</td><td style=\"$highlight\">".$ts_fee_prospect."</td><td  style=\"$highlight; text-align: right;\">".MoneyFormat($ts_fee_calc) . $fee_target ."</td>\n";
+												echo "<tr><td style=\"$highlight\"><input type=\"radio\" name=\"fee_stage_current\" value=\"$ts_fee_id\" $ts_fee_id_selected /> </td><td style=\"$highlight\">$group_code</td><td style=\"$highlight\">$ts_fee_text</td><td style=\"$highlight\">".$prog_begin_print."</td><td style=\"$highlight\">".$prog_end_print."</td><td style=\"$highlight\">".$ts_fee_prospect."</td><td  style=\"$highlight; text-align: right;\">".MoneyFormat($ts_fee_calc) . $fee_target ."</td>\n";
 												echo "<td style=\"$highlight\">".$proj_duration_print."</td>";
 												if ($user_usertype_current > 2) { echo "<td style=\"$highlight\"><a href=\"index2.php?page=timesheet_fees_edit&amp;ts_fee_id=$ts_fee_id\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a></td>"; }
 												echo "</tr>";
@@ -186,18 +187,18 @@ if ($module_fees = 1) {
 						
 						if ($user_usertype_current > 3) { 
 						
-								echo "<tr><td colspan=\"5\"><strong>Total Fee for All Stages</strong></td><td style=\"text-align: right;\" colspan=\"3\"><strong>".MoneyFormat($fee_total)."</strong></td></tr>";
+								echo "<tr><td colspan=\"6\"><strong>Total Fee for All Stages</strong></td><td style=\"text-align: right;\" colspan=\"3\"><strong>".MoneyFormat($fee_total)."</strong></td></tr>";
 								
 								$profit = (( $fee_total / $target_cost_total ) - 1) * 100;
 								
 								$target_fee_percentage = number_format ($profit,2);
 								
-								echo "<tr><td colspan=\"5\"><strong>Target Cost for All Stages</strong></td><td style=\"text-align: right;\" colspan=\"3\"><strong>".MoneyFormat($target_cost_total). " (" . $target_fee_percentage . "% Profit Overall)</strong></td></tr>";
+								echo "<tr><td colspan=\"6\"><strong>Target Cost for All Stages</strong></td><td style=\"text-align: right;\" colspan=\"3\"><strong>".MoneyFormat($target_cost_total). " (" . $target_fee_percentage . "% Profit Overall)</strong></td></tr>";
 
 						
 						}
 						
-						echo "<tr><td colspan=\"8\"><input type=\"submit\" value=\"Update Current Fee Stage\" /></td></tr>";
+						echo "<tr><td colspan=\"9\"><input type=\"submit\" value=\"Update Current Fee Stage\" /></td></tr>";
 						
 						echo "</form>";
 						

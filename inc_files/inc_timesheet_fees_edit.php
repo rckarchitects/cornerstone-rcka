@@ -8,6 +8,7 @@ if ($ts_fee_id != NULL) {
 	$array = mysql_fetch_array($result);
 	
 		$ts_fee_stage = $array['ts_fee_stage'];
+		$ts_fee_group = $array['ts_fee_group'];
 		$ts_fee_time_begin = $array['ts_fee_time_begin'];
 		$ts_fee_duration = $array['ts_fee_time_end'] / 604800;
 		$ts_fee_text = $array['ts_fee_text'];
@@ -20,6 +21,8 @@ if ($ts_fee_id != NULL) {
 		$ts_fee_prospect = $array['ts_fee_prospect'];	
 		$ts_fee_target = $array['ts_fee_target'];		
 		$ts_fee_comment = $array['ts_fee_comment'];
+		
+
 		
 		$ts_datum_commence = $array['ts_datum_commence'];
 		$ts_datum_length = $array['ts_datum_length'];
@@ -100,26 +103,6 @@ echo "</fieldset>";
 
 echo "<fieldset><legend>Details</legend><p>";
 		
-	// Removed 9 July 2011
-
-	// echo "<span class=\"minitext\">(if applicable)</span><br />";
-
-		// echo "<select name=\"ts_fee_stage\">";
-		// $sql = "SELECT riba_id, riba_letter, riba_desc FROM riba_stages order by riba_order";
-		// $result = mysql_query($sql, $conn) or die(mysql_error());
-		// echo "<option value=\"\"";
-			// if ($ts_fee_stage == NULL) { echo " selected=\"selected\""; }
-		// echo ">-- None --</option>";
-		// while ($array = mysql_fetch_array($result)) {
-				// $riba_id = $array['riba_id'];
-				// $riba_letter = $array['riba_letter'];
-				// $riba_desc = $array['riba_desc'];
-				// echo "<option value=\"$riba_id\"";
-				// if ($ts_fee_stage == $riba_id) { echo " selected=\"selected\""; $ts_fee_text_default = $riba_letter."&nbsp;-&nbsp;".$riba_desc; }
-				// echo ">$riba_letter&nbsp;$riba_desc</option>";
-		// }
-		// echo "</select></p>";
-
 	echo "<h3>Prospect</h3><p>";
 	
 	if ($ts_fee_prospect == 25) { $possible = "checked=\"checked\""; }
@@ -136,6 +119,36 @@ echo "<fieldset><legend>Details</legend><p>";
 	echo "<input type=\"radio\" value=\"50\" name=\"ts_fee_prospect\" $neutral />&nbsp;Neutral&nbsp;";
 	echo "<input type=\"radio\" value=\"75\" name=\"ts_fee_prospect\" $probable />&nbsp;Probable&nbsp;";
 	echo "<input type=\"radio\" value=\"100\" name=\"ts_fee_prospect\" $definite />&nbsp;Definite</p>";
+	
+	// Select Project Stage / Group
+	
+	echo "<h3>Project Stage</h3>";
+	
+	$sql_group = "SELECT * FROM intranet_timesheet_group WHERE group_active = 1 ORDER BY group_code, group_order";
+	$result_group = mysql_query($sql_group, $conn) or die(mysql_error());
+	$array_group = mysql_fetch_array($result_group);
+	
+	echo "<select name=\"ts_fee_group\">";
+	
+	echo "<option value=\"\">-- None --</option>"; 
+	
+	while ($array_group = mysql_fetch_array($result_group)) {
+	
+		$group_id = $array_group['group_id'];
+		$group_order = $array_group['group_order'];
+		$group_code = $array_group['group_code'];
+		$group_description = $array_group['group_description'];
+		$group_active = $array_group['group_active'];
+		
+		if ($group_code != NULL) { $group_code = $group_code . ": "; }
+		
+		if ($group_id == $ts_fee_group ) { $select_group = " selected=\"selected\""; } else { unset($select_group); }
+		
+		echo "<option value=\"$group_id\" $select_group>" . $group_code . $group_description . "</option>";
+		
+	}
+	
+	echo "</select>";
 		
 	// Text field
 

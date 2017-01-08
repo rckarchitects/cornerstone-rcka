@@ -7,12 +7,12 @@ $cpd = 75;
 
 // Begin creating the page
 
-echo "<table><tr><th>ID</th><th>Project Number</th><th>Project Name</th><th>Project Stage</th><th>User</th><th>Date</th><th>Hours</th><th>Cost</th><th>Description</th></tr>";
+echo "<table><tr><th>ID</th><th>Project Number</th><th>Project Name</th><th>Project Stage</th><th>Speculative</th><th>User</th><th>Date</th><th>Hours</th><th>Cost</th><th>Description</th></tr>";
 
 
 // Get the relevant infomation from the Invoice Database
 
-	$sql = "SELECT * FROM intranet_projects, intranet_user_details, intranet_timesheet LEFT JOIN intranet_timesheet_fees ON ts_stage_fee = ts_fee_id WHERE ts_project = proj_id AND ts_user = user_id  AND ts_entry > 1367366400 AND ts_entry < 1398902400 ORDER BY ts_entry";
+	$sql = "SELECT * FROM intranet_projects, intranet_user_details, intranet_timesheet LEFT JOIN intranet_timesheet_fees ON ts_stage_fee = ts_fee_id WHERE ts_project = proj_id AND ts_user = user_id  AND ts_entry > 1430438400 AND ts_entry < 1462060740 ORDER BY ts_entry";
 	
 	//$sql = "SELECT * FROM intranet_projects, intranet_user_details, intranet_timesheet WHERE ts_project = proj_id AND ts_user = user_id AND ts_entry > 1398902400 ORDER BY ts_stage_fee";
 	
@@ -31,7 +31,13 @@ echo "<table><tr><th>ID</th><th>Project Number</th><th>Project Name</th><th>Proj
 		$ts_cost = $ts_hours * $ts_rate;
 		$proj_num = $array['proj_num'];
 		$proj_name = $array['proj_name'];
+		$proj_fee_track = $array['proj_fee_track'];
+		$ts_fee_id = $array['ts_fee_id'];
 		$ts_fee_text = $array['ts_fee_text'];
+		$ts_fee_value = $array['ts_fee_value'];
+		$ts_stage_fee = $array['ts_stage_fee'];
+		
+		if ($proj_fee_track == 1 && ($ts_stage_fee == "0" OR $ts_fee_value == "0" OR $ts_stage_fee == NULL OR $ts_fee_value == NULL)) { $speculative = "- Unpaid Prospect -"; } else { unset($speculative); }
 		
 		//$ts_fee_text = $array['ts_stage_fee']; 
 
@@ -39,7 +45,7 @@ echo "<table><tr><th>ID</th><th>Project Number</th><th>Project Name</th><th>Proj
 
 
 		
-echo "<tr><td>".$ts_id."</td><td>".$proj_num."</td><td>".$proj_name."</td><td>".$ts_fee_text."</td><td>".$ts_user."</td><td>".$ts_entry."</td><td>".$ts_hours."</td><td>".$ts_cost."</td><td>".$ts_desc."</td></tr>";
+echo "<tr><td>".$ts_id."</td><td>".$proj_num."</td><td>".$proj_name."</td><td>".$ts_fee_text."</td><td>".$speculative."</td><td>".$ts_user."</td><td>".$ts_entry."</td><td>".$ts_hours."</td><td>".$ts_cost."</td><td>".$ts_desc."</td></tr>";
 
 
 

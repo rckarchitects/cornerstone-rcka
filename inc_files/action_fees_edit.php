@@ -9,6 +9,7 @@ unset($alertmessage);
 		$ts_fee_project = CleanNumber($_POST[ts_fee_project]);
 		$ts_fee_text = addslashes($_POST[ts_fee_text]);
 		$ts_fee_stage = addslashes($_POST[ts_fee_stage]);
+		$ts_fee_group = intval ($_POST[ts_fee_group] );
 		$ts_fee_target = CleanNumber($_POST[ts_fee_target]);
 		$ts_fee_comment = addslashes($_POST[ts_fee_comment]);
 		$ts_fee_commence = $_POST[ts_fee_commence];
@@ -180,6 +181,7 @@ if ($ts_fee_id > 0) {
 	
 		$sql_edit = "UPDATE intranet_timesheet_fees SET
 		ts_fee_stage = '$ts_fee_stage',
+		ts_fee_group = '$ts_fee_group',
 		ts_fee_time_begin = '',
 		ts_fee_time_end = '$ts_fee_duration',
 		ts_fee_text = '$ts_fee_text',
@@ -212,6 +214,7 @@ if ($ts_fee_id > 0) {
 		$sql_add = "INSERT INTO intranet_timesheet_fees (
 		ts_fee_id,
 		ts_fee_stage,
+		ts_fee_group,
 		ts_fee_time_begin,
 		ts_fee_time_end,
 		ts_fee_text,
@@ -229,6 +232,7 @@ if ($ts_fee_id > 0) {
 		) values (
 		NULL,
 		'$ts_fee_stage',
+		'$ts_fee_group',
 		'',
 		'$ts_fee_duration',
 		'$ts_fee_text',

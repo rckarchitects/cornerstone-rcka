@@ -129,7 +129,8 @@ echo "</tr></table>";
 		<input type=\"radio\" value=\"to_studyleave\" name=\"approve\" />&nbsp;Make Study Leave [*]<br />
 		<input type=\"radio\" value=\"to_juryservice\" name=\"approve\" />&nbsp;Make Jury Service [&sect;]<br />
 		<input type=\"radio\" value=\"to_half\" name=\"approve\" />&nbsp;Make Half Day<br />
-		<input type=\"radio\" value=\"to_full\" name=\"approve\" />&nbsp;Make Full Day</p><p>
+		<input type=\"radio\" value=\"to_full\" name=\"approve\" />&nbsp;Make Full Day<br />
+		<input type=\"radio\" value=\"to_toil\" name=\"approve\" />&nbsp;Make TOIL</p><p>
 		<input type=\"hidden\" value=\"$_COOKIE[user]\" name=\"user_id\" />
 		<input type=\"submit\" value=\"Submit\" /></p></form>";
 	

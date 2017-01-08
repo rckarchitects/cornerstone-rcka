@@ -82,7 +82,7 @@ echo "<p>The following form allows you to output a PDF file which lists the acti
 
 echo "<form method=\"post\" action=\"timesheet_pdf_2.php\">";
 
-    echo "<p>Choose Date<br /><select name=\"submit_project\" class=\"inputbox\">";
+    echo "<p>Select Project<br /><select name=\"submit_project\" class=\"inputbox\">";
 
 	$sql = "SELECT * FROM intranet_projects order by proj_num";
 	$result = mysql_query($sql, $conn) or die(mysql_error());

@@ -67,12 +67,12 @@
 			
 			if ($contact_prefix > 0) { $prefix_name = "(".$prefix_name.")"; }
 	
-	print "<h1>Contact Details</h1>";
+	echo "<h1>Contact Details</h1>";
 	
-			print "<p class=\"menu_bar\">";
-			print "<a href=\"index2.php?page=contacts_edit&amp;contact_id=".$contact_id."&amp;status=edit\" class=\"menu_tab\">Edit Contact</a>";
-			if ($contact_company > 0) { print "<a href=\"index2.php?page=contacts_company_edit&amp;company_id=".$contact_company."&amp;status=edit\" class=\"menu_tab\">Edit Company</a>"; }
-			print "<a href=\"vcard.php?contact_id=$contact_id\" class=\"menu_tab\">VCard</a></p>";
+			echo "<p class=\"menu_bar\">";
+			echo "<a href=\"index2.php?page=contacts_edit&amp;contact_id=".$contact_id."&amp;status=edit\" class=\"menu_tab\">Edit Contact</a>";
+			if ($contact_company > 0) { echo "<a href=\"index2.php?page=contacts_company_edit&amp;company_id=".$contact_company."&amp;status=edit\" class=\"menu_tab\">Edit Company</a>"; }
+			echo "<a href=\"vcard.php?contact_id=$contact_id\" class=\"menu_tab\">VCard</a></p>";
 			
 			$contact_name = $contact_namefirst." ".$contact_namesecond;
 			if ($contact_title) { $contact_name = $contact_name . ", $contact_title"; }
@@ -99,7 +99,7 @@
 
 			$checkaddress = 0;
           	if ($contact_postcode != NULL) { $postcode = PostcodeFinder($contact_postcode); $checkaddress = 1; }
-		  	if ($contact_address != NULL) { print nl2br($contact_address); $checkaddress = 1;  }
+		  	if ($contact_address != NULL) { echo nl2br($contact_address); $checkaddress = 1;  }
 			if ($contact_city != NULL) { echo "<br />".$contact_city; $checkaddress = 1;  }
 			if ($contact_county != NULL) { echo "<br />".$contact_county; $checkaddress = 1;  }
 			if ($contact_postcode != NULL) { echo "<br /><a href=\"$postcode\">".$contact_postcode."</a>"; $checkaddress = 1;  }
@@ -110,18 +110,24 @@
 			
 			// Print the Phone Number
 			echo "<tr><td class=\"color\">T</td><td class=\"color\">";
-			if ($contact_telephone != NULL) { print $contact_telephone."&nbsp; [direct]"; } else if ($contact_telephone_home != NULL) { print $contact_telephone_home."&nbsp; [home]"; } else { echo "--"; }
+			if ($contact_telephone != NULL) { echo $contact_telephone."&nbsp; [direct]"; } else if ($contact_telephone_home != NULL) { echo $contact_telephone_home."&nbsp; [home]"; } else { echo "--"; }
 			echo "</td></tr>";
 
 			echo "<tr><td class=\"color\">F</td><td class=\"color\">";
-			if ($contact_fax != NULL) { print $contact_fax; } else { echo "--"; }
+			if ($contact_fax != NULL) { echo $contact_fax; } else { echo "--"; }
 			echo "</td></tr>";
 
 			echo "<tr><td class=\"color\">M</td><td class=\"color\">";
-			if ($contact_mobile != NULL) { print $contact_mobile; } else { echo "--"; }
+			if ($contact_mobile != NULL) { echo $contact_mobile; } else { echo "--"; }
 			echo "</td></tr>";
 			
-			if ($contact_include > 0) { $marketing = ".&nbsp;This person is listed as a marketing contact."; } else { unset($marketing); }
+			if ($contact_include == 1) { $marketing = ".&nbsp;This person receives both emails and hard copy marketing.";
+			
+			} elseif ($contact_include == 2) { $marketing = ".&nbsp;This person receives only email marketing.";
+			
+			} elseif ($contact_include == 3) { $marketing = ".&nbsp;This person receives only hard copy marketing.";
+				
+			} else { unset($marketing); }
 			
 			echo "<tr><td colspan=\"4\"><span class=\"minitext\">Contact added: <a href=\"index2.php?page=datebook_view_day&amp;time=$contact_added\">".date("j M Y", $contact_added)."</a> by $user_name_first $user_name_second $marketing</span></td></tr>";
 		
@@ -185,11 +191,11 @@ if ($contact_company > 0) {
 			
 			// Print the Phone Number
 			echo "<tr><td class=\"color\">T</td><td class=\"color\">";
-			if ($company_phone != NULL) { print $company_phone; } else { echo "--"; }
+			if ($company_phone != NULL) { echo $company_phone; } else { echo "--"; }
 			echo "</td></tr>";
 
 			echo "<tr><td class=\"color\">F</td><td class=\"color\">";
-			if ($company_fax != NULL) { print $company_fax; } else { echo "--"; }
+			if ($company_fax != NULL) { echo $company_fax; } else { echo "--"; }
 			echo "</td></tr>";
 		
 			echo "</table>";
@@ -237,7 +243,7 @@ if ($contact_company > 0) {
 	echo "<fieldset><legend>Related Contacts</legend>";
 	
 	echo "<table>";
-	echo "<tr><td style=\"width: 50%;\">Name</td><td>Email Address</td><td>Postcode</td></tr>";
+	echo "<tr><th style=\"width: 50%;\">Name</th><th>Email Address</th><th>Postcode</th></tr>";
 	while ($array_company_members = mysql_fetch_array($result_company_members)) {	
 	$contact_other_id = $array_company_members['contact_id'];
 	$contact_other_namefirst = $array_company_members['contact_namefirst'];

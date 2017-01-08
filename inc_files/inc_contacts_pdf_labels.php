@@ -65,7 +65,7 @@
 			<td>
 				<select name="marketing">
 				<option value="">All Entries</option>
-				<option value="1">Email &amp; Hard Copy</option>
+				<option value="1">Hard Copy</option>
 				<option value="2">Email Only</option>
 				<option value="3">Hard Copy Only</option>
 				</select>
