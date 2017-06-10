@@ -132,7 +132,7 @@ function ChecklistDate($proj_id, $checklist_item) {
 		$result_checklist_date = mysql_query($sql_checklist_date, $conn) or die(mysql_error());
 		$array_checklist_date = mysql_fetch_array($result_checklist_date);
 		
-		if ($array_checklist_date['checklist_date'] != "0000-00-00") {
+		if ($array_checklist_date['checklist_date'] != "0000-00-00" && $array_checklist_date['checklist_date'] != NULL) {
 			$output = strtotime( $array_checklist_date['checklist_date'] );
 			$output = date("j F Y",$output);
 		}

@@ -96,6 +96,11 @@ $proj_planning_ref = $_POST[proj_planning_ref];
 $proj_buildingcontrol_ref = $_POST[proj_buildingcontrol_ref];
 $proj_fee_percentage = $_POST[proj_fee_percentage];
 
+$proj_ambition_internal = trim(addslashes($_POST[proj_ambition_internal]));
+$proj_ambition_client = trim(addslashes($_POST[proj_ambition_client]));
+
+$proj_location = trim(addslashes($_POST[proj_location]));
+
 // Construct the MySQL instruction to add these entries to the database
 
 $sql_add = "UPDATE intranet_projects SET
@@ -143,10 +148,12 @@ proj_consult_18 = '$proj_consult_18',
 proj_consult_19 = '$proj_consult_19',
 proj_tenant_1 = '$proj_tenant_1',
 proj_planning_ref = '$proj_planning_ref',
-proj_buildingcontrol_ref = '$proj_buildingcontrol_ref'
+proj_buildingcontrol_ref = '$proj_buildingcontrol_ref',
+proj_location = '$proj_location'
 WHERE proj_id = '$_POST[proj_id]'";
 
 $result = mysql_query($sql_add, $conn) or die(mysql_error());
+
 
 if ($user_usertype_current > 3) {
 
@@ -156,7 +163,9 @@ proj_active = '$proj_active',
 proj_account_track = '$proj_account_track',
 proj_fee_track = '$proj_fee_track',
 proj_fee_type = '$proj_fee_type',
-proj_fee_percentage = '$proj_fee_percentage'
+proj_fee_percentage = '$proj_fee_percentage',
+proj_ambition_internal = '$proj_ambition_internal',
+proj_ambition_client = '$proj_ambition_client'
 WHERE proj_id = '$_POST[proj_id]'";
 $result2 = mysql_query($sql_add2, $conn) or die(mysql_error());
 

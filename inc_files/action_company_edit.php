@@ -23,7 +23,7 @@ $company_county = CleanUp($_POST[company_county]);
 $company_postcode = CleanUpPostcode($_POST[company_postcode]);
 $company_country = $_POST[company_country];
 $company_web = str_replace ("http://", "", $_POST[company_web]);
-$company_notes = $_POST[company_notes];
+$company_notes = addslashes($_POST[company_notes]);
 
 // Construct the MySQL instruction to add these entries to the database
 

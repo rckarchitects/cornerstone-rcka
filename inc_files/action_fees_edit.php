@@ -5,15 +5,22 @@ unset($alertmessage);
 
 // Begin to clean up the $_POST submissions
 
-		$ts_fee_id = CleanNumber($_POST[ts_fee_id]);
-		$ts_fee_project = CleanNumber($_POST[ts_fee_project]);
+		$ts_fee_id = intval ($_POST[ts_fee_id]);
+		$ts_fee_project = intval ($_POST[ts_fee_project]);
 		$ts_fee_text = addslashes($_POST[ts_fee_text]);
 		$ts_fee_stage = addslashes($_POST[ts_fee_stage]);
 		$ts_fee_group = intval ($_POST[ts_fee_group] );
-		$ts_fee_target = CleanNumber($_POST[ts_fee_target]);
+		$ts_fee_target = floatval ($_POST[ts_fee_target]);
 		$ts_fee_comment = addslashes($_POST[ts_fee_comment]);
 		$ts_fee_commence = $_POST[ts_fee_commence];
 		$ts_fee_prospect = $_POST[ts_fee_prospect];
+		
+		if ($ts_fee_text == NULL && $ts_fee_group != NULL) {
+			$sql_group_name = "SELECT group_code, group_description FROM intranet_timesheet_group WHERE group_id = $ts_fee_group LIMIT 1";
+			$result_group_name = mysql_query($sql_group_name, $conn) or die(mysql_error());
+			$array_group_name = mysql_fetch_array($result_group_name);
+			$ts_fee_text = addslashes($array_group_name['group_code']) . ". " . addslashes($array_group_name['group_description']);
+		}
 		
 		$ts_fee_proj_change = $_POST[ts_fee_proj_change];
 		
@@ -208,6 +215,8 @@ if ($ts_fee_id > 0) {
 		}
 		
 		UpdateAll($ts_fee_id);
+		
+		//echo "<p>$sql_edit</p>";
 		
 } else {
 

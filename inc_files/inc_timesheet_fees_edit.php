@@ -162,9 +162,8 @@ echo "<fieldset><legend>Details</legend><p>";
 		echo "</fieldset>";
 
 	echo "<fieldset><legend>Fee Type</legend>";
-	echo "<h3>Fixed Fee for Stage</h3><p><input type=\"radio\" value=\"value\" name=\"choose\"";
-	if ($ts_fee_value > 0) { echo " checked=\"checked\" "; }
-	echo " />&nbsp;(&pound;) <input type=\"text\" name=\"ts_fee_value\" size=\"24\" value=\"";
+	echo "<h3>Fee for Stage</h3><p><input type=\"hidden\" value=\"value\" name=\"choose\"";
+	echo " />&nbsp;(&pound;) <input type=\"number\" name=\"ts_fee_value\" size=\"24\" value=\"";
 		echo NumberFormat($ts_fee_value);
 	echo "\" /></p>";
 	
@@ -214,7 +213,7 @@ echo "<fieldset><legend>Details</legend><p>";
 
 	echo "<fieldset><legend>Duration</legend>";
 	echo "<h3>Duration of Stage in weeks (whole numbers only)</h3>";
-	echo "<p><input type=\"text\" name=\"ts_fee_duration\" maxlength=\"2\" value=\"$ts_fee_duration\" /> weeks</p>";
+	echo "<p><input type=\"number\" name=\"ts_fee_duration\" maxlength=\"3\" value=\"$ts_fee_duration\" /> weeks</p>";
 	
 	echo "<h3>Preceding Stage</h3><p>";
 
@@ -247,6 +246,8 @@ echo "<p><input type=\"number\" value=\"$ts_fee_pre_lag\" name=\"ts_fee_pre_lag\
 // Date for start of stage if none entered
 
 echo "<h3>Date of fee stage commencement</h3>";
+
+if (!$ts_fee_commence) { $ts_fee_commence = date("Y-m-d",time());}
 
 echo "<p><input type=\"date\" name=\"ts_fee_commence\" value=\"$ts_fee_commence\" /></p>";
 
@@ -285,7 +286,7 @@ if ($ts_fee_id > 0) {
 		echo "<fieldset><legend>Change Project</legend>";
 		echo "<p>You can move this fee stage to another project by selecting it from below. Note that this will break any links with other fee stages in the current project.</p>";
 
-		$sql6 = "SELECT proj_num, proj_name, proj_id FROM intranet_projects WHERE proj_active = 1 ORDER BY proj_num DESC";
+		$sql6 = "SELECT proj_num, proj_name, proj_id FROM intranet_projects ORDER BY proj_num DESC";
 				$result6 = mysql_query($sql6, $conn) or die(mysql_error());
 				echo "<select name=\"ts_fee_proj_change\">";
 				while ($array6 = mysql_fetch_array($result6)) {

@@ -126,7 +126,7 @@ while ($array_drawings = mysql_fetch_array($result_drawings)) {
 		
 		$sql_issued = "SELECT issue_id FROM intranet_drawings_issued WHERE issue_drawing = '$drawing_id' LIMIT 1";
 		$result_issued = mysql_query($sql_issued, $conn) or die(mysql_error());
-		if (mysql_num_rows($result_issued) > 0) { $pdf->SetTextColor(0, 0, 0); } else { $pdf->SetTextColor(150, 150, 150); $not_issued = "*Drawings shown in light grey have not yet been issued."; $drawing_number = $drawing_number . "*"; }
+		if (mysql_num_rows($result_issued) > 0) { $pdf->SetTextColor(0, 0, 0); } else { $pdf->SetTextColor(150, 150, 150); $not_issued = "Drawings shown in light grey have not yet been issued."; $drawing_number = $drawing_number . "*"; }
 		
 		
 		$link = $pref_location . "/public_drawing_issue.php?drawing_id=" . $drawing_id . "&hash=" . md5($drawing_number);
@@ -169,9 +169,9 @@ while ($array_drawings = mysql_fetch_array($result_drawings)) {
 $pdf->SetLineWidth(0.3);
 $pdf->Cell(0,5,'',T,1,L,0);
 
-if ($not_issued != NULL) { $pdf->Cell(0,5,$not_issued,0,1,R); }
+if ($not_issued != NULL) { $pdf->SetX(10); $pdf->Cell(0,5,$not_issued,0,1,L); }
 
-if ($obsolete_message != NULL) { $pdf->MultiCell(0,5,$obsolete_message,0,1,R); }
+if ($obsolete_message != NULL) { $pdf->MultiCell(0,5,$obsolete_message,0,1,L); }
 
 
 // If development code = "yes" (devcode = "yes") in the $_GET request, include some additional data

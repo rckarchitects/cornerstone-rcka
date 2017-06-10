@@ -182,10 +182,12 @@ if ($_GET[drawing_id] == NULL) {
 		$sql_tier3 = "SELECT standard_num, standard_desc, standard_class FROM intranet_drawings_standards_all ORDER BY standard_class,standard_num";
 		$result_tier3 = mysql_query($sql_tier3, $conn) or die(mysql_error());
 		unset($standard_class);
+		
+		
 							
 					while ($array_tier3 = mysql_fetch_array($result_tier3)) {
 						if ($standard_class != $array_tier3['standard_class'] && $standard_class != NULL) { echo "</select>"; }
-						if ($standard_class != $array_tier3['standard_class']) { echo "<select name=\"drawing_number_4". $array_tier3['standard_class'] ."\" id=\"text1.4" . $array_tier3['standard_class'] . "\" disabled=\"disabled\"  onChange = \"changeDrawing(this);\" style=\"display: none\">"; $standard_class = $array_tier3['standard_class'];}
+						if ($standard_class != $array_tier3['standard_class']) { echo "<select name=\"drawing_number_4". $array_tier3['standard_class'] ."\" id=\"text1.4" . $array_tier3['standard_class'] . "\" disabled=\"disabled\"  onChange = \"changeDrawing(this);\" style=\"display: none\">"; $standard_class = $array_tier3['standard_class']; echo "<option value=\"\">- Select -</option>";}
 						echo "<option value=\"" . $array_tier3['standard_class']."-".$array_tier3['standard_num'] . "\">" . $array_tier3['standard_num'] . " (" . str_replace ("|", " - ", $array_tier3['standard_desc']) . ")</option>";
 						
 					}

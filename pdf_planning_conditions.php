@@ -10,6 +10,8 @@ include_once "inc_files/inc_checkcookie.php";
 
 include_once "secure/prefs.php";
 
+include "inc_files/inc_action_functions_pdf.php";
+
 //  Use FDPI to get the template
 
 define('FPDF_FONTPATH','fpdf/font/');
@@ -29,81 +31,7 @@ $pdf->useTemplate($tplidx);
 
 // Functions
 
-		function StyleBody($input){
-			Global $pdf;
-			Global $format_font;
-			$pdf->SetFont($format_font,'',$input);
-			$pdf->SetTextColor(0, 0, 0);
-		}
 
-		function Notes($input) {
-			Global $pdf;
-			Global $x_current;
-			Global $y_current;
-			$pdf->SetX($x_current);
-			//$print_string = DeCode($input);
-			$print_string = $input;
-			if ($input != NULL) {
-			StyleBody(9);
-			$pdf->SetTextColor(150, 150, 150);
-			$pdf->MultiCell(90,3,$print_string,0, L, false);
-			$pdf->MultiCell(90,1,'',0, L, false);
-			}
-		}
-		
-		function StyleHeading($title,$text,$notes){
-			Global $pdf;
-			Global $x_current;
-			Global $y_current;
-			Global $y_left;
-			Global $y_right;
-			if ($y_current > 230 AND $x_current > 75) { $pdf->addPage(); $x_current = 10; $y_current = 15; }
-			$pdf->SetXY($x_current,$y_current);
-			$pdf->SetFont('Helvetica','b',12);
-			$pdf->SetTextColor(0, 0, 0);
-			$pdf->SetX($x_current);
-			$pdf->SetDrawColor(0,0,0);
-			$pdf->SetLineWidth(0.3);
-			$pdf->MultiCell(90,5,$title,B, L, false);
-			$pdf->MultiCell(90,1,'',0, L, false);
-			Notes($notes);
-			StyleBody(10);
-			$pdf->SetX($x_current);
-			$pdf->MultiCell(90,4,$text,0, L, false);
-			
-			if ($x_current < 75) {
-				$x_current = 105;
-				$y_left = $pdf->GetY();
-			} else {
-				$x_current = 10;
-				$y_right = $pdf->GetY();
-				if ($y_left > $y_right) { $y_current = $y_left + 5; } else { $y_current = $y_right + 5; }
-				if ($y_current > 220) { $pdf->addPage(); $y_current = 20; }
-			}
-			
-			
-		}
-		
-		function AddLine($input) {
-			if ($input != NULL AND $input != '0' AND strlen($input) > 3) { $input = $input."\n"; return $input; }
-		}
-		
-		function SplitBag($input) {
-			Global $pdf;
-			Global $x_current;
-			Global $y_current;
-			Global $y_left;
-			Global $y_right;
-			if ($y_left > $y_right) { $y_current = $y_left + 5; } else { $y_current = $y_right + 5; }
-			$x_current = 10;
-			$pdf->SetXY($x_current,$y_current);
-			StyleBody(10);
-			$pdf->SetFillColor(220, 220, 220);
-			$pdf->Cell(0,5,$input,0, 2,L, true);
-			$pdf->Cell(0,5,'',0, 2,L, false);
-			$x_current = 10;
-			$y_current = $pdf->GetY();
-		}
 		
 
 // Begin creating the page
@@ -111,69 +39,14 @@ $pdf->useTemplate($tplidx);
 	$project_counter = 1;
 	$page_count = 1;
 
-	$pdf->SetY(35);
-	$pdf->SetFont('Helvetica','',18);
 
-	$pdf->SetTextColor(0,0,0);
-	$pdf->Cell(0,10,"Planning Conditions Tracker");
-
-	$pdf->SetY(50);
-	$pdf->SetFont('Helvetica','b',18);
-
-// Determine name of project
-
-	$sql = "SELECT * FROM intranet_projects WHERE proj_id = '$proj_id'";
-	$result = mysql_query($sql, $conn) or die(mysql_error());
-	$array = mysql_fetch_array($result);
-
-	$proj_num = $array['proj_num'];
-	$proj_name = $array['proj_name'];
-	$proj_desc = $array['proj_desc'];
-	$proj_address_1 = $array['proj_address_1'];
-	$proj_address_2 = $array['proj_address_2'];
-	$proj_address_3 = $array['proj_address_3'];
-	$proj_address_town = $array['proj_address_town'];
-	$proj_address_county = $array['proj_address_county'];
-	$proj_address_postcode = $array['proj_address_postcode'];
-	$proj_client_contact_id = $array['proj_client_contact_id'];
-
-	$proj_planning_ref = $array['proj_planning_ref'];
-	$proj_buildingcontrol_ref = $array['proj_buildingcontrol_ref'];
-
-	$print_title = $proj_num." ".$proj_name;
-
-	$pdf->MultiCell(0,8,$print_title,0, L, 0);
-
-// Printed by, and on...
-
-	$pdf->SetFont($format_font,'',10);
-
-	$sql = "SELECT user_name_first, user_name_second FROM intranet_user_details WHERE user_id = $_COOKIE[user]";
-	$result = mysql_query($sql, $conn) or die(mysql_error());
-	$array = mysql_fetch_array($result);
-
-	$user_name_first = $array['user_name_first'];
-	$user_name_second = $array['user_name_second'];
-
-	$printed_on = "Current at ". date("g:ia, j F Y");
-
-	$pdf->Cell(0,6,$printed_on,0, 1, L, 0);
-
-	$pdf->SetFillColor(255, 255, 255);
-
-	$y_current = 70;
-	$x_current = 10;
-
-// Project Address
+	
 
 
-		$proj_address = $proj_address.AddLine($proj_address_1);
-		$proj_address = $proj_address.AddLine($proj_address_2);
-		$proj_address = $proj_address.AddLine($proj_address_3);
-		$proj_address = $proj_address.AddLine($proj_address_town);
-		$proj_address = $proj_address.AddLine($proj_address_county);
-		$proj_address = $proj_address.AddLine($proj_address_postcode);
-		StyleHeading("Site Address",$proj_address);
+ProjectHeading($proj_id, "Planning Conditions Tracker");
+
+
+
 
 	
 	// Begin the conditions array

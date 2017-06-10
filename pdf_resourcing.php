@@ -115,7 +115,8 @@ $pdf->addPage(L);
 		
 		$x = 10;
 		$y = 32;
-		$pdf->SetXY($x,$y);	
+		$pdf->SetXY($x,$y);
+		$pdf->SetDrawColor(0,0,0);
 	}
 	
 	function Weeks($input) {
@@ -508,7 +509,7 @@ DrawGrid();
 		
 		
 		// List all of the upcoming holidays for each person
-		
+		$pdf->addPage(L); DrawGrid();
 		
 		$start = $time;
 		
@@ -516,7 +517,7 @@ DrawGrid();
 		$y = $pdf->GetY() + 15;
 		$pdf->SetXY($x,$y);
 		
-		if ($pdf->GetY() > 170) { $pdf->addPage(L); DrawGrid(); }
+		
 		
 function CheckHols($date, $user_id, $start) {
 	
@@ -535,6 +536,12 @@ function CheckHols($date, $user_id, $start) {
 		if (in_array($date,$array_print)) { return "yes"; }
 
 }
+		
+		
+		DrawGrid();
+		
+		$pdf->SetDrawColor(100,100,100);
+		
 		// First create an array which extracts all bank holidays from the database
 
 		$sql_bankholidays = "SELECT bankholidays_datestamp FROM intranet_user_holidays_bank WHERE bankholiday_timestamp > $current_time";
@@ -611,7 +618,7 @@ function CheckHols($date, $user_id, $start) {
 		
 	// Now let's  attempt a graph
 	
-	if ($pdf->GetY() > 150) { $pdf->addPage(L); DrawGrid(); }
+	$pdf->addPage(L); DrawGrid();
 	
 	$axis_y_max_1 = max ($weekdiff_array);
 	$axis_y_min_1 = min ($weekdiff_array);

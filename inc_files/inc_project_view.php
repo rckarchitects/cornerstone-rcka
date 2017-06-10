@@ -36,13 +36,19 @@ $proj_planning_ref = $array['proj_planning_ref'];
 $proj_buildingcontrol_ref = $array['proj_buildingcontrol_ref'];
 $proj_fee_percentage = $array['proj_fee_percentage'];
 
+$proj_ambition_internal = $array['proj_ambition_internal'];
+$proj_ambition_client = $array['proj_ambition_client'];
+
+$proj_location = $array['proj_location'];
+
+
 // Determine the country
 $sql = "SELECT country_printable_name FROM intranet_contacts_countrylist where country_id = '$proj_address_country' LIMIT 1";
 $result = mysql_query($sql, $conn);
 $array = mysql_fetch_array($result);
 $country_printable_name = $array['country_printable_name'];
 
-
+ProjectSwitcher("project_view",$proj_id,1,1);
 
 $proj_tenant_1 = $array['proj_tenant_1'];
 
@@ -109,10 +115,11 @@ echo "</p>";
 					echo "</td></tr>";
 
 					if ($proj_date_start > 0) { echo "<tr><td  >Project Start Date</td><td  >$proj_date_start</td></tr>"; }
-					if ($proj_date_complete > 0) { echo "<tr><td  >Project Completion Date</td><td  >$proj_date_complete</td></tr>"; }
+					if ($proj_date_complete > 0) { echo "<tr><td  >Project Completion Date</td><td>" . TimeFormat($proj_date_complete) . "</td></tr>"; }
 
-					if ($proj_desc != "") { echo "<tr><td  >Project Description</td><td  >$proj_desc</td></tr>"; }
-
+					if ($proj_desc != "") { echo "<tr><td>Project Description</td><td>" . nl2br ($proj_desc) . "</td></tr>"; }
+					if ($proj_ambition_internal != "") { echo "<tr><td>Project Ambition</td><td>" . nl2br ($proj_ambition_internal) . "</td></tr>"; }
+					if ($proj_ambition_client != "") { echo "<tr><td>Client Ambition</td><td>" . nl2br ($proj_ambition_client) . "</td></tr>"; }
 
 					if ($proj_procure > 0) {
 					echo "<tr><td>Procurement Method</td><td>$proj_procure</td></tr>";
@@ -126,6 +133,11 @@ echo "</p>";
 					if ($proj_fee_percentage > 0) {
 					echo "<tr><td>Fee Percentage</td><td>".$proj_fee_percentage."%</td></tr>";
 					echo "<tr><td>Total Fee<br /><span class=\"minitext\">(Assuming 100% of fee)</span></td><td>".MoneyFormat(($proj_value * ($proj_fee_percentage / 100)))."</td></tr>";
+					}
+					
+					
+					if ($proj_location) {
+						echo "<tr><td>Project Location</td><td>$proj_location</td></tr>";
 					}
 
 					echo "</table>";

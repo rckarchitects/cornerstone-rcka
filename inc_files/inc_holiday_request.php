@@ -67,7 +67,7 @@ echo "<p>You have requested the following days holiday:</p>";
 $holiday_count = CheckHolidays($_POST[holiday_begin],$_POST[holiday_back],"yes",$user_id, $_POST[holiday_length],$paid);
 $holiday_remaining = $user_holidays - $holiday_count;
 
-echo "<p>Please note that your holiday request cannot be confirmed until it has been approved in writing.</p><p><a href=\"pdf_holiday_request.php\">Please click here</a> to download the request form.</p>";
+echo "<p>Please note that your holiday request cannot be confirmed until it has been approved in writing.</p><p><a href=\"pdf_holiday_request.php?user_id=$user_id\">Please click here</a> to download the request form.</p>";
 
 echo "</fieldset>";
 }

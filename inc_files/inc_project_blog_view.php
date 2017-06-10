@@ -45,8 +45,8 @@ print "<h3>Project</h3><p><a href=\"index2.php?page=project_view&amp;proj_id=$pr
 </p><h3>Date</h3><p>".date("g:ia", $blog_date)." <a href=\"index2.php?page=datebook_view_day&amp;time=$blog_date\">".TimeFormat($blog_date)."</a>
 </p>";
 
-			$type_find = array("phone","filenote","meeting","email");
-			$type_replace = array("Telephone Call","File Note","Meeting Note", "Email Message");
+			$type_find = array("phone","filenote","meeting","email","rfi");
+			$type_replace = array("Telephone Call","File Note","Meeting Note", "Email Message","Request for Information (RFI)");
 			$blog_type_view = str_replace($type_find,$type_replace,$blog_type);
 			
 print "<h3>Entry by</h3><p>";

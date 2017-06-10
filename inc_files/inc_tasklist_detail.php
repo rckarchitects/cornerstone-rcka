@@ -78,7 +78,7 @@ print "</p>";
 					
 					// If completed, put the completed date down
 					
-					if ($tasklist_percentage == 100 AND $tasklist_completed != "") {
+					if ($tasklist_percentage == 100 AND $tasklist_completed > 0) {
 					print ", completed <a href=\"index2.php?page=datebook_view_day&time=$tasklist_completed\">".TimeFormat($tasklist_completed)."</a>";
 					}
 					

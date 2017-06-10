@@ -44,12 +44,14 @@ function TotalCost($proj_id, $bar_scale, $bar_width_standard) {
 		GLOBAL $bar_width_standard;
 		GLOBAL $conn;
 				
-		$sql_cost_proj = " SELECT SUM(ts_cost_factored) FROM intranet_timesheet WHERE `ts_project` = $proj_id ";
+		//$sql_cost_proj = " SELECT SUM(ts_cost_factored) FROM intranet_timesheet WHERE `ts_project` = $proj_id ";
+		$sql_cost_proj = " SELECT SUM(ts_cost_factored * (1 - user_prop) * ((1 - user_prop) / (1 - user_prop_target))) FROM intranet_timesheet, intranet_user_details WHERE user_id = ts_user AND `ts_project` = $proj_id ";
+		
 		$result_cost_proj = mysql_query($sql_cost_proj, $conn) or die(mysql_error());
 		$array_cost_proj = mysql_fetch_array($result_cost_proj);
-		$cost_proj = $array_cost_proj['SUM(ts_cost_factored)'];
+		$cost_proj = $array_cost_proj['SUM(ts_cost_factored * (1 - user_prop) * ((1 - user_prop) / (1 - user_prop_target)))'];
 		
-		$sql_fee_proj = "SELECT SUM(ts_fee_value) FROM intranet_timesheet_fees LEFT JOIN intranet_timesheet ON ts_fee_stage = ts_stage_fee WHERE `ts_fee_project` = $proj_id AND ts_id > 0";
+		//$sql_fee_proj = "SELECT SUM(ts_fee_value) FROM intranet_timesheet_fees LEFT JOIN intranet_timesheet ON ts_fee_stage = ts_stage_fee WHERE `ts_fee_project` = $proj_id AND ts_id > 0";
 		$sql_fee_proj = " SELECT SUM(ts_fee_value), SUM(ts_fee_value * (1/ts_fee_target)) FROM intranet_timesheet_fees WHERE `ts_fee_project` = $proj_id ";
 		$result_fee_proj = mysql_query($sql_fee_proj, $conn) or die(mysql_error());
 		$array_fee_proj = mysql_fetch_array($result_fee_proj);
@@ -108,51 +110,6 @@ function TotalCost($proj_id, $bar_scale, $bar_width_standard) {
 		$pdf->Cell(0,1,'',0,1);
 	
 		$pdf->SetLineWidth(0.2);
-}
-
-function Checklist($proj_id) {
-
-		GLOBAL $pdf;
-		GLOBAL $bar_width_standard;
-		GLOBAL $conn;
-
-		$sql_checklist = "SELECT checklist_required, checklist_date, item_group FROM intranet_project_checklist_items LEFT JOIN intranet_project_checklist ON checklist_item = item_id AND checklist_project = $proj_id ORDER BY item_group, item_order, item_name";
-		$result_checklist = mysql_query($sql_checklist, $conn) or die(mysql_error());
-		
-		$rows = mysql_num_rows($result_checklist);
-		$width = (190 / $rows) - 0.75;
-		
-		unset($group);
-		
-		while ($array_checklist = mysql_fetch_array($result_checklist)) {
-		
-				$checklist_required = $array_checklist['checklist_required'];
-				$checklist_date = $array_checklist['checklist_date'];
-				$item_group = $array_checklist['item_group'];
-				$group_rows = $array_checklist['COUNT[item_group]'];
-				
-		if ($checklist_required == "2" AND $checklist_date == "0000-00-00" ) { $pdf->SetFillColor(245,72,72); } // Red
-		elseif ($checklist_required == "2" AND $checklist_date == NULL) { $pdf->SetFillColor(245,72,72); } // Red
-		elseif ($checklist_required == "0") { $pdf->SetFillColor(245,190,72); } // Red
-		elseif ($checklist_required == NULL) { $pdf->SetFillColor(245,190,72); } // Orange
-		elseif ($checklist_required == "1") { $pdf->SetFillColor(220,220,220); } // Grey
-		else { $pdf->SetFillColor(173,233,28); }  // Green
-						
-						$pdf->SetDrawColor(255,255,255);
-						
-						if ($checklist_required != 1) {
-							if ($group != NULL && $group != $item_group) { $pdf->Cell(0.75,2,'',0,0,C,false); }
-							$pdf->Cell($width,2,'',1,0,C,true);
-						}
-						
-			$group = $item_group;		
-		
-		}
-		
-			$current_y = $pdf->GetY() + 4;
-			
-			$pdf->SetX(0);
-			$pdf->SetY($current_y);
 }
 
 
@@ -249,10 +206,12 @@ $pdf->AddFont($format_font,'',$format_font_2);
 	$array_fee_total = mysql_fetch_array($result_fee_total);
 	$fee_total = $array_fee_total['SUM(ts_fee_value)'];
 	
-	$sql_cost_total = "SELECT SUM(ts_cost_factored) FROM intranet_timesheet WHERE ts_project = '$proj_id'";
+	//$sql_cost_total = "SELECT SUM(ts_cost_factored) FROM intranet_timesheet WHERE ts_project = '$proj_id'";
+	$sql_cost_total = "SELECT SUM(ts_cost_factored * (1 - user_prop) * ((1 - user_prop) / (1 - user_prop_target))) FROM intranet_timesheet, intranet_user_details WHERE user_id = ts_user AND ts_project = '$proj_id'";
+	
 	$result_cost_total = mysql_query($sql_cost_total, $conn) or die(mysql_error());
 	$array_cost_total = mysql_fetch_array($result_cost_total);
-	$cost_total = $array_cost_total['SUM(ts_cost_factored)'];
+	$cost_total = $array_cost_total['SUM(ts_cost_factored * (1 - user_prop) * ((1 - user_prop) / (1 - user_prop_target)))'];
 	
 	if ($cost_total > $fee_total) { $this_bar_width = $bar_width_standard * ( $cost_total / $maximum_total_fee); } else { $this_bar_width = $bar_width_standard * ( $fee_total / $maximum_total_fee); } 
 	
@@ -348,7 +307,7 @@ $pdf->AddFont($format_font,'',$format_font_2);
 			if ($cost_total > $fee_total) { $bar_scale = $cost_total; } else { $bar_scale = $fee_total; }
 			
 			// Scale bar for costs
-			if ($bar_scale < 10000) { $unit = 1000; } elseif ($bar_scale< 20000) { $unit = 2000; } elseif ($bar_scale< 50000) { $unit = 5000; } elseif ($bar_scale< 50000) { $unit = 10000; } elseif ($bar_scale< 100000) { $unit = 20000; } elseif ($bar_scale < 300000) { $unit = 25000; } else { $unit = 50000; }
+			if ($bar_scale < 10000) { $unit = 1000; } elseif ($bar_scale< 20000) { $unit = 2000; } elseif ($bar_scale < 50000) { $unit = 5000; } elseif ($bar_scale < 50000) { $unit = 10000; } elseif ($bar_scale < 100000) { $unit = 20000; } elseif ($bar_scale < 300000) { $unit = 25000; } elseif ($bar_scale < 500000) { $unit = 50000; } else { $unit = 100000; }
 			$unit_scale = 0;
 			// Establish whether scale bar should be related to profit or cost
 			$separator = ($bar_width_standard / $bar_scale) * $unit;
@@ -383,10 +342,11 @@ $pdf->AddFont($format_font,'',$format_font_2);
 			
 			// Now a bar which shows the unassigned work
 			
-			$sql_cost_unassigned = " SELECT SUM(ts_cost_factored) FROM intranet_timesheet WHERE `ts_stage_fee` = 0 AND `ts_project`= $proj_id";
+			//$sql_cost_unassigned = "SELECT SUM(ts_cost_factored) FROM intranet_timesheet WHERE `ts_stage_fee` = 0 AND `ts_project`= $proj_id";
+			$sql_cost_unassigned = "SELECT SUM(ts_cost_factored * (1 - user_prop) * ((1 - user_prop) / (1 - user_prop_target))) FROM intranet_timesheet, intranet_user_details WHERE user_id = ts_user AND ts_stage_fee = 0 AND ts_project = $proj_id";
 				$result_cost_unassigned = mysql_query($sql_cost_unassigned, $conn) or die(mysql_error());
 				$array_cost_unassigned = mysql_fetch_array($result_cost_unassigned);
-				$cost_unassigned = $array_cost_unassigned['SUM(ts_cost_factored)'];
+				$cost_unassigned = $array_cost_unassigned['SUM(ts_cost_factored * (1 - user_prop) * ((1 - user_prop) / (1 - user_prop_target)))'];
 				
 				$project_cost_total = $project_cost_total + $cost_unassigned;
 				
@@ -420,8 +380,8 @@ $pdf->AddFont($format_font,'',$format_font_2);
 		
 					// Now include the project checklist completion
 			
-			$pdf->Cell(13,2,'Checklist',0,0,R);
-			Checklist($proj_id);
+			//$pdf->Cell(13,2,'Checklist',0,0,R);
+			//Checklist($proj_id);
 			
 		}
 		
@@ -450,20 +410,23 @@ $pdf->AddFont($format_font,'',$format_font_2);
 		
 			
 			// Now establish the width of the timesheet hours to date for this fee stage only
-			$sql_cost_total = " SELECT SUM(ts_cost_factored) FROM intranet_timesheet WHERE `ts_stage_fee` = $ts_fee_id AND `ts_project` = $proj_id";
+			//$sql_cost_total = " SELECT SUM(ts_cost_factored) FROM intranet_timesheet WHERE `ts_stage_fee` = $ts_fee_id AND `ts_project` = $proj_id";
+			$sql_cost_total = "SELECT SUM(ts_cost_factored * (1 - user_prop) * ((1 - user_prop) / (1 - user_prop_target))) FROM intranet_timesheet, intranet_user_details WHERE user_id = ts_user AND ts_stage_fee = $ts_fee_id AND ts_project = $proj_id";
 			$result_cost_total = mysql_query($sql_cost_total, $conn) or die(mysql_error());
 			$array_cost_total = mysql_fetch_array($result_cost_total);
-			$cost_total = $array_cost_total['SUM(ts_cost_factored)'];
+			$cost_total = $array_cost_total['SUM(ts_cost_factored * (1 - user_prop) * ((1 - user_prop) / (1 - user_prop_target)))'];
 			
-			$sql_cost_stage = " SELECT SUM(ts_cost_factored) FROM intranet_timesheet WHERE `ts_stage_fee` = $ts_fee_id AND `ts_project` = $proj_id ";
+			//$sql_cost_stage = " SELECT SUM(ts_cost_factored) FROM intranet_timesheet WHERE `ts_stage_fee` = $ts_fee_id AND `ts_project` = $proj_id ";
+			$sql_cost_stage = "SELECT SUM(ts_cost_factored * (1 - user_prop) * ((1 - user_prop) / (1 - user_prop_target))) FROM intranet_timesheet, intranet_user_details WHERE user_id = ts_user AND `ts_stage_fee` = $ts_fee_id AND `ts_project` = $proj_id ";
 			$result_cost_stage = mysql_query($sql_cost_stage, $conn) or die(mysql_error());
 			$array_cost_stage = mysql_fetch_array($result_cost_stage);
-			$cost_stage = $array_cost_stage['SUM(ts_cost_factored)'];
+			$cost_stage = $array_cost_stage['SUM(ts_cost_factored * (1 - user_prop) * ((1 - user_prop) / (1 - user_prop_target)))'];
 
-			$sql_cost_stage_uf = " SELECT SUM(ts_rate * ts_hours) FROM intranet_timesheet WHERE `ts_stage_fee` = $ts_fee_id AND `ts_project` = $proj_id ";
+			//$sql_cost_stage_uf = " SELECT SUM(ts_rate * ts_hours) FROM intranet_timesheet WHERE `ts_stage_fee` = $ts_fee_id AND `ts_project` = $proj_id ";
+			$sql_cost_stage_uf = "SELECT SUM(ts_rate * ts_hours * (1 - user_prop)) FROM intranet_timesheet, intranet_user_details WHERE user_id = ts_user AND `ts_stage_fee` = $ts_fee_id AND `ts_project` = $proj_id ";
 			$result_cost_stage_uf = mysql_query($sql_cost_stage_uf, $conn) or die(mysql_error());
 			$array_cost_stage_uf = mysql_fetch_array($result_cost_stage_uf);
-			$cost_stage_uf = $array_cost_stage_uf['SUM(ts_rate * ts_hours)'];
+			$cost_stage_uf = $array_cost_stage_uf['SUM(ts_rate * ts_hours * (1 - user_prop))'];
 			
 			
 			$cost_total = $cost_stage;
@@ -736,135 +699,6 @@ $pdf->Cell(0,4,'',0,1);
 				
 	}
 
-	
-	
-	
-	
-	
-	
-	
-function HolidayCalendar($year) {	
-	
-						GLOBAL $pdf;
-						GLOBAL $conn;
-							
-
-						$pdf->addPage();
-
-						// New page with upcoming holidays, etc.
-						
-						$page_title = "Holidays " . $year;
-
-						$pdf->SetFont('Helvetica','b',24);
-						$pdf->SetTextColor($format_bg_r, $format_bg_g, $format_bg_b);
-						$pdf->MultiCell(0,8,$page_title,0,1,L);
-						$pdf->Cell(0,2,'',0,1);
-
-
-						$pdf->SetFont('Helvetica','b',18);
-
-						// $beginweek = BeginWeek(time()) + 43200 - 2419200;
-
-						$beginweek = BeginWeek ( mktime( 0, 0, 0, 1, 1, $year ) );
-
-						$daycounter = 0;
-
-						$coord_x = $pdf->GetX();
-						$coord_y = $pdf->GetY();
-
-						$days_to_show = 264; // Must be a multiple of 7
-						$days_to_show = 406; // Must be a multiple of 7
-
-						while ($daycounter < $days_to_show) {
-
-							
-
-							$today = ( $daycounter * 86400 ) + $beginweek;
-							$date = date("j",$today);
-							
-							$this_day = date("w",$today);
-							
-							$day = date("j",$today) ;
-							
-							$month = substr( date("M",$today) , 0, 2 );
-							
-							$week = date("W",$today);
-							
-							// Add a square showing the month if this is the first...
-							if (date("j",$today) == 1) { $pdf->SetTextColor(255); $pdf->SetFont('Helvetica','b',6); SetBarPurple(); $pdf->Cell(5,4.5,$month,TBL,0,L,1); $month_begin = 1; }
-							
-							if ( date("n",time()) == date("n",$today) && date("j",time()) == date("j",$today) && date("Y",time()) == date("Y",$today) ) {
-							SetBarDBlue();
-							} elseif (date("W",time()) == date("W",$today) && date("Y",time()) == date("Y",$today)) {
-							SetBarLBlue();
-							} elseif ( date("n",time()) == date("n",$today) ) {
-							$pdf->SetFillColor(160);
-							} elseif (date("n",$today) == 2 OR date("n",$today) == 4 OR date("n",$today) == 6 OR date("n",$today) == 8 OR date("n",$today) == 10 OR date("n",$today) == 12)  {
-							$pdf->SetFillColor(190);
-							} else {
-							$pdf->SetFillColor(220);
-							}
-							
-							unset($holiday_list);
-							$sql_holidays = "SELECT user_initials, holiday_length, holiday_paid, holiday_approved FROM intranet_user_holidays, intranet_user_details  WHERE user_id = holiday_user AND holiday_date = " . date("j",$today) . " AND holiday_month = " . date("n",$today) . " AND holiday_year = " . date("Y",$today) . " ORDER BY user_initials DESC";
-							$result_holidays = mysql_query($sql_holidays, $conn) or die(mysql_error());
-							while ($array_holidays = mysql_fetch_array($result_holidays)) {
-							if ($array_holidays['holiday_length'] == 0.5) { $holiday_length = " (Half day)"; } else { unset($holiday_length); }
-							if ($array_holidays['holiday_approved'] == NULL) { $holiday_approved = "*"; } else { unset($holiday_approved); }
-							if ($array_holidays['holiday_paid'] != 1) { $holiday_paid_1 = "["; $holiday_paid_2 = "]";  } else { unset($holiday_paid_1); unset($holiday_paid_2); }
-							$holiday_list = $holiday_paid_1 . $array_holidays['user_initials'] . $holiday_approved . $holiday_paid_2 . $holiday_length . ", " . $holiday_list ;
-							}
-							
-							$holiday_list = rtrim ( $holiday_list , ", " );
-							
-							$sql_bankholidays = "SELECT bankholiday_timestamp FROM intranet_user_holidays_bank WHERE bankholidays_day = " . date("j",$today) . " AND  bankholidays_month = " . date("n",$today) . " AND bankholidays_year = " . date("Y",$today) . "  LIMIT 1";
-							$result_bankholidays = mysql_query($sql_bankholidays, $conn);
-
-							if (mysql_num_rows($result_bankholidays) > 0) {
-							SetBarOrange();	
-							}
-							
-							if ($daycounter == 0) { $pdf->SetTextColor(0); $pdf->SetFont('Helvetica','',6); $pdf->Cell(6,4.5,$week - 1,TRB,0,L,0); }
-							
-							if ( $this_day > 0 AND $this_day <= 5 ) {
-							$pdf->SetTextColor(255); $pdf->SetFont('Helvetica','b',9);
-							$pdf->Cell(5,4.5,$day,LTB,0,L,1);
-							$pdf->SetTextColor(0);
-							$pdf->SetFont('Helvetica','',5);
-							}
-
-							
-							if ( $this_day > 0 AND $this_day < 5 ) {
-							if ($month_begin == 1) { $cell_width = 26; unset($month_begin); } else { $cell_width = 31; }
-							$pdf->Cell($cell_width,4.5,$holiday_list,TRB,0,L,1);
-							} elseif ( $this_day == 5 )  {
-							if ($month_begin == 1) { $cell_width = 26; unset($month_begin); } else { $cell_width = 31; }
-							$pdf->Cell($cell_width,4.5,$holiday_list,TRB,1,L,1);
-							if ($daycounter < ($days_to_show - 6)) { $pdf->Cell(6,4.5,$week,TRB,0,L,0); }
-							}
-							
-							// $pdf->MultiCell(0,5,$sql_holidays);
-							
-							$daycounter++;
-
-						}
-							
-							$pdf->SetTextColor(0);
-							$pdf->SetFont('Helvetica','',7);
-							
-							$holiday_notes = "* Pending Approval.\nInitials shown in square brackets indicate non-paid holiday.";
-							
-							$pdf->MultiCell(0,4,$holiday_notes,0,L);
-							
-}
-
-$thisyear = date ("Y", time());
-$startyear = 2012;
-
-while ($startyear <= $thisyear) {
-	HolidayCalendar($startyear);
-	$startyear++;
-}
 
 // and send to output
 

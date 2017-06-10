@@ -131,6 +131,7 @@ print "<option value=\"filenote\" ";	if ($blog_type == "filenote") { print "sele
 print "<option value=\"meeting\" ";	if ($blog_type == "meeting") { print "selected"; }; print ">Meeting Note</option>";
 print "<option value=\"review\" ";	if ($blog_type == "review") { print "selected"; }; print ">Project Review</option>";
 print "<option value=\"phone\" ";	if ($blog_type == "phone") { print "selected"; }; print ">Telephone Call</option>";
+print "<option value=\"rfi\" ";	if ($blog_type == "rfi") { print "selected"; }; print ">Request for Information (RFI)</option>";
 
 print "</select>";
 

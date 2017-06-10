@@ -3,9 +3,9 @@
 // First, determine the title of the page
 
 if($_GET[proj_id] != NULL) {
-echo "<h1>Edit Project</h1>";
+echo "<h2>Edit Project</h2>";
 } else {
-echo "<h1>Add New Project</h1>";
+echo "<h2>Add New Project</h2>";
 }
 
 echo "<p class=\"menu_bar\">";
@@ -84,6 +84,11 @@ $proj_planning_ref = $array['proj_planning_ref'];
 $proj_buildingcontrol_ref = $array['proj_buildingcontrol_ref'];
 $proj_fee_percentage = $array['proj_fee_percentage'];
 
+$proj_ambition_internal = $array['proj_ambition_internal'];
+$proj_ambition_client = $array['proj_ambition_client'];
+
+$proj_location = $array['proj_location'];
+
 echo "<form method=\"post\" action=\"index2.php?page=project_view&amp;status=edit&amp;proj_id=$proj_id\">";
 
 } elseif($status == "add") {
@@ -141,6 +146,11 @@ $proj_fee_type = $_POST[proj_fee_type];
 $proj_planning_ref = $_POST[proj_planning_ref];
 $proj_buildingcontrol_ref = $_POST[proj_buildingcontrol_ref];
 $proj_fee_percentage = $_POST[proj_fee_percentage];
+
+$proj_ambition_internal = $_POST[proj_ambition_internal];
+$proj_ambition_client = $_POST[proj_ambition_client];
+
+$proj_location = $_POST[proj_location];
 
 // Find the next number in the sequence
 if ($_POST[proj_num] == NULL) {
@@ -238,33 +248,42 @@ echo "
 
 <h2>Project Particulars</h2>
 
-<p>Planning Reference Number<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_planning_ref\" maxlength=\"50\" value=\"$proj_planning_ref\" /></p>
+<p>Project Description<br /><textarea name=\"proj_desc\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_desc</textarea></p>
 
-<p>Building Control Reference Number<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_buildingcontrol_ref\" maxlength=\"50\" value=\"$proj_buildingcontrol_ref\" /></p>
+<p>Practice Ambition for Project<br /><textarea name=\"proj_ambition_internal\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_ambition_internal</textarea></p>
 
-<p>Proposal Issued</p>";
-include("inc_files/inc_data_project_date_proposal.php");
+<p>Client Ambition for Project<br /><textarea name=\"proj_ambition_client\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_ambition_client</textarea></p>
 
-echo "<p>Date of Appointment</p>";
-include("inc_files/inc_data_project_date_appointment.php");
-
-echo "<p>Project Start</p>";
-include("inc_files/inc_data_project_timestart.php");
-
-echo "<p>Project Complete</p>";
-include("inc_files/inc_data_project_timecomplete.php");
-
-echo "<p>Project Description<br /><textarea name=\"proj_desc\" class=\"inputbox\" cols=\"54\" rows=\"8\">$proj_desc</textarea></p>
 <p>Procurement Method<br />";
+
+//<p>Planning Reference Number<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_planning_ref\" maxlength=\"50\" value=\"$proj_planning_ref\" /></p>
+
+//<p>Building Control Reference Number<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_buildingcontrol_ref\" maxlength=\"50\" value=\"$proj_buildingcontrol_ref\" /></p>
+
+//<p>Proposal Issued</p>";
+//include("inc_files/inc_data_project_date_proposal.php");
+
+//echo "<p>Date of Appointment</p>";
+//include("inc_files/inc_data_project_date_appointment.php");
+
+//echo "<p>Project Start</p>";
+//include("inc_files/inc_data_project_timestart.php");
+
+//echo "<p>Project Complete</p>";
+//include("inc_files/inc_data_project_timecomplete.php");
+
+
 include("inc_files/inc_data_project_procurement.php"); echo "</p>";
 
 echo "<p>Contract Value (approx.)<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_value\" maxlength=\"12\" value=\"$proj_value\" /></p>";
 
-echo "<p>Total Fee (all stages)<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_fee_percentage\" maxlength=\"12\" value=\"$proj_fee_percentage\" /></p>";
+echo "<p>Project File Location<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_location\" maxlength=\"200\" value=\"$proj_location\" /></p>";
 
-echo "<p>Value Type<br />";
+//echo "<p>Total Fee (all stages)<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_fee_percentage\" maxlength=\"12\" value=\"$proj_fee_percentage\" /></p>";
 
-include("inc_files/inc_data_project_value.php"); echo "</p>";
+//echo "<p>Value Type<br />";
+
+//include("inc_files/inc_data_project_value.php"); echo "</p>";
 
 echo "</div>";
 

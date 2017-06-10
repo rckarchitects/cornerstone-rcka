@@ -1,6 +1,10 @@
 <?php
 
+
 	$array_item_id = $_POST['item_id'];
+	
+	$array_item_counter = $_POST['item_counter'];
+	
 	$array_checklist_id = $_POST['checklist_id'];
 	$array_checklist_required = $_POST['checklist_required'];
 	$array_checklist_date = $_POST['checklist_date'];
@@ -13,14 +17,12 @@
 	
 	$target_dir = "docstore/";
 	
-	
-
-$counter = 0;
+	//echo "<h1>Total Rows: " . count($array_item_id) . "SHOULD BE " . $_POST['rows'] .  "</h1>";
 
 $array_update = array();
 
 
-while ($counter < count($array_item_id)) {
+foreach ($array_item_counter AS $counter) {
 
 	$item_id = $array_item_id[$counter];
 	$checklist_id = $array_checklist_id[$counter];
@@ -34,16 +36,18 @@ while ($counter < count($array_item_id)) {
 	$checklist_deadline = $array_checklist_deadline[$counter];
 	
 	
-	//move_uploaded_file ($_FILES['uploadFile'] ['tmp_name'];
-	
-	if ($checklist_id == NULL) { $checklist_id = "0"; }
-
 	//Check whether this is an existing entry
 	
-	$sql_check = "SELECT checklist_id FROM intranet_project_checklist WHERE checklist_id = $checklist_id";
-	$result_check = mysql_query($sql_check, $conn) or die(mysql_error());
 	
-	if (mysql_num_rows($result_check) > 0) { 
+	//$sql_check = "SELECT checklist_id FROM intranet_project_checklist WHERE checklist_id = '$checklist_id' AND checklist_project = '$checklist_project'";
+
+	//$result_check = mysql_query($sql_check, $conn) or die(mysql_error());
+	
+	//echo "<p>$sql_check</p>";
+	
+	//echo "<h1>$counter: checklist_id: $checklist_id / item_id: $item_id</h1>";
+	
+	if ($checklist_id > 0) {
 
 				$sql_checklist_update = "
 				
@@ -90,7 +94,7 @@ while ($counter < count($array_item_id)) {
 	
 	}
 	
-	//echo "<p>$sql_checklist_update</p>";
+	//echo "<p><strong>$counter:</strong> $sql_checklist_update</p>";
 	
 	
 				
@@ -100,9 +104,7 @@ while ($counter < count($array_item_id)) {
 						$array_update[] = mysql_insert_id();
 					}
 				}
-				
-				
-$counter++;	
+			
 }
 
 

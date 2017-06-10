@@ -9,6 +9,77 @@ $currency_junk = array("£","€");
 
 $text_remove = array("Ã","Â");
 
+function PresentCost($input) { 
+		$output = "&pound;" . numberformat($input, 2);
+		return $output;
+}	
+
+
+function StageTabs ($group_id_selected, $proj_id, $page, $filter) {
+	GLOBAL $conn;
+	
+	if ($filter == "edit") {
+	$sql_group = "SELECT group_id, group_code, group_description FROM intranet_timesheet_group WHERE group_project = 1 AND group_active = 1 ORDER BY group_order";
+	} else {
+	$sql_group = "SELECT * FROM intranet_timesheet_group, intranet_project_checklist_items LEFT JOIN intranet_project_checklist ON item_id = checklist_item WHERE group_project = 1 AND group_active = 1 AND checklist_project = $proj_id AND item_stage = group_id GROUP BY group_id ORDER BY group_order";
+	}
+	$result_group = mysql_query($sql_group, $conn) or die(mysql_error());
+	if (mysql_num_rows($result_group) > 0) {
+		echo "<p class=\"submenu_bar\"><span class=\"minitext\">Project Stage: </span>";
+			while ($array_group = mysql_fetch_array($result_group)) {
+				$group_id = $array_group['group_id'];
+				$group_code = $array_group['group_code'];
+				if ($group_id_selected == $group_id) { $group_code = "<strong>$group_code</strong>";
+					echo "<span class=\"submenu_bar\" style=\"background: #eee;\">$group_code</span>"; $group_description = $group_code . ": " . $array_group['group_description'];
+				} else {
+					echo "<a href=\"" . $page . "group_id=" . $group_id . "\" class=\"submenu_bar\">$group_code</a>";
+				}
+			}
+		echo "</p>";
+		
+		echo "<h3>" . $group_description . "</h3>";
+	}
+}
+
+
+function SelectStage($item_stage, $bg) {
+
+		GLOBAL $conn;
+
+		$sql_stages = "SELECT * FROM intranet_timesheet_group WHERE group_active = 1 ORDER BY group_order";
+		$result_stages = mysql_query($sql_stages, $conn) or die(mysql_error());
+		
+		
+		echo "Select Project Stage: <select name=\"item_stage\">";
+		
+		echo "<option value=\"\">-- None --</option>";
+		
+		while ($array_stages = mysql_fetch_array($result_stages)) {
+			
+			if ($item_stage == $array_stages['group_id'] ) { $selected = " selected=\"selected\" "; } else { unset($selected); }
+			
+			echo "<option value=\"" . $array_stages['group_id'] . "\"" . $selected . ">" . $array_stages['group_code'] . ": " . $array_stages['group_description'] . "</option>";
+		}
+				
+		echo "</select>";
+		
+
+
+}
+
+function GetProjectInfo($proj_id) {
+					if ($proj_id != NULL) {
+						GLOBAL $conn;
+						$sql = "SELECT proj_num, proj_name FROM intranet_projects WHERE proj_id = $proj_id";
+						$result = mysql_query($sql, $conn) or die(mysql_error());
+						$array = mysql_fetch_array($result);
+						$proj_num = $array['proj_num'];
+						$proj_name = $array['proj_name'];
+						$proj_title = $proj_num . " " . $proj_name;
+						echo "<a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">" . $proj_title . "</a>";
+					}
+}
+
 function SearchPanel() {
 	
 	echo "<span class=\"heading_side_right\">Search</span>";
@@ -50,14 +121,18 @@ function ProjectTitle() {
 
 }
 
-function ProjectSwitcher ($page,$proj_id) {
+function ProjectSwitcher ($page,$proj_id, $proj_active, $proj_fee) {
 	
 	GLOBAL $conn;
 
 	echo "<form action=\"index2.php\" method=\"get\">";
 	echo "<p><input type=\"hidden\" name=\"page\" value=\"$page\" />";
+	
+	if ($proj_active == 1) { $proj_active_switch = "WHERE proj_active > 0"; }
+	if ($proj_fee == 1 && $proj_active == 1) { $proj_fee_switch = "AND proj_fee_track > 0"; }
+	elseif ($proj_fee != 1 && $proj_active == 1) { $proj_fee_switch = "WHERE proj_fee_track > 0"; }
 
-	$sql_switcher = "SELECT proj_id, proj_name, proj_num FROM intranet_projects WHERE proj_active > 0 ORDER BY proj_num DESC";
+	$sql_switcher = "SELECT proj_id, proj_name, proj_num FROM intranet_projects $proj_active_switch $proj_fee_switch ORDER BY proj_num DESC";
 	$result_switcher = mysql_query($sql_switcher, $conn) or die(mysql_error());
 	echo "<select onchange=\"this.form.submit()\" name=\"proj_id\">";
 	while ($array_switcher = mysql_fetch_array($result_switcher)) {
@@ -77,15 +152,14 @@ function ProjectSwitcher ($page,$proj_id) {
 
 function CreateDays($date,$hour) {
 
-		//Take the date and explode it into an array
-		//$date_array = explode("-",$date);
-		//$d = $date_array[2];
-		//$m = $date_array[1];
-		//$y = $date_array[0];
+		$date_array = explode("-",$date);
+		$d = $date_array[2];
+		$m = $date_array[1];
+		$y = $date_array[0];
 
-		//if ($date == "0000-00-00") { $output = NULL; } else { $output = mktime($hour,0,0,$m,$d,$y); }
+		if ($date == "0000-00-00") { $output = NULL; } else { $output = mktime($hour,0,0,$m,$d,$y); }
 		
-		//return $output;
+		return $output;
 	
 }
 
@@ -186,7 +260,7 @@ function TimeFormat($input) {
 }
 
 function TimeFormatBrief($input) {
-	$input = gmdate("j.n.Y", $input);
+	$input = gmdate("j.n.y", $input);
 	return($input);
 }
 
@@ -702,15 +776,21 @@ function EditForm($answer_id,$answer_question,$answer_ref,$answer_words,$answer_
 				";
 }
 
-function ListHolidays() {
+function ListHolidays($days) {
 
 	global $conn;
 	
-	echo "<h2>Upcoming Holidays</h2>";
+	
 	
 	$nowtime = time() - 43200;
+	
+	if (intval ($days) == 0) { $days = 7; } else { $days = intval($days); }
+	
+	$time =  60 * 60 * 24 * intval ($days);
+	
+	echo "<h2>Upcoming Holidays - Next $days Days</h2>";
 
-		$sql5 = "SELECT user_id, user_name_first, user_name_second, holiday_date, holiday_timestamp, holiday_paid, holiday_length, holiday_approved FROM intranet_user_details, intranet_user_holidays WHERE holiday_user = user_id AND holiday_timestamp BETWEEN $nowtime AND " . ($nowtime + (2 * 604800)) ." ORDER BY holiday_timestamp, user_name_second";
+		$sql5 = "SELECT user_id, user_name_first, user_name_second, holiday_date, holiday_timestamp, holiday_paid, holiday_length, holiday_approved FROM intranet_user_details, intranet_user_holidays WHERE holiday_user = user_id AND holiday_timestamp BETWEEN $nowtime AND " . ($nowtime + $time) ." ORDER BY holiday_timestamp, user_name_second";
 		$result5 = mysql_query($sql5, $conn) or die(mysql_error());
 		if (mysql_num_rows($result5) > 0) {
 			$current_date = 0;
@@ -760,3 +840,749 @@ function FooterBar() {
 	echo "<div id=\"mainfooter\">powered by <a href=\"https://github.com/rckarchitects/cornerstone-rcka/wiki/Welcome-to-Cornerstone\">RCKa Cornerstone</a></div>";
 	
 }
+
+function StyleBody($size,$font,$bold){
+			Global $pdf;
+			Global $format_font;
+			if (!$font) { $font = $format_font; }
+			$pdf->SetFont($font,$bold,$size);
+			
+		}
+		
+function StyleHeading($title,$text,$notes){
+			Global $pdf;
+			Global $x_current;
+			Global $y_current;
+			Global $y_left;
+			Global $y_right;
+			if ($y_current > 230 AND $x_current > 75) { $pdf->addPage(); $x_current = 10; $y_current = 15; }
+			$pdf->SetXY($x_current,$y_current);
+			$pdf->SetFont('Helvetica','b',10);
+			$pdf->SetTextColor(0, 0, 0);
+			$pdf->SetX($x_current);
+			$pdf->SetDrawColor(0,0,0);
+			$pdf->SetLineWidth(0.3);
+			$pdf->MultiCell(90,5,$title,B, L, false);
+			$pdf->MultiCell(90,1,'',0, L, false);
+			Notes($notes);
+			$pdf->Ln(1);
+			StyleBody(10);
+			$pdf->SetX($x_current);
+			$pdf->MultiCell(90,4,$text,0, L, false);
+			
+			if ($x_current < 75) {
+				$x_current = 105;
+				$y_left = $pdf->GetY();
+			} else {
+				$x_current = 10;
+				$y_right = $pdf->GetY();
+				if ($y_left > $y_right) { $y_current = $y_left + 5; } else { $y_current = $y_right + 5; }
+				if ($y_current > 220) { $pdf->addPage(); $y_current = 20; }
+			}
+			
+			
+		}
+		
+function ListHoliday($day_begin, $color_switch) {
+
+		if ($color_switch == 1) { SetColor1(); } else { SetColor2(); }
+
+		GLOBAL $conn;
+		GLOBAL $pdf;
+		
+		StyleBody(8,'Helvetica','');
+		
+		$day = date("D j",$day_begin);
+		
+		$pdf->Cell(15,10,$day);
+		
+		$day_begin = $day_begin + 43200;
+		$date = date("Y-m-d",$day_begin);
+		
+		StyleBody(14,'Helvetica','B');
+		
+		$sql_bankhols = "SELECT bankholidays_description FROM intranet_user_holidays_bank WHERE bankholidays_datestamp = '$date'";
+		$result_bankhols = mysql_query($sql_bankhols, $conn) or die(mysql_error());
+		$array_bankhols = mysql_fetch_array($result_bankhols);
+		if ($array_bankhols['bankholidays_description']) { $pdf->Cell(0,12,$array_bankhols['bankholidays_description'],0,0,'L',0); } else {
+		
+			$sql = "SELECT * FROM `intranet_user_holidays`, `intranet_user_details` WHERE user_id = holiday_user AND holiday_datestamp = '$date' ORDER BY user_initials";
+			$result = mysql_query($sql, $conn) or die(mysql_error());
+			while ($array = mysql_fetch_array($result)) {
+				if ($array['holiday_length'] < 1) { 
+				$pdf->Cell(6,12,'',0,0,'C',1);
+				$xval = $pdf->GetX() - 6;
+				$pdf->SetX($xval);
+				$pdf->Cell(12,12,$array['user_initials'],0,0,'C',0);
+				} else {
+				$pdf->Cell(12,12,$array['user_initials'],0,0,'C',1);
+				}
+				$pdf->Cell(2,12,'',0,0,'C',0);
+				if ($pdf->GetX() < 25) { $pdf->SetX(25); }
+			}
+			
+		}
+		
+		$pdf->Ln(14);
+
+
+}
+	
+function ListTenders($day_begin) {
+
+		GLOBAL $conn;
+		GLOBAL $pdf;
+		
+		StyleBody(14,'Helvetica','B');
+		
+		
+			$sql = "SELECT * FROM `intranet_tender` WHERE tender_date BETWEEN $day_begin AND ($day_begin + 604800) ORDER BY tender_date";
+			$result = mysql_query($sql, $conn) or die(mysql_error());
+			
+			if (mysql_num_rows($result) > 0) {
+			
+			StyleBody(16,'Helvetica','B');
+			$pdf->Cell(0,10,'Tenders',0,1);
+			$color_swich = 1;
+			while ($array = mysql_fetch_array($result)) {
+			$tender_name = date("G:i",$array['tender_date']) . ": " . $array['tender_name'] . " (" . $array['tender_client'] . ")";
+				if ($color_switch == 1) { SetColor2(); $color_switch = 2; } else { SetColor3(); $color_switch = 1; }
+				StyleBody(10,'Helvetica','');
+				$day = date("D j",$array['tender_date']);
+				if ($current_day != $day) { $pdf->Cell(15,10,$day);  } else { $pdf->Cell(15,10,''); }
+				StyleBody(13,'Helvetica','B');
+				$width = $pdf->GetStringWidth($tender_name) + 5;
+				$pdf->Cell(2,12,'',0,0,'L',1);
+				$pdf->Cell($width,12,$tender_name,0,1,'L',1);
+				$pdf->Ln(2);
+				$current_day = $day;
+			}
+			
+
+		
+		$pdf->Ln(5);
+		
+		}
+
+
+}
+
+function TaskDeadlines($day_begin) {
+	
+	GLOBAL $conn;
+	GLOBAL $pdf;
+	
+		$sql = "SELECT * FROM  `intranet_projects`, `intranet_tasklist` LEFT JOIN intranet_user_details ON user_id = tasklist_person WHERE tasklist_project = proj_id AND tasklist_percentage < 100 AND tasklist_due > 0 AND tasklist_due < ($day_begin + 604800) ORDER BY DATE(from_unixtime(tasklist_due)), proj_num";
+		$result = mysql_query($sql, $conn) or die(mysql_error());
+		
+		if (mysql_num_rows($result) > 0) {
+
+			StyleBody(16,'Helvetica','B');
+			$pdf->Cell(0,10,'Deadlines',0,1);
+			SetColor2();
+			$color_switch = 2;
+			
+			while ($array = mysql_fetch_array($result)) {
+				
+				$day = date("d.n.y",$array['tasklist_due']);
+				if ($current_day != $day) {
+					if ($array['tasklist_due'] >= $day_begin) { StyleBody(11,'Helvetica','B'); $day_print = date("D",$array['tasklist_due']); } else { StyleBody(8,'Helvetica',''); $day_print = $day; }
+					$pdf->Cell(15,10,$day_print); if ($color_switch == 1) { SetColor1(); $color_switch = 2; } else { SetColor2(); $color_switch = 1; } } else { $pdf->Cell(15,10,'');
+				}
+				
+				
+				
+				StyleBody(13,'Helvetica','B');
+				$proj_name = $array['proj_num'] . " " . $array['proj_name'];
+				$width = $pdf->GetStringWidth($proj_name) + 5;
+				$pdf->Cell(2,10,'',0,0,'L',1);
+				$pdf->Cell($width,10,$proj_name,0,0,'L',1);
+				StyleBody(13,'Helvetica','');
+				$pdf->Cell(1,10,'',0,0,'L',0);
+				if (strlen($array['tasklist_notes']) > 70) { $tasklist_notes = substr($array['tasklist_notes'],0,65) . "..."; } else { $tasklist_notes = $array['tasklist_notes']; }
+				$width = $pdf->GetStringWidth($tasklist_notes) + 5;
+				$pdf->Cell(2,10,'',0,0,'L',1);
+				if ($array['tasklist_due'] < $day_begin ) { $pdf->SetTextColor(255,0,0); } else { $pdf->SetTextColor(0,0,0); }
+				$pdf->Cell($width,10,$tasklist_notes,0,0,'L',1);
+				$pdf->SetTextColor(0,0,0);
+				$pdf->Cell(1,$row_height,'');
+				StyleBody(10,'Helvetica','B');
+				$user_initial_project = $array['user_initials'];
+				$pdf->Cell(10,10,$user_initial_project,0,1,'C',1);
+				$pdf->Ln(2);
+				$current_day = $day;				
+			}
+			
+			
+		}
+				
+}
+
+function ListStages($day_begin) {
+
+
+		GLOBAL $conn;
+		GLOBAL $pdf;
+		
+		StyleBody(14,'Helvetica','B');
+		
+			$date = date("Y-m-d",$day_begin);
+			$weekend = date("Y-m-d",($day_begin + 518400));
+			
+			$sql = "SELECT DATE_ADD(ts_fee_commence, INTERVAL ts_fee_time_end SECOND), group_id, group_code, group_description, proj_num, proj_name, proj_rep_black, ts_fee_text, user_initials, ts_fee_commence, ts_fee_time_end FROM `intranet_projects`, `intranet_timesheet_fees` LEFT JOIN intranet_timesheet_group ON ts_fee_group = group_id LEFT JOIN intranet_user_details ON user_id = group_leader WHERE ts_fee_project = proj_id AND ts_fee_commence <= '$weekend' AND (DATE_ADD(ts_fee_commence, INTERVAL ts_fee_time_end SECOND) >= '$date') AND ts_fee_prospect = 100 AND proj_active = 1 AND group_project = 1 ORDER BY group_order, proj_num";
+			$result = mysql_query($sql, $conn) or die(mysql_error());
+
+			
+			$sql2 = "SELECT COUNT(group_id) FROM `intranet_projects`, `intranet_timesheet_fees` LEFT JOIN intranet_timesheet_group ON ts_fee_group = group_id WHERE ts_fee_project = proj_id AND ts_fee_commence <= '$date' AND (DATE_ADD(ts_fee_commence, INTERVAL ts_fee_time_end SECOND) >= '$date') AND ts_fee_prospect = 100 AND proj_active = 1 ORDER BY group_order, proj_num";
+			$result2 = mysql_query($sql2, $conn) or die(mysql_error());
+			$array2 = mysql_fetch_array($result2);
+			$groups = $array2['COUNT(group_id)'];
+			$space_needed_for_headings = $groups * 12;
+			
+			
+			$totalrows = mysql_num_rows($result);
+			$current_y = $pdf->GetY();
+			$remaining = 420 - $current_y;
+			$space_needed_for_rows = $remaining - $space_needed_for_headings;
+			$row_height = $space_needed_for_rows / $totalrows * 1.4;
+			if ($row_height > 10) { $row_height = 10; }
+			$row_height = 10;
+			
+
+			if ($totalrows > 0) {
+			
+			StyleBody(16,'Helvetica','B');
+			
+			$pdf->Cell(0,10,'Project Stages',0,1);
+			
+			SetColor1(); $color_switch = 1;
+		
+			while ($array = mysql_fetch_array($result)) {
+				
+				$group_name = $array['group_description'];
+				
+				$sql3 = "SELECT user_initials FROM intranet_user_details WHERE user_id = '" . $array['proj_rep_black'] . "' LIMIT 1";
+				$result3 = mysql_query($sql3, $conn) or die(mysql_error());
+				$array3 = mysql_fetch_array($result3);
+				$user_initial_project = $array3['user_initials'];
+				
+				
+				if ($array['user_initials']) { $group_name = $group_name . " (Stage Leader: " . $array['user_initials'] . ")"; }
+				$proj_name = $array['proj_num'] . " " . $array['proj_name'];
+				$stage_name = $array['ts_fee_text'];
+				if ($array['group_id'] != $current_group_code) {
+					if ($pdf->GetY() > 360) { $pdf->AddPage(); }
+					if ($current_group_code != NULL) { $pdf->Ln(2); }
+					StyleBody(16,'Helvetica','B'); $pdf->Cell(15,7,$array['group_code']); StyleBody(14,'Helvetica',''); $pdf->Cell(0,7,$group_name); $current_group_code = $array['group_id']; $pdf->Ln(9);
+					if ($color_switch == 1) { SetColor4(); $color_switch = 2; } else { SetColor1(); $color_switch = 1; }
+				}
+				StyleBody(9,'Helvetica','B');
+				$pdf->Cell(15,$row_height,'');
+				$font_height = floor($row_height * 1.6);
+				StyleBody($font_height,'Helvetica','B');
+				$width = $pdf->GetStringWidth($proj_name) + 2;
+				$pdf->Cell(2,$row_height,'',0,0,'L',1);
+				$pdf->Cell($width,$row_height,$proj_name,0,0,'L',1);
+				StyleBody($font_height,'Helvetica','');
+				$width = $pdf->GetStringWidth($stage_name) + 5;
+				$pdf->Cell(2,$row_height,'',0,0,'L',1);
+				$pdf->Cell($width,$row_height,$stage_name,0,0,'L',1);
+				$pdf->Cell(1,$row_height,'');
+				
+				//Dates
+				StyleBody(7,'Helvetica','');
+				$pdf->SetDrawColor(255,255,255);
+				$pdf->SetLineWidth(0.5);
+				$date_present_start = TimeFormatBrief(AssessDays($array['ts_fee_commence']));
+				$date_present_end = TimeFormatBrief(AssessDays($array['ts_fee_commence']) + $array['ts_fee_time_end']);
+				if ($pdf->GetStringWidth($date_present_start) > $pdf->GetStringWidth($date_present_end)) {
+				$date_width = $pdf->GetStringWidth($date_present_start) + 2;
+				} else {
+				$date_width = $pdf->GetStringWidth($date_present_end) + 2;	
+				} 
+				$current_y = $pdf->GetY();
+				$pdf->Cell($date_width,($row_height/2),$date_present_start,'B',2,'C',1);
+				if ((AssessDays($array['ts_fee_commence']) + $array['ts_fee_time_end']) < (time() + 604800)) { SetColor3();}
+				$pdf->Cell($date_width,($row_height/2),$date_present_end,'T',0,'C',1);
+				$current_x = $pdf->GetX();
+				$pdf->SetXY($current_x,$current_y);
+				
+				if ($color_switch == 1) { SetColor1(); } else { SetColor4();  }
+				
+				//Project Leader
+				$pdf->Cell(1,$row_height,'');
+				StyleBody(12,'Helvetica','B');
+				if (($row_height - 2) < $pdf->GetStringWidth($user_initial_project)) { $square_width = $pdf->GetStringWidth($user_initial_project) + 2; } else { $square_width = $row_height; }
+				$pdf->Cell($square_width,$row_height,$user_initial_project,0,0,'C',1);
+				$line_height = $row_height + 2;
+				$pdf->Ln($line_height);
+			}
+			
+
+		
+		$pdf->Ln(14);
+		
+		}
+
+
+}
+
+function HolidayPanel($begin_week) {
+
+		GLOBAL $pdf;
+
+		StyleBody(16,'Helvetica','B');
+		$pdf->Cell(0,10,'Holidays',0,1);
+
+		$day_begin = $begin_week;
+		$counter = 0;
+		$color_switch = 1;
+		while ($counter < 5) {
+
+			ListHoliday($day_begin, $color_switch);
+			
+			$day_begin = $day_begin + 86400;
+
+			$counter++;
+			
+			if ($color_switch == 1) { $color_switch = 2; } else { $color_switch = 1; }
+
+		}
+
+		$pdf->Ln(5);
+
+}
+
+
+function OtherHolidaysToday($user_id,$date) {
+
+	GLOBAL $conn;
+	GLOBAL $pdf;
+	
+	$sql_user_holidays = "SELECT user_initials, holiday_approved FROM intranet_user_holidays LEFT JOIN intranet_user_details ON user_id = holiday_user WHERE holiday_user != $user_id AND holiday_datestamp = '$date' ORDER BY user_initials";
+	$result_user_holidays = mysql_query($sql_user_holidays, $conn) or die(mysql_error());
+	
+	$numrows = mysql_num_rows($result_user_holidays);
+	
+	if ($numrows > 0) {
+			$cellwidth = 75 / $numrows;
+			if ($cellwidth > 10) { $cellwidth = 10; }
+			
+			
+			
+			while ($array_user_holidays = mysql_fetch_array($result_user_holidays)) {
+			
+				if ($array_user_holidays['holiday_approved'] > 0) { $pdf->SetTextColor(0,0,0); } else { $pdf->SetTextColor(255,0,0); }
+				
+				$pdf->Cell($cellwidth,7.5,$array_user_holidays['user_initials'],'B',0,L,0);		
+			}
+			
+			$pdf->Cell(0,7.5,'','B',1,L,0);	
+		
+			
+	} else {
+	
+				$pdf->SetTextColor(0,0,0);
+	
+				$pdf->Cell(0,7.5,$array_user_holidays['user_initials'],'B',1,C,0);
+	
+	}
+	
+	$pdf->SetTextColor(0,0,0);
+
+
+}
+
+function UserHolidaysArray($user_id,$year,$working_days) {
+	
+	GLOBAL $conn;
+
+			$sql_user = "SELECT user_user_added, user_user_ended, user_holidays, user_name_first, user_name_second FROM intranet_user_details WHERE user_id = $user_id LIMIT 1";
+			$result_user = mysql_query($sql_user, $conn);
+			$array_user = mysql_fetch_array($result_user);
+			$user_user_added = $array_user['user_user_added'];
+			$user_user_ended = $array_user['user_user_ended'];
+			$user_name_first = $array_user['user_name_first'];
+			$user_name_second = $array_user['user_name_second'];
+			
+			$user_holidays = $array_user['user_holidays'];
+			
+			$holiday_datum = mktime(0,0,0,1,1,2012);
+			
+			$nextyear = $year + 1;
+			
+			if ($user_user_added == NULL OR $user_user_added < $holiday_datum ) { $user_user_added = $holiday_datum; $listadd = "-"; } else { $listadd = date ( "d M Y", $user_user_added ); }
+			
+			if ($user_user_ended == NULL OR $user_user_ended == 0) { $user_user_ended = mktime(0,0,0,1,1,$nextyear); $listend = "-"; } else { $listend = date ( "d M Y", $user_user_ended ); }
+			
+	
+							$sql_count = "SELECT * FROM intranet_user_holidays WHERE holiday_user = $user_id AND holiday_assigned = $year ORDER BY holiday_timestamp";
+							$result_count = mysql_query($sql_count, $conn);
+							while ($array_count = mysql_fetch_array($result_count)) {
+							
+
+								$holiday_year = $array_count['holiday_year'];
+								$holiday_length = $array_count['holiday_length'];
+								$holiday_paid = $array_count['holiday_paid'];
+								
+								$holiday_allowance = $user_user_ended - $user_user_added;
+							$yearlength = 365.242 * 24 * 60 * 60;
+							$holiday_allowance = ( $holiday_allowance / $yearlength ) * $user_holidays;
+							$holiday_allowance = round($holiday_allowance);
+							
+							$holiday_allowance_thisyear = $user_user_ended - mktime(0,0,0,1,1,$year);
+							if ($user_user_added > mktime(0,0,0,1,1,$year)) { $holiday_allowance_thisyear = $holiday_allowance_thisyear - ($user_user_added - mktime(0,0,0,1,1,$year)); }
+							$holiday_allowance_thisyear = $holiday_allowance_thisyear / (365.242 * 24 * 60 * 60) ;
+							
+
+							
+							if ($holiday_allowance < $user_holidays) { $year_allowance = $holiday_allowance; } else { $year_allowance = $user_holidays; }
+							
+							$holiday_allowance_thisyear = round ($user_holidays * $holiday_allowance_thisyear);
+								
+											
+											if ($holiday_paid == 1) { $holiday_paid_total = $holiday_paid_total + $holiday_length; }
+											elseif ($holiday_paid == 2) { $study_leave_total = $study_leave_total + $holiday_length; }
+											elseif ($holiday_paid == 3) { $jury_service_total = $jury_service_total + $holiday_length; }
+											elseif ($holiday_paid == 4) { $toil_service_total = $toil_service_total + $holiday_length; $holiday_paid_total = $holiday_paid_total - $holiday_length;  }
+											else { $holiday_unpaid_total = $holiday_unpaid_total + $holiday_length; }
+											
+											
+
+											if ($holiday_paid == 1) { $holiday_total = $holiday_total + $holiday_length; }
+											
+								
+								}
+								
+							// Calculate any adjustments for unpaid holiday	
+								
+							$unpaid_adjustment = ($working_days - $holiday_unpaid_total) / $working_days;
+							$holiday_allowance_thisyear = ceil ($unpaid_adjustment * $holiday_allowance_thisyear);
+							
+
+							
+							$length = round ((($user_user_ended - $user_user_added) / 31556908.8), 2);
+							
+							$holiday_allowance = (ceil($length * $user_holidays * 2) / 2);
+							
+							// Temporary
+							if ($length > 1) {
+							$holiday_allowance_thisyear = $user_holidays;
+							} else {
+							$holiday_allowance_thisyear = ceil ($length * $user_holidays * 2) / 2;
+							}
+							// End Temporary
+							
+							$holiday_year_remaining = $holiday_allowance_thisyear - $holiday_paid_total;
+							
+							$array = array($length,$user_holidays,$holiday_allowance,$holiday_allowance_thisyear,$holiday_paid_total,$holiday_unpaid_total,$study_leave_total,$jury_service_total,$toil_service_total,$holiday_year_remaining,$listadd,$listend,$user_name_first, $user_name_second);
+	
+							return $array;
+	
+}
+
+function WorkingDays($year) {
+	
+	GLOBAL $conn;
+	
+	$year = intval($year);
+	
+	$sql = "SELECT COUNT(bankholidays_id) FROM intranet_user_holidays_bank WHERE bankholidays_year = $year";
+	$result = mysql_query($sql, $conn);
+	$array = mysql_fetch_array($result);
+	$bankholidays = $array['COUNT(bankholidays_id)'];
+	
+	$thisyear = $year;
+	$day = mktime(12,0,0,1,1,$year);
+	$countdays = 0;
+	while ($thisyear == $year) {
+		
+		if (date("w",$day) > 0 && date("w",$day) < 6) { $countdays++; }
+		$day = $day + 86400;
+		$thisyear = intval ( date("Y",$day) );
+
+	}
+	
+	$workingdays = $countdays - $bankholidays;
+	
+	return $workingdays;
+	
+}
+
+
+
+function HolidaySchedule($year,$user_usertype_current,$working_days,$beginnning_of_this_year,$beginnning_of_next_year) {
+
+GLOBAL $conn;
+
+						echo "<h2 id=\"holidaysthisyear\">Holidays in $year</h2>";
+
+						echo "<p>There were $working_days working days in $year.</p>";
+
+						if ($user_usertype_current < 3) { $limit = "AND user_id = $user_id"; } else { unset( $limit );}
+
+						$sql_users = "SELECT user_id, user_name_first, user_name_second FROM intranet_user_details WHERE (
+						(user_user_added BETWEEN $beginnning_of_this_year AND $beginnning_of_next_year)
+						OR (user_user_ended BETWEEN $beginnning_of_this_year AND $beginnning_of_next_year)
+						OR (user_user_added < $beginnning_of_this_year AND (user_user_ended = 0 OR user_user_ended IS NULL))
+						) $limit ORDER BY user_name_second";
+
+
+						$result_users = mysql_query($sql_users, $conn);
+						echo "<table>";
+
+						echo "<tr>
+						<th style=\"width: 15%;\">Name</th>
+						<th style=\"width: 10%;\">Date Started</th>
+						<th style=\"width: 10%;\">Date Ended</th>
+						<th style=\"width: 6%; text-align: right;\">Years<br />(to end of $year)</th>
+						<th style=\"width: 10%; text-align: right;\">Annual Allowance</th>
+						<th style=\"width: 6%; text-align: right;\">Total Allowance</th>
+						<th style=\"width: 6%; text-align: right;\">Allowance ($year)</th>
+						<th style=\"width: 6%; text-align: right;\">Days Taken ($year)</th>
+						<th style=\"width: 6%; text-align: right;\">Days Unpaid ($year)</th>
+						<th style=\"width: 6%; text-align: right;\">Study Leave ($year)</th>
+						<th style=\"width: 6%; text-align: right;\">Jury Service ($year)</th>
+						<th style=\"width: 6%; text-align: right;\">TOIL ($year)</th>
+						<th style=\"text-align: right;\">Days Remaining ($year)</th></tr>";
+
+						while ($array_users = mysql_fetch_array($result_users)) {
+
+
+							
+
+							$user_id = $array_users['user_id'];
+							$user_name_first = $array_users['user_name_first'];
+							$user_name_second = $array_users['user_name_second'];
+							
+														
+							$holiday_paid_total = 0;
+							$holiday_unpaid_total = 0;
+							$holiday_total = 0;
+							$study_leave_total = 0;
+							$jury_service_total = 0;
+							$toil_service_total = 0;
+							$toil_total = 0;
+							
+							$UserHolidaysArray = UserHolidaysArray($user_id,$year,$working_days); 
+							
+							$length = $UserHolidaysArray[0];
+							$user_holidays = $UserHolidaysArray[1];
+							$holiday_allowance = $UserHolidaysArray[2];
+							$holiday_allowance_thisyear = $UserHolidaysArray[3];
+							$holiday_paid_total = $UserHolidaysArray[4];
+							$holiday_unpaid_total = $UserHolidaysArray[5];
+							$study_leave_total = $UserHolidaysArray[6];
+							$jury_service_total = $UserHolidaysArray[7];
+							$toil_service_total = $UserHolidaysArray[8];
+							$holiday_year_remaining = $UserHolidaysArray[9];
+							$listadd = $UserHolidaysArray[10];
+							$listend = $UserHolidaysArray[11];
+							$user_name_first = $UserHolidaysArray[12];
+							$user_name_second = $UserHolidaysArray[13];
+							
+							if ($holiday_year_remaining < 0) { $holiday_year_remaining = "<span style=\"color: red;\">" . $holiday_year_remaining . "</span>"; }
+							
+							if ($_GET[showuser] == $user_id) { $bg = "; font-weight: bold; background: rgba(100,100,150,0.5)\""; } else { unset($bg); }
+								
+							echo "
+							<tr>
+							<td style=\"$bg\"><a href=\"index2.php?page=holiday_approval&amp;showuser=$user_id&year=$_GET[year]#holidaysthisyear\">$user_name_first $user_name_second</a></td>
+							<td style=\"$bg\">" . $listadd . "</td>
+							<td style=\"$bg\">" . $listend . "</td>
+							<td style=\"text-align:right; $bg\">$length</td>
+							<td style=\"text-align:right; $bg\">$user_holidays</td>
+							<td style=\"text-align:right; $bg\">$holiday_allowance</td>
+							<td style=\"text-align:right; $bg\">$holiday_allowance_thisyear</td>
+							<td style=\"text-align:right; $bg\">$holiday_paid_total</td>
+							<td style=\"text-align:right; $bg\">$holiday_unpaid_total</td>
+							<td style=\"text-align:right; $bg\">$study_leave_total</td>
+							<td style=\"text-align:right; $bg\">$jury_service_total</td>
+							<td style=\"text-align:right; $bg\">$toil_service_total</td>
+							<td style=\"text-align:right; $bg\">$holiday_year_remaining</td>
+							</tr>";
+							
+							if ($_GET[showuser] == $user_id) {
+							
+									$bg = "; background: rgba(100,100,150,0.1)\"";
+							
+										if ($unpaid_adjustment < 1 && $_GET[showuser] == $user_id) {
+											echo "<tr><td colspan=\"13\" style=\"font-style: italic; $bg\">
+											$user_name_first took $holiday_unpaid_total unpaid holidays during $year, from a total of $working_days possible working days. Available holiday has therefore been reduced to " . round (100 *  $unpaid_adjustment ) . "% of the total allowance for this year.
+											</td></tr>";
+										}
+							
+									$bg = "; background: rgba(100,100,150,0.2)\"";
+								
+									$sql_totalhols = "SELECT holiday_timestamp, holiday_length, holiday_paid, holiday_assigned FROM intranet_user_holidays WHERE holiday_user = $user_id AND holiday_assigned = $year ORDER BY holiday_timestamp";
+									$result_totalhols = mysql_query($sql_totalhols, $conn);
+
+										if (mysql_num_rows($result_totalhols) > 0) {
+										
+										$rows = mysql_num_rows($result_totalhols);
+											
+												$totalhols_count = 0;
+												$totalholsup_count = 0;
+												
+											
+												while ($array_totalhols = mysql_fetch_array($result_totalhols)) {
+												
+												$holiday_length = $array_totalhols['holiday_length'];
+												
+												if ($array_totalhols['holiday_paid'] == 0 ) { $holiday_type = "Unpaid Leave"; }
+												elseif ($array_totalhols['holiday_paid'] == 2 ) { $holiday_type = "Study Leave";  }
+												elseif ($array_totalhols['holiday_paid'] == 3 ) { $holiday_type = "Jury Service"; }
+												elseif ($array_totalhols['holiday_paid'] == 4 ) { $holiday_type = "TOIL"; }
+												elseif ($array_totalhols['holiday_paid'] == 5 ) { $holiday_type = "Compassionate Leave"; }
+												else { $holiday_type = "Standard"; $totalhols_count = $totalhols_count + $holiday_length; }
+												
+												if ($holiday_length == 0.5) { $holiday_type = $holiday_type . " (half day)"; }
+
+													echo "<tr><td colspan=\"4\" style=\"$bg\">" . date ( "l, j F Y", $array_totalhols['holiday_timestamp'] ) . "</td>";
+													echo "<td colspan=\"3\" style=\"$bg\">$holiday_type</td>";
+														
+														
+														echo "
+														<td style=\"text-align: right; $bg\">$totalhols_count</td>
+														<td style=\"$bg\" colspan=\"5\"></td>
+														";
+													
+												echo "</tr>";
+												
+												}
+												
+												if ($_GET[showuser] == $user_id) { $bg = "; background: rgba(100,100,150,0.35)\""; } else { unset($bg); }
+												
+												echo "<tr><td colspan=\"7\" style=\"$bg\"><strong>Total</strong></td><td style=\"text-align: right; $bg\"><strong>$totalhols_count</strong></td><td colspan=\"5\" style=\"$bg\"></th></tr>";
+											
+											
+										} else {
+										
+												echo "<tr><td></td><td colspan=\"12\">No holidays found for $year</td></tr>";
+										
+										}
+										
+								unset($bg);
+								
+								
+							}
+
+
+						}
+
+						echo "</table>";
+
+
+
+
+
+
+
+
+}
+
+
+function ChangeHolidays($year) {
+	
+		$year_before = $year - 1;
+		$year_after = $year + 1;
+		
+		echo "<table><tr><td rowspan=\"4\">Change selected holidays</td>
+		<td><input type=\"radio\" value=\"approve\" name=\"approve\" checked=\"checked\" />&nbsp;Approve</td>
+		<td><input type=\"radio\" value=\"unapprove\" name=\"approve\" />&nbsp;Unapprove</td>
+		<td><input type=\"radio\" value=\"delete\" name=\"approve\" />&nbsp;Delete</td>
+		<td><input type=\"radio\" value=\"to_paid\" name=\"approve\" />&nbsp;Make Paid Holiday</td>
+		<td><input type=\"radio\" value=\"to_unpaid\" name=\"approve\" />&nbsp;Make Unpaid Holiday</td>
+		</tr><tr>
+		<td><input type=\"radio\" value=\"to_studyleave\" name=\"approve\" />&nbsp;Make Study Leave</td>
+		<td><input type=\"radio\" value=\"to_juryservice\" name=\"approve\" />&nbsp;Make Jury Service</td>
+		<td><input type=\"radio\" value=\"to_half\" name=\"approve\" />&nbsp;Make Half Day</td>
+		<td><input type=\"radio\" value=\"to_full\" name=\"approve\" />&nbsp;Make Full Day</td>
+		<td><input type=\"radio\" value=\"to_toil\" name=\"approve\" />&nbsp;Make TOIL</td>
+		</tr><tr>
+		<td><input type=\"radio\" value=\"compassionate\" name=\"approve\" />&nbsp;Make Compassionate Leave</td>
+		<td><input type=\"radio\" value=\"$year_before\" name=\"approve\" />&nbsp;Assign to " . $year_before . "</td>
+		<td><input type=\"radio\" value=\"$year\" name=\"approve\" />&nbsp;Assign to " . $year . "</td>
+		<td><input type=\"radio\" value=\"$year_after\" name=\"approve\" />&nbsp;Assign to " . $year_after . "</td>
+		<td><input type=\"hidden\" value=\"$_COOKIE[user]\" name=\"user_id\" /><input type=\"submit\" value=\"Submit\" /></td>
+		</tr>
+		</table>
+		";
+		
+}
+
+function ListTenders2() {
+
+		GLOBAL $conn;
+
+		$nowtime = time();
+
+		if ($_GET[detail] == "yes") { $detail = "yes"; }
+
+		$sql = "SELECT * FROM intranet_tender ORDER BY tender_date DESC";
+		$result = mysql_query($sql, $conn) or die(mysql_error());
+
+				echo "<p class=\"submenu_bar\">";
+					if ($user_usertype_current > 3) {
+						echo "<a href=\"index2.php?page=project_edit&amp;status=add\" class=\"submenu_bar\">Add Tender</a>";
+					}
+				if ($detail != "yes") {
+					echo "<a href=\"index2.php?page=tender_list&amp;detail=yes\" class=\"submenu_bar\">View Details</a>";
+				} else {
+					echo "<a href=\"index2.php?page=tender_list\" class=\"submenu_bar\">Hide Details</a>";
+				}
+					
+				echo "</p>";
+				
+				echo "<h2>Tender List</h2>";
+
+
+				if (mysql_num_rows($result) > 0) {
+				
+				$time_line = NULL;
+
+				echo "<table summary=\"Lists of tenders\">";
+					
+				while ($array = mysql_fetch_array($result)) {
+				
+				$tender_id = $array['tender_id'];
+				$tender_name = $array['tender_name'] . "&nbsp;(". $array['tender_type'] .")";
+				$tender_date = $array['tender_date'];
+				$tender_client = $array['tender_client'];
+				$tender_description = nl2br($array['tender_description']);
+				$tender_keywords = $array['tender_keywords'];
+				
+				if (($nowtime > $tender_date) && ($nowtime < $time_line)) { echo "<tr><td colspan=\"2\" style=\"background: red; color: white; text-align: right;\">Today is ".TimeFormat($nowtime)."</td></tr>"; }
+				
+				if ((($tender_date - $nowtime) < 86400) && (($tender_date - $nowtime) > 0)) { $style = "style=\"background: orange;\""; } else { unset($style); }
+				
+				echo "<tr><th colspan=\"2\" $style ><a href=\"index2.php?page=tender_view&amp;tender_id=$tender_id\">$tender_name</a></th></tr>";
+				echo "<tr><td $style >".date("d M Y",$tender_date)."</td><td $style>$tender_client</td></tr>";
+				if ($detail == "yes") { echo "<tr><td colspan=\"2\" $style >$tender_description</td></tr>"; }
+				if ($detail == "yes") { 
+					echo "<tr><td colspan=\"2\" $style ><span class=\"minitext\">Keywords:&nbsp;";
+					KeyWords($tender_keywords);
+					echo "</span></td></tr>";
+				}
+				
+				$time_line = $tender_date;
+
+				}
+
+				echo "</table>";
+
+				} else {
+
+				echo "There are no tenders on the system.";
+
+				}
+				
+}
+
+function NotAllowed() {
+	
+	echo "<h1>Access Denied</h1><p>You have insufficient privileges to view this page.</p>";
+	
+}
+		
+

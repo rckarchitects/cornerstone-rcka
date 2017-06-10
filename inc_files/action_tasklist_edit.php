@@ -15,12 +15,12 @@ else {
 		$tasklist_comment = CleanUp($_POST[tasklist_comment]);
 		$tasklist_updated = time();
 		$tasklist_added = time();
-		$tasklist_completed = "";
+		if ($_POST[tasklist_percentage] == 100) { $tasklist_completed = time(); } else { $tasklist_completed = "NULL"; }
 		$tasklist_person = $_POST[tasklist_person];
 		$tasklist_due = $_POST[tasklist_due];
 		$tasklist_percentage = $_POST[tasklist_percentage];
 		
-	if ($_POST[tasklist_id] != NULL) {
+	if ($_POST[tasklist_id] > 0) {
 	
 		$sql_edit = "UPDATE intranet_tasklist SET
 		tasklist_project = '$tasklist_project',
@@ -31,6 +31,7 @@ else {
 		tasklist_person = '$tasklist_person',
 		tasklist_comment = '$tasklist_comment',
 		tasklist_percentage = '$tasklist_percentage',
+		tasklist_completed = $tasklist_completed,
 		tasklist_due = '$tasklist_due'
 		WHERE tasklist_id = '$_POST[tasklist_id]' LIMIT 1
 		";
@@ -65,7 +66,7 @@ else {
 		'$tasklist_notes',
 		'',
 		'$tasklist_added',
-		'$tasklist_completed',
+		NULL,
 		'$tasklist_person',
 		'$tasklist_due',
 		'$tasklist_comment',

@@ -11,12 +11,6 @@ if ($TSFormat == "popup") { $TSPage = "popup_timesheet.php?"; } else { $TSPage =
 	
 	$week_complete_check = 1;
 	
-// Any functions?
-
-	function PresentCost($input) { 
-		$output = "&pound;" . numberformat($input, 2);
-		return $output;
-	}	
 	
 // Begin the daily loop
 
@@ -53,9 +47,7 @@ for($weekcount=0; $weekcount<=6;$weekcount++) {
 	
 	$ts_day_total = 0;
 	
-	if ($_GET[user_view] != NULL) { $user_view = $_GET[user_view]; } else { $user_view = $_COOKIE[user]; }
-	
-	$sql_ts = "SELECT * FROM intranet_timesheet inner join intranet_projects on intranet_timesheet.ts_project = intranet_projects.proj_id WHERE intranet_timesheet.ts_user = '$user_view' AND intranet_timesheet.ts_entry >= '$ts_day_begin' AND intranet_timesheet.ts_entry <= '$ts_day_end' order by ts_entry, intranet_projects.proj_num ";
+	$sql_ts = "SELECT * FROM intranet_timesheet inner join intranet_projects on intranet_timesheet.ts_project = intranet_projects.proj_id WHERE intranet_timesheet.ts_user = '$viewuser' AND intranet_timesheet.ts_entry >= '$ts_day_begin' AND intranet_timesheet.ts_entry <= '$ts_day_end' order by ts_entry, intranet_projects.proj_num ";
 	$result_list_ts = mysql_query($sql_ts, $conn) or die(mysql_error());
 
 	
@@ -77,6 +69,7 @@ for($weekcount=0; $weekcount<=6;$weekcount++) {
 		$ts_list_day_complete = $array['ts_day_complete'];
 		
 		$ts_list_rate = $array['ts_rate'];
+		
 		$ts_list_overhead = $array['ts_overhead'];
 		$ts_list_projectrate = $array['ts_projectrate']; 
 		
@@ -121,7 +114,7 @@ for($weekcount=0; $weekcount<=6;$weekcount++) {
 			echo "<td style=\"" . $style . "\">" . $ts_list_date . "</td>";
 			echo "<td style=\"" . $style . "\">" . $ts_list_desc;
 			if ($editbutton == 1) {
-				print "&nbsp;<a href=\"".$TSPage."week=$ts_weekbegin&amp;ts_id=$ts_list_id&amp;user_view=$user_view\"><img src=\"images/button_edit.png\" alt=\"Edit this entry\" /></a>"; }
+				print "&nbsp;<a href=\"".$TSPage."week=$ts_weekbegin&amp;ts_id=$ts_list_id&amp;user_view=$viewuser\"><img src=\"images/button_edit.png\" alt=\"Edit this entry\" /></a>"; }
 			print "</td><td style=\"text-align: right;" . $style . "\">";
 	
 			print $ts_list_hours;
@@ -154,11 +147,11 @@ for($weekcount=0; $weekcount<=6;$weekcount++) {
 		// Update the ts_day_complete variable if there has been a change to the figures for this day
 		
 		if ($ts_day_total >= 8 && $_POST[ts_project] != NULL) {
-				$sql_update_day = "UPDATE intranet_timesheet SET ts_day_complete = 1 WHERE ts_entry = $ts_list_entry AND ts_user = $user_view";
+				$sql_update_day = "UPDATE intranet_timesheet SET ts_day_complete = 1 WHERE ts_entry = $ts_list_entry AND ts_user = $viewuser";
 				mysql_query($sql_update_day, $conn);
 				// $background = "background-color: cyan;";
 		} elseif ($ts_day_total < 8 && $_POST[ts_project] != NULL) {
-		$sql_update_day = "UPDATE intranet_timesheet SET ts_day_complete = 0 WHERE ts_entry = $ts_list_entry AND ts_user = $user_view";
+		$sql_update_day = "UPDATE intranet_timesheet SET ts_day_complete = 0 WHERE ts_entry = $ts_list_entry AND ts_user = $viewuser";
 				mysql_query($sql_update_day, $conn);
 				$background = "background-color: green;";	
 		}
@@ -231,17 +224,16 @@ echo "</tr>";
 		
 		//if ($_POST[ts_project] != NULL) {
 		if ($ts_list_total >= $weekly_hours_required	) {
-		$sql_update_factor = "UPDATE intranet_timesheet SET ts_cost_factored = ( ts_hours * $user_hourly_factor) WHERE ts_entry > $ts_weekbegin AND ts_entry < $ts_weekend AND ts_user = $user_view";
+		$sql_update_factor = "UPDATE intranet_timesheet SET ts_cost_factored = ( ts_hours * $user_hourly_factor) WHERE ts_entry > $ts_weekbegin AND ts_entry < $ts_weekend AND ts_user = $viewuser";
 		$result_update_factor = mysql_query($sql_update_factor, $conn) or die(mysql_error());
 		} else {
-		$sql_update_factor = "UPDATE intranet_timesheet SET ts_cost_factored = (ts_hours * ts_rate) WHERE ts_entry > $ts_weekbegin AND ts_entry < $ts_weekend AND ts_user = $user_view";
+		$sql_update_factor = "UPDATE intranet_timesheet SET ts_cost_factored = (ts_hours * ts_rate) WHERE ts_entry > $ts_weekbegin AND ts_entry < $ts_weekend AND ts_user = $viewuser";
 		$result_update_factor = mysql_query($sql_update_factor, $conn) or die(mysql_error());
 		}
 		
-		echo "<p>" . $sql_update_factor . "</p>";
 		
-		if ($user_usertype_current > 3) { 
-		echo "<p>User factored rate for week = &pound;" . $user_hourly_factor . "<br />User standard rate for week: &pound;" . $user_rate_standard . "<br />Weekly cost for user: " . MoneyFormat($ts_week_total_factored) .  "<br />User hours required: " . $weekly_hours_required . "</p>";
+		if ($user_usertype_current >= 5) { 
+		echo "<h3>Cost Data</h3><p>User factored rate for week: &pound;" . $user_hourly_factor . "<br />User standard rate for week: &pound;" . $user_rate_standard . "<br />Weekly cost for user: " . MoneyFormat($ts_week_total_factored) .  "<br />User hours required: " . $weekly_hours_required . "</p>";
 		}
 		
 		

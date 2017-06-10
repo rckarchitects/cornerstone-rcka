@@ -2,18 +2,7 @@
 
 if ($module_fees = 1) {
 					
-				function GetProjectInfo($proj_id) {
-					if ($proj_id != NULL) {
-						GLOBAL $conn;
-						$sql = "SELECT proj_num, proj_name FROM intranet_projects WHERE proj_id = $proj_id";
-						$result = mysql_query($sql, $conn) or die(mysql_error());
-						$array = mysql_fetch_array($result);
-						$proj_num = $array['proj_num'];
-						$proj_name = $array['proj_name'];
-						$proj_title = $proj_num . " " . $proj_name;
-						echo "<a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">" . $proj_title . "</a>";
-					}
-				}
+
 
 				// Check if we're updating the current fee stage
 
@@ -83,6 +72,7 @@ if ($module_fees = 1) {
 												$ts_fee_project = $array['ts_fee_project'];
 												$ts_fee_stage = $array['ts_fee_stage'];
 												$group_code = $array['group_code'];
+												if ($group_code == NULL) { $group_code = "-"; }
 												$ts_fee_target = 1 / $array['ts_fee_target'];
 												$ts_fee_prospect = $array['ts_fee_prospect'];
 												$ts_fee_pre_lag = $array['ts_fee_pre_lag']; 
@@ -218,7 +208,7 @@ if ($module_fees = 1) {
 									
 											echo "<p>Move all unassigned hours ($null_rows entries) to this fee stage:</p>";
 											
-											echo "<form action=\"index2.php?page=project_fees&amp;proj_id=$proj_id\" method=\"post\">";
+											echo "<p><form action=\"index2.php?page=project_fees&amp;proj_id=$proj_id\" method=\"post\">";
 											echo "<input type=\"hidden\" name=\"action\" value=\"fee_move_unassigned\" />";
 											
 											echo "<select name=\"ts_fee_id\">";
@@ -236,10 +226,12 @@ if ($module_fees = 1) {
 											}
 											
 											echo "</select>";
-											echo "<p><input type=\"hidden\" name=\"proj_id\" value=\"$proj_id\" />";
-											echo "<input type=\"submit\"  onclick=\"return confirm('Are you sure you want to move all unallocated hours to this fee stage?')\"></p>";
+											echo "&nbsp;<input type=\"hidden\" name=\"proj_id\" value=\"$proj_id\" />";
+											echo "<input type=\"submit\"  onclick=\"return confirm('Are you sure you want to move all unallocated hours to this fee stage?')\">";
 											
-											echo "</form>";
+											echo "</form></p>";
+											
+											echo "<p>Alternatively, <a href=\"index2.php?page=timesheet_fee_reconcile&amp;proj_id=$proj_id\">click here</a> to undertake detailed reconciliation.</p>";
 									
 									echo "</fieldset>";
 						

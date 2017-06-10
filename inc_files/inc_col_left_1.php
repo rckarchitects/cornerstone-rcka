@@ -1,15 +1,7 @@
 <?php
 
 
-echo "<div class=\"maintitle\"><a href=\"index2.php\" class=\"image\">";
 
-if (file_exists($logo)) {
-		echo "<img src=\"$logo\" alt=\"$settings_name\" style=\"text-align: center;\" />";
-} else {
-		echo $settings_name;
-}
-
-echo "</a></div>";
 
 // Menu - System
 
@@ -19,6 +11,17 @@ echo "</a></div>";
 	$array_access = array(0,4,4,0);
 
 	SideMenu ("System", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
+	
+// Menu - Weekly Summary
+
+	$nextweek = time() + 604800;
+	$lastweek = time() - 604800;
+	$array_pages = array("pdf_weekly_summary.php","pdf_weekly_summary.php?beginweek=$lastweek","pdf_weekly_summary.php?beginweek=$nextweek");
+	$array_title = array("Weekly Summary (PDF)","Last Week Summary (PDF)","Next Week Summary (PDF)");
+	$array_images = array("button_pdf.png","button_pdf.png","button_pdf.png");
+	$array_access = array(1,1,1);
+
+	SideMenu ("Weekly Summary", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 	
 
 // Menu - Contacts
@@ -63,6 +66,15 @@ if ($module_holidays == "1") {
 	$array_title = array("Holiday Request","Holiday Calendar");
 	$array_images = array("button_calendar.png","button_calendar.png");
 	$array_access = array(1,1);
+	
+	$sql_user_holidays = "SELECT holiday_length FROM intranet_user_holidays WHERE holiday_user = $_COOKIE[user] AND holiday_approved IS NULL";
+	$result_user_holidays = mysql_query($sql_user_holidays, $conn) or die(mysql_error());
+	if (mysql_num_rows($result_user_holidays) > 0) {
+		$array_pages[] = "pdf_holiday_request.php?user_id=$_COOKIE[user]";
+		$array_title[] = "Holiday Request";
+		$array_images[] = "button_pdf.png";
+		$array_access[] = 1;
+	}
 
 	SideMenu ("Holidays", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 }
@@ -110,10 +122,10 @@ if ($module_invoices == "1") {
 
 if ($module_expenses == "1") {
 
-	$array_pages = array("index2.php?page=timesheet_expense_edit","index2.php?page=timesheet_expense_list","index2.php?page=timesheet_expense_list&&amp;user_id=$_COOKIE[user]");
-	$array_title = array("Add Expenses","Oustanding Expenses","List My Expenses");
-	$array_images = array("button_new.png","button_list.png","button_list.png");
-	$array_access = array(1,4,1);
+	$array_pages = array("index2.php?page=timesheet_expense_edit","index2.php?page=timesheet_expense_list","index2.php?page=timesheet_expense_list&&amp;user_id=$_COOKIE[user]","pdf_expense_claim.php?user_id=$_COOKIE[user]");
+	$array_title = array("Add Expenses","Oustanding Expenses","List My Expenses","Expenses Claim");
+	$array_images = array("button_new.png","button_list.png","button_list.png","button_pdf.png");
+	$array_access = array(1,4,1,2);
 
 	SideMenu ("Expenses", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 
@@ -136,10 +148,10 @@ if ($module_library == 1) {
 
 if ($module_tenders == 1) {
 
-	$array_pages = array("index2.php?page=tender_list");
-	$array_title = array("Tenders");
-	$array_images = array("button_list.png");
-	$array_access = array(3);
+	$array_pages = array("index2.php?page=tender_list","index2.php?page=tender_edit");
+	$array_title = array("List Tenders","Add Tender");
+	$array_images = array("button_list.png","button_new.png");
+	$array_access = array(3,3);
 
 	SideMenu ("Tenders", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 	

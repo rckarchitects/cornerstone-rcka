@@ -15,62 +15,121 @@ $tplidx = $pdf->ImportPage(1);
 $pdf->addPage();
 $pdf->useTemplate($tplidx, 0, 0, 210, 297);
 
-$format_font = "century";
-$format_font_2 = "Century.php";
+//$format_font = "Helvetica";
+//$format_font_2 = "franklingothicbook.php";
 
-$pdf->AddFont($format_font,'',$format_font_2);
+//$pdf->AddFont($format_font,'',$format_font_2);
+$pdf->SetTextColor(0, 0, 0);
 
+$pdf->SetY(30);
+StyleBody(22,'Helvetica','B');
+$pdf->Cell(0,17,'Holiday Request',0,1);
+StyleBody(18,'Helvetica','B');
 
-$format_bg_r = "220";
-$format_bg_g = "220";
-$format_bg_b = "220";
-
-$format_ln_r = "220";
-$format_ln_g = "220";
-$format_ln_b = "220";
+$time = time();
+$user_id = $_GET[user_id];
+$loopcheck = 0;
 
 
 // Begin creating the page
 
 //Page Title
 
-$sql_project = "SELECT * FROM intranet_projects_blog, intranet_user_details, intranet_projects WHERE blog_id = $blog_id AND blog_proj = proj_id AND blog_user = user_id LIMIT 1";
-$result_project = mysql_query($sql_project, $conn) or die(mysql_error());
-$array_project = mysql_fetch_array($result_project);
-$proj_num = $array_project['proj_num'];
-$proj_name = $array_project['proj_name'];
-$blog_title = $array_project['blog_title'];
-$blog_date = $array_project['blog_date'];
-$blog_type = $array_project['blog_type'];
-$blog_text = strip_tags(nl2br(RemoveShit($array_project['blog_text'])));
-$user_name_first = $array_project['user_name_first'];
-$user_name_second = $array_project['user_name_second'];
+		$year = date("Y",time());
+		
+		$working_days = WorkingDays($year);
 
-	if ($blog_type == "phone") { $blog_type_view = "Telephone Call";}
-	elseif ($blog_type == "filenote") { $blog_type_view = "File Note"; }
-	elseif ($blog_type == "meeting") { $blog_type_view = "Meeting Note";}
-	elseif ($blog_type == "email") { $blog_type_view = "Email Message"; }
-	else { $blog_type_view = NULL; $type = 0; }
-	
-	$blog_type_view = $blog_type_view." - ".$user_name_first." ".$user_name_second;
-	
-	$pdf->SetXY(10,45);
-	$pdf->SetFont($format_font,'',14);
-	$pdf->SetTextColor(200, 200, 200);
-	$sheet_subtitle = $proj_num." ".$proj_name.", ".TimeFormat($blog_date);
-	$pdf->Cell(0,7.5,$sheet_subtitle,0,1,L,0);
-	$pdf->Cell(0,7.5,$blog_type_view,0,1,L,0);
+		
+		$UserHolidaysArray = UserHolidaysArray($user_id,$year,$working_days);
+		
+							$length = $UserHolidaysArray[0];
+							$user_holidays = $UserHolidaysArray[1];
+							$holiday_allowance = $UserHolidaysArray[2];
+							$holiday_allowance_thisyear = $UserHolidaysArray[3];
+							$holiday_paid_total = $UserHolidaysArray[4];
+							$holiday_unpaid_total = $UserHolidaysArray[5];
+							$study_leave_total = $UserHolidaysArray[6];
+							$jury_service_total = $UserHolidaysArray[7];
+							$toil_service_total = $UserHolidaysArray[8];
+							$holiday_year_remaining = $UserHolidaysArray[9];
+							$listadd = $UserHolidaysArray[10];
+							$listend = $UserHolidaysArray[11];
+							$user_name_first = $UserHolidaysArray[12];
+							$user_name_second = $UserHolidaysArray[13];
+							
+		$applicant_name = $user_name_first." ".$user_name_second;
+		$pdf->Cell(0,7.5,$applicant_name,0,1,L,0);
+		$loopcheck++;
+		StyleBody(11,'Helvetica','B');
+		$pdf->Ln(2);
+		$pdf->SetLineWidth(0.5);
+		$pdf->Cell(110,7.5,'Days Requested','B',0,L,0);
+		$pdf->Cell(0,7.5,'Other Holidays','B',1,L,0);
+		StyleBody(11,'Helvetica','');
+		$pdf->SetLineWidth(0.25);
 
-	$pdf->SetFont($format_font,'',24);
-	$pdf->SetTextColor(150, 150, 150);
-	$pdf->MultiCell(0,8,$blog_title,0,L);
-	
-	$pdf->SetXY(40,85);
-	
-	$pdf->SetFont($format_font,'',11);
-	$pdf->SetTextColor(0, 0, 0);
-	$pdf->MultiCell(0,5,$blog_text,0,L);
+$sql_user_holidays = "SELECT * FROM intranet_user_holidays WHERE holiday_user = $user_id AND holiday_timestamp > $time AND (holiday_approved IS NULL OR holiday_approved = 0) ORDER BY holiday_datestamp";
+$result_user_holidays = mysql_query($sql_user_holidays, $conn) or die(mysql_error());
 
+
+while ($array_user_holidays = mysql_fetch_array($result_user_holidays)) {
+
+	$holiday_datestamp = $array_user_holidays['holiday_datestamp'];
+	$holiday_paid = $array_user_holidays['holiday_paid'];
+	
+	
+		if ($holiday_paid == 1) { $holiday_paid = "Paid"; }
+		elseif ($holiday_paid == 2) { $holiday_paid = "Study Leave"; }
+		elseif ($holiday_paid == 3) { $holiday_paid = "Jury Service"; }
+		elseif ($holiday_paid == 4) { $holiday_paid = "TOIL"; }
+		elseif ($holiday_paid == 5) { $holiday_paid = "Compassionate Leave"; }
+		else { $holiday_paid = "Unpaid"; }
+		
+		if ($holiday_length == 0.5) { $holiday_length = "Half Day"; } else { $holiday_length = "Full Day"; }
+		
+		StyleBody(10,'Helvetica','');
+		$date = TimeFormatDay ( CreateDays($holiday_datestamp,12) );
+		$pdf->Cell(50,7.5,$date,'B',0,L,0);
+		$pdf->Cell(40,7.5,$holiday_paid,'B',0,L,0);
+		$pdf->Cell(20,7.5,$holiday_length,'B',0,L,0);
+		
+		OtherHolidaysToday($user_id,$holiday_datestamp);
+	
+}
+
+// Holiday Allowance
+		
+		$pdf->Ln(5);
+
+		StyleBody(11,'Helvetica','B');
+		$pdf->Cell(0,5,'Notes',0,1,L,0);
+							
+		StyleBody(10,'Helvetica','');
+		
+		if ($holiday_allowance_thisyear > 0 ) {
+			
+			$holiday_paid_total = ceil ($holiday_paid_total * 2) / 2;
+		
+			$helptext = $user_name_first . " has a total paid holiday allowance of " . $holiday_allowance_thisyear . " days for " . $year . ".\n" . $user_name_first . " has booked " . $holiday_paid_total . " days to date (including this request)";
+			
+			if ($holiday_unpaid_total > 0) { $helptext = $helptext . " of these, in addition to " . $holiday_unpaid_total . " unpaid days,"; }
+			
+			$helptext = $helptext . " and therefore has " . $holiday_year_remaining . " day(s) holiday remaining before the end of the year." ;
+
+			$pdf->MultiCell(150,5,$helptext);
+		
+		}
+		
+		$nowdate = TimeFormat(time());
+
+		$pdf->Ln(15);
+		StyleBody(11,'Helvetica','B');
+		$pdf->Cell(0,5,'Holiday Approved',0,1,L,0);
+		
+		$pdf->Cell(120,25,'',1,1,L,0);
+		$pdf->Ln(2.5);
+		StyleBody(10,'Helvetica','');
+		$pdf->Cell(0,5,$nowdate,0,1,L,0);
 
 
 // and send to output

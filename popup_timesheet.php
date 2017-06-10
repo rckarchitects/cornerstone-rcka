@@ -5,7 +5,7 @@ include "inc_files/inc_checkcookie.php";
 
 // Perform any actions required
 
-if ($_GET[user_view] > 0) { $viewuser = $_GET[user_view]; } else { $viewuser = $_COOKIE[user]; }
+if ($_GET[user_view] > 0) { $viewuser = intval( $_GET[user_view] ); } else { $viewuser = intval( $_COOKIE[user] ); }
 
 if ($_POST[action] != NULL) { $include_action = "inc_files/action_" . $_POST[action] .".php"; include_once($include_action); TimeSheetHours($viewuser,""); }
 

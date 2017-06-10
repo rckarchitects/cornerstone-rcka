@@ -1,7 +1,5 @@
 <?php
 
-$viewuser = $_COOKIE[user];
-
 $profit = 1;
 
 $ts_id = $_POST[ts_id];

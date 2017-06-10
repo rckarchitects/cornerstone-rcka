@@ -4,6 +4,58 @@ include "inc_files/inc_checkcookie.php";
 
 if ($user_usertype_current <= 3) { header ("Location: index2.php"); } else {
 
+
+// Functions for use on this pagecount
+
+	function StageTotal() {
+		GLOBAL $pdf;
+		GLOBAL $stage_total;
+		GLOBAL $hours_total;
+		GLOBAL $running_cost_nf;
+		GLOBAL $ts_fee_target;
+		
+		$invoice_cost = $stage_total * $ts_fee_target;
+		$invoice_cost_print = "£" . number_format($invoice_cost,2);
+		$running_cost_nf_print =  "(£" . number_format($running_cost_nf,2) . ")";
+		
+				$stage_total_print = "£" . number_format($stage_total,2);
+				$pdf->Cell(0,1,'',T,1);
+				$pdf->Cell(20,4,'Stage Total', 0, 0, L);
+				$pdf->Cell(8,4,$hours_total, 0, 0, R);
+				$pdf->Cell(5,4,'hrs', 0, 0);
+				$pdf->Cell(38,4,'', 0, 0);
+				$pdf->Cell(20,4,$stage_total_print, 0, 0, R);
+				$pdf->Cell(20,4,$running_cost_nf_print, 0, 1, R);
+				$pdf->Ln();
+				$stage_total = 0;
+				$hours_total= 0;
+				$running_cost_nf = 0;
+				
+				$ts_fee_target_print = ($ts_fee_target - 1) * 100;
+				$ts_fee_target_print = "Stage Cost (including profit at " . number_format($ts_fee_target_print,2) . "%)";
+				
+				$pdf->Cell(0,1,'',T,1);
+				$pdf->Cell(71,4,$ts_fee_target_print, 0, 0, L);
+				$pdf->Cell(20,4,$invoice_cost_print, 0, 1, R);
+				$pdf->Ln();
+	
+		}
+		
+	function StageFee($ts_fee_id) {
+			
+			if ($ts_fee_id > 0) {
+				GLOBAL $conn;
+				GLOBAL $pdf;
+				$sql = "SELECT ts_fee_value FROM intranet_timesheet_fees WHERE ts_fee_id = $ts_fee_id";
+				$result = mysql_query($sql, $conn) or die(mysql_error());
+				$array = mysql_fetch_array($result);
+				$ts_fee_value_print = "Stage Fee (including profit) " . number_format($array['ts_fee_value'],2);
+				$pdf->Cell(0,1,'',T,1);
+				$pdf->Cell(0,8,$ts_fee_target_print, 0, 0, L);
+				
+			}
+		}
+
 		// Establish the parameters for what we are showing
 
 		$time_submit_begin = $_POST[submit_begin];
@@ -88,7 +140,7 @@ $pdf->SetFont($format_font,'',6);
 $pdf->Cell(0,4,$printed_on,0, 1, L, 0);
 $pdf->Ln();
 
-$legend = "Cost (Fa) = Factored cost\nCost (Ho) = Hourly cost\nCost (Fa Acc) = Factored accumulative cost\nCost (Ho Acc) = Hourly accumulative cost\n";
+$legend = "Cost (Fa) = Factored cost\nCost (Ho) = Hourly cost (not factored)\nCost (Fa Acc) = Factored accumulative cost\nCost (Ho Acc) = Hourly accumulative cost (not factored)\n";
 
 $pdf->MultiCell(0,3,$legend);
 
@@ -107,52 +159,7 @@ $stage_total = 0;
 $hours_total = 0;
 
 
-		function StageTotal() {
-		GLOBAL $pdf;
-		GLOBAL $stage_total;
-		GLOBAL $hours_total;
-		GLOBAL $running_cost_nf;
-		GLOBAL $ts_fee_target;
-		
-		$invoice_cost = $stage_total * $ts_fee_target;
-		$invoice_cost_print = "£" . number_format($invoice_cost,2);
-		
-				$stage_total_print = "£" . number_format($stage_total,2);
-				$pdf->Cell(0,1,'',T,1);
-				$pdf->Cell(20,4,'Stage Total', 0, 0, L);
-				$pdf->Cell(8,4,$hours_total, 0, 0, R);
-				$pdf->Cell(5,4,'hrs', 0, 0);
-				$pdf->Cell(38,4,'', 0, 0);
-				$pdf->Cell(20,4,$stage_total_print, 0, 1, R);
-				$pdf->Ln();
-				$stage_total = 0;
-				$hours_total= 0;
-				$running_cost_nf = 0;
-				
-				$ts_fee_target_print = ($ts_fee_target - 1) * 100;
-				$ts_fee_target_print = "Stage Cost (including profit at " . number_format($ts_fee_target_print,2) . "%)";
-				
-				$pdf->Cell(0,1,'',T,1);
-				$pdf->Cell(71,4,$ts_fee_target_print, 0, 0, L);
-				$pdf->Cell(20,4,$invoice_cost_print, 0, 1, R);
-				$pdf->Ln();
-	
-		}
-		
-		function StageFee($ts_fee_id) {
-			
-			if ($ts_fee_id > 0) {
-				GLOBAL $conn;
-				GLOBAL $pdf;
-				$sql = "SELECT ts_fee_value FROM intranet_timesheet_fees WHERE ts_fee_id = $ts_fee_id";
-				$result = mysql_query($sql, $conn) or die(mysql_error());
-				$array = mysql_fetch_array($result);
-				$ts_fee_value_print = "Stage Fee (including profit) " . number_format($array['ts_fee_value'],2);
-				$pdf->Cell(0,1,'',T,1);
-				$pdf->Cell(0,8,$ts_fee_target_print, 0, 0, L);
-				
-			}
-		}
+
 
 	while ($array = mysql_fetch_array($result)) {
 	$user_name_first = $array['user_name_first'];
@@ -163,7 +170,9 @@ $hours_total = 0;
 	$user_prop = $array['user_prop'];
 	$user_prop_target = $array['user_prop_target'];
 	
-	if ($user_prop) { $user_prop_actual = $user_prop; } elseif ($user_prop_target) { $user_prop_actual = $user_prop_target; } else { $user_prop_actual = 0; }
+	$user_prop_actual = $user_prop;
+	
+	//if ($user_prop) { $user_prop_actual = $user_prop; } elseif ($user_prop_target) { $user_prop_actual = $user_prop_target; } else { $user_prop_actual = 0; }
 	$user_prop_actual = (1 - $user_prop_actual);
 	
 	$ts_id = $array['ts_id'];
@@ -180,9 +189,11 @@ $hours_total = 0;
 	$ts_fee_id = $array['ts_fee_id'];
 	$ts_stage_fee = $array['ts_stage_fee'];
 	//$ts_rate = $array['ts_cost_factored'];
-	$ts_cost_factored = $array['ts_cost_factored'] * $user_prop_actual;
+	$ts_cost_factored = $array['ts_cost_factored'] * (1 - $user_prop_target);
 	
-	$ts_cost_nf = $ts_rate * $ts_hours;
+	$ts_cost_factored = $ts_cost_factored * ((1 - $user_prop) / (1 - $user_prop_target));
+	
+	$ts_cost_nf = $ts_rate * $ts_hours ;
 	
 	$sql_fee_text = "SELECT ts_fee_id, ts_fee_text, ts_fee_target FROM intranet_timesheet_fees WHERE ts_fee_id = '$ts_stage_fee' LIMIT 1";
 	$result_fee_text = mysql_query($sql_fee_text, $conn) or die(mysql_error());
@@ -191,7 +202,7 @@ $hours_total = 0;
 	$ts_fee_target = $array_fee_text['ts_fee_target'];
 	//$ts_stage_fee = $array_fee_text['ts_stage_fee'];
 	
-	if ( $ts_fee_target == NULL) { $ts_fee_target = 1.3; }
+	if ( $ts_fee_target == NULL) { $ts_fee_target = 1; }
 	
 	if ($ts_stage_fee == 0) { $ts_fee_text = "Unassigned"; }
 	
