@@ -11,137 +11,7 @@ require('fpdf/fpdi.php');
 
 $pdf= new fpdi();
 
-function NewPage() {
 
-	GLOBAL $pdf;
-	$pdf->addPage();
-	$current_y = $pdf->GetY();
-	$new_y = $current_y + 50;
-	$pdf->SetY($new_y);
-
-}
-
-
-function Paragraph ($input) {
-	
-	GLOBAL $pdf;
-	GLOBAL $format_font;
-	
-	$text_array = explode ("\n",$input);
-	
-	$header = 1;
-	
-	foreach ($text_array AS $para ) {
-		
-		$para = trim($para);
-		
-		
-		
-		$pdf->SetTextColor(0);
-		if (substr($para,0,2) == "- ") {
-			$pdf->SetFont('ZapfDingbats','',4);
-			$para = trim($para,"- ");
-			$pdf->SetX(0);
-			$pdf->Cell(30,5,'l',0,0,R,0);
-			$pdf->SetX(30);
-			$pdf->SetFont($format_font,'',11);
-			$pdf->MultiCell(145,5,$para,0,L);
-		} elseif (substr($para,0,1) == "|") {
-			if ($header == 1) { $pdf->SetLineWidth(0.5); $header = 0; } else { $pdf->SetLineWidth(0.2); }
-			$row = explode ("|",$para);
-			$delete = array_shift($row);
-			foreach ($row AS $cell ) {
-				$cell_width = 150 / count($row);
-				$pdf->SetFont($format_font,'',10);
-				$pdf->Cell($cell_width,7,$cell,1,0,L,0);
-				$pdf->SetFont($format_font,'',11);
-			}
-			$pdf->Ln(7);
-			$pdf->SetX(25);
-		} else {
-		$pdf->SetX(25);
-		$pdf->SetFont($format_font,'',11);
-		$pdf->MultiCell(150,5,$para,0,L);
-		}
-		
-		
-	
-	}
-	
-	
-}
-
-function UpDate ($qms_date) {
-						
-						GLOBAL $pdf;
-						
-						$current_x = $pdf->GetX();
-						$current_y = $pdf->GetY();
-						$new_y = $pdf->GetY() + 2;
-					
-						$pdf->SetXY(180,$new_y);
-						$pdf->SetTextColor(180);
-						$pdf->SetDrawColor(180);
-						$pdf->SetFont('Helvetica','',5);
-						$pdf->Cell(0,2,$qms_date,0,0);
-						$pdf->SetTextColor(0);
-						
-						$pdf->SetXY($current_x,$current_y);
-					
-					}
-					
-function AddBullets($input) {
-	
-		GLOBAL $pdf;
-		
-		if (substr($input,2) == "- ") {
-			
-			
-		} else {
-			
-			
-		}
-	
-	
-}
-
-function ProjectData($proj_id, $type) {
-	
-	GLOBAL $conn;
-	$proj_id = intval($proj_id);
-	$sql_proj = "SELECT * FROM intranet_projects WHERE proj_id = $proj_id LIMIT 1";
-	$result_proj = mysql_query($sql_proj, $conn) or die(mysql_error());
-	$array_proj = mysql_fetch_array($result_proj);
-	
-	if ($type = "name") {	
-	$output = $array_proj['proj_num'] . " " . $array_proj['proj_name'];
-	}
-	
-	return $output;
-	
-}
-
-function ChecklistDate($proj_id, $checklist_item) {
-	
-	GLOBAL $conn;
-	$proj_id = intval($proj_id);
-	$checklist_item = intval (trim ($checklist_item,"#") );
-	if ($proj_id > 0 AND $checklist_item > 0){
-		
-		$sql_checklist_date = "SELECT checklist_date FROM intranet_project_checklist WHERE checklist_project = $proj_id AND checklist_item = $checklist_item ORDER BY checklist_date DESC LIMIT 1";
-		$result_checklist_date = mysql_query($sql_checklist_date, $conn) or die(mysql_error());
-		$array_checklist_date = mysql_fetch_array($result_checklist_date);
-		
-		if ($array_checklist_date['checklist_date'] != "0000-00-00" && $array_checklist_date['checklist_date'] != NULL) {
-			$output = strtotime( $array_checklist_date['checklist_date'] );
-			$output = date("j F Y",$output);
-		}
-		
-		return $output;
-	
-	}
-	
-}
 
 
 $pagecount = $pdf->setSourceFile("pdf/template.pdf");
@@ -214,25 +84,37 @@ $sql = "SELECT * FROM intranet_qms $s1 $s2 ORDER BY qms_toc1, qms_toc2, qms_toc3
 					$qms_text = strip_tags ( $array['qms_text'] );
 					$qms_timestamp = $array['qms_timestamp'];
 					$qms_date = date("d M Y",$qms_timestamp);
+					$qms_pagebreak = $array['qms_pagebreak'];
+					
 					
 					$number = $qms_toc4;
 					
 					if ($_GET[proj_id] != NULL && $qms_text == "[project name]" ) { $qms_text = ProjectData($_GET[proj_id], $type); }
 					if ($_GET[proj_id] != NULL && substr($qms_text,0,1) == "#" ) { $qms_text = ChecklistDate($_GET[proj_id], $qms_text); }
-						
-					if ($qms_toc4 > 0 && $qms_type == "code") { if ($pdf->GetY() > 270) { $pdf->addPage(); } UpDate ($qms_date); $pdf->SetTextColor(180); $pdf->SetFont('Helvetica','',5); $pdf->Cell(15,5,$number,0,0,R); $pdf->SetFont('Courier','',10); $pdf->SetTextColor(0); $pdf->Cell(150,2,'',0,2,'',1); $pdf->MultiCell(150,4.5,$qms_text,0,'',true); $pdf->SetX(25); $pdf->Cell(150,2,'',0,2,'',1); $pdf->Cell(0,3,'',0,1); }
 					
-					elseif ($qms_toc4 > 0 && $qms_type == "comp") { if ($pdf->GetY() > 260) { $pdf->addPage(); } UpDate ($qms_date); $pdf->SetTextColor(180); $pdf->SetFont('Helvetica','',5); $pdf->Cell(15,5,$number,0,0,R); $pdf->SetTextColor(0); $pdf->SetLineWidth(0.5); $pdf->SetDrawColor(100);$pdf->Cell(1,3,'',0,0); $pdf->SetFont('Helvetica','',12); $pdf->Cell(149,15,$qms_text,1,1); $pdf->Cell(0,3,'',0,1); }
 					
-					elseif ($qms_toc4 > 0 && $qms_type == "image") { $max_width = 150; $image = "images/" . $qms_text ; $image_size = GetImagesize($image); $image_height = $image_size[1]; $image_width = $image_size[0]; $height = ($image_height / $image_width) * $max_width;  if ($pdf->GetY() + $height > 270) { $pdf->addPage(); } UpDate ($qms_date); $pdf->SetTextColor(180); $pdf->SetFont('Helvetica','',5); $pdf->Cell(15,5,$number,0,0,R); $x = $pdf->GetX(); $y = $pdf->GetY();  $pdf->Image($image,$x,$y,$max_width,$height); $y = ( $pdf->GetY() + $height + 2 ); $pdf->SetY($y); unset($x); unset($y); }
+					$qms_text = ClauseCrossReference($qms_text);
 					
-					elseif ($qms_toc4 > 0 && $qms_type == "check") { if ($pdf->GetY() > 260) { $pdf->addPage(); } UpDate ($qms_date); $pdf->SetTextColor(180); $pdf->SetFont('Helvetica','',5); $pdf->Cell(15,5,$number,0,0,R); $pdf->SetTextColor(0); $pdf->SetLineWidth(0.5); $pdf->SetDrawColor(100); $pdf->Cell(1,3,'',0,0); $pdf->Cell(10,6,'',1,0); $pdf->Cell(2,3,'',0,0); $pdf->SetFont($format_font,'',11); $pdf->MultiCell(135,5,$qms_text,0,L); $pdf->Cell(0,3,'',0,1); }
+					$line_length = $pdf->GetStringWidth($qms_text);
 					
-					elseif ($qms_toc4 > 0 && $qms_type == NULL) { if ($pdf->GetY() > 270) { $pdf->addPage(); } UpDate ($qms_date); $pdf->SetTextColor(180); $pdf->SetFont('Helvetica','',5); $pdf->SetTextColor(180); $pdf->Cell(15,5,$number,0,0,R); Paragraph($qms_text); $pdf->Cell(0,4,'',0,1); }
+					$line_height = $pdf->GetY() + ceil($line_length/150) * 4;
+				
+					
+					if ($line_height > 270) { $pdf->addPage(); $line_height = 0;} elseif ($qms_pagebreak == 1) { $pdf->addPage(); $line_height = 0;}
+					
+					if ($qms_toc4 > 0 && $qms_type == "code") {  UpDate ($qms_date); $pdf->SetTextColor(0); $pdf->SetFont('Helvetica','',7); $pdf->Cell(15,4,$number,0,0,R); $pdf->SetFont('Courier','',10); $pdf->SetTextColor(0); $pdf->Cell(150,2,'',0,2,'',1); $pdf->MultiCell(150,4.5,$qms_text,0,'',true); $pdf->SetX(25); $pdf->Cell(150,2,'',0,2,'',1); $pdf->Cell(0,3,'',0,1); }
+					
+					elseif ($qms_toc4 > 0 && $qms_type == "comp") { UpDate ($qms_date); $pdf->SetTextColor(0); $pdf->SetFont('Helvetica','',7); $pdf->Cell(15,4,$number,0,0,R); $pdf->SetTextColor(0); $pdf->SetLineWidth(0.5); $pdf->SetDrawColor(100);$pdf->Cell(1,3,'',0,0); $pdf->SetFont('Helvetica','',11); $pdf->Cell(149,15,$qms_text,1,1); $pdf->Cell(0,3,'',0,1); }
+					
+					elseif ($qms_toc4 > 0 && $qms_type == "image") { $max_width = 150; $image = "images/" . $qms_text ; $image_size = GetImagesize($image); $image_height = $image_size[1]; $image_width = $image_size[0]; $height = ($image_height / $image_width) * $max_width;  if ($pdf->GetY() + $height > 270) { $pdf->addPage(); } UpDate ($qms_date); $pdf->SetTextColor(0); $pdf->SetFont('Helvetica','',7); $pdf->Cell(15,4,$number,0,0,R); $x = $pdf->GetX(); $y = $pdf->GetY();  $pdf->Image($image,$x,$y,$max_width,$height); $y = ( $pdf->GetY() + $height + 2 ); $pdf->SetY($y); unset($x); unset($y); }
+					
+					elseif ($qms_toc4 > 0 && $qms_type == "check") { UpDate ($qms_date); $pdf->SetTextColor(0); $pdf->SetFont('Helvetica','',7); $pdf->Cell(15,4,$number,0,0,R); $pdf->SetTextColor(0); $pdf->SetLineWidth(0.5); $pdf->SetDrawColor(100); $pdf->Cell(1,3,'',0,0); $pdf->Cell(10,6,'',1,0); $pdf->Cell(2,3,'',0,0); $pdf->SetFont($format_font,'',10); $pdf->MultiCell(135,4,$qms_text,0,L); $pdf->Cell(0,4,'',0,1); }
+					
+					elseif ($qms_toc4 > 0 && $qms_type == NULL) { UpDate ($qms_date); $pdf->SetTextColor(0); $pdf->SetFont('Helvetica','',7); $pdf->SetTextColor(0); $pdf->Cell(15,5,$number,0,0,R); Paragraph($qms_text); $pdf->Cell(0,2,'',0,1); }
 
-					elseif ($qms_toc3 > 0) { if ($pdf->GetY() > 210) { $pdf->addPage(); } UpDate ($qms_date);  $pdf->Cell(0,6,'',0,1); $pdf->SetFont('Helvetica','',12); $number = $qms_toc1 . "." .  $qms_toc2 . "." .  $qms_toc3; $pdf->Cell(15,6,$number,0,0,R); $pdf->Cell(150,6,$qms_text,0,2); $pdf->Cell(0,4,'',0,1); }
+					elseif ($qms_toc3 > 0) { if ($pdf->GetY() > 210) { $pdf->addPage(); } UpDate ($qms_date);  $pdf->Cell(0,3,'',0,1); $pdf->SetFont('Helvetica','',11); $number = $qms_toc1 . "." .  $qms_toc2 . "." .  $qms_toc3; $pdf->Cell(15,6,$number,0,0,R); $pdf->Cell(150,6,$qms_text,0,2); $pdf->Cell(0,2,'',0,1); }
 
-					elseif ($qms_toc2 > 0) {  $pdf->Cell(0,8,'',0,1); if ($pdf->GetY() > 210) { $pdf->addPage(); } UpDate ($qms_date); $pdf->SetFont('Helvetica','',14); $number = $qms_toc1 . "." .  $qms_toc2; $pdf->Cell(15,8,$number,0,0,R); $pdf->Cell(150,8,$qms_text,0,2); $pdf->Cell(0,5,'',0,1);  }
+					elseif ($qms_toc2 > 0) {  $pdf->Cell(0,8,'',0,1); if ($pdf->GetY() > 210) { $pdf->addPage(); } UpDate ($qms_date); $pdf->SetFont('Helvetica','',12); $number = $qms_toc1 . "." .  $qms_toc2; $pdf->Cell(15,8,$number,0,0,R); $pdf->Cell(150,8,$qms_text,0,2); $pdf->Cell(0,3,'',0,1);  }
 
 					elseif ($qms_toc1 > 0) {  NewPage(); UpDate ($qms_date); $pdf->SetFont('Helvetica','B',16); $pdf->Cell(15,10,$qms_toc1,0,0,R); $pdf->Cell(150,10,$qms_text,0,2); $pdf->Cell(0,5,'',0,1); }
 					
@@ -245,7 +127,7 @@ $sql = "SELECT * FROM intranet_qms $s1 $s2 ORDER BY qms_toc1, qms_toc2, qms_toc3
 
 // and send to output
 
-$file_name = $pref_practice . "_QMS_".Date("Y",time())."-".Date("m",time())."-".Date("d",time()).".pdf";
+$file_name = $pref_practice . "_QMS_".Date("Y",time())."-".Date("m",time())."-".Date("d",time()). "_" . $qms_toc1 . "-" . $qms_toc2 . ".pdf";
 
 $pdf->Output($file_name,I);
 

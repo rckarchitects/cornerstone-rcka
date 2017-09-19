@@ -204,7 +204,7 @@ if (mysql_num_rows($result_checklist) > 0) {
 		if ($_GET[item] != $item_id AND $_POST[item] != $item_id) { $hidden = "none"; } else { unset($hidden); }
 	
 		if (!$item) {
-			echo "<td $bg><a href=\"javascript:void(0);\" onclick=\"hideRow($item_id, false);\">Help</a></td>";
+			echo "<td $bg><a href=\"javascript:void(0);\" onclick=\"hideRow($item_id, false);\"><img src=\"images/button_help.png\" alt=\"Help\" /></a></td>";
 		} else {
 			echo "<td $bg></td>";
 		}
@@ -240,7 +240,7 @@ if (mysql_num_rows($result_checklist) > 0) {
 	} else { 
 	
 		echo "<td $bg>";
-		if (!$_GET[item]) { echo "<a href=\"index2.php?page=project_checklist_edit&amp;proj_id=$proj_id&amp;item=$item_id\">+</a>"; }
+		if (!$_GET[item]) { echo "<a href=\"index2.php?page=project_checklist_edit&amp;proj_id=$proj_id&amp;item=$item_id&amp;group_id=$group_id\"><img src=\"images/button_new.png\" alt=\"Add Help\" /></a>"; }
 		echo "</td>";
 		echo "</tr>\n";
 	

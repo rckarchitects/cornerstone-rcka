@@ -162,9 +162,17 @@ while ($array_drawings = mysql_fetch_array($result_drawings)) {
 		
 		if ($revision_letter == "*") { $pdf->SetTextColor(150, 150, 150); } else { $pdf->SetTextColor(0, 0, 0); }
 		
-		$pdf->Cell(60,5,$drawing_number,T,0,L,$fill);
-		$pdf->Cell(25,5,$drawing_date,T,0,L,$fill);
-		$pdf->MultiCell(0,5,$drawing_title,T,L,$fill);
+		$line_height = $pdf->GetStringWidth($drawing_title);
+		$lines = 5 * (ceil($line_height / 105));
+		
+		$pdf->Cell(0,$lines,'',T,0,L,$fill);
+		
+		$pdf->SetX(10);
+		
+		$pdf->Cell(60,5,$drawing_number,0,0,L,0);
+		$pdf->Cell(25,5,$drawing_date,0,0,L,0);
+		$pdf->MultiCell(0,5,$drawing_title,0,L,0);
+		
 		
 		if ($revision_letter == "*") {	
 				$back_y = $pdf->GetY() - 2.5;

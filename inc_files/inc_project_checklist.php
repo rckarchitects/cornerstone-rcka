@@ -112,7 +112,7 @@ if (mysql_num_rows($result_checklist) > 0) {
 		}
 	
 	
-	echo "<tr id=\"$item_id\"><td $bg>";
+	echo "<tr><td $bg>";
 	//if ($item_name_current != $item_name) { 
 	
 	echo $item_name;
@@ -153,7 +153,7 @@ if (mysql_num_rows($result_checklist) > 0) {
 		if ($_GET[item] != $item_id AND $_POST[item] != $item_id) { $hidden = "none"; } else { unset($hidden); }
 	
 		if (!$item) {
-			echo "<td $bg><a href=\"javascript:void(0);\" onclick=\"hideRow($item_id, false);\">Help</a></td>";
+			echo "<td $bg><a href=\"javascript:void(0);\" onclick=\"hideRow($item_id, false);\"><img src=\"images/button_help.png\" alt=\"Help\" /></a></td>";
 		}
 		
 		echo "</tr>";

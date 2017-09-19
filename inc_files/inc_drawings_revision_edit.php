@@ -19,8 +19,9 @@ if ($_GET[revision_id] > 0) {
 		$revision_desc = $array_revision['revision_desc'];
 		$revision_author = $array_revision['revision_author'];
 		
+		echo "<h2>Edit Drawing Revision for $drawing_number</h2>";
 		
-		echo "<h1>Edit Drawing Revision for $drawing_number</h1>";
+		$add_or_edit = "edit";
 	
 } else {
 		
@@ -29,12 +30,17 @@ if ($_GET[revision_id] > 0) {
 		$array_revision = mysql_fetch_array($result_revision);
 		$revision_letter = $array_revision['revision_letter'];
 		
-		echo "<h1>Add Drawing Revision for $drawing_number</h1>";
+		echo "<h2>Add Drawing Revision for $drawing_number";
 		
+		if ($revision_letter) {
+		echo " (Current Revision: " . strtoupper ( $revision_letter ) . ")</h2>";
+		}
+		
+		$add_or_edit = "add";
 }
 
-$revision_letters = array("-","a","b","c","d","e","f","g","h","j","k","l","m","n","p","q","r","s","t","u","v","w","x","y","z","*","a1","a2","c1","c2","p1","p2");
-$revision_code = array("-","Alpha","Bravo","Charlie","Delta","Echo","Foxtrot","Golf","Hotel","Juliet","Kilo","Lima","Mike","November","Papa","Quebec","Romeo","Sierra","Tango","Uniform","Victor","Whisky","X-Ray","Yankee","Zulu","Obsolete","-Non Standard-","-Non Standard-","-Non Standard-","-Non Standard-","-Non Standard-","-Non Standard-");
+$revision_letters = array("","-","a","b","c","d","e","f","g","h","j","k","l","m","n","p","q","r","s","t","u","v","w","x","y","z","*","","p1","p2","p3","p4","p5","p6","p7","p8","p9","p10");
+$revision_code = array("Standard Revisions","First Issue","Alpha","Bravo","Charlie","Delta","Echo","Foxtrot","Golf","Hotel","Juliet","Kilo","Lima","Mike","November","Papa","Quebec","Romeo","Sierra","Tango","Uniform","Victor","Whisky","X-Ray","Yankee","Zulu","Obsolete","BS 1192.2007","Revision 1","Revision 2","Revision 3","Revision 4","Revision 5","Revision 6","Revision 7","Revision 8","Revision 9","Revision 10");
 
 
 
@@ -53,14 +59,19 @@ if ($user_usertype_current <= 3 ) {
 $rev_total = count($revision_letters);
 
 echo "<p>Revision Letter";
-if ($revision_letter) {
-	echo " (Currently: " . strtoupper ( $revision_letter ) . ")";
-}
+
 echo "<br /><select name=\"revision_letter\">";
 while ($rev_begin < $rev_total) {
-	if ($revision_letter == $revision_letters[$rev_begin]) { $selected = " selected=\"selected\" "; } else { unset($selected); } 
-echo "<option value=\"$revision_letters[$rev_begin]\" $selected >" . strtoupper($revision_letters[$rev_begin]) . " " . ($revision_code[$rev_begin]) . "</option>";
-$rev_begin++;
+	if ($revision_letter == $revision_letters[$rev_begin-1] && $add_or_edit == "add") { $selected = " selected=\"selected\" "; }
+	elseif ($revision_letter == $revision_letters[$rev_begin] && $add_or_edit == "edit") { $selected = " selected=\"selected\" "; }
+	else { unset($selected); }
+	if ($revision_letters[$rev_begin] == "") {
+		echo "<option value=\"\" disabled=\"disabled\" style=\"font-weight: bold;\">$revision_code[$rev_begin]</option>";
+	} else {
+		echo "<option value=\"$revision_letters[$rev_begin]\" $selected >" . strtoupper($revision_letters[$rev_begin]) . " (" . ($revision_code[$rev_begin]) . ")</option>";
+	}
+		
+	$rev_begin++;
 }
 echo "</select></p>";
 

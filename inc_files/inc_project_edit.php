@@ -188,6 +188,12 @@ echo "<p>Country<br />";
 include("inc_files/inc_data_project_address_country.php");
 echo "</p>";
 
+echo "<p>Project Description<br /><textarea name=\"proj_desc\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_desc</textarea></p>";
+
+echo "<p>Practice Ambition for Project<br /><textarea name=\"proj_ambition_internal\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_ambition_internal</textarea></p>";
+
+echo "<p>Client Ambition for Project<br /><textarea name=\"proj_ambition_client\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_ambition_client</textarea></p>";
+
 // Now echo the admin only options if applicable
 
 if ($user_usertype_current > 2) {
@@ -247,12 +253,6 @@ echo "</div><div id=\"item_switch_3\">";
 echo "
 
 <h2>Project Particulars</h2>
-
-<p>Project Description<br /><textarea name=\"proj_desc\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_desc</textarea></p>
-
-<p>Practice Ambition for Project<br /><textarea name=\"proj_ambition_internal\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_ambition_internal</textarea></p>
-
-<p>Client Ambition for Project<br /><textarea name=\"proj_ambition_client\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_ambition_client</textarea></p>
 
 <p>Procurement Method<br />";
 

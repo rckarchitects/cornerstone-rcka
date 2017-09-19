@@ -18,7 +18,13 @@ Rollbar::init(array('access_token' => '79f4496bab774563862a8da48e15cf19'));
 
 date_default_timezone_set ( 'Europe/London ' );
 
-include("inc_action_functions.php");
+include_once("inc_action_functions.php");
+
+if ($module_timesheets == 1) {
+	
+	include_once("inc_action_functions_timesheet.php");
+	
+}
 
 if ($_GET[time] != NULL) { $time = CleanNumber($_GET[time]); setcookie("lastdayview", $time);  } else { $time = time(); }
 

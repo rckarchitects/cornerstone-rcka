@@ -19,7 +19,7 @@ print "</p>";
 print "<h2>View Invoices</h2>";
 
 
-$sql = "SELECT * FROM intranet_timesheet_invoice WHERE invoice_project = '$proj_id' order by invoice_ref";
+$sql = "SELECT * FROM intranet_timesheet_invoice WHERE invoice_project = '$proj_id' order by invoice_date, invoice_ref";
 $result = mysql_query($sql, $conn) or die(mysql_error());
 
 if (mysql_num_rows($result) > 0) {

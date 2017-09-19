@@ -152,6 +152,8 @@ if ($s1 == 0) {
 					$qms_text = $array['qms_text'];
 					$qms_timestamp = $array['qms_timestamp'];
 					
+					$qms_text = ClauseCrossReference($qms_text);
+					
 					if ($user_usertype_current > 4) {
 						$edit_clause = "<a href=\"index2.php?page=qms_edit&amp;s1=" . $qms_toc1 . "&amp;s2=" . $qms_toc2 . "\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a>&nbsp;";
 					} else { unset($edit_clause); }

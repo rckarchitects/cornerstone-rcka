@@ -40,6 +40,7 @@ $ts_expense_receipt = $_POST[ts_expense_receipt];
 $ts_expense_reimburse = $_POST[ts_expense_reimburse];
 $ts_expense_notes = CleanUp($_POST[ts_expense_notes]);
 $ts_expense_category = CleanNumber($_POST[ts_expense_category]);
+$ts_expense_p11d = intval($_POST[ts_expense_p11d]);
 
 // Check the date input
 

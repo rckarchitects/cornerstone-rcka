@@ -28,7 +28,7 @@ if($status == "edit") {
 	$blog_date_month = date("n",$blog_date);
 	$blog_date_year = date("Y",$blog_date);
 	
-	print "<h2>Edit Existing Project Blog Entry</h2>";
+	echo "<h2>Edit Existing Project Blog Entry</h2>";
 	
 	if ($blog_id > 0) {
 		echo "<form method=\"post\" action=\"index2.php?page=project_blog_list\">";
@@ -61,54 +61,54 @@ if($status == "edit") {
 	$blog_date_month = date("n",time());
 	$blog_date_year = date("Y",time());
 
-	print "<h2>Add New Project Blog Entry</h2>";
+	echo "<h2>Add New Project Blog Entry</h2>";
 	
-	print "<form method=\"post\" action=\"index2.php?page=project_blog_list\">";
+	echo "<form method=\"post\" action=\"index2.php?page=project_blog_list\">";
 
 }
 
-if ($blog_title != NULL) { print "<h2>$blog_title</h2>"; } elseif ($proj_id > 0) {
+if ($blog_title != NULL) { echo "<h2>$blog_title</h2>"; } elseif ($proj_id > 0) {
 
 			$sql2 = "SELECT * FROM intranet_projects where proj_id = $_GET[proj_id]";
 			$result2 = mysql_query($sql2, $conn);
 			$array2 = mysql_fetch_array($result2);
 			$proj_num = $array2['proj_num'];
 			$proj_name = $array2['proj_name'];
-			print "<h2>Add Blog Entry for: $proj_num&nbsp;$proj_name</h2>";
+			echo "<h2>Add Blog Entry for: $proj_num&nbsp;$proj_name</h2>";
 }
 
-print "
+echo "
 <h3>Title</h3><p>
 <input type=\"text\" name=\"blog_title\" maxlength=\"100\" size=\"50\" value=\"$blog_title\" /></p>";
 
 if($status == "add" AND $proj_id != NULL) {
 
-print "<input type=\"hidden\" value=\"blog_add\" name=\"action\" />";
-print "<input type=\"hidden\" value=\"$proj_id\" name=\"blog_proj\" />";
+echo "<input type=\"hidden\" value=\"blog_add\" name=\"action\" />";
+echo "<input type=\"hidden\" value=\"$proj_id\" name=\"blog_proj\" />";
 
 
-print "<input type=\"hidden\" value=\"".$nowtime."\" name=\"blog_date\" />";
+echo "<input type=\"hidden\" value=\"".$nowtime."\" name=\"blog_date\" />";
 
-print "<input type=\"hidden\" value=\"".$user_id_current."\" name=\"blog_user\" />";
-print "<p><input type=\"submit\" value=\"Submit\" class=\"inputsubmit\" /></p>";
+echo "<input type=\"hidden\" value=\"".$user_id_current."\" name=\"blog_user\" />";
+echo "<p><input type=\"submit\" value=\"Submit\" class=\"inputsubmit\" /></p>";
 
 } elseif($status == "edit" OR $proj_id == NULL ) {
 
 		$sql2 = "SELECT proj_id, proj_num, proj_name FROM intranet_projects order by proj_num";
 		$result2 = mysql_query($sql2, $conn);
-		print "<h3>Project</h3><p><select name=\"blog_proj\">";
+		echo "<h3>Project</h3><p><select name=\"blog_proj\">";
 		while ($array2 = mysql_fetch_array($result2)) {
 			$proj_id_select = $array2['proj_id'];
 			$proj_num_select = $array2['proj_num'];
 			$proj_name_select = $array2['proj_name'];
-			print "<option value=\"$proj_id_select\"";
-			if ($proj_id_select == $blog_proj) { print " selected"; }
-			print ">$proj_num_select&nbsp;$proj_name_select</option>";
+			echo "<option value=\"$proj_id_select\"";
+			if ($proj_id_select == $blog_proj) { echo " selected"; }
+			echo ">$proj_num_select&nbsp;$proj_name_select</option>";
 		}
-		print "</select></p>";
+		echo "</select></p>";
 		
-print "<input type=\"hidden\" value=\"".$user_id_current."\" name=\"blog_user\" />";
-print "<input type=\"hidden\" value=\"$blog_id\" name=\"blog_id\" />";
+echo "<input type=\"hidden\" value=\"".$user_id_current."\" name=\"blog_user\" />";
+echo "<input type=\"hidden\" value=\"$blog_id\" name=\"blog_id\" />";
 		
 
 
@@ -116,48 +116,49 @@ print "<input type=\"hidden\" value=\"$blog_id\" name=\"blog_id\" />";
 
 TextAreaEdit();
 
-print "
+echo "
 <h3>Entry</h3><p><textarea name=\"blog_text\" rows=\"12\" cols=\"48\">".$blog_text."</textarea></p>
 <p>Viewable only to me?&nbsp;<input type=\"checkbox\" name=\"blog_view\" value=\"1\"";
 
-	if ($blog_view == "1") { print " checked "; }
+	if ($blog_view == "1") { echo " checked "; }
 
-print " /></p><h3>Entry type</h3><p><select name=\"blog_type\">";
+echo " /></p><h3>Entry type</h3><p><select name=\"blog_type\">";
 
 if ($blog_type == NULL) { $blog_type = "filenote"; }
 
-print "<option value=\"email\" ";	if ($blog_type == "email") { print "selected"; }; print ">Email Message</option>";
-print "<option value=\"filenote\" ";	if ($blog_type == "filenote") { print "selected"; }; print ">File Note</option>";
-print "<option value=\"meeting\" ";	if ($blog_type == "meeting") { print "selected"; }; print ">Meeting Note</option>";
-print "<option value=\"review\" ";	if ($blog_type == "review") { print "selected"; }; print ">Project Review</option>";
-print "<option value=\"phone\" ";	if ($blog_type == "phone") { print "selected"; }; print ">Telephone Call</option>";
-print "<option value=\"rfi\" ";	if ($blog_type == "rfi") { print "selected"; }; print ">Request for Information (RFI)</option>";
+echo "<option value=\"email\" ";	if ($blog_type == "email") { echo "selected"; }; echo ">Email Message</option>";
+echo "<option value=\"filenote\" ";	if ($blog_type == "filenote") { echo "selected"; }; echo ">File Note</option>";
+echo "<option value=\"meeting\" ";	if ($blog_type == "meeting") { echo "selected"; }; echo ">Meeting Note</option>";
+echo "<option value=\"review\" ";	if ($blog_type == "review") { echo "selected"; }; echo ">Project Review</option>";
+echo "<option value=\"phone\" ";	if ($blog_type == "phone") { echo "selected"; }; echo ">Telephone Call</option>";
+echo "<option value=\"rfi\" ";	if ($blog_type == "rfi") { echo "selected"; }; echo ">Request for Information (RFI)</option>";
+echo "<option value=\"stage\" ";	if ($blog_type == "stage") { echo "selected"; }; echo ">Stage Report</option>";
 
-print "</select>";
+echo "</select>";
 
 
-print "<h3>Contact</h3><p>";
+echo "<h3>Contact</h3><p>";
 	$data_contact_id = $blog_contact;
 	$data_contact_var = "blog_contact";
 	include("dropdowns/inc_data_dropdown_contacts.php");
-print "</p>";
+echo "</p>";
 
 // Link this entry with another one
 
 		$sql3 = "SELECT blog_id, blog_title, blog_date FROM intranet_projects_blog WHERE blog_proj = '$proj_id' AND blog_id != '$blog_id' AND blog_user = '$_COOKIE[user]' order by blog_date DESC";
 		$result3 = mysql_query($sql3, $conn);
 		if (mysql_num_rows($result3) > 0) {
-			print "<h3>Link with other entry</h3><p><select name=\"blog_link\">";
-			print "<option value=\"\">-- None --</option>";
+			echo "<h3>Link with other entry</h3><p><select name=\"blog_link\">";
+			echo "<option value=\"\">-- None --</option>";
 			while ($array3 = mysql_fetch_array($result3)) {
 				$blog_id_link = $array3['blog_id'];
 				$blog_date_link = $array3['blog_date'];
 				$blog_title_link = $array3['blog_title'];
-				print "<option value=\"$blog_id_link\"";
-				if ($blog_id_link == $blog_link) { print " selected"; }
-				print ">$blog_title_link (".TimeFormat($blog_date_link).")</option>";
+				echo "<option value=\"$blog_id_link\"";
+				if ($blog_id_link == $blog_link) { echo " selected"; }
+				echo ">$blog_title_link (".TimeFormat($blog_date_link).")</option>";
 			}
-			print "</select></p>";
+			echo "</select></p>";
 		}
 		
 // Link this entry with a task
@@ -165,17 +166,17 @@ print "</p>";
 		$sql4 = "SELECT tasklist_id, tasklist_notes, tasklist_added FROM intranet_tasklist WHERE tasklist_project = '$proj_id' AND tasklist_person = '$_COOKIE[user]' order by tasklist_due DESC";
 		$result4 = mysql_query($sql4, $conn);
 		if (mysql_num_rows($result4) > 0) {
-			print "<h3>Link with task</h3><p><select name=\"blog_task\">";
-			print "<option value=\"\">-- None --</option>";
+			echo "<h3>Link with task</h3><p><select name=\"blog_task\">";
+			echo "<option value=\"\">-- None --</option>";
 			while ($array4 = mysql_fetch_array($result4)) {
 				$task_id = $array4['tasklist_id'];
 				$task_added = $array4['tasklist_added'];
 				$task_notes = "[Added ".TimeFormat($task_added)."] - ".substr($array4['tasklist_notes'], 0, 60)."...";
-				print "<option value=\"$task_id\"";
-				if ($task_id == $blog_task) { print " selected"; }
-				print ">$task_notes</option>";
+				echo "<option value=\"$task_id\"";
+				if ($task_id == $blog_task) { echo " selected"; }
+				echo ">$task_notes</option>";
 			}
-			print "</select></p>";
+			echo "</select></p>";
 		}
 
 // Hidden values 
@@ -187,52 +188,52 @@ $month = 1;
 $month_array = array("","January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
 $year = 1;
 
-print "<h3>Date</h3><p>";
+echo "<h3>Date</h3><p>";
 
-		print "Hour&nbsp;<select name=\"blog_date_hour\">"; $ampm = "am";
+		echo "Hour&nbsp;<select name=\"blog_date_hour\">"; $ampm = "am";
 		while ($hour <= 23) {
-			print "<option value=\"$hour\"";
-				if ($blog_date_hour == $hour) { print " selected"; }
-			print ">$hour $ampm</option>";
+			echo "<option value=\"$hour\"";
+				if ($blog_date_hour == $hour) { echo " selected"; }
+			echo ">$hour $ampm</option>";
 			$hour++;
 				if ($hour == 12) { $ampm = "pm"; }
 		}
-		print "</select>&nbsp;";
+		echo "</select>&nbsp;";
 
-print "Minutes&nbsp;<input type=\"text\" name=\"blog_date_minute\" value=\"$blog_date_minute\" maxlength=\"2\" size=\"3\" />";
+echo "Minutes&nbsp;<input type=\"text\" name=\"blog_date_minute\" value=\"$blog_date_minute\" maxlength=\"2\" size=\"3\" />";
 
-		print "&nbsp;Day&nbsp;<select name=\"blog_date_day\">";
+		echo "&nbsp;Day&nbsp;<select name=\"blog_date_day\">";
 		while ($day <= 31) {
-			print "<option value=\"$day\"";
-				if ($blog_date_day == $day) { print " selected"; }
-			print ">$day</option>";
+			echo "<option value=\"$day\"";
+				if ($blog_date_day == $day) { echo " selected"; }
+			echo ">$day</option>";
 			$day++;
 		}
-		print "</select>&nbsp;";
+		echo "</select>&nbsp;";
 		
-		print "&nbsp;Month&nbsp;<select name=\"blog_date_month\">";
+		echo "&nbsp;Month&nbsp;<select name=\"blog_date_month\">";
 		while ($month <= 12) {
-			print "<option value=\"$month\"";
-				if ($blog_date_month == $month) { print " selected"; }
-			print ">$month_array[$month]</option>";
+			echo "<option value=\"$month\"";
+				if ($blog_date_month == $month) { echo " selected"; }
+			echo ">$month_array[$month]</option>";
 			$month++;
 		}
-		print "</select>&nbsp;";
+		echo "</select>&nbsp;";
 		
 
-print "Year&nbsp;
+echo "Year&nbsp;
 		<input type=\"text\" name=\"blog_date_year\" value=\"$blog_date_year\" maxlength=\"4\" size=\"5\"  />
 		";
 		
 		if ($blog_id > 0) {		
-			print "<input type=\"hidden\" value=\"blog_edit\" name=\"action\" />";
-			print "<p><input type=\"submit\" value=\"Update\" class=\"inputsubmit\" /></p>";
+			echo "<input type=\"hidden\" value=\"blog_edit\" name=\"action\" />";
+			echo "<p><input type=\"submit\" value=\"Update\" class=\"inputsubmit\" /></p>";
 		} else {
-			print "<input type=\"hidden\" value=\"blog_add\" name=\"action\" />";
-			print "<p><input type=\"submit\" value=\"Add\" class=\"inputsubmit\" /></p>";
+			echo "<input type=\"hidden\" value=\"blog_add\" name=\"action\" />";
+			echo "<p><input type=\"submit\" value=\"Add\" class=\"inputsubmit\" /></p>";
 		}
 
-print "</form>";
+echo "</form>";
 
 
 

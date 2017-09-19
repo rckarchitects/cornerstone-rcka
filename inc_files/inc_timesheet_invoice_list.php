@@ -2,7 +2,7 @@
 
 if ($_POST[proj_id]) { $proj_id = $_POST[proj_id]; } elseif ($_POST[invoice_project]) { $proj_id = $_POST[invoice_project]; }
 
-print "<h1>Invoices</h1>";
+print "<h2>Invoices</h2>";
 
 if ($proj_id != NULL) { 
 

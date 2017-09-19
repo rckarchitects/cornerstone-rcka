@@ -76,7 +76,7 @@ while ($array_user_holidays = mysql_fetch_array($result_user_holidays)) {
 
 	$holiday_datestamp = $array_user_holidays['holiday_datestamp'];
 	$holiday_paid = $array_user_holidays['holiday_paid'];
-	
+	$holiday_length = $array_user_holidays['holiday_length'];
 	
 		if ($holiday_paid == 1) { $holiday_paid = "Paid"; }
 		elseif ($holiday_paid == 2) { $holiday_paid = "Study Leave"; }
@@ -85,17 +85,38 @@ while ($array_user_holidays = mysql_fetch_array($result_user_holidays)) {
 		elseif ($holiday_paid == 5) { $holiday_paid = "Compassionate Leave"; }
 		else { $holiday_paid = "Unpaid"; }
 		
-		if ($holiday_length == 0.5) { $holiday_length = "Half Day"; } else { $holiday_length = "Full Day"; }
+		if ($holiday_length < 1) { $holiday_length_text = "Half Day"; } else { $holiday_length_text = "Full Day"; }
 		
 		StyleBody(10,'Helvetica','');
 		$date = TimeFormatDay ( CreateDays($holiday_datestamp,12) );
 		$pdf->Cell(50,7.5,$date,'B',0,L,0);
 		$pdf->Cell(40,7.5,$holiday_paid,'B',0,L,0);
-		$pdf->Cell(20,7.5,$holiday_length,'B',0,L,0);
+		$pdf->Cell(20,7.5,$holiday_length_text,'B',0,L,0);
 		
 		OtherHolidaysToday($user_id,$holiday_datestamp);
 	
 }
+
+		$pdf->Ln(5);
+
+		StyleBody(11,'Helvetica','B');
+		$pdf->Cell(0,5,'Type',0,1,L,0);
+		
+		$pdf->Ln(5);
+		StyleBody(11,'Helvetica','');
+		$pdf->Cell(5,5,'',1,0);
+		$pdf->Cell(45,5,'Paid',0,0,L,0);
+		$pdf->Cell(5,5,'',1,0);
+		$pdf->Cell(45,5,'Unpaid',0,0,L,0);
+		$pdf->Cell(5,5,'',1,0);
+		$pdf->Cell(45,5,'Study Leave',0,1,L,0);
+		$pdf->Ln(2.5);
+		$pdf->Cell(5,5,'',1,0);
+		$pdf->Cell(45,5,'Jury Service',0,0,L,0);
+		$pdf->Cell(5,5,'',1,0);
+		$pdf->Cell(45,5,'Compassionate Leave',0,0,L,0);
+		$pdf->Cell(5,5,'',1,0);
+		$pdf->Cell(45,5,'TOIL',0,1,L,0);
 
 // Holiday Allowance
 		
@@ -120,9 +141,11 @@ while ($array_user_holidays = mysql_fetch_array($result_user_holidays)) {
 		
 		}
 		
+
+		
 		$nowdate = TimeFormat(time());
 
-		$pdf->Ln(15);
+		$pdf->Ln(5);
 		StyleBody(11,'Helvetica','B');
 		$pdf->Cell(0,5,'Holiday Approved',0,1,L,0);
 		
@@ -130,6 +153,8 @@ while ($array_user_holidays = mysql_fetch_array($result_user_holidays)) {
 		$pdf->Ln(2.5);
 		StyleBody(10,'Helvetica','');
 		$pdf->Cell(0,5,$nowdate,0,1,L,0);
+		
+		
 
 
 // and send to output

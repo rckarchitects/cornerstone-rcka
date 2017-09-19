@@ -12,7 +12,7 @@ echo "<table><tr><th>ID</th><th>Project Number</th><th>Project Name</th><th>Proj
 
 // Get the relevant infomation from the Invoice Database
 
-	$sql = "SELECT * FROM intranet_projects, intranet_user_details, intranet_timesheet LEFT JOIN intranet_timesheet_fees ON ts_stage_fee = ts_fee_id LEFT JOIN intranet_timesheet_group ON group_id = ts_fee_group WHERE ts_project = proj_id AND ts_user = user_id  AND ts_entry > 1430438400 AND ts_entry < 1462060740 AND proj_fee_track = 1 ORDER BY ts_entry, proj_num, user_name_second";
+	$sql = "SELECT * FROM intranet_projects, intranet_user_details, intranet_timesheet LEFT JOIN intranet_timesheet_fees ON ts_stage_fee = ts_fee_id LEFT JOIN intranet_timesheet_group ON group_id = ts_fee_group WHERE ts_project = proj_id AND ts_user = user_id  AND ts_entry > 1462078800 AND ts_entry < 1493593200 AND proj_fee_track = 1 ORDER BY ts_entry, proj_num, user_name_second";
 	
 	//$sql = "SELECT * FROM intranet_projects, intranet_user_details, intranet_timesheet WHERE ts_project = proj_id AND ts_user = user_id AND ts_entry > 1398902400 ORDER BY ts_stage_fee";
 	

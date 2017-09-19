@@ -103,7 +103,7 @@ print "<select name=\"tasklist_due\">";
 
 print "<option value=\"0\">-- None --</option>";
 
-if ($tasklist_due < $nowtime_week_pre AND $tasklist_due > 0) {
+if ($tasklist_due > 0) {
 	print "<option value=\"$tasklist_due\" selected>";
 	print date("l j F Y", $tasklist_due);
 	print "</option>";

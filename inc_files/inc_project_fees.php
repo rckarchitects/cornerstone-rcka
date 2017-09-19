@@ -1,5 +1,92 @@
 <?php
 
+function InvoiceLineItems ($ts_fee_id, $highlight, $stage_fee) {
+	
+	global $conn;
+	
+	$highlight = $highlight . " font-size: 75%;";
+	
+	$ts_fee_id = intval($ts_fee_id);
+	
+	$invoice_total = 0;
+	$invoice_paid_total = 0;
+	$invoice_paid_remaining = 0;
+	
+	$sql = "SELECT * FROM intranet_timesheet_invoice_item, intranet_timesheet_invoice WHERE invoice_id = invoice_item_invoice AND invoice_item_stage = $ts_fee_id ORDER BY invoice_date, invoice_ref";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	
+	if (mysql_num_rows($result) > 0) {
+	
+				while ($array = mysql_fetch_array($result)) {
+					
+					$invoice_id = $array['invoice_id'];
+					$invoice_item_id = $array['invoice_item_id'];
+					$invoice_item_invoice = $array['invoice_item_invoice'];
+					$invoice_date = $array['invoice_date'];
+					$invoice_paid = $array['invoice_paid'];
+					$invoice_ref = $array['invoice_ref'];
+					$invoice_item_novat = $array['invoice_item_novat'];
+					$invoice_project = $array['invoice_project'];
+					
+					$invoice_total = $invoice_total + $invoice_item_novat;
+					
+					if ($invoice_paid) { $invoice_paid_total = $invoice_paid_total + $invoice_item_novat; }
+					
+					echo "	<tr>
+							<td style=\"" . $highlight . "\" colspan=\"2\"></td>
+							<td style=\"" . $highlight . "\"><a href=\"index2.php?page=timesheet_invoice_view&amp;invoice_id=$invoice_id\">" . $invoice_ref . "</a>";
+					
+					if (!$invoice_date_paid) { echo "&nbsp;<a href=\"index2.php?page=timesheet_invoice_items_edit&amp;proj_id=" . $invoice_project . "&amp;invoice_item_id=" . $invoice_item_id . "\"><img src=\"images/button_edit.png\" alt=\"Edit\" />"; }
+					
+					echo "</td>
+							<td style=\"" . $highlight . "\">" . TimeFormat($invoice_date) . "</td>
+							<td style=\"" . $highlight . "text-align: right;" . "\" colspan=\"3\">" . MoneyFormat($invoice_item_novat) . "</td>
+							<td style=\"" . $highlight . "\" colspan=\"2\"></td>
+							</tr>
+						";
+					}
+					
+					$stage_fee_remaining = $stage_fee - $invoice_total;
+					
+					if ($stage_fee_remaining > 0) { $stage_fee_remaining = "<span style=\"color: red; font-weight: bold;\">" . MoneyFormat($stage_fee_remaining) . "</span>"; }
+					else { $stage_fee_remaining = MoneyFormat($stage_fee_remaining); }
+					
+					
+					echo "	<tr>
+							<td style=\"" . $highlight . "\" colspan=\"2\"></td>
+							<td style=\"" . $highlight . "\" colspan=\"2\">Remaining to invoice</td>
+							<td style=\"" . $highlight . "text-align: right;" . "\" colspan=\"3\">" . $stage_fee_remaining . "</td>
+							<td style=\"" . $highlight . "\" colspan=\"2\"></td>
+							</tr>
+						";
+				
+				$invoice_paid_remaining = $invoice_total - $invoice_paid_total;
+				
+				if ($invoice_paid_remaining > 0) { $invoice_paid_remaining_print = "<span style=\"color: red;\">" . MoneyFormat($invoice_paid_remaining) . "</span>"; }
+				else { $invoice_paid_remaining_print = MoneyFormat($invoice_paid_remaining); }
+						
+				if ($invoice_paid_remaining > 0) {
+						
+					echo "	<tr>
+							<td style=\"" . $highlight . "\" colspan=\"2\"></td>
+							<td style=\"" . $highlight . "\" colspan=\"2\">Remaining to be paid</td>
+							<td style=\"" . $highlight . "text-align: right;" . "\" colspan=\"3\">" . $invoice_paid_remaining_print . "</td>
+							<td style=\"" . $highlight . "\" colspan=\"2\"></td>
+							</tr>
+					";
+					
+				}
+	
+	}
+	
+	$output = array();
+	$output[] = $invoice_total;
+	$output[] = $invoice_paid_total;
+	
+	return $output;
+	
+}
+
 if ($module_fees = 1) {
 					
 
@@ -20,12 +107,12 @@ if ($module_fees = 1) {
 
 					if ($user_usertype_current > 3 OR $user_id_current == $proj_rep_black) {
 						echo "<a href=\"index2.php?page=project_edit&amp;status=edit&amp;proj_id=$proj_id\" class=\"submenu_bar\">Edit</a>";
-					}
-
-					if ($user_usertype_current > 2) {
 						echo "<a href=\"index2.php?page=project_hourlyrates_view&amp;proj_id=$proj_id\" class=\"submenu_bar\">Hourly Rates</a>";
 						echo "<a href=\"index2.php?page=project_timesheet_view&amp;proj_id=$proj_id\" class=\"submenu_bar\">Expenditure</a>";
 						echo "<a href=\"index2.php?page=timesheet_fees_edit&amp;proj_id=$proj_id\" class=\"submenu_bar\">Add Fee Stage</a>";
+						echo "<a href=\"pdf_fee_drawdown.php?proj_id=$proj_id\" class=\"submenu_bar\"><img src=\"images/button_pdf.png\" alt=\"PDF\" />&nbsp;Fee Drawdown</a>";
+						echo "<a href=\"pdf_fee_drawdown.php?proj_id=$proj_id&amp;showinvoices=yes\" class=\"submenu_bar\"><img src=\"images/button_pdf.png\" alt=\"PDF\" />&nbsp;Fee Drawdown (with invoices)</a>";
+						
 					}
 
 
@@ -56,6 +143,9 @@ if ($module_fees = 1) {
 						$prog_begin = $proj_date_commence;
 						
 						$target_cost_total = 0;
+						
+						$invoice_total = 0;
+						$invoice_paid_total = 0;
 						
 												while ($array = mysql_fetch_array($result)) {
 												
@@ -135,7 +225,7 @@ if ($module_fees = 1) {
 												
 												if ($ts_fee_id == $proj_riba) { $ts_fee_id_selected = " checked=\"checked\""; $highlight = " background: rgba(200,200,200,0.5);"; } else { unset($ts_fee_id_selected); unset($highlight); }
 												
-												if ($prog_end < time()) { $highlight = $highlight . " text-decoration: line-through;"; }
+												if ($prog_end < time()) { $highlight = $highlight . " background: rgba(175,213,0,0.3);"; } elseif ( $ts_fee_id == $proj_riba ) { $highlight = $highlight . " background: rgba(255,175,0,0.3);"; } else { $highlight = $highlight . " background: rgba(255,0,0,0.3);"; }
 												
 												
 												$fee_factored = $ts_fee_calc * $ts_fee_target; $fee_target = "<br />(Target Cost: " . MoneyFormat($fee_factored). " / " .  number_format(((1 / $ts_fee_target) * 100) - 100 ) . "%)"; $target_cost_total = $target_cost_total + $fee_factored;
@@ -154,6 +244,11 @@ if ($module_fees = 1) {
 												echo "<td style=\"$highlight\">".$proj_duration_print."</td>";
 												if ($user_usertype_current > 2) { echo "<td style=\"$highlight\"><a href=\"index2.php?page=timesheet_fees_edit&amp;ts_fee_id=$ts_fee_id\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a></td>"; }
 												echo "</tr>";
+												
+												$totals_array = InvoiceLineItems($ts_fee_id,$highlight,$ts_fee_calc);
+
+												$invoice_total = $invoice_total + $totals_array[0];
+												$invoice_paid_total = $invoice_paid_total + $totals_array[1];				
 												
 												// Include a line if the invoice has been issued
 												
@@ -177,14 +272,21 @@ if ($module_fees = 1) {
 						
 						if ($user_usertype_current > 3) { 
 						
-								echo "<tr><td colspan=\"6\"><strong>Total Fee for All Stages</strong></td><td style=\"text-align: right;\" colspan=\"3\"><strong>".MoneyFormat($fee_total)."</strong></td></tr>";
+								echo "<tr><td colspan=\"6\"><strong>Total Fee for All Stages</strong></td><td style=\"text-align: right;\"><strong>".MoneyFormat($fee_total)."</strong></td><td colspan=\"2\"></td></tr>";
 								
 								$profit = (( $fee_total / $target_cost_total ) - 1) * 100;
 								
 								$target_fee_percentage = number_format ($profit,2);
 								
-								echo "<tr><td colspan=\"6\"><strong>Target Cost for All Stages</strong></td><td style=\"text-align: right;\" colspan=\"3\"><strong>".MoneyFormat($target_cost_total). " (" . $target_fee_percentage . "% Profit Overall)</strong></td></tr>";
+								echo "<tr><td colspan=\"6\"><strong>Target Cost for All Stages</strong></td><td style=\"text-align: right;\"><strong>".MoneyFormat($target_cost_total). "</strong></td><td colspan=\"2\">" . $target_fee_percentage . "% profit overall</td></tr>";
 
+								if ($invoice_total > 0) {
+									echo "<tr><td colspan=\"6\">Invoice Total</td><td style=\"text-align: right;\">".MoneyFormat($invoice_total). "</td><td colspan=\"2\"></td></tr>";
+								}
+								
+								if ($invoice_paid_total > 0) {
+									echo "<tr><td colspan=\"6\">Invoice Paid Total</td><td style=\"text-align: right;\">".MoneyFormat($invoice_paid_total). "</td><td colspan=\"2\"></td></tr>";
+								}
 						
 						}
 						

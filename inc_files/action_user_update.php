@@ -17,7 +17,7 @@ else { $user_id = ""; }
 	$user_username = addslashes ( $_POST[user_username] );
 	$user_email = addslashes ( $_POST[user_email] );
 	$user_initials = addslashes ( $_POST[user_initials] );
-
+	$user_notes = addslashes ( $_POST[user_notes] );
 
 if ($user_id > 0) {
 
@@ -52,7 +52,8 @@ if ($user_id > 0) {
 	user_initials = '$user_initials',
 	user_prop_target = '$_POST[user_prop_target]',
 	user_user_timesheet = '$_POST[user_user_timesheet]',
-	user_timesheet_hours = '$_POST[user_timesheet_hours]'
+	user_timesheet_hours = '$_POST[user_timesheet_hours]',
+	user_notes = '$user_notes'
 	$update_password
 	WHERE user_id = '$user_id' LIMIT 1";
 	
@@ -87,7 +88,8 @@ if ($user_id > 0) {
 	user_initials,
 	user_prop_target,
 	user_password,
-	user_timesheet_hours
+	user_timesheet_hours,
+	user_notes
 	) VALUES (
 	'$user_address_county',
 	'$user_address_postcode',
@@ -112,7 +114,9 @@ if ($user_id > 0) {
 	'$user_initials',
 	'$_POST[user_prop_target]',
 	'$user_password',
-	'$user_timesheet_hours')
+	'$user_timesheet_hours',
+	'$user_notes'
+	)
 	";
 
 

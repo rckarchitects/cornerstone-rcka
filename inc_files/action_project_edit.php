@@ -103,6 +103,8 @@ $proj_location = trim(addslashes($_POST[proj_location]));
 
 // Construct the MySQL instruction to add these entries to the database
 
+if ($user_usertype_current >= 3 OR $_COOKIE[user] == $proj_rep_black) {
+
 $sql_add = "UPDATE intranet_projects SET
 proj_num = '$proj_num',
 proj_name = '$proj_name',
@@ -155,8 +157,6 @@ WHERE proj_id = '$_POST[proj_id]'";
 $result = mysql_query($sql_add, $conn) or die(mysql_error());
 
 
-if ($user_usertype_current > 3) {
-
 $sql_add2 = "UPDATE intranet_projects SET
 proj_rep_black = '$proj_rep_black',
 proj_active = '$proj_active',
@@ -167,6 +167,7 @@ proj_fee_percentage = '$proj_fee_percentage',
 proj_ambition_internal = '$proj_ambition_internal',
 proj_ambition_client = '$proj_ambition_client'
 WHERE proj_id = '$_POST[proj_id]'";
+
 $result2 = mysql_query($sql_add2, $conn) or die(mysql_error());
 
 }

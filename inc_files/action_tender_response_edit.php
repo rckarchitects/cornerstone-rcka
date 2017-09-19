@@ -41,8 +41,8 @@ unset($alertmessage);
 // Begin to clean up the $_POST submissions
 
 		$answer_id = CleanNumber($_POST[answer_id]);
-		$answer_response = strip_tags($_POST[answer_response],"<p><ul><li><ol><strong><b><i><italic><u>");
-		$answer_feedback = strip_tags($_POST[answer_feedback],"<p><ul><li><ol><strong><b><i><italic><u>");
+		$answer_response = strip_tags($_POST[answer_response],"<p><ul><li><ol><strong><b><i><italic><u><span>");
+		$answer_feedback = strip_tags($_POST[answer_feedback],"<p><ul><li><ol><strong><b><i><italic><u><span>");
 		$word_count = WordCount(strip_tags($answer_response));
 		
 		$answer_complete = $_POST[answer_complete];

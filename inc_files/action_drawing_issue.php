@@ -21,7 +21,7 @@ $array_issued = $_POST['drawing_issued'];
 
 $issue_method = $_POST['issue_method'];
 $issue_format = $_POST['issue_format'];
-$issue_comment = $_POST['issue_comment'];
+$issue_comment = addslashes($_POST['issue_comment']);
 $issue_project = $_POST['issue_project'];
 $issue_checked = $_POST['set_checked'];
 

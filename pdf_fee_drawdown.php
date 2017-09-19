@@ -49,18 +49,10 @@ $proj_id = intval($_GET[proj_id]);
 
 
 
-// Now run the functions above
+// Now run the standard functions
 
-
-	ProjectHeading($proj_id,"Stage Checklist");
 	
-	ChecklistSummary($proj_id);
-
-	StageArrays($proj_id);
-
-	Footer();
-	
-	
+	PDF_Fee_Drawdown($proj_id);
 
 
 // If development code = "yes" (devcode = "yes") in the $_GET request, include some additional data

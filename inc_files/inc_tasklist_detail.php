@@ -34,9 +34,9 @@ print "</h1>";
 // Menu bar
 
 print "<p class=\"menu_bar\"><a href=\"index2.php?page=tasklist_edit\" class=\"menu_tab\">Add New Task</a>";
-if ($user_usertype_current > 3 OR $_COOKIE[user] == $tasklist_user ) {
+//if ($user_usertype_current > 3 ) { // OR $_COOKIE[user] == $tasklist_user ) {
 print "<a href=\"index2.php?page=tasklist_edit&amp;tasklist_id=$tasklist_id\" class=\"menu_tab\">Edit This Task</a>";
-}
+//}
 print "</p>";
 
 // Only print if the task is not complete or was completed within the last week

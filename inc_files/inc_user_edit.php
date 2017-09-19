@@ -1,22 +1,17 @@
 <?php
 
-if ($_GET[user_add] == "true" && $user_usertype_current > 3) {
+function GetUserName($user_id) {
 	
-	unset($user_id);
+	GLOBAL $conn;
+	$user_id = intval($user_id);
+	$sql = "SELECT * FROM intranet_user_details WHERE user_id = '$user_id' LIMIT 1";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	$array = mysql_fetch_array($result);
+	$user_name_first = $array['user_name_first'];
+	$user_name_second = $array['user_name_second'];
+	echo "<h1>Edit details for " . $user_name_first . "&nbsp;" . $user_name_second . "</h2>";
 	
-	echo "<h1>Add New User</h1>";
-	
-} else {
-
-	if ($_GET[user_id] != "") { $user_id = $_GET[user_id]; }
-	elseif ($_POST[user_id] != "") { $user_id = $_POST[user_id]; }
-	else { $user_id = $_COOKIE[user]; }
-		
-	echo "<h1>Edit details for $user_name_first&nbsp;$user_name_second</h2>";
-		
 }
-
-
 
 function UserForm ($user_id) {
 	
@@ -49,6 +44,7 @@ function UserForm ($user_id) {
 	$user_initials = $array['user_initials'];
 	$user_prop_target = $array['user_prop_target'];
 	$user_timesheet_hours = $array['user_timesheet_hours'];
+	$user_notes = $array['user_notes'];
 	
 	echo "<form method=\"post\" action=\"index2.php?page=user_view&amp;user_id=$user_id\">";
 	
@@ -83,6 +79,13 @@ function UserForm ($user_id) {
 		echo "<p>Extension<br /><input type=\"text\" name=\"user_num_extension\" value=\"$user_num_extension\" maxlength=\"50\" size=\"32\" /></p>";
 		echo "<p>Mobile<br /><input type=\"text\" name=\"user_num_mob\" value=\"$user_num_mob\" maxlength=\"50\" size=\"32\" /></p>";
 		echo "<p>Home<br /><input type=\"text\" name=\"user_num_home\" value=\"$user_num_home\" maxlength=\"50\" size=\"32\" /></p>";
+		
+	echo "</fieldset>";
+	
+	
+	echo "<fieldset><legend>Notes</legend>";
+	
+		echo "<textarea name=\"user_notes\" style=\"width: 95%; height: 150px;\">$user_notes</textarea>";
 		
 	echo "</fieldset>";
 	
@@ -200,6 +203,26 @@ function UserForm ($user_id) {
 	
 	
 }
+
+
+
+if ($_GET[user_add] == "true" && $user_usertype_current > 3) {
+	
+	unset($user_id);
+	
+	echo "<h1>Add New User</h1>";
+	
+} else {
+
+	if ($_GET[user_id] > 0) { $user_id = $_GET[user_id]; }
+	elseif ($_POST[user_id] > 0) { $user_id = $_POST[user_id]; }
+	else { $user_id = $_COOKIE[user]; }
+	
+	GetUserName($user_id);
+		
+}
+
+
 
 UserForm($user_id);
 

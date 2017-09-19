@@ -1,14 +1,12 @@
 <?php
 
-$format_bg_r = "150";
-$format_bg_g = "150";
-$format_bg_b = "150";
-
-if ($_GET[proj_id] != NULL) { $proj_id = $_GET[proj_id]; } else { header ("Location: ../index2.php"); }
-
-include "inc_files/inc_checkcookie_logincheck.php";
-
 include "inc_files/inc_checkcookie.php";
+
+if ($_GET[proj_id] == NULL) { header ("Location: index2.php"); }
+
+if ($user_usertype_current < 2) { header ("Location: index2.php"); }
+
+include "inc_files/inc_action_functions_pdf.php";
 
 //  Use FDPI to get the template
 
@@ -17,96 +15,22 @@ require('fpdf/fpdi.php');
 
 $pdf= new fpdi();
 
-$format_font = "century";
-$format_font_2 = "Century.php";
-$pdf->AddFont($format_font,'',$format_font_2);
-
 $pagecount = $pdf->setSourceFile("pdf/template.pdf");
 $tplidx = $pdf->ImportPage(1);
 
 $pdf->addPage();
-$pdf->useTemplate($tplidx);
+$pdf->useTemplate($tplidx, 0, 0, 210, 297);
 
-// Functions
+if ($settings_pdffont != NULL) {
+$format_font = $settings_pdffont;
+$format_font_2 = $settings_pdffont.".php";
+} else {
+$format_font = "franklingothicbook";
+$format_font_2 = "franklingothicbook.php";
+}
 
-		function StyleBody($input){
-			Global $pdf;
-			Global $format_font;
-			$pdf->SetFont($format_font,'',$input);
-			$pdf->SetTextColor(0, 0, 0);
-		}
+$pdf->AddFont($format_font,'',$format_font_2);
 
-		function Notes($input) {
-			Global $pdf;
-			Global $x_current;
-			Global $y_current;
-			$pdf->SetX($x_current);
-			//$print_string = DeCode($input);
-			$print_string = $input;
-			if ($input != NULL) {
-			StyleBody(9);
-			$pdf->SetTextColor(0, 0, 0);
-			$pdf->MultiCell(90,3,$print_string,0, L, false);
-			$pdf->MultiCell(90,1,'',0, L, false);
-
-			}
-		}
-		
-		function StyleHeading($title,$text,$notes){
-			Global $pdf;
-			Global $x_current;
-			Global $y_current;
-			Global $y_left;
-			Global $y_right;
-			if ($y_current > 230 AND $x_current > 75) { $pdf->addPage(); $x_current = 10; $y_current = 15; }
-			$pdf->SetXY($x_current,$y_current);
-			$pdf->SetFont('Helvetica','b',10);
-			$pdf->SetTextColor(0, 0, 0);
-			$pdf->SetX($x_current);
-			$pdf->SetDrawColor(0,0,0);
-			$pdf->SetLineWidth(0.3);
-			$pdf->MultiCell(90,5,$title,B, L, false);
-			$pdf->MultiCell(90,1,'',0, L, false);
-			Notes($notes);
-			$pdf->Ln(1);
-			StyleBody(10);
-			$pdf->SetX($x_current);
-			$pdf->MultiCell(90,4,$text,0, L, false);
-			
-			if ($x_current < 75) {
-				$x_current = 105;
-				$y_left = $pdf->GetY();
-			} else {
-				$x_current = 10;
-				$y_right = $pdf->GetY();
-				if ($y_left > $y_right) { $y_current = $y_left + 5; } else { $y_current = $y_right + 5; }
-				if ($y_current > 220) { $pdf->addPage(); $y_current = 20; }
-			}
-			
-			
-		}
-		
-		function AddLine($input) {
-			if ($input != NULL AND $input != '0' AND strlen($input) > 3) { $input = $input."\n"; return $input; }
-		}
-		
-		function SplitBag($input) {
-			Global $pdf;
-			Global $x_current;
-			Global $y_current;
-			Global $y_left;
-			Global $y_right;
-			if ($y_left > $y_right) { $y_current = $y_left + 5; } else { $y_current = $y_right + 5; }
-			$x_current = 10;
-			$pdf->SetXY($x_current,$y_current);
-			StyleBody(10);
-			$pdf->SetFillColor(220, 220, 220);
-			$pdf->Cell(0,5,$input,0, 2,L, true);
-			$pdf->Cell(0,5,'',0, 2,L, false);
-			$x_current = 10;
-			$y_current = $pdf->GetY();
-		}
-		
 
 // Begin creating the page
 

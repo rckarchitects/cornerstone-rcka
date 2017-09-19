@@ -80,6 +80,11 @@ SearchPanel();
 		$array_images[] = "button_list.png";
 		$array_access[] = 4;
 		
+		$array_pages[] = "index2.php?page=user_edit&amp;user_add=true";
+		$array_title[] = "Add New User";
+		$array_images[] = "button_new.png";
+		$array_access[] = 4;
+		
 				
 	SideMenu ("Team", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images, "r");
 

@@ -4,10 +4,18 @@ if ($_POST[qms_id]) {
 
 	foreach ($_POST[qms_id] AS $post_qms_id) {
 		
-		if (($_POST[qms_text_check][$post_qms_id] != trim ( addslashes ( $_POST[qms_text][$post_qms_id] ) ) ) OR ($_POST[qms_toc1_check][$post_qms_id] != $_POST[qms_toc1][$post_qms_id]) OR ($_POST[qms_toc2_check][$post_qms_id] != $_POST[qms_toc2][$post_qms_id]) OR ($_POST[qms_toc3_check][$post_qms_id] != $_POST[qms_toc3][$post_qms_id]) OR ($_POST[qms_toc4_check][$post_qms_id] != $_POST[qms_toc4][$post_qms_id]) OR ($_POST[qms_type_check][$post_qms_id] != $_POST[qms_type][$post_qms_id]) ) {
+		
+		if ($_POST[qms_type][$post_qms_id] == "del") {
+			
+			$post_qms_id = intval($post_qms_id);
+			$sql_delete = "DELETE FROM intranet_qms WHERE qms_id = $post_qms_id LIMIT 1";
+			$result_delete = mysql_query($sql_delete, $conn) or die(mysql_error());
+			
+		} elseif (($_POST[qms_text_check][$post_qms_id] != trim ( addslashes ( $_POST[qms_text][$post_qms_id] ) ) ) OR ($_POST[qms_toc1_check][$post_qms_id] != $_POST[qms_toc1][$post_qms_id]) OR ($_POST[qms_toc2_check][$post_qms_id] != $_POST[qms_toc2][$post_qms_id]) OR ($_POST[qms_toc3_check][$post_qms_id] != $_POST[qms_toc3][$post_qms_id]) OR ($_POST[qms_toc4_check][$post_qms_id] != $_POST[qms_toc4][$post_qms_id]) OR ($_POST[qms_type_check][$post_qms_id] != $_POST[qms_type][$post_qms_id]) OR ($_POST[qms_pagebreak_check][$post_qms_id] != $_POST[qms_pagebreak][$post_qms_id]) ) {
 	
-			$sql_update = "UPDATE intranet_qms SET qms_toc1 = " . $_POST[qms_toc1][$post_qms_id] . ", qms_toc2 = " . $_POST[qms_toc2][$post_qms_id] . ", qms_toc3 = " . $_POST[qms_toc3][$post_qms_id] . ", qms_toc4 = " . $_POST[qms_toc4][$post_qms_id] . ", qms_type = '" . $_POST[qms_type][$post_qms_id] . "', qms_text = \"" . trim ( addslashes ($_POST[qms_text][$post_qms_id] ) ) . "\", qms_timestamp = " . time() . ", qms_user = $_COOKIE[user] WHERE qms_id = " . $post_qms_id . " LIMIT 1";
+			$sql_update = "UPDATE intranet_qms SET qms_toc1 = " . $_POST[qms_toc1][$post_qms_id] . ", qms_toc2 = " . $_POST[qms_toc2][$post_qms_id] . ", qms_toc3 = " . $_POST[qms_toc3][$post_qms_id] . ", qms_toc4 = " . $_POST[qms_toc4][$post_qms_id] . ", qms_type = '" . $_POST[qms_type][$post_qms_id] . "', qms_text = \"" . trim ( addslashes ($_POST[qms_text][$post_qms_id] ) ) . "\", qms_timestamp = " . time() . ", qms_user = $_COOKIE[user], qms_pagebreak = " . intval($_POST[qms_pagebreak][$post_qms_id]) . " WHERE qms_id = " . $post_qms_id . " LIMIT 1";
 			$result = mysql_query($sql_update, $conn) or die(mysql_error());
+			
 		
 		}
 		
@@ -19,7 +27,7 @@ if ($_POST[qms_id]) {
 	
 	$qms_text = trim ( addslashes($_POST[qms_text] ) );
 	
-	$sql_update = "INSERT INTO intranet_qms (qms_id, qms_toc1, qms_toc2, qms_toc3, qms_toc4, qms_type, qms_text, qms_timestamp, qms_user) VALUES ( NULL, $_POST[qms_toc1], $_POST[qms_toc2], $_POST[qms_toc3], $_POST[qms_toc4], '$_POST[qms_type]', '$qms_text', " . time() . ", $_COOKIE[user])";
+	$sql_update = "INSERT INTO intranet_qms (qms_id, qms_toc1, qms_toc2, qms_toc3, qms_toc4, qms_type, qms_text, qms_timestamp, qms_user, qms_pagebreak) VALUES ( NULL, $_POST[qms_toc1], $_POST[qms_toc2], $_POST[qms_toc3], $_POST[qms_toc4], '$_POST[qms_type]', '$qms_text', " . time() . ", $_COOKIE[user], '$_POST[qms_pagebreak]')";
 	$result = mysql_query($sql_update, $conn) or die(mysql_error());
 
 		
@@ -183,6 +191,7 @@ $qms_type = $array['qms_type'];
 $qms_text = $array['qms_text'];
 $qms_timestamp = $array['qms_timestamp'];
 $qms_access = $array['qms_access'];
+$qms_pagebreak = $array['qms_pagebreak'];
 
 if ($user_usertype_current < $qms_access) {
 
@@ -196,19 +205,24 @@ if ($user_usertype_current < $qms_access) {
 	
 }
 
+if ($qms_type == NULL) { $checked = " checked=\"checked\" ";} else { unset($checked); }
+if ($qms_type == "code") { $checked1 = " checked=\"checked\" ";} else { unset($checked1); }
+if ($qms_type == "comp") { $checked2 = " checked=\"checked\" ";} else { unset($checked2); }
+if ($qms_type == "image") { $checked3 = " checked=\"checked\" ";} else { unset($checked3); }
+if ($qms_type == "check") { $checked4 = " checked=\"checked\" ";} else { unset($checked4); }
+if ($qms_type == "pbreak") { $checked5 = " checked=\"checked\" ";} else { unset($checked5); }
+if ($qms_type == "pbreak" && $readonly != "readonly") { $disablebox = " disabled=\"disabled\""; } else { unset($disablebox); }
+if ($qms_pagebreak == 1) { $checked6 = " checked=\"checked\" ";} else { unset($checked6); }
+
 echo "<tr>";
 echo "<td rowspan=\"2\" id=\"$qms_id\">$qms_id<input type=\"hidden\" name=\"qms_id[$qms_id]\" value=\"$qms_id\" /><input type=\"hidden\" name=\"qms_text_check[$qms_id]\" value=\"" . addslashes($qms_text) . "\" /><input type=\"hidden\" name=\"qms_toc1_check[$qms_id]\" value=\"$qms_toc1\" /><input type=\"hidden\" name=\"qms_toc2_check[$qms_id]\" value=\"$qms_toc2\" /><input type=\"hidden\" name=\"qms_toc3_check[$qms_id]\" value=\"$qms_toc3\" /><input type=\"hidden\" name=\"qms_toc4_check[$qms_id]\" value=\"$qms_toc4\" /><input type=\"hidden\" name=\"qms_type_check[$qms_id]\" value=\"$qms_type\" /></td>";
 echo "<td><input type=\"text\" value=\"$qms_toc1\" name=\"qms_toc1[$qms_id]\" style=\"width: 40px;\" $readonly onchange=\"ChangeBG('$qms_id')\" /></td>";
 echo "<td><input type=\"text\" value=\"$qms_toc2\" name=\"qms_toc2[$qms_id]\" style=\"width: 40px;\" $readonly onchange=\"ChangeBG('$qms_id')\" /></td>";
 echo "<td><input type=\"text\" value=\"$qms_toc3\" name=\"qms_toc3[$qms_id]\" style=\"width: 40px;\" $readonly onchange=\"ChangeBG('$qms_id')\" /></td>";
 echo "<td><input type=\"text\" value=\"$qms_toc4\" name=\"qms_toc4[$qms_id]\" style=\"width: 40px;\" $readonly onchange=\"ChangeBG('$qms_id')\" /></td>";
-echo "<td rowspan=\"2\"><textarea name=\"qms_text[$qms_id]\" style=\"min-width:500px; height: 100px;\" $readonly onchange=\"ChangeBG('$qms_id')\" >$qms_text</textarea>";
-if ($qms_type == NULL) { $checked = " checked=\"checked\" ";} else { unset($checked); }
-if ($qms_type == "code") { $checked1 = " checked=\"checked\" ";} else { unset($checked1); }
-if ($qms_type == "comp") { $checked2 = " checked=\"checked\" ";} else { unset($checked2); }
-if ($qms_type == "image") { $checked3 = " checked=\"checked\" ";} else { unset($checked3); }
-if ($qms_type == "check") { $checked4 = " checked=\"checked\" ";} else { unset($checked4); }
-echo "<td colspan=\"2\" rowspan=\"2\"><input type=\"radio\" value=\"\" name=\"qms_type[$qms_id]\" $checked $readonly_radio onclick=\"ChangeBG('$qms_id')\" />&nbsp;None<br /><input type=\"radio\" value=\"code\" name=\"qms_type[$qms_id]\" $checked1 $readonly_radio onclick=\"ChangeBG('$qms_id')\" />&nbsp;Code<br /><input type=\"radio\" value=\"comp\" name=\"qms_type[$qms_id]\" $checked2 $readonly_radio onclick=\"ChangeBG('$qms_id')\" />&nbsp;Complete<br /><input type=\"radio\" value=\"image\" name=\"qms_type[$qms_id]\" $checked3 $readonly_radio onclick=\"ChangeBG('$qms_id')\" />&nbsp;Image<br /><input type=\"radio\" value=\"check\" name=\"qms_type[$qms_id]\" $checked4 $readonly_radio onclick=\"ChangeBG('$qms_id')\" />&nbsp;Checkbox</td>";
+echo "<td rowspan=\"2\"><textarea name=\"qms_text[$qms_id]\" style=\"min-width:500px; height: 100px;\" $readonly $disablebox onchange=\"ChangeBG('$qms_id')\" >$qms_text</textarea>";
+echo "<td rowspan=\"2\"><input type=\"radio\" value=\"\" name=\"qms_type[$qms_id]\" $checked $readonly_radio onclick=\"ChangeBG('$qms_id')\" />&nbsp;None<br /><input type=\"radio\" value=\"code\" name=\"qms_type[$qms_id]\" $checked1 $readonly_radio onclick=\"ChangeBG('$qms_id')\" />&nbsp;Code<br /><input type=\"radio\" value=\"comp\" name=\"qms_type[$qms_id]\" $checked2 $readonly_radio onclick=\"ChangeBG('$qms_id')\" />&nbsp;Complete<br /><input type=\"radio\" value=\"image\" name=\"qms_type[$qms_id]\" $checked3 $readonly_radio onclick=\"ChangeBG('$qms_id')\" />&nbsp;Image<br /><input type=\"radio\" value=\"check\" name=\"qms_type[$qms_id]\" $checked4 $readonly_radio onclick=\"ChangeBG('$qms_id')\" />&nbsp;Checkbox<br /><input type=\"radio\" value=\"del\" name=\"qms_type[$qms_id]\" $readonly_radio onclick=\"ChangeBG('$qms_id'); return confirm('Are you sure you want to delete entry $qms_id?');\" />&nbsp;Delete Entry&nbsp;<img src=\"images/button_delete.png\" alt=\"Delete Entry\" /></td>";
+echo "<td rowspan=\"2\"><input type=\"checkbox\" value=\"1\" name=\"qms_pagebreak[$qms_id]\" $checked6 onclick=\"ChangeBG('$qms_id')\" /><input type=\"hidden\" value=\"$qms_pagebreak\" name=\"qms_pagebreak_check[$qms_id]\" /><small>&nbsp;Page Break Before (PDF)</small></td>";
 echo "</tr>";
 
 echo "<tr><td colspan=\"4\"><span class=\"minitext\">" . date("d M Y", $qms_timestamp) . "</span></td></tr>";
@@ -258,14 +272,15 @@ echo "<td><input type=\"text\" value=\"$qms_toc2\" name=\"qms_toc2\" style=\"wid
 echo "<td><input type=\"text\" value=\"$qms_toc3\" name=\"qms_toc3\" style=\"width: 40px;\" id=\"qms_toc3\" /></td>";
 echo "<td><input type=\"text\" value=\"$qms_toc4\" name=\"qms_toc4\" style=\"width: 40px;\" id=\"qms_toc4\" /></td>";
 echo "<td><textarea name=\"qms_text\" style=\"min-width:500px; height: 100px;\" id=\"qms_text\"></textarea>";
-echo "<td><input type=\"radio\" value=\"code\" name=\"qms_type\" id=\"button_1\" />&nbsp;Code<br /><input type=\"radio\" value=\"comp\" name=\"qms_type\" id=\"button_2\" />&nbsp;Complete<br /><input type=\"radio\" value=\"image\" name=\"qms_type\" id=\"button_3\" />&nbsp;Image<br /><input type=\"radio\" value=\"check\" name=\"qms_type\" id=\"button_4\" />&nbsp;Checkbox</td>";
-echo "<td><input type=\"submit\" value=\"Add New Entry\" id=\"addnewentry\" /></td>";
+echo "<td><input type=\"radio\" value=\"code\" name=\"qms_type\" id=\"button_1\" />&nbsp;Code<br /><input type=\"radio\" value=\"comp\" name=\"qms_type\" id=\"button_2\" />&nbsp;Complete<br /><input type=\"radio\" value=\"image\" name=\"qms_type\" id=\"button_3\" />&nbsp;Image<br /><input type=\"radio\" value=\"check\" name=\"qms_type\" id=\"button_4\" />&nbsp;Checkbox<br /></td>";
+echo "<td><input type=\"checkbox\" value=\"1\" name=\"qms_pagebreak\" /><small>&nbsp;Add Page Break Before (PDF)</small><br /><br /><input type=\"submit\" value=\"Add New Entry\" id=\"addnewentry\" /></td>";
 echo "</form>";
 echo "</tr>";
 
 echo "<tr><th colspan=\"8\">Placeholders</th></tr>";
 echo "<tr><td colspan=\"5\" style=\"text-align:right;\">[project name]</td><td colspan=\"3\"><i>Includes the name and number of the current project</i></td></tr>";
 echo "<tr><td colspan=\"5\" style=\"text-align:right;\">#*</td><td colspan=\"3\"><i>Includes date added to project checklist according to practice-specific requirements (eg. #78). Refer to project checklist for more information and relevant code.</i></td></tr>";
+echo "<tr><td colspan=\"5\" style=\"text-align:right;\">^*</td><td colspan=\"3\"><i>Starting a line with ^ includes a cross-reference to another clause. Use the numeric clause identifier shown to the left of each line, eg. ^1654.</i></td></tr>";
 echo "<tr><td colspan=\"5\" style=\"text-align:right;\">|</td><td colspan=\"3\"><i>Creates a table, using the format <code>	&#124;content&#124;content</code>. The &#124; (pipe) character should be used to start a column - avoid closing a line with this character in order to avoid a superfluous empty cell.</i></td></tr>";
 echo "<tr><td colspan=\"5\" style=\"text-align:right;\">-</td><td colspan=\"3\"><i>Starting a line with a short dash and space creates a bulleted list.</i></td></tr>";
 
