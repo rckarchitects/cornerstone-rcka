@@ -2,7 +2,7 @@
 
 // Timesheet Settings & Analysis
 
-SearchPanel();
+SearchPanel($user_usertype_current);
 
 
 if ($module_timesheets == 1) {

@@ -219,7 +219,11 @@ proj_location
 
 $result = mysql_query($sql_add, $conn) or die(mysql_error());
 
-$actionmessage = "The entry for project <b>$proj_num $proj_name</b> was added successfully.";
+$project_id_added = mysql_insert_id();
+
+$actionmessage = "<p>Project <a href=\"index2.php?page=project_view&amp;proj_id=$project_id_added\">" . $proj_num . " " . $proj_name. "</a> was added successfully.</p>";
+
+AlertBoxInsert($_COOKIE[user],"Project Added",$actionmessage,$project_id_added,86400);
 
 $techmessage = $result;
 

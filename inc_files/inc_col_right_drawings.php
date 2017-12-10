@@ -2,7 +2,7 @@
 
 if ($_GET[proj_id] != NULL) { $proj_id = intval($_GET[proj_id]); }
 
-SearchPanel();
+SearchPanel($user_usertype_current);
 
 
 if ($proj_id != NULL && $module_phonemessages == 1) {

@@ -542,7 +542,7 @@ $pdf->Cell(0,4,'',0,1);
 	
 	while ($array_userhours = mysql_fetch_array($result_userhours)) {
 		
-		if ($pdf->GetY() > 280) { $pdf->addPage(); }
+		if ($pdf->GetY() > 260) { $pdf->addPage(); }
 		
 		$user_id = $array_userhours['user_id'];
 		$user_name_first = $array_userhours['user_name_first'];
@@ -630,7 +630,10 @@ $pdf->Cell(0,4,'',0,1);
 				
 				// Display projects each person has been working on
 				
-				$four_weeks_ago = time() - 2419200;
+				$days_to_track = 7;
+				$days_to_track_text = "Last " . $days_to_track . " days";
+				
+				$four_weeks_ago = BeginWeek ( time() - ($days_to_track * 86400) );
 				
 				$sql_user_proj = "SELECT SUM(ts_hours), proj_num FROM intranet_timesheet, intranet_projects WHERE ts_project = proj_id AND ts_entry > " .  $four_weeks_ago . " AND ts_user = $user_id GROUP BY ts_project ORDER BY proj_num";
 				$result_user_proj = mysql_query($sql_user_proj, $conn) or die(mysql_error());
@@ -648,7 +651,7 @@ $pdf->Cell(0,4,'',0,1);
 				
 							$pdf->Cell(0,0.5,'',0,1,L);
 							
-							$pdf->Cell($name_width,4,'Last 28 Days',0,0,R);
+							$pdf->Cell($name_width,4,$days_to_track_text,0,0,R);
 							$pdf->SetDrawColor(255,255,255);
 							$pdf->SetLineWidth(0.5);
 							$pdf->SetFillColor(200,200,200);
@@ -677,23 +680,23 @@ $pdf->Cell(0,4,'',0,1);
 							
 					}
 				$pdf->Cell(0,4,'',0,1,R);
-			}
+				}
 			
 		// Now examine holidays taken and entitlement
 		
-			$pdf->SetFont('Helvetica','',6);
-			$pdf->SetTextColor(0);
-			$pdf->Cell($name_width,4,'Holidays Remaining',0,0,R);
-			$pdf->SetDrawColor(255,255,255);
-			$pdf->SetLineWidth(0.5);
-			$pdf->SetFillColor(200,200,200);
+			// $pdf->SetFont('Helvetica','',6);
+			// $pdf->SetTextColor(0);
+			// $pdf->Cell($name_width,4,'Holidays Remaining',0,0,R);
+			// $pdf->SetDrawColor(255,255,255);
+			// $pdf->SetLineWidth(0.5);
+			// $pdf->SetFillColor(200,200,200);
 			
-			$holidays_allowed = UserHolidays($user_id);
+			// $holidays_allowed = UserHolidays($user_id);
 			
-			$pdf->Cell(0,4,$holidays_allowed,0);
+			// $pdf->Cell(0,4,$holidays_allowed,0);
 			
 			
-		$pdf->Cell(0,6,'',0,1,L);
+		// $pdf->Cell(0,6,'',0,1,L);
 		
 		
 				

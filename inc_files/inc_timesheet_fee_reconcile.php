@@ -11,7 +11,7 @@ if ($user_usertype_current > 3 OR $ts_fee_id == NULL OR $ts_fee_id == 0 ) {
 		
 	GLOBAL $conn;
 		
-	$sql_fees = "SELECT ts_fee_id, ts_fee_text, ts_fee_commence, ts_fee_time_end FROM intranet_timesheet_fees WHERE ts_fee_project = $proj_id ORDER BY ts_fee_commence DESC";
+	$sql_fees = "SELECT ts_fee_id, ts_fee_text, ts_fee_commence, ts_fee_time_end FROM intranet_timesheet_fees WHERE ts_fee_project = $proj_id ORDER BY ts_fee_commence";
 	$result_fees = mysql_query($sql_fees, $conn) or die(mysql_error());
 		
 	
@@ -32,7 +32,7 @@ if ($user_usertype_current > 3 OR $ts_fee_id == NULL OR $ts_fee_id == 0 ) {
 			
 			$ts_fee_id = $array_fees['ts_fee_id'];
 			$ts_fee_text = $array_fees['ts_fee_text'];
-			if (($ts_entry >= $stage_start) && $check_selected == 0) { $selected = " selected=\"selected\" "; $check_selected = 1; } else { unset($selected); }
+			if (($ts_entry >= $stage_start && $ts_entry <= $stage_end) && $check_selected == 0) { $selected = " selected=\"selected\" "; $check_selected = 1; } else { unset($selected); }
 			echo "<option value=\"$ts_fee_id\" $selected>$ts_fee_text ($begin - $end)</option>";
 			
 		}

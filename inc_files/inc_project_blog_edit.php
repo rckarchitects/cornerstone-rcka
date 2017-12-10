@@ -2,11 +2,15 @@
 
 // Retrieve and process the values passed using the $_GET submission
 
-if ($_GET[proj_id] != NULL) { $proj_id = $_GET[proj_id]; } else { $proj_id = NULL; }
+if ($_GET[proj_id] != NULL) { $proj_id = intval($_GET[proj_id]); } else { unset ( $proj_id ); }
 if ($_GET[status] != NULL) { $status = $_GET[status]; } else { $status = "add"; }
-if ($_GET[blog_id] != NULL) { $blog_id = $_GET[blog_id]; } else { $blog_id = NULL; }
+if ($_GET[blog_id] != NULL) { $blog_id = intval($_GET[blog_id]); } else { unset($blog_id); }
+if ($_POST[contact_id]) { $contact_id = intval($_POST[contact_id]); } elseif ($_GET[contact_id]) { $contact_id = intval($_GET[contact_id]); } else { unset($contact_id); }
 
-if($status == "edit") {
+
+
+
+if(intval($blog_id) > 0 && intval($proj_id) > 0) {
 
 	$sql = "SELECT * FROM intranet_projects_blog where blog_id = '$blog_id'";
 	$result = mysql_query($sql, $conn);
@@ -22,13 +26,13 @@ if($status == "edit") {
 	$blog_link = $array['blog_link'];
 	$blog_task = $array['blog_task'];
 	
+	$contact_id = $blog_contact;
+	
 	$blog_date_minute = date("i",$blog_date);
 	$blog_date_hour = date("G",$blog_date);
 	$blog_date_day = date("j",$blog_date);
 	$blog_date_month = date("n",$blog_date);
 	$blog_date_year = date("Y",$blog_date);
-	
-	echo "<h2>Edit Existing Project Blog Entry</h2>";
 	
 	if ($blog_id > 0) {
 		echo "<form method=\"post\" action=\"index2.php?page=project_blog_list\">";
@@ -55,6 +59,7 @@ if($status == "edit") {
 	$blog_link = $_POST[blog_link];
 	$blog_task = $_POST[blog_task];
 	
+	
 	$blog_date_minute = date("i",time());
 	$blog_date_hour = date("G",time());
 	$blog_date_day = date("j",time());
@@ -78,7 +83,7 @@ if ($blog_title != NULL) { echo "<h2>$blog_title</h2>"; } elseif ($proj_id > 0) 
 }
 
 echo "
-<h3>Title</h3><p>
+<p>Title</p><p>
 <input type=\"text\" name=\"blog_title\" maxlength=\"100\" size=\"50\" value=\"$blog_title\" /></p>";
 
 if($status == "add" AND $proj_id != NULL) {
@@ -93,19 +98,12 @@ echo "<input type=\"hidden\" value=\"".$user_id_current."\" name=\"blog_user\" /
 echo "<p><input type=\"submit\" value=\"Submit\" class=\"inputsubmit\" /></p>";
 
 } elseif($status == "edit" OR $proj_id == NULL ) {
+	
+	echo "<p>Project</p><p>";
 
-		$sql2 = "SELECT proj_id, proj_num, proj_name FROM intranet_projects order by proj_num";
-		$result2 = mysql_query($sql2, $conn);
-		echo "<h3>Project</h3><p><select name=\"blog_proj\">";
-		while ($array2 = mysql_fetch_array($result2)) {
-			$proj_id_select = $array2['proj_id'];
-			$proj_num_select = $array2['proj_num'];
-			$proj_name_select = $array2['proj_name'];
-			echo "<option value=\"$proj_id_select\"";
-			if ($proj_id_select == $blog_proj) { echo " selected"; }
-			echo ">$proj_num_select&nbsp;$proj_name_select</option>";
-		}
-		echo "</select></p>";
+		ProjectSelect($blog_proj,"blog_proj");
+		
+	echo "</p>";	
 		
 echo "<input type=\"hidden\" value=\"".$user_id_current."\" name=\"blog_user\" />";
 echo "<input type=\"hidden\" value=\"$blog_id\" name=\"blog_id\" />";
@@ -138,9 +136,7 @@ echo "</select>";
 
 
 echo "<h3>Contact</h3><p>";
-	$data_contact_id = $blog_contact;
-	$data_contact_var = "blog_contact";
-	include("dropdowns/inc_data_dropdown_contacts.php");
+	ContactsDropdownSelect($contact_id,"blog_contact");
 echo "</p>";
 
 // Link this entry with another one

@@ -22,8 +22,8 @@ $company_city = CleanUp($_POST[company_city]);
 $company_county = CleanUp($_POST[company_county]);
 $company_postcode = CleanUpPostcode($_POST[company_postcode]);
 $company_country = $_POST[company_country];
-$company_web = ltrim ( $_POST[company_web], "http://" );
-$company_notes = $_POST[company_notes];
+$company_web = ltrim ( $company_notes = addslashes( $_POST[company_web], "http://" ) );
+$company_notes = addslashes($_POST[company_notes]);
 
 // Construct the MySQL instruction to add these entries to the database
 
@@ -55,11 +55,11 @@ company_notes
 
 $result = mysql_query($sql_add, $conn) or die(mysql_error());
 
-$actionmessage = "The entry for company <b>$company_name</b> was added successfully.";
+$company_id_added = mysql_insert_id();
 
-$company_id_added = mysql_affected_rows($result);
+$actionmessage = "<p><a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id_added\">" . $company_name . "</a> has been added to the database.</p>";
 
-$company_id = mysql_insert_id();
+AlertBoxInsert($_COOKIE[user],"Company Details Added",$actionmessage,$company_id_added,86400);
 
 $techmessage = $sql_add;
 

@@ -19,7 +19,7 @@
 	$array_pages = array("pdf_weekly_summary.php","pdf_weekly_summary.php?beginweek=$lastweek","pdf_weekly_summary.php?beginweek=$nextweek");
 	$array_title = array("Weekly Summary (PDF)","Last Week Summary (PDF)","Next Week Summary (PDF)");
 	$array_images = array("button_pdf.png","button_pdf.png","button_pdf.png");
-	$array_access = array(1,1,1);
+	$array_access = array(2,2,2);
 
 	SideMenu ("Weekly Summary", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 	
@@ -28,10 +28,21 @@
 
 if ($module_contacts == "1") {
 
-	$array_pages = array("index2.php?page=contacts_edit&amp;status=add","index2.php?page=contacts_company_edit&amp;status=add","index2.php?page=contacts_discipline_list","index2.php?page=contacts_pdf_labels");
-	$array_title = array("Add Contact","Add Company","List Disciplines","Marketing Labels");
-	$array_images = array("button_contact.png","button_contact.png","button_list.png","button_print.png");
-	$array_access = array(1,1,1,3);
+	$array_pages = array("index2.php?page=contacts_edit&amp;status=add","index2.php?page=contacts_company_edit&amp;status=add","index2.php?page=contacts_discipline_list","index2.php?page=contacts_view","index2.php?page=contacts_pdf_labels");
+	$array_title = array("Add Contact","Add Company","List Disciplines","All Contacts","Marketing Labels");
+	$array_images = array("button_contact.png","button_contact.png","button_list.png","button_list.png","button_print.png");
+	$array_access = array(2,2,1,1,3);
+	
+	$sql = "SELECT target_id FROM intranet_contacts_targetlist WHERE target_user = $_COOKIE[user] LIMIT 1";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	if (mysql_num_rows($result) > 0) {
+	
+		$array_pages[] = "index2.php?page=contacts_targetlist";
+		$array_title[] = "My List";
+		$array_images[] = "button_list.png";
+		$array_access[] = 2;
+		
+	}
 
 	SideMenu ("Contacts", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 	

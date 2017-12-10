@@ -13,7 +13,7 @@ if ($proj_id == NULL) {
 	
 	echo "<h2>Drawing List</h2>";
 	
-	echo "<p class=\"submenu_bar\"><a href=\"pdf_drawing_list.php?proj_id=$proj_id\" class=\"submenu_bar\">Drawing Schedule&nbsp;<img src=\"images/button_pdf.png\" alt=\"Download drawing list as PDF\" /></a><a href=\"pdf_drawing_matrix.php?proj_id=$proj_id\" class=\"submenu_bar\">Drawing Matrix&nbsp;<img src=\"images/button_pdf.png\" alt=\"Download drawing matrix as PDF\" /></a></p>";
+	echo "<div class=\"submenu_bar\"><a href=\"pdf_drawing_list.php?proj_id=$proj_id\" class=\"submenu_bar\">Drawing Schedule&nbsp;<img src=\"images/button_pdf.png\" alt=\"Download drawing list as PDF\" /></a><a href=\"pdf_drawing_matrix.php?proj_id=$proj_id\" class=\"submenu_bar\">Drawing Matrix&nbsp;<img src=\"images/button_pdf.png\" alt=\"Download drawing matrix as PDF\" /></a></div>";
 
 
 	
@@ -41,7 +41,7 @@ if ($proj_id == NULL) {
 	
 	$drawing_class = $_POST[drawing_class];
 	$drawing_type = $_POST[drawing_type];
-	echo "<div><h3>Filter:</h3><form method=\"post\" action=\"index2.php?page=drawings_list&amp;proj_id=$proj_id&amp;drawing_class=$drawing_class&amp;drawing_type=$drawing_type\" >";
+	echo "<div style=\"float: left;\"><h3>Filter:</h3><form method=\"post\" action=\"index2.php?page=drawings_list&amp;proj_id=$proj_id&amp;drawing_class=$drawing_class&amp;drawing_type=$drawing_type\" >";
 	$array_class_1 = array("","SK","PL","TD","CN","CT","FD");
 	$array_class_2 = array("- All -","Sketch","Planning","Tender","Contract","Construction","Final Design");
 	ClassList($array_class_1,$array_class_2,"drawing_class");
@@ -61,7 +61,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		if (mysql_num_rows($result) > 0) {
 
 		echo "<table summary=\"Lists all of the drawings for the project\">";
-		echo "<tr><td><strong>Drawing Number</strong></td><td><strong>Title</strong></td><td><strong>Rev.</strong></td><td><strong>Scale</strong></td><td><strong>Paper</strong></td></tr>";
+		echo "<tr><td><strong>Drawing Number</strong></td><td><strong>Title</strong></td><td><strong>Rev.</strong></td><td><strong>Status</strong></td><td><strong>Scale</strong></td><td><strong>Paper</strong></td></tr>";
 
 		while ($array = mysql_fetch_array($result)) {
 		$drawing_id = $array['drawing_id'];
@@ -70,6 +70,9 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		$paper_size = $array['paper_size'];
 		$drawing_title = $array['drawing_title'];
 		$drawing_author = $array['drawing_author'];
+		$drawing_status = $array['drawing_status'];
+		
+		if (!$drawing_status) { $drawing_status = "-"; }
 		
 		$sql_rev = "SELECT * FROM intranet_drawings_revision WHERE revision_drawing = '$drawing_id' ORDER BY revision_letter DESC LIMIT 1";
 		$result_rev = mysql_query($sql_rev, $conn) or die(mysql_error());
@@ -86,7 +89,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 			echo "&nbsp;<a href=\"index2.php?page=drawings_edit&amp;drawing_id=$drawing_id&amp;proj_id=$proj_id&amp;drawing_edit=yes\"><img src=\"images/button_edit.png\" alt=\"Edit this drawing\" /></a>";
 		}
 
-		echo "</td><td $background>".nl2br($drawing_title)."</td><td $background>$revision_letter</td><td $background>$scale_desc</td><td $background>$paper_size</td>";
+		echo "</td><td $background>".nl2br($drawing_title)."</td><td $background>$revision_letter</td><td $background>$drawing_status</td><td $background>$scale_desc</td><td $background>$paper_size</td>";
 
 
 		echo "</tr>";

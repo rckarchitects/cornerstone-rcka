@@ -11,17 +11,7 @@ if (strlen($keywords) > 2) {
 
 $keywords_array = explode(" ", $keywords);
 
-function SearchTerms($search_text,$search_field) {
-		$counter = 0;
-		$max_count = count($search_text);
-		while($counter < $max_count) {
-		if ($counter > 0) { $searching_blog = $searching_blog." AND $search_field LIKE "; }
-		$searching_blog = $searching_blog."'%".$search_text[$counter]."%'";
-		$counter++;
-		}
-		$searching_blog = "$search_field LIKE ".$searching_blog;
-		return($searching_blog);
-}
+
 
 // Begin printing the results tables
 
@@ -59,6 +49,11 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 	if (mysql_num_rows($result) == 0) {
 		echo "<tr><td colspan=\"2\">- No results found for Contacts -</td></tr>";
 	} else {
+		
+		//echo "<tr><td colspan=\"2\">$sql</td></tr>";
+		//echo "<tr><td colspan=\"2\">" . SearchTerms($keywords_array, "contact_namesecond") . "</td></tr>";
+		
+		
 			while ($array = mysql_fetch_array($result)) {
 			$contact_id = $array['contact_id'];
 			$contact_namefirst = $array['contact_namefirst'];
@@ -97,7 +92,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 				echo "<td>$company_postcode</td>";
 				echo "</tr>";			
 			}	else	{
-				echo "<tr><td colspan=\"2\">";
+				echo "<tr><td colspan=\"3\">";
 				echo "<a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">$company_name</a>";
 				echo "</td></tr>";
 			}
@@ -235,45 +230,53 @@ echo "</table>";
 
 // Expenses (by value)
 
-$value_lower = $_POST[keywords] - 0.01;
-$value_upper = $_POST[keywords] + 0.01;
+					$value_lower = floatval($_POST[keywords]) - 0.01;
+					$value_upper = floatval($_POST[keywords]) + 0.01;
+					
+					if (floatval($value_lower) > 0) {
 
-if ($user_usertype_current > 3) {
-$sql = "SELECT * FROM  intranet_user_details, intranet_timesheet_expense WHERE (ts_expense_vat BETWEEN $value_lower AND $value_upper) AND ts_expense_vat > 0 AND user_id = ts_expense_user ORDER BY ts_expense_date DESC";
+							if ($user_usertype_current > 3 && $value_upper ) {
+							$sql = "SELECT * FROM  intranet_user_details, intranet_timesheet_expense WHERE (ts_expense_vat BETWEEN $value_lower AND $value_upper) AND ts_expense_vat > 0 AND user_id = ts_expense_user ORDER BY ts_expense_date DESC";
 
-// echo $sql;
+							// echo $sql;
 
-} else {
+							} elseif ($value_upper) {
 
-$sql = "SELECT * FROM intranet_user_details, intranet_timesheet_expense WHERE (ts_expense_vat BETWEEN `$value_lower` AND `$value_upper`) AND ts_expense_vat > 0 AND user_id = ts_expense_user AND ts_expense_user = $user_id  ORDER BY ts_expense_date DESC";
+							$sql = "SELECT * FROM intranet_user_details, intranet_timesheet_expense WHERE (ts_expense_vat BETWEEN `$value_lower` AND `$value_upper`) AND ts_expense_vat > 0 AND user_id = ts_expense_user AND ts_expense_user = $user_id  ORDER BY ts_expense_date DESC";
 
-}
+							}
 
-$result = mysql_query($sql, $conn) or die(mysql_error());
-	if (mysql_num_rows($result) > 0) {
-			echo "<h2>Expenses with this value</h2>";
-			echo "<table>";
-			echo "<tr><th>Date</th><th>Verified</th><th>Description</th><th>Value</th><th>User</th></tr>";
-			while ($array = mysql_fetch_array($result)) {
-			$ts_expense_id = $array['ts_expense_id'];
-			$ts_expense_desc = $array['ts_expense_desc'];
-			$ts_expense_date = $array['ts_expense_date'];
-			$ts_expense_notes = $array['ts_expense_notes'];
-			$ts_expense_vat = $array['ts_expense_vat'];
-			$ts_expense_verified = $array['ts_expense_verified'];
-			$ts_expense_p11d = $array['ts_expense_p11d'];
-			if ($ts_expense_verified > 0) {
-			$ts_expense_verified = "<a href=\"index2.php?page=datebook_view_day&amp;time=$ts_expense_verified\">".TimeFormat($ts_expense_verified)."</a>"; } else { $ts_expense_verified = "--"; }
-			$user_initials = $array['user_initials'];
-			echo "<tr><td><a href=\"index2.php?page=datebook_view_day&amp;time=$ts_expense_date\">".TimeFormat($ts_expense_date)."</a></td><td>$ts_expense_verified</td><td style=\"width: 50%;\"><a href=\"index2.php?page=timesheet_expense_view&amp;ts_expense_id=$ts_expense_id\">$ts_expense_desc</a>";
-			if ($ts_expense_notes != NULL) { echo "<br />Notes: $ts_expense_notes"; }
-			echo "</td><td>".MoneyFormat($ts_expense_vat)." [ID: $ts_expense_id]";
-			echo "<td>" . $user_initials;
-			if ($ts_expense_p11d != 0) { echo "&nbsp; [P11d]"; }
-			echo "</td></tr>";
-	}
-	echo "</table>";
-}
+							$result = mysql_query($sql, $conn) or die(mysql_error());
+								if (mysql_num_rows($result) > 0) {
+										echo "<h2>Expenses with this value</h2>";
+										echo "<table>";
+										echo "<tr><th>Date</th><th>Verified</th><th>Description</th><th>Value</th><th>User</th></tr>";
+										while ($array = mysql_fetch_array($result)) {
+										$ts_expense_id = $array['ts_expense_id'];
+										$ts_expense_desc = $array['ts_expense_desc'];
+										$ts_expense_date = $array['ts_expense_date'];
+										$ts_expense_notes = $array['ts_expense_notes'];
+										$ts_expense_vat = $array['ts_expense_vat'];
+										$ts_expense_verified = $array['ts_expense_verified'];
+										$ts_expense_p11d = $array['ts_expense_p11d'];
+										if ($ts_expense_verified > 0) {
+										$ts_expense_verified = "<a href=\"index2.php?page=datebook_view_day&amp;time=$ts_expense_verified\">".TimeFormat($ts_expense_verified)."</a>"; } else { $ts_expense_verified = "--"; }
+										$user_initials = $array['user_initials'];
+										echo "<tr><td><a href=\"index2.php?page=datebook_view_day&amp;time=$ts_expense_date\">".TimeFormat($ts_expense_date)."</a></td><td>$ts_expense_verified</td><td style=\"width: 50%;\"><a href=\"index2.php?page=timesheet_expense_view&amp;ts_expense_id=$ts_expense_id\">$ts_expense_desc</a>";
+										if ($ts_expense_notes != NULL) { echo "<br />Notes: $ts_expense_notes"; }
+										echo "</td><td>".MoneyFormat($ts_expense_vat)." [ID: $ts_expense_id]";
+										echo "<td>" . $user_initials;
+										if ($ts_expense_p11d != 0) { echo "&nbsp; [P11d]"; }
+										echo "</td></tr>";
+								}
+								echo "</table>";
+							}
+
+
+					}
+
+
+
 
 }
 

@@ -2,7 +2,7 @@
 
 // Page title
 
-echo "<h1>Contacts</h1>";
+echo "<h1>My Contacts</h1>";
 
 // Establish where to start from GET, and then define it as 0 if none given
 
@@ -19,16 +19,17 @@ if (!$_GET[listorder] OR $_GET[listorder] == "contact") { unset($listorder); ech
 
 echo "</div>";
 
-
-
-// Now present the filter information as a list of the alphabet
-
-AlphabetFilter($current_letter,$listorder,$_GET[desc_order]);
-
+echo "<div class=\"submenu_bar\"><a class=\"submenu_bar\" href=\"index2.php?page=contacts_view\">List All Contacts</a></div>";
 
 // Now include the contacts database in the chosen format type
 
-ListContacts($listorder,$startletter,$_GET[desc_order],$listbegin,$listmax);
+ListUserTargetsColumns($_COOKIE[user]);
+
+
+
+
+
+?>
 
 
 

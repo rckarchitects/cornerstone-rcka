@@ -24,16 +24,16 @@ $proj_id = $_GET[proj_id];
 		$proj_name = $array_issued['proj_name'];
 		
 		
-		echo "<h1>Drawing Issue: $print_date (ID: $set_id)</h1>";
+		echo "<h2>Drawing Issue: $print_date (ID: $set_id)</h2>";
 		
-		echo "<p class=\"menu_bar\"><a href=\"pdf_drawing_issue.php?issue_set=$set_id&amp;proj_id=$proj_id\" class=\"menu_tab\">Drawing Issue Sheet&nbsp;<img src=\"images/button_pdf.png\" alt=\"PDF Drawing Issue Sheet\" /></a>";
+		echo "<div class=\"menu_bar\"><a href=\"pdf_drawing_issue.php?issue_set=$set_id&amp;proj_id=$proj_id\" class=\"menu_tab\">Drawing Issue Sheet&nbsp;<img src=\"images/button_pdf.png\" alt=\"PDF Drawing Issue Sheet\" /></a>";
 		
 		if ((time() - $set_date) < 172800) {
 			echo "<a href=\"index2.php?page=drawings_list&amp;proj_id=$proj_id&amp;set_id=$set_id&amp;action=drawing_issue_delete\" class=\"menu_tab\" onClick=\"javascript:return confirm('Are you sure you want to delete this drawing issue? Deleted drawings issues will be permanently deleted and cannot be recovered.')\">Delete Drawing Issue&nbsp;<img src=\"images/button_delete.png\" alt=\"Delete Drawing Issue\" /></a>";
 		}
 		
 		
-		echo "</p>";
+		echo "</div>";
 		
 
 			
@@ -65,7 +65,7 @@ $result_drawings = mysql_query($sql_drawings, $conn) or die(mysql_error());
 
 		echo "<fieldset><legend>Drawings</legend><table>";
 		
-		echo "<tr><th style=\"width:25%\">Number</th><th style=\"width:20%\">Rev.</th><th>Rev. Date</th><th colspan=\"2\">Title</th></tr>";
+		echo "<tr><th style=\"width:25%\">Number</th><th style=\"width:20%\">Rev.</th><th>Rev. Date</th><th>Status</th><th colspan=\"2\">Title</th></tr>";
 		
 		unset($current_drawing);
 		
@@ -76,13 +76,18 @@ $result_drawings = mysql_query($sql_drawings, $conn) or die(mysql_error());
 			$drawing_id = $array_drawings['drawing_id'];
 			$drawing_title = $array_drawings['drawing_title'];
 			$drawing_number = $array_drawings['drawing_number'];
+			$drawing_status = $array_drawings['drawing_status'];
 			$drawing_description = str_replace("\n",", ",$array_drawings['drawing_description']);	
 			$revision_letter = $array_drawings['revision_letter'];
 			$issue_id = $array_drawings['issue_id'];
 			$issue_drawing = $array_drawings['issue_drawing'];
 			
-			if ($revision_letter == NULL ) {
-			$revision_letter = "-";
+			if (!$revision_letter) {
+				$revision_letter = "-";
+			}
+			
+			if (!$drawing_status) {
+				$drawing_status = "-";
 			}
 			
 			if ($revision_date > 0 ) {
@@ -97,7 +102,7 @@ $result_drawings = mysql_query($sql_drawings, $conn) or die(mysql_error());
 			
 			
 			if ($current_drawing != $drawing_id) { 
-				echo "<tr id=\"$issue_id\"><td><a href=\"index2.php?page=drawings_detailed&amp;drawing_id=$drawing_id&amp;proj_id=$proj_id\">$drawing_number</a><td>" . strtoupper($revision_letter) . "</td><td>$revision_date</td><td>$drawing_title</td><td>" . $delete_button . "</td></tr>";
+				echo "<tr id=\"$issue_id\"><td><a href=\"index2.php?page=drawings_detailed&amp;drawing_id=$drawing_id&amp;proj_id=$proj_id\">$drawing_number</a><td>" . strtoupper($revision_letter) . "</td><td>$revision_date</td><td>$drawing_status</td><td>$drawing_title</td><td>" . $delete_button . "</td></tr>";
 			}
 			
 			$current_drawing = $drawing_id;
@@ -110,15 +115,6 @@ $result_drawings = mysql_query($sql_drawings, $conn) or die(mysql_error());
 		
 // Recipients of drawings
 
-$sql_contacts = "SELECT * FROM contacts_contactlist, intranet_contacts_project, intranet_drawings_issued
-LEFT JOIN contacts_companylist
-ON company_id = issue_company
-WHERE issue_set = $set_id
-AND issue_contact = contact_id
-AND contact_proj_contact = contacts_contactlist.contact_id
-AND contact_proj_project = $proj_id
-ORDER BY company_name, contact_namesecond
-";
 
 $sql_contacts = "SELECT * FROM contacts_contactlist, intranet_contacts_project, intranet_drawings_issued
 LEFT JOIN contacts_companylist

@@ -58,7 +58,7 @@ if ($_GET[now] == "insert" && $_GET[s4] != NULL) {
 
 
 
-echo "<h1>Edit QMS<h1>";
+echo "<h1>Edit QMS</h1>";
 
 echo "	<script type=\"text/javascript\">
 		<!--//

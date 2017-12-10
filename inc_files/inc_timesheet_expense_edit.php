@@ -168,7 +168,8 @@ print "<input type=\"hidden\" name=\"ts_expense_id\" value=\"$ts_expense_id\" />
 	$time_invoice_expired = $days_invoice_expired * 86400;
 	
 		print "<select name=\"ts_expense_invoiced\">";
-		$sql = "SELECT * FROM intranet_timesheet_invoice, intranet_projects WHERE invoice_project = proj_id AND invoice_date > ".(time() - $time_invoice_expired)." OR invoice_project = proj_id AND invoice_id = '$ts_expense_invoiced' order by invoice_ref";
+		//$sql = "SELECT * FROM intranet_timesheet_invoice, intranet_projects WHERE invoice_project = proj_id AND invoice_date > ".(time() - $time_invoice_expired)." OR invoice_project = proj_id AND invoice_id = '$ts_expense_invoiced' order by invoice_ref";
+		$sql = "SELECT * FROM intranet_timesheet_invoice, intranet_projects WHERE invoice_project = proj_id AND invoice_date > 0 OR invoice_project = proj_id AND invoice_id = '$ts_expense_invoiced' AND invoice_paid = 0 order by proj_num DESC, invoice_ref";
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		print "<option value=\"\">-- None --</option>";
 		while ($array = mysql_fetch_array($result)) {

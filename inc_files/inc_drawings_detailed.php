@@ -16,10 +16,13 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		$drawing_title = $array['drawing_title'];
 		$drawing_author = $array['drawing_author'];
 		$drawing_date = $array['drawing_date'];
+		$drawing_status = $array['drawing_status'];
 		$proj_id = $array['proj_id'];
 		$proj_num = $array['proj_num'];
 		$proj_name = $array['proj_name'];
 		$drawing_author = $array['user_name_first']."&nbsp;".$array['user_name_second'];
+		
+		if (!$drawing_status) { $drawing_status = "-"; }
 		
 				// Drawing issue menu
 					echo "<p class=\"submenu_bar\">";
@@ -57,6 +60,8 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		echo "</td></tr>";
 		
 		echo "<tr><td><strong>Title</strong></td><td>".nl2br($drawing_title)."</td></tr>";
+		
+		echo "<tr><td><strong>Status</strong></td><td>$drawing_status</td></tr>";
 		
 		echo "<tr><td><strong>Scale</strong></td><td>$scale_desc</td></tr>";
 		

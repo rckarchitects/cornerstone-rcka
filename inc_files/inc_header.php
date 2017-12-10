@@ -32,47 +32,73 @@
 	  
   <link rel=\"StyleSheet\" type=\"text/css\" href=\"skins/$settings_style/styles.css\" />
 
-	<script type=\"text/javascript\">
-	var current = \"1\";
-	function menuSwitch(id){
-    if(!document.getElementById) return false;
-    var div = document.getElementById(\"page_element_\"+id);
-    var curDiv = document.getElementById(\"page_element_\"+current);
-    curDiv.style.display = \"none\";
-    div.style.display = \"block\";
-    current = id;
-	}
-	</script>
-	
-	<script type=\"text/javascript\">
-	var current = \"1\";
-	function itemSwitch(id){
-    if(!document.getElementById) return false;
-    var div = document.getElementById(\"item_switch_\"+id);
-    var curDiv = document.getElementById(\"item_switch_\"+current);
-    curDiv.style.display = \"none\";
-    div.style.display = \"block\";
-    current = id;
-	}
-	</script>
+			<script type=\"text/javascript\">
+			var current = \"1\";
+			function menuSwitch(id){
+			if(!document.getElementById) return false;
+			var div = document.getElementById(\"page_element_\"+id);
+			var curDiv = document.getElementById(\"page_element_\"+current);
+			curDiv.style.display = \"none\";
+			div.style.display = \"block\";
+			current = id;
+			}
+			</script>
+			
+			<script type=\"text/javascript\">
+			var current = \"1\";
+			function itemSwitch(id){
+			if(!document.getElementById) return false;
+			var div = document.getElementById(\"item_switch_\"+id);
+			var curDiv = document.getElementById(\"item_switch_\"+current);
+			curDiv.style.display = \"none\";
+			div.style.display = \"block\";
+			current = id;
+			}
+			</script>
 	
 
 	
-<script type=\"text/javascript\">
-function PhoneMessageAlert()
-{
-if (confirm(\"You have outstanding messages. View now?\")) { location = \"index2.php?page=phonemessage_view&amp;status=view\"; }
-}
-</script>
+			<script type=\"text/javascript\">
+			function PhoneMessageAlert()
+			{
+			if (confirm(\"You have outstanding messages. View now?\")) { location = \"index2.php?page=phonemessage_view&amp;status=view\"; }
+			}
+			</script>
 
-<script type=\"text/javascript\">
-function SelectAll(id)
-{
-    document.getElementById(id).focus();
-    document.getElementById(id).select();
-}
-</script>
+			<script type=\"text/javascript\">
+			function SelectAll(id)
+			{
+				document.getElementById(id).focus();
+				document.getElementById(id).select();
+			}
+			</script>
+			
+			
+			<script type=\"text/javascript\" src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js\"></script>
+
+			<script type=\"text/javascript\">
+			
+				$(document).ready(function(){
+					$(\".alert_delete\").click(function(){
+					
+					 var DelID = $(this).val();
+					 var LoadPage = \"ajax.php?action=alert_delete&alert_id=\" + DelID;
+					 var TargetAlert = \"target_\" + DelID;
+					 
+						$.get(LoadPage);
+						$(\"#\" + TargetAlert).fadeOut(\"3000\");
+			
+					 });
+				});
+				</script>
+
+
+";
+
+if ($module_contacts == 1) { ToggleTargetList() ;}
+
+
+echo "
 	
 </head>
 ";
-?>

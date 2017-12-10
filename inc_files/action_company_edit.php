@@ -43,12 +43,12 @@ WHERE company_id = '$company_id' LIMIT 1
 
 $result = mysql_query($sql_add, $conn) or die(mysql_error());
 
-$actionmessage = "The entry for company <b>$company_name</b> was updated successfully.";
+$actionmessage = ".";
 
 $techmessage = $sql_add;
 
-$company_id = mysql_affected_rows($result);
+$actionmessage = "<p>The entry for company <a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">$company_name</a> was updated successfully.</p>";
+
+AlertBoxInsert($_COOKIE[user],"Company Details Updated",$actionmessage,$company_id,0);
 
 }
-
-?>

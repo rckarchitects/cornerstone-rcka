@@ -1,8 +1,8 @@
 <?php
 
-if ($user_usertype_current < 3) { print "<h1 class=\"heading_alert\">Permission Denied</h1><p>You do not have permission to view this page.</p>"; } else {
+if ($user_usertype_current < 3) { echo "<h1 class=\"heading_alert\">Permission Denied</h1><p>You do not have permission to view this page.</p>"; } else {
 
-print "<h1>Verified Expenses</h1>";
+echo "<h1>Verified Expenses</h1>";
 
 $date_begin = mktime(0,0,$_POST[then_month],$_POST[then_day],$_POST[then_year]);
 $date_end = mktime(23,59,$_POST[now_month],$_POST[now_day],$_POST[now_year]);
@@ -20,8 +20,8 @@ $proj_id_current == NULL;
 $expense_total = 0;
 $linecount = 0;
 
-print "<table summary=\"List all verified expenses by date\">";
-print "<tr><td colspan=\"2\"><strong>Date Verified</strong></td></td></tr>";
+echo "<table summary=\"List all verified expenses by date\">";
+echo "<tr><td colspan=\"2\"><strong>Date Verified</strong></td></td></tr>";
 
 while ($array = mysql_fetch_array($result)) {
   
@@ -35,7 +35,7 @@ while ($array = mysql_fetch_array($result)) {
 			echo "<td><a href=\"index2.php?page=timesheet_expense_list_verified&amp;time=$lasttime\">".MoneyFormat($expense_total)."</a></td></tr>";
 			}			
 
-		print "<tr><td><a href=\"index2.php?page=datebook_view_day&amp;time=$ts_expense_verified\">".TimeFormat($ts_expense_verified)."</a>&nbsp;<a href=\"pdf_expense_verified_list.php?time=$ts_expense_verified\" target=\"_blank\"><img src=\"images/button_pdf.png\" alt=\"PDF Output\" /></a></td>";
+		echo "<tr><td><a href=\"index2.php?page=datebook_view_day&amp;time=$ts_expense_verified\">".TimeFormat($ts_expense_verified)."</a>&nbsp;<a href=\"pdf_expense_verified_list.php?time=$ts_expense_verified\" target=\"_blank\"><img src=\"images/button_pdf.png\" alt=\"PDF Output\" /></a></td>";
 		
 		$linecount++;
 		
@@ -57,11 +57,11 @@ echo "</table>";
 
 } else {
 
-	print "<p>There are no expenses to verify.</p><p>$sql</p>";
+	echo "<p>There are no expenses to verify.</p><p>$sql</p>";
 
 }
 
-print "</table>";
+echo "</table>";
 
 
 
@@ -71,5 +71,3 @@ print "</table>";
 
 
 }
-
-?>

@@ -2,7 +2,7 @@
 
 include "inc_files/inc_checkcookie.php";
 
-if ($_GET[proj_id] == NULL) { header ("Location: index2.php"); }
+if ($_GET[proj_id] == NULL) { header ("Location: index2.php"); } else { $proj_id = intval($_GET[proj_id]); }
 
 if ($user_usertype_current < 2) { header ("Location: index2.php"); }
 
@@ -32,18 +32,8 @@ $format_font_2 = "franklingothicbook.php";
 $pdf->AddFont($format_font,'',$format_font_2);
 
 
-$format_bg_r = "220";
-$format_bg_g = "220";
-$format_bg_b = "220";
-
-$format_ln_r = "220";
-$format_ln_g = "220";
-$format_ln_b = "220";
 
 
-
-
-$proj_id = intval($_GET[proj_id]);
 
 
 
@@ -63,6 +53,6 @@ if ($_GET[devcode] == "yes") { $pdf->MultiCell(0,4,$sql_drawings); }
 
 $file_date = time();
 
-$file_name = $proj_num."_2.05_".Date("Y",$file_date)."-".Date("m",$file_date)."-".Date("d",$file_date)."_Project_Checklist.pdf";
+	$file_name = PDF_FileName ($proj_id, "Fee Schedule");
 
 $pdf->Output($file_name,I);

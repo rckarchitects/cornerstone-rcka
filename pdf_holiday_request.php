@@ -68,7 +68,7 @@ $loopcheck = 0;
 		StyleBody(11,'Helvetica','');
 		$pdf->SetLineWidth(0.25);
 
-$sql_user_holidays = "SELECT * FROM intranet_user_holidays WHERE holiday_user = $user_id AND holiday_timestamp > $time AND (holiday_approved IS NULL OR holiday_approved = 0) ORDER BY holiday_datestamp";
+$sql_user_holidays = "SELECT * FROM intranet_user_holidays WHERE holiday_user = $user_id AND (holiday_approved IS NULL OR holiday_approved = 0) ORDER BY holiday_datestamp";
 $result_user_holidays = mysql_query($sql_user_holidays, $conn) or die(mysql_error());
 
 

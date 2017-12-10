@@ -103,7 +103,7 @@ if ($module_fees = 1) {
 
 
 				// Item Sub Menu
-				echo "<p class=\"submenu_bar\">";
+				echo "<div class=\"submenu_bar\">";
 
 					if ($user_usertype_current > 3 OR $user_id_current == $proj_rep_black) {
 						echo "<a href=\"index2.php?page=project_edit&amp;status=edit&amp;proj_id=$proj_id\" class=\"submenu_bar\">Edit</a>";
@@ -116,7 +116,7 @@ if ($module_fees = 1) {
 					}
 
 
-				echo "</p>";
+				echo "</div>";
 
 				echo "<h2>Fee Stages</h2>";
 
@@ -127,7 +127,7 @@ if ($module_fees = 1) {
 
 
 						if (mysql_num_rows($result) > 0) {
-						
+							
 						echo "<table summary=\"Lists the fees for the selected project\">";
 						
 						echo "<form method=\"post\" action=\"index2.php?page=project_fees&amp;proj_id=$proj_id\">";
@@ -160,6 +160,7 @@ if ($module_fees = 1) {
 												$ts_fee_percentage = $array['ts_fee_percentage'];
 												$ts_fee_invoice = $array['ts_fee_invoice'];
 												$ts_fee_project = $array['ts_fee_project'];
+												$ts_fee_pre = $array['ts_fee_pre'];
 												$ts_fee_stage = $array['ts_fee_stage'];
 												$group_code = $array['group_code'];
 												if ($group_code == NULL) { $group_code = "-"; }
@@ -172,15 +173,6 @@ if ($module_fees = 1) {
 												if ($array['proj_date_start'] != 0) { $proj_date_start = $array['proj_date_start']; } else { $proj_date_start = time(); }
 												
 												if ($ts_fee_comment != NULL) { $ts_fee_text = $ts_fee_text . "<span class=\"minitext\"><br />". $ts_fee_comment . "</span>"; }
-
-												if ($ts_fee_stage > 0) {
-														$sql_riba = "SELECT * FROM riba_stages WHERE riba_id = '$ts_fee_stage' LIMIT 1";
-														$result_riba = mysql_query($sql_riba, $conn) or die(mysql_error());
-														$array_riba = mysql_fetch_array($result_riba);
-														$riba_letter = $array_riba['riba_letter'];
-														$riba_desc = $array_riba['riba_desc'];
-														$ts_fee_text = $riba_letter." - ".$riba_desc;
-												}
 												
 												//  Pull any invoices from the system which relate to this fee stage
 													$sql2 = "SELECT * FROM intranet_timesheet_invoice WHERE invoice_id = '$ts_fee_invoice' LIMIT 1";
@@ -214,21 +206,35 @@ if ($module_fees = 1) {
 														$percent_complete = $percent_complete * 100;
 														
 														$percent_complete = round ($percent_complete,0);
+														
+														$fee_period_length = intval(($prog_end - $prog_begin) / 604800);
 												
 												if ($prog_begin > 0) { $prog_begin_print = "<a href=\"index2.php?page=datebook_view_day&amp;time=$prog_begin\">".TimeFormat($prog_begin)."</a>"; } else { $prog_begin_print = "-"; }
 												if ($prog_end > 0) { $prog_end_print = "<a href=\"index2.php?page=datebook_view_day&amp;time=$prog_end\">".TimeFormat($prog_end)."</a>"; } else { $prog_end_print = "-"; }
 												
-												if ($ts_fee_pre_lag != 0) { $prog_begin_print = $prog_begin_print . "<br /><span class=\"minitext\">[+" . round($ts_fee_pre_lag / 604800) . " weeks]"; }
+												if ($prog_end > 0 && $fee_period_length > 0) { $prog_end_print = $prog_end_print . "<br /><span class=\"minitext\">Length: "  . $fee_period_length . " wks</span>"; }
+									
+												if ($ts_fee_pre) { $prog_begin_print_add = $ts_fee_pre ; }
 												
-												$proj_duration = $prog_end - $prog_begin;
-												if ($proj_duration > 0) { $proj_duration_print = round($proj_duration / 604800)." weeks<br />(" . $percent_complete . "%)"; } else { $proj_duration_print = " - "; }
+												if ($ts_fee_pre_lag > 0) { $prog_begin_print_add = $prog_begin_print_add . " + " . round($ts_fee_pre_lag / 604800) . " weeks"; }
+												
+												if ($prog_begin_print_add) { $prog_begin_print = $prog_begin_print . "<br /><span class=\"minitext\"  onmouseover=\"ChangeBackgroundColor(\"stage_" . $prog_begin_print_add . "\")\">[" . $prog_begin_print_add . "]</span>"; }
+												
+
+												
+												
+												$proj_duration_print = "Complete: " . $percent_complete . "%</span>";
+												
+												if ( $percent_complete < 100) { $bg_color = "rgba(255,0,0,0.5)"; } else { $bg_color = "rgba(150,200,25,1)"; }
+												
+												$proj_duration_print = $proj_duration_print . "<div style=\"margin: 5px 0 0 0; background: $bg_color; height: 3px; width:" . $percent_complete . "%\"></div>";
 												
 												if ($ts_fee_id == $proj_riba) { $ts_fee_id_selected = " checked=\"checked\""; $highlight = " background: rgba(200,200,200,0.5);"; } else { unset($ts_fee_id_selected); unset($highlight); }
 												
 												if ($prog_end < time()) { $highlight = $highlight . " background: rgba(175,213,0,0.3);"; } elseif ( $ts_fee_id == $proj_riba ) { $highlight = $highlight . " background: rgba(255,175,0,0.3);"; } else { $highlight = $highlight . " background: rgba(255,0,0,0.3);"; }
 												
 												
-												$fee_factored = $ts_fee_calc * $ts_fee_target; $fee_target = "<br />(Target Cost: " . MoneyFormat($fee_factored). " / " .  number_format(((1 / $ts_fee_target) * 100) - 100 ) . "%)"; $target_cost_total = $target_cost_total + $fee_factored;
+												$fee_factored = $ts_fee_calc * $ts_fee_target; $fee_target = "<br /><span class=\"minitext\">Cumulative: "  . MoneyFormat($fee_total) . "<br />Target Cost: " . MoneyFormat($fee_factored). " + " .  number_format(((1 / $ts_fee_target) * 100) - 100 ) . "% profit</span>"; $target_cost_total = $target_cost_total + $fee_factored;
 												
 												if ($ts_fee_prospect == 0) { $ts_fee_likelihood = "Dead"; }
 												elseif ($ts_fee_prospect == 10) { $ts_fee_likelihood = "Unlikely"; }
@@ -240,7 +246,7 @@ if ($module_fees = 1) {
 												$ts_fee_prospect = $ts_fee_likelihood . "&nbsp;(" . $ts_fee_prospect . "%)";
 												
 												
-												echo "<tr><td style=\"$highlight\"><input type=\"radio\" name=\"fee_stage_current\" value=\"$ts_fee_id\" $ts_fee_id_selected /> </td><td style=\"$highlight\">$group_code</td><td style=\"$highlight\">$ts_fee_text</td><td style=\"$highlight\">".$prog_begin_print."</td><td style=\"$highlight\">".$prog_end_print."</td><td style=\"$highlight\">".$ts_fee_prospect."</td><td  style=\"$highlight; text-align: right;\">".MoneyFormat($ts_fee_calc) . $fee_target ."</td>\n";
+												echo "<tr id=\"stage_$ts_fee_id\"><td style=\"$highlight\"><input type=\"radio\" name=\"fee_stage_current\" value=\"$ts_fee_id\" $ts_fee_id_selected /> </td><td style=\"$highlight\">$group_code<br /><span class=\"minitext\">[$ts_fee_id]</span></td><td style=\"$highlight\">$ts_fee_text</td><td style=\"$highlight\">".$prog_begin_print."</td><td style=\"$highlight\">".$prog_end_print."</td><td style=\"$highlight\">".$ts_fee_prospect."</td><td  style=\"$highlight; text-align: right;\">".MoneyFormat($ts_fee_calc) . $fee_target ."</td>\n";
 												echo "<td style=\"$highlight\">".$proj_duration_print."</td>";
 												if ($user_usertype_current > 2) { echo "<td style=\"$highlight\"><a href=\"index2.php?page=timesheet_fees_edit&amp;ts_fee_id=$ts_fee_id\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a></td>"; }
 												echo "</tr>";
@@ -272,7 +278,7 @@ if ($module_fees = 1) {
 						
 						if ($user_usertype_current > 3) { 
 						
-								echo "<tr><td colspan=\"6\"><strong>Total Fee for All Stages</strong></td><td style=\"text-align: right;\"><strong>".MoneyFormat($fee_total)."</strong></td><td colspan=\"2\"></td></tr>";
+								echo "<tr><td colspan=\"6\"><strong>Total Fee for All Stages</strong></td><td style=\"text-align: right;\"><strong>". MoneyFormat($fee_total) . "</strong></td><td colspan=\"2\"></td></tr>";
 								
 								$profit = (( $fee_total / $target_cost_total ) - 1) * 100;
 								

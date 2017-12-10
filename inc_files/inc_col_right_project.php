@@ -4,7 +4,7 @@ if ($_GET[proj_id] > 0) { $proj_id = intval($_GET[proj_id]); }
 
 $maxnum = 5;
 
-SearchPanel();
+	SearchPanel($user_usertype_current);
 
 // First print the blog entries if there are any
 
@@ -69,7 +69,7 @@ if ($module_drawings == 1) {
 	$array_pages = array("index2.php?page=drawings_list&amp;proj_id=$proj_id");
 	$array_title = array("Drawings");
 	$array_images = array();
-	$array_access = array(1);
+	$array_access = array(2);
 
 	SideMenu ("Drawings", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 	

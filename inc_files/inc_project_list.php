@@ -41,10 +41,10 @@
 					
 					$cost_percentage_cost = $ts_cost_factored_all / $ts_fee_value;
 
-					if ($hours_remaining_user > 0 AND $user_percent > 0.1 AND $cost_percentage > 0.2 AND $cost_percentage < 1) {
+					if ($hours_remaining_user > 0 && $user_percent > 0.1 && $cost_percentage > 0.2 && $cost_percentage < 1) {
 					$row_text = "<span class=\"minitext\"><i>You have <strong>" . round($hours_remaining_user) . "</strong> hour(s) remaining on this stage</i></span>";
 					$row_color = "rgba(0,255,0,0.4)";
-					} elseif ( $cost_percentage > 1 AND $cost_percentage_cost < 1 ) {
+					} elseif ( $cost_percentage > 1 && $cost_percentage_cost < 1 ) {
 					$percent_over = round(100 * ($cost_percentage - 1) );
 					$row_text = "<span class=\"minitext\"><i>This fee stage has overspent target profitability by <strong>" . $percent_over . "%</strong>.</i></span>";
 					$row_color = "rgba(255,220,0, 0.4)";
@@ -98,6 +98,15 @@ $timesheet_period = time() - $timesheet_period;
 
 $sql_timesheet_projects = "SELECT ts_project FROM intranet_timesheet WHERE ts_user = $_COOKIE[user] AND ts_datestamp > $timesheet_period GROUP BY ts_project";
 $result_timesheet_projects = mysql_query($sql_timesheet_projects, $conn) or die(mysql_error());
+
+if (mysql_num_rows($result_timesheet_projects) == 0) {
+
+	$sql_timesheet_projects = "SELECT ts_project FROM intranet_timesheet WHERE ts_datestamp > $timesheet_period GROUP BY ts_project";
+	$result_timesheet_projects = mysql_query($sql_timesheet_projects, $conn) or die(mysql_error());	
+
+}
+
+
 $array_projects_recent = array();
 while ($array_timesheet_projects = mysql_fetch_array($result_timesheet_projects)) {
 array_push($array_projects_recent,$array_timesheet_projects['ts_project']);
@@ -105,12 +114,12 @@ array_push($array_projects_recent,$array_timesheet_projects['ts_project']);
 
 // Get the list of projects from the database
 
-$sql = "SELECT *, UNIX_TIMESTAMP(ts_fee_commence) FROM intranet_user_details, intranet_projects LEFT JOIN intranet_timesheet_fees ON `proj_riba` = `ts_fee_id` WHERE proj_rep_black = user_id $project_active order by proj_num";
+	$sql = "SELECT *, UNIX_TIMESTAMP(ts_fee_commence) FROM intranet_user_details, intranet_projects LEFT JOIN intranet_timesheet_fees ON `proj_riba` = `ts_fee_id` WHERE proj_rep_black = user_id $project_active AND proj_fee_track = 1 order by proj_num";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
 
-$result = mysql_query($sql, $conn) or die(mysql_error());
 
 
-		echo "<p class=\"submenu_bar\">";
+		echo "<div class=\"menu_bar\">";
 		
 		if ($_GET[active] != NULL) {
 			echo "<a href=\"index2.php\" class=\"submenu_bar\">My Projects</a>";
@@ -129,7 +138,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 			// echo "<a href=\"index2.php?page=project_analysis\" class=\"submenu_bar\">Project Analysis</a>";
 			}
 		echo "<a href=\"index2.php?page=project_blog_edit&amp;status=add\" class=\"submenu_bar\">Add Journal Entry (+)</a>";
-		echo "</p>";
+		echo "</div>";
 		
 		
 		
@@ -233,7 +242,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 												echo "0<br /><span class=\"minitext\">wks</span>";	
 											}
 												
-											echo "</td><td $row_color_style><span class=\"minitext\">$current_stage $row_text</span></td>";
+											echo "</td><td $row_color_style>$current_stage $row_text</td>";
 											
 											echo "<td style=\"text-align: center; $row_color\">";
 													echo "<a href=\"index2.php?page=project_checklist&amp;proj_id=$proj_id\"><img src=\"images/button_list.png\" alt=\"Checklist\" /></a>";

@@ -8,6 +8,8 @@ elseif ($_GET[issue_set] == NULL) { header ("Location: index2.php?proj_id=$_GET[
 
 include "secure/prefs.php";
 
+include "inc_files/inc_action_functions_pdf.php";
+
 //  Use FDPI to get the template
 
 define('FPDF_FONTPATH','fpdf/font/');
@@ -77,18 +79,7 @@ $user_name = $array_set['user_initials'];
 
 
 	
-	$sheet_title = "Drawing Issue Sheet";
-	$pdf->SetXY(10,45);
-	$pdf->SetFont($format_font,'',24);
-	$pdf->SetTextColor(0, 0, 0);
-	$pdf->SetDrawColor(0, 0, 0);
-	$pdf->Cell(0,10,$sheet_title);
-	$pdf->SetXY(10,55);
-	$pdf->SetFont($format_font,'',14);
-	
-	$sheet_subtitle = $proj_num." ".$proj_name.", ". $set_date;
-	$pdf->Cell(0,10,$sheet_subtitle,0,1,L,0);
-	$pdf->SetXY(10,70);
+	PDFHeader ($proj_id,"Drawing Issue Sheet");
 	
 	$pdf->SetDrawColor(0, 0, 0);
 	$pdf->SetFont("Helvetica",'B',8);	
@@ -128,10 +119,11 @@ $y = $pdf->GetY() + 5;
 $pdf->SetY($y);
 
 $pdf->SetTextColor(0, 0, 0);
-$pdf->SetFont($format_font,'',14);
+$pdf->SetFont('Helvetica','B',12);
 $pdf->Cell(0,7.5,"Drawings Issued",0,1,L,0);
 $pdf->SetFont("Helvetica",'B',8);
-$pdf->Cell(50,5,"Drawing Number",0,0,L,0);
+$pdf->Cell(35,5,"Drawing Number",0,0,L,0);
+$pdf->Cell(15,5,"Status",0,0,L,0);
 $pdf->Cell(10,5,"Rev.",0,0,L,0);
 $pdf->Cell(25,5,"Date",0,0,L,0);
 $pdf->Cell(0,5,"Drawing Title",0,1,L,0);
@@ -154,6 +146,8 @@ while ($array_drawings = mysql_fetch_array($result_drawings)) {
 	$drawing_date = TimeFormat($array_drawings['drawing_date']);
 	$revision_letter = strtoupper($array_drawings['revision_letter']);
 	$revision_desc = $array_drawings['revision_desc'];
+	$drawing_status = $array_drawings['drawing_status'];
+	if (!$drawing_status) { $drawing_status = "-"; }
 	if ($revision_letter == NULL) { $revision_letter = "-"; }
 	if ($array_drawings['revision_date'] != 0) { $revision_date = TimeFormat($array_drawings['revision_date']); } else { $revision_date = "-"; }
 	
@@ -169,7 +163,8 @@ while ($array_drawings = mysql_fetch_array($result_drawings)) {
 		
 		$pdf->SetX(10);
 		
-		$pdf->Cell(60,5,$drawing_number,0,0,L,0);
+		$pdf->Cell(35,5,$drawing_number,0,0,L,0);
+		$pdf->Cell(25,5,$drawing_status,0,0,L,0);
 		$pdf->Cell(25,5,$drawing_date,0,0,L,0);
 		$pdf->MultiCell(0,5,$drawing_title,0,L,0);
 		
@@ -225,7 +220,7 @@ $y = $pdf->GetY() + 5;
 $pdf->SetY($y);
 
 $pdf->SetTextColor(0, 0, 0);
-$pdf->SetFont($format_font,'',14);
+$pdf->SetFont('Helvetica','B',12);
 $pdf->Cell(0,7.5,"Issued To",0,1,L,0);
 $pdf->SetFont("Helvetica",'B',8);
 $pdf->Cell(60,5,"Name",0,0,L,0);
@@ -265,8 +260,8 @@ $pdf->Cell(0,1,'',T,1,L,0);
 
 if ($set_comment) {
 $pdf->Cell(0,10,'',0,1,L,0);
-$pdf->SetTextColor(150, 150, 150);
-$pdf->SetFont($format_font,'',14);
+$pdf->SetTextColor(0, 0, 0);
+$pdf->SetFont('Helvetica','B',12);
 $pdf->Cell(0,7.5,"Notes",0,1,L,0);
 $pdf->SetTextColor(0, 0, 0);
 $pdf->SetFont($format_font,'',10);

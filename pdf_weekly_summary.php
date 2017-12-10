@@ -4,6 +4,8 @@ include "inc_files/inc_checkcookie_logincheck.php";
 
 include "inc_files/inc_checkcookie.php";
 
+include "inc_files/inc_action_functions_pdf.php";
+
 //  Use FDPI to get the template
 
 if ($_GET[beginweek]) { $begin_week = BeginWeek(intval($_GET[beginweek])); } else { $begin_week = BeginWeek(time()); }
@@ -57,23 +59,23 @@ function SetColor4() { GLOBAL $pdf; $pdf->SetFillColor(177,227,227); }
 
 
 
-HolidayPanel($begin_week);
+	PDF_HolidayPanel($begin_week);
 
 
 //Tenders
 
 
 
-	ListTenders($begin_week);
+	PDF_ListTenders($begin_week);
 
 	
 // Fee Stages
 	
-	ListStages($begin_week);
+	PDF_ListStages($begin_week);
 	
 // Tasks Due This Week
 
-	TaskDeadlines($begin_week);
+	PDF_TaskDeadlines($begin_week);
 
 
 // and send to output

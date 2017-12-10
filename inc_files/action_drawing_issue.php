@@ -16,6 +16,7 @@ $array_contact_id = $_POST['contact_id'];
 $array_company_id = $_POST['company_id'];
 $array_issue_to = $_POST['issue_to'];
 $array_drawing = $_POST['drawing_id'];
+$array_status = $_POST['drawing_status'];
 $array_revision = $_POST['revision_id'];
 $array_issued = $_POST['drawing_issued'];
 
@@ -78,6 +79,7 @@ $issue_set = mysql_insert_id();
 							while ($counter_drawing < count($array_drawing)) {
 
 							$issue_drawing = $array_drawing[$counter_drawing];
+							$issue_status = $array_status[$counter_drawing];
 							$issue_revision = $array_revision[$counter_drawing];
 							$issue_confirmed = $array_issued[$counter_drawing];
 							
@@ -89,7 +91,8 @@ $issue_set = mysql_insert_id();
 								issue_project,
 								issue_contact,
 								issue_set,
-								issue_company
+								issue_company,
+								issue_status
 							) values (
 								'NULL',
 								'$issue_drawing',
@@ -97,7 +100,8 @@ $issue_set = mysql_insert_id();
 								'$issue_project',
 								'$issue_contact',
 								'$issue_set',
-								'$issue_company'
+								'$issue_company',
+								'$issue_status'
 							)";
 							
 							

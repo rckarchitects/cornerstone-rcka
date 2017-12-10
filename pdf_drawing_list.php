@@ -2,9 +2,11 @@
 
 include "inc_files/inc_checkcookie.php";
 
-if ($_GET[proj_id] == NULL) { header ("Location: index2.php"); }
+if ($_GET[proj_id] == NULL) { header ("Location: index2.php"); } else { $proj_id = intval($_GET[proj_id]); }
 
 if ($user_usertype_current < 2) { header ("Location: index2.php"); }
+
+include "inc_files/inc_action_functions_pdf.php";
 
 //  Use FDPI to get the template
 
@@ -19,19 +21,24 @@ $tplidx = $pdf->ImportPage(1);
 $pdf->addPage();
 $pdf->useTemplate($tplidx, 0, 0, 210, 297);
 
-$format_font = "century";
-$format_font_2 = "Century.php";
+if ($settings_pdffont != NULL) {
+$format_font = $settings_pdffont;
+$format_font_2 = $settings_pdffont.".php";
+} else {
+$format_font = "franklingothicbook";
+$format_font_2 = "franklingothicbook.php";
+}
 
 $pdf->AddFont($format_font,'',$format_font_2);
 
 
-$format_bg_r = "220";
-$format_bg_g = "220";
-$format_bg_b = "220";
+$format_bg_r = "0";
+$format_bg_g = "0";
+$format_bg_b = "0";
 
-$format_ln_r = "220";
-$format_ln_g = "220";
-$format_ln_b = "220";
+$format_ln_r = "0";
+$format_ln_g = "0";
+$format_ln_b = "0";
 
 
 
@@ -42,26 +49,7 @@ $proj_id = CleanUp($_GET[proj_id]);
 
 //Page Title
 
-$sql_proj = "SELECT * FROM intranet_projects WHERE proj_id = $proj_id LIMIT 1";
-$result_proj = mysql_query($sql_proj, $conn) or die(mysql_error());
-$array_proj = mysql_fetch_array($result_proj);
-$proj_num = $array_proj['proj_num'];
-$proj_name = $array_proj['proj_name'];
-	
-	$sheet_title = "Drawing Schedule";
-	$pdf->SetXY(10,45);
-	$pdf->SetFont($format_font,'',24);
-	$pdf->SetTextColor(150, 150, 150);
-	$pdf->SetDrawColor(150, 150, 150);
-	$pdf->Cell(0,10,$sheet_title);
-	$pdf->SetXY(10,55);
-	$pdf->SetFont($format_font,'',14);
-	
-	$sheet_subtitle = $proj_num." ".$proj_name.", printed ". $current_date;
-	$pdf->Cell(0,10,$sheet_subtitle,0,1,L,0);
-	$pdf->SetXY(10,60);
-	
-	$pdf->SetLineWidth(0.5);
+PDFHeader ($proj_id,"Drawing List");
 	
 	
 	
@@ -78,14 +66,15 @@ $result_drawings = mysql_query($sql_drawings, $conn) or die(mysql_error());
 $y = $pdf->GetY() + 10;
 $pdf->SetY($y);
 
-$pdf->SetTextColor(200, 200, 200);
+$pdf->SetTextColor(0, 0, 0);
 $pdf->SetLineWidth(0.3);
 $pdf->SetFont("Helvetica",'B',6);
 $pdf->Cell(25,5,"Drawing Number",B,0,L,0);
 $pdf->Cell(10,5,"Size",B,0,L,0);
 $pdf->Cell(20,5,"Scale",B,0,L,0);
-$pdf->Cell(80,5,"Drawing Title",B,0,L,0);
-$pdf->Cell(20,5,"Target Date",B,0,L,0);
+$pdf->Cell(70,5,"Drawing Title",B,0,L,0);
+$pdf->Cell(15,5,"Status",B,0,L,0);
+$pdf->Cell(15,5,"Target Date",B,0,L,0);
 $pdf->Cell(15,5,"Current Rev.",B,0,L,0);
 $pdf->Cell(20,5,"Date",B,1,L,0);
 
@@ -107,6 +96,7 @@ while ($array_drawings = mysql_fetch_array($result_drawings)) {
 	$drawing_comment = $array_drawings['drawing_comment'];
 	$scale_desc = $array_drawings['scale_desc'];
 	$paper_size = $array_drawings['paper_size'];
+	$drawing_status = $array_drawings['drawing_status'];
 	
 	$this_type_array = explode("-",$drawing_number);
 	$this_type = $this_type_array[2];
@@ -138,10 +128,12 @@ while ($array_drawings = mysql_fetch_array($result_drawings)) {
 		$pdf->Cell(10,4.5,$paper_size,$border,0,L,$fill);
 		$pdf->Cell(20,4.5,$scale_desc,$border,0,L,$fill);
 		if ($drawing_targetdate != "0000-00-00") {
-			$pdf->Cell(80,4.5,$drawing_title,$border,0,L,$fill);
-			$pdf->Cell(20,4.5,$drawing_targetdate,$border,0,L,$fill);
+			$pdf->Cell(70,4.5,$drawing_title,$border,0,L,$fill);
+			$pdf->Cell(15,4.5,$drawing_status,$border,0,L,$fill);
+			$pdf->Cell(15,4.5,$drawing_targetdate,$border,0,L,$fill);
 		} else {
-			$pdf->Cell(100,4.5,$drawing_title,$border,0,L,$fill);		
+			$pdf->Cell(70,4.5,$drawing_title,$border,0,L,$fill);
+			$pdf->Cell(30,4.5,$drawing_status,$border,0,L,$fill);
 		}
 		$pdf->Cell(15,4.5,$revision_letter,$border,0,C,$fill);
 		$pdf->Cell(20,4.5,$revision_date,$border,1,L,$fill);

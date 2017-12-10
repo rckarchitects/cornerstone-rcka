@@ -163,7 +163,7 @@ function Checklist($proj_id) {
 }
 
 
-function PDFHeader ($proj_id) {
+function PDFHeader ($proj_id,$sheet_title) {
 
 		$current_date = TimeFormat(time());
 
@@ -178,18 +178,19 @@ function PDFHeader ($proj_id) {
 						$proj_num = $array_proj['proj_num'];
 						$proj_name = $array_proj['proj_name'];
 							
-							$sheet_title = "Project Checklist";
+							if (!$sheet_title) { $sheet_title = "Project Checklist"; }
 							$pdf->SetXY(10,45);
-							$pdf->SetFont($format_font,'',24);
+							$pdf->SetFont('Helvetica','B',24);
 							$pdf->SetTextColor(0, 0, 0);
 							$pdf->SetDrawColor(0, 0, 0);
 							$pdf->Cell(0,10,$sheet_title);
 							$pdf->SetXY(10,55);
-							$pdf->SetFont($format_font,'',14);
+							$pdf->SetFont('Helvetica','',14);
 							
 							$sheet_subtitle = $proj_num." ".$proj_name;
 							$sheet_date = "Current at ". $current_date;
 							$pdf->Cell(0,7.5,$sheet_subtitle,0,1,L,0);
+							$pdf->SetFont('Helvetica','',12);
 							$pdf->Cell(0,7.5,$sheet_date,0,1,L,0);
 							$pdf->SetXY(10,70);
 							
@@ -617,7 +618,7 @@ function PDF_Fee_Drawdown ($proj_id) {
 		
 		$proj_id = intval($proj_id);
 		
-		$sql = "SELECT ts_fee_commence FROM intranet_timesheet_fees WHERE ts_fee_project = $proj_id AND ts_fee_value > 5 ORDER BY ts_fee_commence";
+		$sql = "SELECT ts_fee_commence FROM intranet_timesheet_fees WHERE ts_fee_project = $proj_id AND ts_fee_value > 5 AND ts_fee_prospect > 0 ORDER BY ts_fee_commence";
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		$array = mysql_fetch_array($result);
 		$ts_fee_commence = $array['ts_fee_commence'];
@@ -627,7 +628,7 @@ function PDF_Fee_Drawdown ($proj_id) {
 		
 		ProjectHeading($proj_id,$title);
 	
-		$sql = "SELECT * FROM intranet_timesheet_fees WHERE ts_fee_project = $proj_id AND ts_fee_value > 5 ORDER BY ts_fee_commence";
+		$sql = "SELECT * FROM intranet_timesheet_fees WHERE ts_fee_project = $proj_id AND ts_fee_value > 5 AND ts_fee_prospect > 0 ORDER BY ts_fee_commence";
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		
 			if (mysql_num_rows($result) > 0) {
@@ -636,6 +637,7 @@ function PDF_Fee_Drawdown ($proj_id) {
 			
 				while ($array = mysql_fetch_array($result)) {
 					
+					if ($pdf->GetY() > 250) { $pdf->addPage();  }
 				
 					$pdf->SetLineWidth(0.5);
 					$pdf->SetFont('Helvetica','',10);
@@ -782,7 +784,7 @@ function PDF_Fee_Invoice_Reduce($stage_fee, $fee_id) {
 
 		$fee_id	= intval($fee_id);	
 		
-		$sql = "SELECT SUM(invoice_item_novat), invoice_ref FROM intranet_timesheet_invoice, intranet_timesheet_invoice_item WHERE invoice_item_invoice = invoice_id AND invoice_item_stage = $fee_id AND invoice_paid > 0 GROUP BY invoice_id";
+		$sql = "SELECT SUM(invoice_item_novat), invoice_ref, invoice_paid FROM intranet_timesheet_invoice, intranet_timesheet_invoice_item WHERE invoice_item_invoice = invoice_id AND invoice_item_stage = $fee_id AND invoice_paid > 0 GROUP BY invoice_id";
 		
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		
@@ -793,9 +795,10 @@ function PDF_Fee_Invoice_Reduce($stage_fee, $fee_id) {
 		$invoice_ref = $array['invoice_ref'];
 		$fee_remaining = $fee_remaining - $array['SUM(invoice_item_novat)'];
 		$fee_remaining_print = utf8_decode( "£" . number_format ( $fee_remaining , 2 ) );
+		$invoice_paid = TimeFormat ( $array['invoice_paid'] );
 		$pdf->SetFont($format_font,'',8);
 		
-		$invoice_ref_print = "Less invoice ref. " . $invoice_ref . " (" . utf8_decode( "£" . number_format ( $array['SUM(invoice_item_novat)'] , 2 ) ) . ")";
+		$invoice_ref_print = "Less invoice ref. " . $invoice_ref . " (" . utf8_decode( "£" . number_format ( $array['SUM(invoice_item_novat)'] , 2 ) ) . ", paid " . $invoice_paid . ")";
 		
 		
 		$pdf->Cell(125,4,$invoice_ref_print,0,0);
@@ -814,6 +817,263 @@ function PDF_Fee_Invoice_Reduce($stage_fee, $fee_id) {
 		}
 		
 }
+
+function PDF_HolidayPanel($begin_week) {
+
+		GLOBAL $pdf;
+
+		StyleBody(16,'Helvetica','B');
+		$pdf->Cell(0,10,'Holidays',0,1);
+
+		$day_begin = $begin_week;
+		$counter = 0;
+		$color_switch = 1;
+		while ($counter < 5) {
+
+			ListHoliday($day_begin, $color_switch);
+			
+			$day_begin = $day_begin + 86400;
+
+			$counter++;
+			
+			if ($color_switch == 1) { $color_switch = 2; } else { $color_switch = 1; }
+
+		}
+
+		$pdf->Ln(5);
+
+}
+
+function PDF_TextShrinker($font_size,$textstring,$width_available,$face,$style) {
+	
+	global $pdf;
+	
+	StyleBody($font_size,$face,$style);
+	
+	$current_text_width = $pdf->GetStringWidth($textstring);
+	
+	if ($current_text_width < $width_available) { StyleBody($font_size,$face,$style);  }
+	
+	else {
+		
+		$output_font_size = $font_size;
+		
+		while ($current_text_width >= $width_available) {
+			
+			$output_font_size = $output_font_size * 0.95;
+			
+			$current_text_width = $pdf->GetStringWidth($textstring);
+			StyleBody($output_font_size,$face,$style);
+		}
+		
+	}
+	
+	
+}
+
+function PDF_ListTenders($day_begin) {
+
+		GLOBAL $conn;
+		GLOBAL $pdf;
+		
+		StyleBody(14,'Helvetica','B');
+		
+			$time_end = BeginWeek ( $day_begin + 1296000 );
+		
+			$sql = "SELECT * FROM `intranet_tender` WHERE tender_date BETWEEN $day_begin AND ($day_begin + 1209600) ORDER BY tender_date";
+			$result = mysql_query($sql, $conn) or die(mysql_error());
+			
+			if (mysql_num_rows($result) > 0) {
+			
+			StyleBody(16,'Helvetica','B');
+			$pdf->Cell(0,10,'Tenders Due (Next Fortnight)',0,1);
+			$color_swich = 1;
+			while ($array = mysql_fetch_array($result)) {
+			$tender_name = date("G:i",$array['tender_date']) . ": " . $array['tender_name'] . " (" . $array['tender_client'] . ")";
+				if ($color_switch == 1) { SetColor2(); $color_switch = 2; } else { SetColor3(); $color_switch = 1; }
+				StyleBody(10,'Helvetica','');
+				$day = date("D j",$array['tender_date']);
+				if ($current_day != $day) { $pdf->Cell(15,10,$day);  } else { $pdf->Cell(15,10,''); }
+				
+				
+				PDF_TextShrinker(13,$tender_name,260,'Helvetica','B');
+				
+				$width = $pdf->GetStringWidth($tender_name) + 5;
+				$pdf->Cell(2,12,'',0,0,'L',1);
+				$pdf->Cell($width,12,$tender_name,0,1,'L',1);
+				$pdf->Ln(2);
+				$current_day = $day;
+				
+			}
+		
+		$pdf->Ln(5);
+		
+		}
+
+
+}
+
+function PDF_TaskDeadlines($day_begin) {
+	
+	GLOBAL $conn;
+	GLOBAL $pdf;
+	
+		$sql = "SELECT * FROM  `intranet_projects`, `intranet_tasklist` LEFT JOIN intranet_user_details ON user_id = tasklist_person WHERE tasklist_project = proj_id AND tasklist_percentage < 100 AND tasklist_due > 0 AND tasklist_due < ($day_begin + 604800) ORDER BY DATE(from_unixtime(tasklist_due)), proj_num";
+		$result = mysql_query($sql, $conn) or die(mysql_error());
+		
+		if (mysql_num_rows($result) > 0) {
+
+			StyleBody(16,'Helvetica','B');
+			$pdf->Cell(0,10,'Deadlines',0,1);
+			SetColor2();
+			$color_switch = 2;
+			
+			while ($array = mysql_fetch_array($result)) {
+				
+				$day = date("d.n.y",$array['tasklist_due']);
+				if ($current_day != $day) {
+					if ($array['tasklist_due'] >= $day_begin) { StyleBody(11,'Helvetica','B'); $day_print = date("D",$array['tasklist_due']); } else { StyleBody(8,'Helvetica',''); $day_print = $day; }
+					$pdf->Cell(15,10,$day_print); if ($color_switch == 1) { SetColor1(); $color_switch = 2; } else { SetColor2(); $color_switch = 1; } } else { $pdf->Cell(15,10,'');
+				}
+				
+				
+				
+				StyleBody(13,'Helvetica','B');
+				$proj_name = $array['proj_num'] . " " . $array['proj_name'];
+				$width = $pdf->GetStringWidth($proj_name) + 5;
+				$pdf->Cell(2,10,'',0,0,'L',1);
+				$pdf->Cell($width,10,$proj_name,0,0,'L',1);
+				StyleBody(13,'Helvetica','');
+				$pdf->Cell(1,10,'',0,0,'L',0);
+				if (strlen($array['tasklist_notes']) > 70) { $tasklist_notes = substr($array['tasklist_notes'],0,65) . "..."; } else { $tasklist_notes = $array['tasklist_notes']; }
+				$width = $pdf->GetStringWidth($tasklist_notes) + 5;
+				$pdf->Cell(2,10,'',0,0,'L',1);
+				if ($array['tasklist_due'] < $day_begin ) { $pdf->SetTextColor(255,0,0); } else { $pdf->SetTextColor(0,0,0); }
+				$pdf->Cell($width,10,$tasklist_notes,0,0,'L',1);
+				$pdf->SetTextColor(0,0,0);
+				$pdf->Cell(1,$row_height,'');
+				StyleBody(10,'Helvetica','B');
+				$user_initial_project = $array['user_initials'];
+				$pdf->Cell(10,10,$user_initial_project,0,1,'C',1);
+				$pdf->Ln(2);
+				$current_day = $day;				
+			}
+			
+			
+		}
+				
+}
+
+
+function PDF_ListStages($day_begin) {
+
+
+		GLOBAL $conn;
+		GLOBAL $pdf;
+		
+		StyleBody(14,'Helvetica','B');
+		
+			$date = date("Y-m-d",$day_begin);
+			$weekend = date("Y-m-d",($day_begin + 518400));
+			
+			$sql = "SELECT DATE_ADD(ts_fee_commence, INTERVAL ts_fee_time_end SECOND), group_id, group_code, group_description, proj_num, proj_name, proj_rep_black, ts_fee_text, user_initials, ts_fee_commence, ts_fee_time_end FROM `intranet_projects`, `intranet_timesheet_fees` LEFT JOIN intranet_timesheet_group ON ts_fee_group = group_id LEFT JOIN intranet_user_details ON user_id = group_leader WHERE ts_fee_project = proj_id AND ts_fee_commence <= '$weekend' AND (DATE_ADD(ts_fee_commence, INTERVAL ts_fee_time_end SECOND) >= '$date') AND ts_fee_prospect = 100 AND proj_active = 1 ORDER BY group_order, proj_num";
+			$result = mysql_query($sql, $conn) or die(mysql_error());
+
+			
+			$sql2 = "SELECT COUNT(group_id) FROM `intranet_projects`, `intranet_timesheet_fees` LEFT JOIN intranet_timesheet_group ON ts_fee_group = group_id WHERE ts_fee_project = proj_id AND ts_fee_commence <= '$date' AND (DATE_ADD(ts_fee_commence, INTERVAL ts_fee_time_end SECOND) >= '$date') AND ts_fee_prospect = 100 AND proj_active = 1 ORDER BY group_order, proj_num";
+			$result2 = mysql_query($sql2, $conn) or die(mysql_error());
+			$array2 = mysql_fetch_array($result2);
+			$groups = $array2['COUNT(group_id)'];
+			$space_needed_for_headings = $groups * 12;
+			
+			
+			$totalrows = mysql_num_rows($result);
+			$current_y = $pdf->GetY();
+			$remaining = 420 - $current_y;
+			$space_needed_for_rows = $remaining - $space_needed_for_headings;
+			$row_height = $space_needed_for_rows / $totalrows * 1.4;
+			if ($row_height > 10) { $row_height = 10; }
+			$row_height = 10;
+			
+
+			if ($totalrows > 0) {
+			
+			StyleBody(16,'Helvetica','B');
+			
+			$pdf->Cell(0,10,'Project Stages',0,1);
+			
+			SetColor1(); $color_switch = 1;
+		
+			while ($array = mysql_fetch_array($result)) {
+				
+				$group_name = $array['group_description'];
+				
+				$sql3 = "SELECT user_initials FROM intranet_user_details WHERE user_id = '" . $array['proj_rep_black'] . "' LIMIT 1";
+				$result3 = mysql_query($sql3, $conn) or die(mysql_error());
+				$array3 = mysql_fetch_array($result3);
+				$user_initial_project = $array3['user_initials'];
+				
+				
+				if ($array['user_initials']) { $group_name = $group_name . " (Stage Leader: " . $array['user_initials'] . ")"; }
+				$proj_name = $array['proj_num'] . " " . $array['proj_name'];
+				$stage_name = $array['ts_fee_text'];
+				if ($array['group_id'] != $current_group_code) {
+					if ($pdf->GetY() > 360) { $pdf->AddPage(); }
+					if ($current_group_code != NULL) { $pdf->Ln(2); }
+					StyleBody(16,'Helvetica','B'); $pdf->Cell(15,7,$array['group_code']); StyleBody(14,'Helvetica',''); $pdf->Cell(0,7,$group_name); $current_group_code = $array['group_id']; $pdf->Ln(9);
+					if ($color_switch == 1) { SetColor4(); $color_switch = 2; } else { SetColor1(); $color_switch = 1; }
+				}
+				StyleBody(9,'Helvetica','B');
+				$pdf->Cell(15,$row_height,'');
+				$font_height = floor($row_height * 1.6);
+				StyleBody($font_height,'Helvetica','B');
+				$width = $pdf->GetStringWidth($proj_name) + 2;
+				$pdf->Cell(2,$row_height,'',0,0,'L',1);
+				$pdf->Cell($width,$row_height,$proj_name,0,0,'L',1);
+				StyleBody($font_height,'Helvetica','');
+				$width = $pdf->GetStringWidth($stage_name) + 5;
+				$pdf->Cell(2,$row_height,'',0,0,'L',1);
+				$pdf->Cell($width,$row_height,$stage_name,0,0,'L',1);
+				$pdf->Cell(1,$row_height,'');
+				
+				//Dates
+				StyleBody(7,'Helvetica','');
+				$pdf->SetDrawColor(255,255,255);
+				$pdf->SetLineWidth(0.5);
+				$date_present_start = TimeFormatBrief(AssessDays($array['ts_fee_commence']));
+				$date_present_end = TimeFormatBrief(AssessDays($array['ts_fee_commence']) + $array['ts_fee_time_end']);
+				if ($pdf->GetStringWidth($date_present_start) > $pdf->GetStringWidth($date_present_end)) {
+				$date_width = $pdf->GetStringWidth($date_present_start) + 2;
+				} else {
+				$date_width = $pdf->GetStringWidth($date_present_end) + 2;	
+				} 
+				$current_y = $pdf->GetY();
+				$pdf->Cell($date_width,($row_height/2),$date_present_start,'B',2,'C',1);
+				if ((AssessDays($array['ts_fee_commence']) + $array['ts_fee_time_end']) < (time() + 604800)) { SetColor3();}
+				$pdf->Cell($date_width,($row_height/2),$date_present_end,'T',0,'C',1);
+				$current_x = $pdf->GetX();
+				$pdf->SetXY($current_x,$current_y);
+				
+				if ($color_switch == 1) { SetColor1(); } else { SetColor4();  }
+				
+				//Project Leader
+				$pdf->Cell(1,$row_height,'');
+				StyleBody(12,'Helvetica','B');
+				if (($row_height - 2) < $pdf->GetStringWidth($user_initial_project)) { $square_width = $pdf->GetStringWidth($user_initial_project) + 2; } else { $square_width = $row_height; }
+				$pdf->Cell($square_width,$row_height,$user_initial_project,0,0,'C',1);
+				$line_height = $row_height + 2;
+				$pdf->Ln($line_height);
+			}
+			
+
+		
+		$pdf->Ln(14);
+		
+		}
+
+
+}
+
 
 
 function WorkingDaysInPeriod ($period_start, $period_end, $daily_fee) {
@@ -865,3 +1125,71 @@ function ConsolidateFee ($value,$factor) {
 		return $output;
 
 }
+
+function PDF_FileName ($proj_id, $file_name) {
+	
+	$$proj_id = intval($proj_id);
+	
+	global $conn;
+	
+	$sql = "SELECT proj_num FROM intranet_projects WHERE proj_id = $proj_id";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	$array = mysql_fetch_array($result);
+	$proj_num = $array['proj_num'];
+	
+	$file_name_output = $proj_num."_".Date("Y",time())."-".Date("m",time())."-".Date("d",time()). "_" . $file_name . ".pdf";
+	
+	return $file_name_output;
+	
+}
+
+	function StageTotal() {
+		GLOBAL $pdf;
+		GLOBAL $stage_total;
+		GLOBAL $hours_total;
+		GLOBAL $running_cost_nf;
+		GLOBAL $ts_fee_target;
+		
+		$invoice_cost = $stage_total * $ts_fee_target;
+		$invoice_cost_print = "£" . number_format($invoice_cost,2);
+		$running_cost_nf_print =  "(£" . number_format($running_cost_nf,2) . ")";
+		
+				$stage_total_print = "£" . number_format($stage_total,2);
+				$pdf->Cell(0,1,'',T,1);
+				$pdf->Cell(20,4,'Stage Total', 0, 0, L);
+				$pdf->Cell(8,4,$hours_total, 0, 0, R);
+				$pdf->Cell(5,4,'hrs', 0, 0);
+				$pdf->Cell(38,4,'', 0, 0);
+				$pdf->Cell(20,4,$stage_total_print, 0, 0, R);
+				$pdf->Cell(20,4,$running_cost_nf_print, 0, 1, R);
+				$pdf->Ln();
+				$stage_total = 0;
+				$hours_total= 0;
+				$running_cost_nf = 0;
+				
+				$ts_fee_target_print = ($ts_fee_target - 1) * 100;
+				$ts_fee_target_print = "Stage Cost (including profit at " . number_format($ts_fee_target_print,2) . "%)";
+				
+				$pdf->Cell(0,1,'',T,1);
+				$pdf->Cell(71,4,$ts_fee_target_print, 0, 0, L);
+				$pdf->Cell(20,4,$invoice_cost_print, 0, 1, R);
+				$pdf->Ln();
+	
+		}
+		
+	function StageFee($ts_fee_id) {
+			
+			if ($ts_fee_id > 0) {
+				GLOBAL $conn;
+				GLOBAL $pdf;
+				$sql = "SELECT ts_fee_value FROM intranet_timesheet_fees WHERE ts_fee_id = $ts_fee_id";
+				$result = mysql_query($sql, $conn) or die(mysql_error());
+				$array = mysql_fetch_array($result);
+				$ts_fee_value_print = "Stage Fee (including profit) " . number_format($array['ts_fee_value'],2);
+				$pdf->Cell(0,1,'',T,1);
+				$pdf->Cell(0,8,$ts_fee_target_print, 0, 0, L);
+				
+			}
+		}
+
+	

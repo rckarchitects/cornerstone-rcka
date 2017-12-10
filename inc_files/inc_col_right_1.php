@@ -5,7 +5,7 @@
 
 
 
-SearchPanel();
+SearchPanel($user_usertype_current);
 
 
 // Menu - Web Feeds

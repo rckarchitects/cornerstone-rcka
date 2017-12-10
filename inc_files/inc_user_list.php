@@ -14,13 +14,13 @@ function ListUsers($active) {
 	
 			if ($_GET[list_active] != 1) {
 				
-				echo "<p>Showing active users only. <a href=\"index2.php?page=user_list&amp;list_active=1\">Click here to show all users</a>.</p>";
+				echo "<p class=\"sub_menu\"><a class=\"menu_tab\" href=\"index2.php?page=user_list&amp;list_active=1\">All Users</a></p>";
 				$showactive = " WHERE user_active = '1' ";
 				
 				
 			} else {
 				
-				echo "<p>Showing all users. <a href=\"index2.php?page=user_list\">Click here to show active users only</a>.</p>";
+				echo "<p class=\"sub_menu\"><a class=\"menu_tab\" href=\"index2.php?page=user_list\">Active Users</a></p>";
 				unset($showactive);
 			}
 

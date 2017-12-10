@@ -41,12 +41,6 @@
 	
 	$contact_added_date = "Added ".date("jS M y",$contact_added);
 	
-	// Select Title
-			$sql2 = "SELECT * FROM contacts_titlelist WHERE title_id = '$contact_title' LIMIT 1";
-			$result2 = mysql_query($sql2, $conn) or die(mysql_error());
-			$array2 = mysql_fetch_array($result2);
-			$title_name = $array2['title_name'];
-
 	// Select Sector
 			$sql3 = "SELECT * FROM contacts_sectorlist WHERE sector_id = '$contact_sector' LIMIT 1";
 			$result3 = mysql_query($sql3, $conn) or die(mysql_error());
@@ -69,10 +63,14 @@
 	
 	echo "<h1>Contact Details</h1>";
 	
-			echo "<p class=\"menu_bar\">";
-			echo "<a href=\"index2.php?page=contacts_edit&amp;contact_id=".$contact_id."&amp;status=edit\" class=\"menu_tab\">Edit Contact</a>";
-			if ($contact_company > 0) { echo "<a href=\"index2.php?page=contacts_company_edit&amp;company_id=".$contact_company."&amp;status=edit\" class=\"menu_tab\">Edit Company</a>"; }
-			echo "<a href=\"vcard.php?contact_id=$contact_id\" class=\"menu_tab\">VCard</a></p>";
+			echo "<div class=\"menu_bar\">";
+			if ($user_usertype_current > 1) {
+				echo "<a href=\"index2.php?page=contacts_edit&amp;contact_id=".$contact_id."&amp;status=edit\" class=\"menu_tab\">Edit Contact</a>";
+			}
+			if ($contact_company > 0 && $user_usertype_current > 1) { echo "<a href=\"index2.php?page=contacts_company_edit&amp;company_id=".$contact_company."&amp;status=edit\" class=\"menu_tab\">Edit Company</a>"; }
+			echo "<a href=\"index2.php?page=project_blog_edit&amp;status=add&amp;contact_id=$contact_id\" class=\"menu_tab\">Add Journal Entry</a>";
+			echo "<a href=\"vcard.php?contact_id=$contact_id\" class=\"menu_tab\">VCard</a>";
+			echo "</div>";
 			
 			$contact_name = $contact_namefirst." ".$contact_namesecond;
 			if ($contact_title) { $contact_name = $contact_name . ", $contact_title"; }
@@ -330,45 +328,13 @@ if ($contact_company > 0) {
 	echo "</fieldset>";
 	
 	// List any drawing issues to this contact
-	
-	$sql_drawing = "SELECT * FROM intranet_drawings_issued_set, intranet_projects, intranet_drawings_issued LEFT JOIN contacts_companylist ON company_id = issue_company WHERE proj_id = set_project AND issue_contact = $contact_id AND issue_set = set_id ORDER BY set_date DESC";
-	
-	$current_set = 0;
-	
-	$result_drawing = mysql_query($sql_drawing, $conn);
-	if (mysql_num_rows($result_drawing) > 0) {
-		echo "<fieldset><legend>Drawing Issue</legend>";
-		echo "<table>";
-		
-		echo "<tr><th>Date</th><th>Project</th><th>Company</th><th>Reason for Issue</th></tr>";
-		
-		while ($array_drawing = mysql_fetch_array($result_drawing)) {
-		$set_id = $array_drawing['set_id'];
-		$set_date = $array_drawing['set_date'];
-		$set_reason = $array_drawing['set_reason'];
-		$proj_id = $array_drawing['proj_id'];
-		$proj_num = $array_drawing['proj_num'];
-		$proj_name = $array_drawing['proj_name'];
-		$company_id = $array_drawing['company_id'];
-		$company_name = $array_drawing['company_name'];
-		
-		if ($set_id != $current_set) {
-			
-			echo "<tr><td><a href=\"index2.php?page=datebook_view_day&amp;time=$set_date\">" . TimeFormat($set_date) . "</a></td><td><a href=\"" . $pref_location . "/index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></td><td><a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">$company_name</a></td><td><a href=\"index2.php?page=drawings_issue_list&set_id=$set_id&amp;proj_id=$proj_id\">$set_reason</a></td></tr>";
-		
-		}
-		
-		$current_set = $set_id;
-		
-		}
-		echo "</table></fieldset>";
-	}
+	ContactDrawingList($contact_id);
 	
 	
 } else {
 	
 	header("Location:index2.php");
 	
-	}
+}
 
 ?>

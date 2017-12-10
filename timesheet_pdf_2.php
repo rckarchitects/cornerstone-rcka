@@ -1,62 +1,16 @@
 <?php
 
-include "inc_files/inc_checkcookie.php";
+include_once "inc_files/inc_checkcookie.php";
 
 if ($user_usertype_current <= 3) { header ("Location: index2.php"); } else {
+	
+	
+include_once "inc_files/inc_action_functions_pdf.php";
 
 
 // Functions for use on this pagecount
 
-	function StageTotal() {
-		GLOBAL $pdf;
-		GLOBAL $stage_total;
-		GLOBAL $hours_total;
-		GLOBAL $running_cost_nf;
-		GLOBAL $ts_fee_target;
-		
-		$invoice_cost = $stage_total * $ts_fee_target;
-		$invoice_cost_print = "£" . number_format($invoice_cost,2);
-		$running_cost_nf_print =  "(£" . number_format($running_cost_nf,2) . ")";
-		
-				$stage_total_print = "£" . number_format($stage_total,2);
-				$pdf->Cell(0,1,'',T,1);
-				$pdf->Cell(20,4,'Stage Total', 0, 0, L);
-				$pdf->Cell(8,4,$hours_total, 0, 0, R);
-				$pdf->Cell(5,4,'hrs', 0, 0);
-				$pdf->Cell(38,4,'', 0, 0);
-				$pdf->Cell(20,4,$stage_total_print, 0, 0, R);
-				$pdf->Cell(20,4,$running_cost_nf_print, 0, 1, R);
-				$pdf->Ln();
-				$stage_total = 0;
-				$hours_total= 0;
-				$running_cost_nf = 0;
-				
-				$ts_fee_target_print = ($ts_fee_target - 1) * 100;
-				$ts_fee_target_print = "Stage Cost (including profit at " . number_format($ts_fee_target_print,2) . "%)";
-				
-				$pdf->Cell(0,1,'',T,1);
-				$pdf->Cell(71,4,$ts_fee_target_print, 0, 0, L);
-				$pdf->Cell(20,4,$invoice_cost_print, 0, 1, R);
-				$pdf->Ln();
-	
-		}
-		
-	function StageFee($ts_fee_id) {
-			
-			if ($ts_fee_id > 0) {
-				GLOBAL $conn;
-				GLOBAL $pdf;
-				$sql = "SELECT ts_fee_value FROM intranet_timesheet_fees WHERE ts_fee_id = $ts_fee_id";
-				$result = mysql_query($sql, $conn) or die(mysql_error());
-				$array = mysql_fetch_array($result);
-				$ts_fee_value_print = "Stage Fee (including profit) " . number_format($array['ts_fee_value'],2);
-				$pdf->Cell(0,1,'',T,1);
-				$pdf->Cell(0,8,$ts_fee_target_print, 0, 0, L);
-				
-			}
-		}
-
-		// Establish the parameters for what we are showing
+	// Establish the parameters for what we are showing
 
 		$time_submit_begin = $_POST[submit_begin];
 		$time_submit_end = $_POST[submit_end];
@@ -93,48 +47,15 @@ $pdf->useTemplate($tplidx, 0, 0, 210, 297);
 
 $pdf->AddFont($format_font,'',$format_font_2);
 
-$pdf->SetY(50);
-
-$pdf->SetFont($format_font,'',14);
-
 // Determine name of project
 
-$sql = "SELECT proj_num, proj_name FROM intranet_projects WHERE proj_id = '$proj_submit'";
-$result = mysql_query($sql, $conn) or die(mysql_error());
-$array = mysql_fetch_array($result);
-
-$proj_num = $array['proj_num'];
-$proj_name = $array['proj_name'];
-
-$print_submit_begin = date("l, jS F Y",$_POST[submit_begin]);
-$print_submit_begin = "from ".$print_submit_begin;
-
-if ($_POST[submit_end] > 0 ) { $print_submit_end = $_POST[submit_end]; } else { $print_submit_end = time(); }
-
-$print_submit_end = date("l jS F Y",$print_submit_end);
-
-if ($_POST[submit_begin] == NULL OR $_POST[submit_begin] == 0) { $print_submit_begin = ""; }
-
-$ts_print_title = "Schedule for ".$proj_num." ".$proj_name.",".$print_submit_begin." to ".$print_submit_end;
-
-$pdf->SetFont($format_font,'',12);
-$pdf->MultiCell(0,6,$ts_print_title,0, L, 0);
+ProjectHeading($proj_submit,"Timesheet Analysis");
 
 // Printed by, and on...
 
 $pdf->SetFont($format_font,'',12);
 $pdf->SetTextColor(0,0,0);
 
-$sql = "SELECT user_name_first, user_name_second FROM intranet_user_details WHERE user_id = $_COOKIE[user]";
-$result = mysql_query($sql, $conn) or die(mysql_error());
-$array = mysql_fetch_array($result);
-
-$user_name_first = $array['user_name_first'];
-$user_name_second = $array['user_name_second'];
-
-$pdf->SetFont($format_font,'',8);
-
-$printed_on = "Generated ".date("r")." by ".$user_name_first." ".$user_name_second;
 
 $pdf->SetFont($format_font,'',6);
 $pdf->Cell(0,4,$printed_on,0, 1, L, 0);
@@ -149,7 +70,7 @@ $pdf->SetFillColor(220, 220, 220);
 
 // Begin the array through all users
 
-$sql = "SELECT * FROM intranet_user_details, intranet_timesheet LEFT JOIN intranet_timesheet_fees ON ts_project = ts_fee_stage WHERE ts_user = user_id AND ts_project = '$proj_submit' AND ts_entry BETWEEN '$time_submit_begin' AND '$time_submit_end' ORDER BY ts_stage_fee, ts_fee_time_begin";
+$sql = "SELECT * FROM intranet_user_details, intranet_timesheet LEFT JOIN intranet_timesheet_fees ON ts_project = ts_fee_stage WHERE ts_user = user_id AND ts_project = '$proj_submit' AND ts_entry BETWEEN '$time_submit_begin' AND '$time_submit_end' ORDER BY ts_fee_commence, ts_stage_fee, ts_fee_time_begin";
 $result = mysql_query($sql, $conn) or die(mysql_error());
 
 $current_fee_stage = NULL;
@@ -232,15 +153,15 @@ $hours_total = 0;
 		$current_y = $pdf->GetY();
 		if ($current_y > 240) { $pdf->addPage(); }
 		
-		$pdf->SetFont($format_font,'',8);
+		$pdf->SetFont('Helvetica','B',9, true);
 		$pdf->Ln();
-		$pdf->Cell(0,5,$ts_fee_text, 0, 1, L, true);
+		$pdf->Cell(0,6,$ts_fee_text, 0, 1, L, true);
 		$pdf->SetFont($format_font,'',6, true);
 		$pdf->Cell(20,4,'Date',0,0,L, true);
-		$pdf->Cell(13,4,'Hours',0,0,C, true);
+		$pdf->Cell(13,4,'Hours',0,0,R, true);
 		$pdf->Cell(15,4,'Cost (Fa)',0,0,R, true);
 		$pdf->Cell(15,4,'Cost (Ho)',0,0,R, true);
-		$pdf->Cell(8,4,'Initials',0,0,C, true);
+		$pdf->Cell(8,4,'Init',0,0,C, true);
 		$pdf->Cell(20,4,'Cost (Fa Acc)',0,0,R, true);
 		$pdf->Cell(20,4,'Cost (Ho Acc)',0,0,R, true);
 		$pdf->Cell(0,4,'Description',0,0,L, true);
@@ -286,7 +207,7 @@ $hours_total = 0;
 						$pdf->Cell(20,4,$entry_day,0, 0, L, 0, $ts_link);
 						$pdf->Cell(8,4,$view_hours,0, 0, R, 0);
 						if ($_POST[separate_pages] != 1) {
-						$pdf->Cell(5,4,'hrs',0, 0, C, 0);
+						$pdf->Cell(5,4,'hrs',0, 0, R, 0);
 						$pdf->Cell(15,4,$entry_cost_print,0, 0, R, 0);
 						$pdf->Cell(15,4,$ts_cost_nf_print,0, 0, R, 0);
 						$pdf->Cell(8,4,$user_initials,0, 0, C, 0);

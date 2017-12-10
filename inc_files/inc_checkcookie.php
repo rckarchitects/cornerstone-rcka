@@ -15,16 +15,11 @@ Rollbar::init($config);
 // installs global error and exception handlers
 Rollbar::init(array('access_token' => '79f4496bab774563862a8da48e15cf19'));
 
-
+// Set Locale
+setlocale(LC_ALL, 'gb_EN');
 date_default_timezone_set ( 'Europe/London ' );
 
-include_once("inc_action_functions.php");
-
-if ($module_timesheets == 1) {
-	
-	include_once("inc_action_functions_timesheet.php");
-	
-}
+// Establish the functions we require based on the modules loaded
 
 if ($_GET[time] != NULL) { $time = CleanNumber($_GET[time]); setcookie("lastdayview", $time);  } else { $time = time(); }
 
@@ -69,6 +64,11 @@ $settings_pdffont = $database_read_array[20];
 $settings_timesheetstart = $database_read_array[21];
 $settings_timesheetlimit = $database_read_array[22];
 
+// Preferences
+
+include_once "secure/prefs.php";
+
+
 if ($user_user_added > $settings_timesheetstart) { $settings_timesheetstart = $user_user_added; }
 
 if ($settings_ip_address != $ip_current AND $settings_ip_lock == 1) { header("Location: wrongip.php"); }
@@ -87,14 +87,19 @@ $array_ipcheck['user_password'];
     if ($array_ipcheck['user_password'] != $_COOKIE[password] ) {
     header("location: index.php");
   }
+  
 $user_usertype_current = $array_ipcheck['user_usertype'];
 $user_id_current = $array_ipcheck['user_id'];
 $user_timesheet_hours = $array_ipcheck['user_timesheet_hours'];
 }
 
-// Set Locale
 
-setlocale(LC_ALL, 'gb_EN');
+
+include_once("inc_functions_general.php");
+if ($module_timesheets == 1) {  include_once("inc_functions_timesheet.php"); }
+if ($module_contacts == 1) { include_once("inc_functions_contacts.php"); }
+
+
 
 // Set the page-wide definitions from the $_GET submissions if they exist
 

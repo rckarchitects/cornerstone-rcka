@@ -95,13 +95,15 @@ contact_added_by
 
 $result = mysql_query($sql_add, $conn) or die(mysql_error());
 
-$contact_id = mysql_insert_id();
+$contact_id_added = mysql_insert_id();
 
 $actionmessage = "The entry for contact <b>$contact_namefirst $contact_namesecond</b> was added successfully.";
 
 $techmessage = $sql_add;
 
-// $company_id = mysql_affected_rows($result);
+$contact_add_message = "<p><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=$contact_id_added\">" . $contact_namefirst . " " . $contact_namesecond . "</a> has been added to the database.</p>";
+
+AlertBoxInsert($_COOKIE[user],"Contact Added",$contact_add_message,$contact_id_added,86400);
 
 }
 

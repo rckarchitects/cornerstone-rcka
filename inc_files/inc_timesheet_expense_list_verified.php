@@ -1,6 +1,6 @@
 <?php
 
-$ts_expense_verified = CleanUp($_GET[time]);
+$ts_expense_verified = CleanUp($_GET[timestamp]);
 
 if ($user_usertype_current <= 3) { print "<h1 class=\"heading_alert\">Permission Denied</h1><p>You do not have permission to view this page.</p>"; } else {
 

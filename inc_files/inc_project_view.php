@@ -48,11 +48,11 @@ $result = mysql_query($sql, $conn);
 $array = mysql_fetch_array($result);
 $country_printable_name = $array['country_printable_name'];
 
-ProjectSwitcher("project_view",$proj_id,1,1);
+ProjectSwitcher("project_view",$proj_id,0,1);
 
 $proj_tenant_1 = $array['proj_tenant_1'];
 
-echo "<p class=\"menu_bar\">";
+echo "<div class=\"menu_bar\">";
 echo "<a href=\"#\" onclick=\"itemSwitch(1); return false;\" class=\"menu_tab\">Main</a>";
 echo "<a href=\"#\" onclick=\"itemSwitch(2); return false;\" class=\"menu_tab\">Client</a>";
 echo "<a href=\"#\" onclick=\"itemSwitch(4); return false;\" class=\"menu_tab\">Contacts</a>";
@@ -66,13 +66,13 @@ if ( $module_invoices == 1) { echo "<a href=\"#\" onclick=\"itemSwitch(7); retur
 }
 
 echo "<a href=\"#\" onclick=\"itemSwitch(3); return false;\" class=\"menu_tab\">Particulars</a>";
-echo "</p>";
+echo "</div>";
 
 
 echo "<div id=\"item_switch_1\">";
 
 // Project Page Menu
-echo "<p class=\"submenu_bar\">";
+echo "<div class=\"submenu_bar\">";
 	if ($user_usertype_current > 3 OR $user_id_current == $proj_rep_black) {
 		echo "<a href=\"index2.php?page=project_edit&amp;status=edit&amp;proj_id=$proj_id\" class=\"submenu_bar\">Edit</a>";
 	}
@@ -93,7 +93,7 @@ echo "<p class=\"submenu_bar\">";
 		echo "<a href=\"index2.php?page=project_planningcondition_list&amp;proj_id=$proj_id\" class=\"submenu_bar\">Planning Tracker</a>";
 	}
 	
-echo "</p>";
+echo "</div>";
 
 					echo "<h2>Project Information</h2>";
 
@@ -145,14 +145,14 @@ echo "</p>";
 echo "</div><div id=\"item_switch_2\">";
 
 		// Project Page Menu
-		echo "<p class=\"submenu_bar\">";
+		echo "<div class=\"submenu_bar\">";
 			if ($user_usertype_current > 3 OR $user_id_current == $proj_rep_black) {
 				echo "<a href=\"index2.php?page=project_edit&amp;status=edit&amp;proj_id=$proj_id\" class=\"submenu_bar\">Edit</a>";
 			}
 			if ($user_usertype_current > 1) {
 				echo "<a href=\"index2.php?page=project_blog_edit&amp;status=add&amp;proj_id=$proj_id\" class=\"submenu_bar\">Add Project Journal Entry</a>";
 			}
-		echo "</p>";
+		echo "</div>";
 
 					// Pull the details from the contact database
 
@@ -203,14 +203,14 @@ echo "</div><div id=\"item_switch_2\">";
 echo "</div><div id=\"item_switch_3\">";
 
 		// Project Page Menu
-		echo "<p class=\"submenu_bar\">";
-			if ($user_usertype_current > 0 OR $user_id_current == $proj_rep_black) {
+		echo "<div class=\"submenu_bar\">";
+			if ($user_usertype_current > 3 OR $user_id_current == $proj_rep_black) {
 				echo "<a href=\"index2.php?page=project_edit&amp;status=edit&amp;proj_id=$proj_id\" class=\"submenu_bar\">Edit</a>";
 			}
 			if ($user_usertype_current > 1) {
 				echo "<a href=\"index2.php?page=project_blog_edit&amp;status=add&amp;proj_id=$proj_id\" class=\"submenu_bar\">Add Project Journal Entry</a>";
 			}
-		echo "</p>";
+		echo "</div>";
 
 					if ($proj_date_start > 0 OR $proj_date_complete > 0 OR $proj_date_proposal > 0 OR $proj_date_appointment > 0) {
 							echo "<h2>Project Dates</h2><table summary=\"Project Dates\">";
@@ -269,14 +269,14 @@ echo "</div><div id=\"item_switch_4\">";
 
 
 		// Project Page Menu
-		echo "<p class=\"submenu_bar\">";
+		echo "<div class=\"submenu_bar\">";
 			if ($user_usertype_current > 3 OR $user_id_current == $proj_rep_black) {
 				echo "<a href=\"index2.php?page=project_edit&amp;status=edit&amp;proj_id=$proj_id\" class=\"submenu_bar\">Edit</a>";
 			}
 			if ($user_usertype_current > 1) {
 				echo "<a href=\"index2.php?page=project_blog_edit&amp;status=add&amp;proj_id=$proj_id\" class=\"submenu_bar\">Add Project Journal Entry</a>";
 			}
-		echo "</p>";
+		echo "</div>";
 
 include("inc_files/inc_project_contacts.php");
 

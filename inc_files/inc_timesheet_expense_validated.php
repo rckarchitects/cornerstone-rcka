@@ -37,7 +37,7 @@ while ($array = mysql_fetch_array($result)) {
 
 		$ts_expense_verified = $array['ts_expense_verified'];
 		$ts_expense_vat_total = "&pound;" . number_format ( $array['SUM(ts_expense_vat)'], 2);
-		echo "<tr><td><a href=\"index2.php?page=timesheet_expense_list_verified&amp;time=$ts_expense_verified\">".TimeFormatDetailed($ts_expense_verified)."</a></td><td style=\"text-align: right;\">$ts_expense_vat_total</td><td><a href=\"". $pref_location ."/pdf_expense_verified_list.php?time=$ts_expense_verified\"><img src=\"images/button_pdf.png\" alt=\"Export as PDF\" /></a></td><tr>";
+		echo "<tr><td><a href=\"index2.php?page=timesheet_expense_list_verified&amp;timestamp=$ts_expense_verified\">".TimeFormatDetailed($ts_expense_verified)."</a></td><td style=\"text-align: right;\">$ts_expense_vat_total</td><td><a href=\"". $pref_location ."/pdf_expense_verified_list.php?timestamp=$ts_expense_verified\"><img src=\"images/button_pdf.png\" alt=\"Export as PDF\" /></a></td><tr>";
 
 	}
 	

@@ -39,8 +39,8 @@ if ($_GET[revision_id] > 0) {
 		$add_or_edit = "add";
 }
 
-$revision_letters = array("","-","a","b","c","d","e","f","g","h","j","k","l","m","n","p","q","r","s","t","u","v","w","x","y","z","*","","p1","p2","p3","p4","p5","p6","p7","p8","p9","p10");
-$revision_code = array("Standard Revisions","First Issue","Alpha","Bravo","Charlie","Delta","Echo","Foxtrot","Golf","Hotel","Juliet","Kilo","Lima","Mike","November","Papa","Quebec","Romeo","Sierra","Tango","Uniform","Victor","Whisky","X-Ray","Yankee","Zulu","Obsolete","BS 1192.2007","Revision 1","Revision 2","Revision 3","Revision 4","Revision 5","Revision 6","Revision 7","Revision 8","Revision 9","Revision 10");
+$revision_letters = array("","-","a","b","c","d","e","f","g","h","j","k","l","m","n","p","q","r","s","t","u","v","w","x","y","z","aa","ab","ac","ad","ae","af","ag","ah","aj","ak","al","am","an","ap","aq","ar","as","at","au","av","aw","ax","ay","az","*","","p1","p2","p3","p4","p5","p6","p7","p8","p9","p10");
+$revision_code = array("Standard Revisions","First Issue","Alpha","Bravo","Charlie","Delta","Echo","Foxtrot","Golf","Hotel","Juliet","Kilo","Lima","Mike","November","Papa","Quebec","Romeo","Sierra","Tango","Uniform","Victor","Whisky","X-Ray","Yankee","Zulu","Alpha Alpha","Alpha Brava","Alpha Charlie","Alpha Delta","Alpha Echo","Alpha Foxtrot","Alpha Golf","Alpha Hotel","Alpha Juliet","Alpha Kilo","Alpha Lima","Alpha Mike","Alpha November","Alpha Papa","Alpha Quebec","Alpha Romeo","Alpha Sierra","Alpha Tango","Alpha Uniform","Alpha Victor","Alpha Whisky","Alpha X-Ray","Alpha Yankee","Alpha Zulu","Obsolete","BS 1192.2007","Revision 1","Revision 2","Revision 3","Revision 4","Revision 5","Revision 6","Revision 7","Revision 8","Revision 9","Revision 10");
 
 
 

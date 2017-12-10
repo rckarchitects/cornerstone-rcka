@@ -17,11 +17,61 @@ if ($_GET[lock_answer] > 0) {
 
 }
 
-// Get the list of projects from the database
-
 if ($_GET[answer_id] > 0) { $answer_id = " AND answer_id = '$_GET[answer_id]' "; } elseif ($_GET[edit_answer] > 0) { $answer_id = " AND answer_id = '$_GET[edit_answer]' "; } else { $answer_id = NULL; }
 
+// First get the tender information
 
+function Tender_GetInformation($tender_id) {
+	
+	global $conn;
+	$tender_id = intval($tender_id);
+		
+$sql = "SELECT * FROM intranet_tender WHERE tender_id = $tender_id LIMIT 1";
+$result = mysql_query($sql, $conn) or die(mysql_error());
+
+$array = mysql_fetch_array($result);
+
+
+		$tender_id = $array['tender_id'];
+		$tender_client = $array['tender_client'];
+		$tender_name = $array['tender_name'];
+		$tender_date = $array['tender_date'];
+		$tender_type = $array['tender_type'];
+		$tender_source = $array['tender_source'];
+		$tender_instructions = $array['tender_instructions'];
+		
+
+
+			echo "<h1>$tender_name ($tender_type)</h1>";
+		
+			
+			echo "<div class=\"submenu_bar\">";
+			//if ($user_usertype_current > 2) {
+				echo "<a href=\"index2.php?page=tender_view&amp;question=add&amp;tender_id=$tender_id\" class=\"submenu_bar\">Add Question</a>";
+			//}
+			
+			if ($_GET[edit_question] == NULL) { echo "<a href=\"popup_tender.php?tender_id=$tender_id\" class=\"submenu_bar\">Printable View</a>"; }
+			echo "</div>";
+			
+			echo "<h2>Details</h2>";
+			
+			if ($tender_description) { echo "<div><h3>Description</h3><p>$tender_description</p></div>"; }
+			
+			if ($tender_description != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<div><h3>Description</h3><p>". $tender_description . "</p></div>"; }
+			
+			if ($tender_instructionsc!= NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<div><h3>Submission Instructions</h3><p>". $tender_instructions . "</p></div>"; }
+			
+			if ($tender_client != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<div><h3>Client</h3><p>". $tender_client . "</p></div>"; }
+			
+			if ($tender_source != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<div><h3>Source of Tender</h3><p>". TextPresent($tender_source) . "</p></div>"; }
+			
+			echo "<div><h3>Submission Deadline</h3><p>".TimeFormatDetailed($tender_date)."</p></div>";
+
+
+}
+
+
+Tender_GetInformation($_GET[tender_id]);
 
 $sql = "SELECT * FROM intranet_tender, intranet_tender_answers LEFT JOIN intranet_user_details ON user_id = answer_id_edited WHERE tender_id = answer_tender_id AND tender_id = '$_GET[tender_id]' $answer_id ORDER BY answer_ref";
 $result = mysql_query($sql, $conn) or die(mysql_error());
@@ -48,13 +98,6 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		$answer_id_edited = $array['answer_id_edited'];
 		$answer_time_edited = $array['answer_time_edited'];
 		$answer_lock = $array['answer_lock'];
-		$tender_id = $array['tender_id'];
-		$tender_client = $array['tender_client'];
-		$tender_name = $array['tender_name'];
-		$tender_date = $array['tender_date'];
-		$tender_type = $array['tender_type'];
-		$tender_source = $array['tender_source'];
-		$tender_instructions = $array['tender_instructions'];
 		$user_name_first = $array['user_name_first'];
 		$user_name_second = $array['user_name_second'];
 		
@@ -68,22 +111,6 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		if ($tender_editable == "yes" AND $answer_id != $_GET[edit_question] AND $_GET[edit_answer] == NULL AND $_GET[edit_question] == NULL) { $answer_ref = $answer_ref . "&nbsp;<a href=\"index2.php?page=tender_view&amp;tender_id=$_GET[tender_id]&amp;edit_question=$answer_id#$answer_id\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a>"; }
 		
 		if ($counter == 0) {
-			echo "<h1>$tender_name ($tender_type)</h1>";
-			
-			echo "<p class=\"submenu_bar\">";
-			if ($user_usertype_current > 2) {
-				echo "<a href=\"index2.php?page=tender_view&amp;question=add&amp;tender_id=$tender_id\" class=\"submenu_bar\">Add Question</a>";
-			}
-			if ($_GET[edit_question] == NULL) { echo "<a href=\"popup_tender.php?tender_id=$tender_id\" class=\"submenu_bar\">Printable View</a>"; }
-			echo "</p>";
-			
-			if ($tender_instructions!= NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<h2>Submission Instructions</h2><blockquote>". $tender_instructions . "</blockquote>"; }
-			
-			if ($tender_client != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<h2>Client</h2><blockquote>". $tender_client . "</blockquote>"; }
-			
-			if ($tender_source != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<h2>Source of Tender</h2><blockquote>". TextPresent($tender_source) . "</blockquote>"; }
-			
-			echo "<h2>Submission Deadline</h2><blockquote>".TimeFormatDetailed($tender_date)."</blockquote>";
 			
 			echo "<h2>Responses</h2>";
 			
@@ -166,8 +193,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		$tender_id = $array['tender_id'];
 		$tender_name = $array['tender_name'];
 		$tender_date = $array['tender_date'];
-		echo "<h1>$tender_name</h1>";
-		echo "<h2>".TimeFormatDetailed($tender_date)."</h2>";
+		echo "<h2>Tender Questions</h2>";
 		echo "<p>There are currently no responses on the system.</p>";
 		echo "<table summary=\"Lists of questions and responses\">";
 		EditForm($answer_id,$answer_question,$answer_ref,$answer_words,$answer_weighting,$tender_id);

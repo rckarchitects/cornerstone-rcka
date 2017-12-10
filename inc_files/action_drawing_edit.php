@@ -39,6 +39,7 @@ $drawing_package_list = $_POST[drawing_package_list];
 $drawing_total_packages = $_POST[drawing_total_packages];
 $drawing_targetdate = $_POST[drawing_targetdate];
 $drawing_comment = CleanUp($_POST[drawing_comment]);
+$drawing_status = CleanUp($_POST[drawing_status]);
 
 $counter = 0;
 while ($counter < $drawing_total_packages) {
@@ -90,7 +91,8 @@ if ($drawing_id > 0) {
 		drawing_checked = '$drawing_checked',
 		drawing_packages = '$drawing_packages',
 		drawing_targetdate = '$drawing_targetdate',
-		drawing_comment = '$drawing_comment'
+		drawing_comment = '$drawing_comment',
+		drawing_status = '$drawing_status'
 		WHERE drawing_id = '$drawing_id' LIMIT 1";
 		
 		$result = mysql_query($sql_edit, $conn) or die(mysql_error());
@@ -116,7 +118,8 @@ if ($drawing_id > 0) {
 		drawing_checked,
 		drawing_packages,
 		drawing_targetdate,
-		drawing_comment
+		drawing_comment,
+		drawing_status
 		) values (
 		'NULL',
 		'$drawing_number',
@@ -130,7 +133,8 @@ if ($drawing_id > 0) {
 		'$drawing_checked',
 		'$drawing_packages',
 		'$drawing_targetdate',
-		'$drawing_comment'
+		'$drawing_comment',
+		'$drawing_status'
 		)";
 		
 		//echo $sql_add;

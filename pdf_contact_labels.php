@@ -83,12 +83,12 @@ $pdf->SetAutoPageBreak("no");
 
 // Create the sheet header
 
+$pdf->SetXY(0,0);
 $pdf->SetFont("arial",'',$label_j);
 	$label_print_date = $label_title.", created ".date("jS M y",time());
-	$label_url = "http://labelstudio.redcitrus.com";
 	$pdf->SetFontSize(8);
 	$pdf->SetTextColor(190,190,190);
-	$pdf->Cell(0,5,$label_print_date,0,1,L,0,$label_url);
+	$pdf->Cell(0,5,$label_print_date,0,1,L,0);
 $pdf->SetFont($font,'',$label_j);
 $pdf->SetTextColor(0,0,0);
 $pdf->SetFontSize($label_j);

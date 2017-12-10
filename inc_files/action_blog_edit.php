@@ -52,7 +52,9 @@ WHERE blog_id = '$blog_id' LIMIT 1
 
 $result = mysql_query($sql_add, $conn) or die(mysql_error());
 
-$actionmessage = "The blog entry was edited successfully.";
+$actionmessage = "<p><a href=\"index2.php?page=project_blog_view&amp;blog_id=$$blog_id&amp;proj_id=$blog_proj\">Journal Entry</a> was edited successfully.</p>";
+
+AlertBoxInsert($_COOKIE[user],"Journal",$actionmessage,$blog_id,0);
 
 $techmessage = $sql_add;
 

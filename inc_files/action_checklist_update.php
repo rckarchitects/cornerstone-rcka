@@ -107,5 +107,6 @@ foreach ($array_item_counter AS $counter) {
 			
 }
 
+$$actionmessage = "<p>Checklist for project id $checklist_project updated.</p>";
 
-?>
+AlertBoxInsert($_COOKIE[user],"Checklist",$actionmessage,$checklist_project,0,1);

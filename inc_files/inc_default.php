@@ -1,12 +1,10 @@
 <?
 
-echo "<div style=\"margin-top: 25px;\">";
+echo "<div class=\"menu_bar\">";
 
-echo "<p class=\"menu_bar\">";
 echo "<a href=\"#\" onclick=\"itemSwitch(1); return false;\" class=\"menu_tab\">Projects</a>";
 echo "<a href=\"#\" onclick=\"itemSwitch(2); return false;\" class=\"menu_tab\">Tasks</a>";
 echo "<a href=\"#\" onclick=\"itemSwitch(3); return false;\" class=\"menu_tab\">Messages</a>";
-echo "</p>";
 
 echo "</div>";
 

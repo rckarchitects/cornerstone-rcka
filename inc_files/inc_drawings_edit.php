@@ -1,7 +1,7 @@
 <?php
 
 if ($_GET[drawing_id] != NULL && $_GET[drawing_edit] == "yes") {
-print "<h2>Edit Existing Drawing</h2>";
+echo "<h2>Edit Existing Drawing</h2>";
 $sql = "SELECT * FROM intranet_drawings, intranet_projects WHERE drawing_id = '$_GET[drawing_id]' AND drawing_project = proj_id LIMIT 1";
 $result = mysql_query($sql, $conn) or die(mysql_error());
 $array = mysql_fetch_array($result);
@@ -18,10 +18,11 @@ $drawing_paper = $array['drawing_paper'];
 $drawing_packages = $array['drawing_packages'];
 $drawing_targetdate = $array['drawing_targetdate'];
 $drawing_comment = $array['drawing_comment'];
+$drawing_status = $array['drawing_status'];
 $proj_id = $drawing_project;
 $proj_num = $array['proj_num'];
 } else {
-print "<h2>Add New Drawing</h2>";
+echo "<h2>Add New Drawing</h2>";
 
 $sql = "SELECT * FROM intranet_projects WHERE proj_id = '$_GET[proj_id]' LIMIT 1";
 $result = mysql_query($sql, $conn) or die(mysql_error());
@@ -41,6 +42,7 @@ unset($drawing_paper);
 unset($drawing_packages);
 unset($drawing_targetdate);
 unset($drawing_comment);
+unset($drawing_status);
 $proj_id = $_GET[proj_id];
 }
 
@@ -48,10 +50,10 @@ if ($_GET[proj_id] == NULL && $drawing_project == NULL) { echo "<p>No project se
 
 if ($drawing_project == NULL) { $proj_id = $_GET[proj_id]; }
 
-print "<form method=\"post\" action=\"index2.php?page=drawings_list&amp;proj_id=$proj_id\" id=\"form1\">";
+echo "<form method=\"post\" action=\"index2.php?page=drawings_list&amp;proj_id=$proj_id\" id=\"form1\">";
 
-print "<p>";
-print "Drawing Number<br />";
+echo "<p>";
+echo "Drawing Number<br />";
 
 if ($_GET[drawing_id] == NULL) {
 	echo "<input type=\"radio\" name=\"choose_drawing_name\" id=\"radio_preset\" value=\"preset\" onChange=\"disablefield();\" checked=\"checked\" />&nbsp;";
@@ -252,7 +254,7 @@ if ($_GET[drawing_id] == NULL) {
 		}	
 		
 		} else { echo "<input type=\"text\" name=\"drawing_number\" value=\"$drawing_number\" required=\"required\" />"; }
-print "</p>";
+echo "</p>";
 
 //	Drawing packages
 
@@ -281,73 +283,82 @@ print "</p>";
 
 		echo "</div>"; 
 
-print "<p>";
-print "Drawing Title<br />";
-print "<textarea name=\"drawing_title\" id=\"drawing_title\" rows=\"4\" cols=\"42\" required=\"required\">$drawing_title</textarea>";
-print "</p>";
+echo "<p>";
+echo "Drawing Title<br />";
+echo "<textarea name=\"drawing_title\" id=\"drawing_title\" rows=\"4\" cols=\"42\" required=\"required\">$drawing_title</textarea>";
+echo "</p>";
 
-print "<p>";
-print "Drawing By<br />";
+echo "<p>";
+echo "Drawing By<br />";
 $data_user_var = "drawing_author";
 if ($drawing_author > 0) { $data_user_id = $drawing_author; } else { $data_user_id = $_COOKIE[user]; }
 include("dropdowns/inc_data_dropdown_users.php");
-print "</p>";
+echo "</p>";
 
-print "<p>";
-print "Drawing Scale<br />";
+echo "<p>";
+echo "Drawing Scale<br />";
 $result_data = "drawing_scale";
 include("dropdowns/inc_data_dropdown_drawings_scale.php");
-print "</p>";
+echo "</p>";
 
-print "<p>";
-print "Drawing Paper<br />";
+echo "<p>";
+echo "Drawing Paper<br />";
 $result_data = "drawing_paper";
 include("dropdowns/inc_data_dropdown_drawings_paper.php");
-print "</p>";
+echo "</p>";
 
-print "<p>";
-print "Drawing Orientation<br />";
-print "<input type=\"radio\" name=\"drawing_orientation\" id=\"drawing_orientation\" value=\"l\"";
-	if ($drawing_orientation == "l" OR $drawing_orientation != "p") { print " checked "; }
-print " />&nbsp;Landscape<br />";
-print "<input type=\"radio\" name=\"drawing_orientation\" value=\"p\"";
-	if ($drawing_orientation == "p") { print " checked ";}
-print "/>&nbsp;Portrait";
-print "</p>";
+echo "<p>";
+echo "Drawing Orientation<br />";
+echo "<input type=\"radio\" name=\"drawing_orientation\" id=\"drawing_orientation\" value=\"l\"";
+	if ($drawing_orientation == "l" OR $drawing_orientation != "p") { echo " checked "; }
+echo " />&nbsp;Landscape<br />";
+echo "<input type=\"radio\" name=\"drawing_orientation\" value=\"p\"";
+	if ($drawing_orientation == "p") { echo " checked ";}
+echo "/>&nbsp;Portrait";
+echo "</p>";
 
-print "<p>";
-print "Date of Drawing (DD/MM/YYYY)<br />";
+
+echo "<p>";
+echo "Status<br />";
+
+	DrawingStatusDropdown ($drawing_status,"drawing_status");
+	
+echo "</p>";
+
+
+echo "<p>";
+echo "Date of Drawing (DD/MM/YYYY)<br />";
 if ($drawing_date != NULL) { $drawing_date_day = date("j", $drawing_date); } else { $drawing_date_day = date("j", time()); }
 if ($drawing_date != NULL) { $drawing_date_month = date("n", $drawing_date); } else { $drawing_date_month = date("n", time()); }
 if ($drawing_date != NULL) { $drawing_date_year = date("Y", $drawing_date); } else { $drawing_date_year = date("Y", time()); }
-print "<input type=\"text\" name=\"drawing_date_day\" value=\"$drawing_date_day\" maxlength=\"2\" size=\"4\" required=\"required\" />&nbsp;Day&nbsp;"; 
-print "<input type=\"text\" name=\"drawing_date_month\" value=\"$drawing_date_month\" maxlength=\"2\" size=\"4\" required=\"required\" />&nbsp;Month&nbsp;"; 
-print "<input type=\"text\" name=\"drawing_date_year\" value=\"$drawing_date_year\" maxlength=\"4\" size=\"4\" required=\"required\" />&nbsp;Year"; 
-print "</p>";
-
-
-print "<p>";
-print "Target Date for Drawing Issue (DD/MM/YYYY)<br />";
-print "<input type=\"date\" name=\"drawing_targetdate\" value=\"$drawing_targetdate\"/>";
+echo "<input type=\"text\" name=\"drawing_date_day\" value=\"$drawing_date_day\" maxlength=\"2\" size=\"4\" required=\"required\" />&nbsp;Day&nbsp;"; 
+echo "<input type=\"text\" name=\"drawing_date_month\" value=\"$drawing_date_month\" maxlength=\"2\" size=\"4\" required=\"required\" />&nbsp;Month&nbsp;"; 
+echo "<input type=\"text\" name=\"drawing_date_year\" value=\"$drawing_date_year\" maxlength=\"4\" size=\"4\" required=\"required\" />&nbsp;Year"; 
 echo "</p>";
 
-print "<p>";
-print "Comment<br />";
-print "<input type=\"text\" name=\"drawing_comment\" value=\"$drawing_comment\" maxlength=\"200\"/>";
+
+echo "<p>";
+echo "Target Date for Drawing Issue (DD/MM/YYYY)<br />";
+echo "<input type=\"date\" name=\"drawing_targetdate\" value=\"$drawing_targetdate\"/>";
 echo "</p>";
 
-print "<p>";
-print "<input type=\"submit\" />";
-print "<input type=\"hidden\" name=\"action\" value=\"drawing_edit\"  />";
-print "<input type=\"hidden\" name=\"drawing_project\" value=\"$proj_id\"  />";
+echo "<p>";
+echo "Comment<br />";
+echo "<input type=\"text\" name=\"drawing_comment\" value=\"$drawing_comment\" maxlength=\"200\"/>";
+echo "</p>";
+
+echo "<p>";
+echo "<input type=\"submit\" />";
+echo "<input type=\"hidden\" name=\"action\" value=\"drawing_edit\"  />";
+echo "<input type=\"hidden\" name=\"drawing_project\" value=\"$proj_id\"  />";
 echo "</p>";
 
 
 if ($drawing_id != NULL) {
-	print "<input type=\"hidden\" name=\"drawing_id\" value=\"$drawing_id\"  />";
+	echo "<input type=\"hidden\" name=\"drawing_id\" value=\"$drawing_id\"  />";
 }
 
-print "</form>";
+echo "</form>";
 
 }
 

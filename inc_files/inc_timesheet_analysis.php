@@ -171,6 +171,52 @@ echo "</select></p>";
 echo "<p><input type=\"checkbox\" name=\"separate_pages\" value=\"1\" />&nbsp;Separate fee stages by page, remove costs</p>";
 echo "<p><input type=submit value=\"Go\" class=\"inputsubmit\" /></p>";
 
+echo "</form>";
+
+echo "</fieldset>";
+
+
+echo "<fieldset><legend>List Projects by Hours</legend>";
+
+echo "<form action=\"index2.php?page=timesheet_analysis_output\" method=\"post\">";
+
+	echo "<p>Select Beginning of Period</p>";
+
+	echo "<p><input type=\"date\" name=\"period_date_start\" /></p>";
+
+	echo "<p>Select End of Period</p>";
+
+	echo "<p><input type=\"date\" name=\"period_date_end\" /></p>";
+	
+	echo "<p><input type=\"checkbox\" name=\"allprojects\" value=\"1\" />&nbsp;Show non fee-earning projects?</p>";
+
+	echo "<p><input type=\"submit\" /><input type=\"hidden\" name=\"output\" value=\"ListProjectsbyHours\" /></p>";
+
+echo "</form>";
+
+echo "</fieldset>";
+
+
+echo "<fieldset><legend>List Project by User</legend>";
+
+echo "<form action=\"index2.php?page=timesheet_analysis_output\" method=\"post\">";
+
+	echo "<p>Select Project</p><p>";
+	
+	ProjectSelect($proj_id_select,"proj_id");
+
+	echo "</p><p>Select Beginning of Period</p>";
+
+	echo "<p><input type=\"date\" name=\"period_date_start\" /></p>";
+
+	echo "<p>Select End of Period</p>";
+
+	echo "<p><input type=\"date\" name=\"period_date_end\" /></p>";
+
+	echo "<p><input type=\"submit\" /><input type=\"hidden\" name=\"output\" value=\"ListHoursByUser\" /></p>";
+
+echo "</form>";
+
 echo "</fieldset>";
 
 

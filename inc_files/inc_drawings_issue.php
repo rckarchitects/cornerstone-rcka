@@ -1,6 +1,6 @@
 <?php
 
-		echo "<h1>Drawing Issue</h1>";
+		echo "<h2>Drawing Issue</h2>";
 
 if ($_GET[proj_id] != NULL) {
 
@@ -63,7 +63,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		
 
 		
-		echo "<h2>Drawings to Issue</h2>";
+		echo "<fieldset><legend>Drawings to Issue</legend>";
 
 
 		if (mysql_num_rows($result) > 0) {
@@ -71,7 +71,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		echo "<form action=\"index2.php?page=drawings_list&amp;proj_id=$_GET[proj_id]\" method=\"post\">";
 
 		echo "<table summary=\"Lists all of the drawings for the project\">";
-		echo "<tr><td><strong>Drawing Number</strong></td><td><strong>Title</strong></td><td><strong>Rev.</strong></td><td><strong>Issue</strong></td></tr>";
+		echo "<tr><td><strong>Drawing Number</strong></td><td><strong>Title</strong></td><td><strong>Rev.</strong></td><td><strong>Status</strong></td><td><strong>Issue</strong></td></tr>";
 		
 		$counter = 0;
 
@@ -82,6 +82,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		$paper_size = $array['paper_size'];
 		$drawing_title = $array['drawing_title'];
 		$drawing_author = $array['drawing_author'];
+		$drawing_status = $array['drawing_status'];
 
 		echo "<tr><td><a href=\"index2.php?page=drawings_detailed&amp;drawing_id=$drawing_id\">$drawing_number</a>";
 
@@ -95,7 +96,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 							$revision_id = $array_2['revision_id'];
 							$revision_letter = $array_2['revision_letter'];
 							$revision_date = $array_2['revision_date'];
-								echo "<option value=\"$revision_id\">$revision_letter - ".TimeFormat($revision_date)."</option>";
+								echo "<option value=\"$revision_id\">" . strtoupper($revision_letter) . " - ".TimeFormat($revision_date)."</option>";
 						}
 						echo "<option value=\"\">- No Revision -</option>\n";
 						echo "</select>";
@@ -105,7 +106,9 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 						
 		
 		
-		echo "<td><input type=\"hidden\" value=\"$drawing_id\" name=\"drawing_id[$counter]\" /><input type=\"checkbox\" value=\"yes\" name=\"drawing_issued[$counter]\" /></td>";
+		echo "<td>";
+		DrawingStatusDropdown ($drawing_status,"drawing_status[$counter]");
+		echo "</td><td><input type=\"hidden\" value=\"$drawing_id\" name=\"drawing_id[$counter]\" /><input type=\"checkbox\" value=\"yes\" name=\"drawing_issued[$counter]\" /></td>";
 
 
 		echo "</tr>\n";
@@ -114,12 +117,12 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 
 		}
 
-		echo "</table>";
+		echo "</table></fieldset>";
 		
 		
 // Drawing issued to
 		
-		echo "<h2>Issued To</h2>";
+		echo "<fieldset><legend>Issued To</legend>";
 		
 $sql_issued_to = "
 SELECT * FROM contacts_disciplinelist, contacts_contactlist, intranet_contacts_project
@@ -150,7 +153,7 @@ $result_issued_to = mysql_query($sql_issued_to, $conn) or die(mysql_error());
 	
 	}
 	
-	echo "</table>";
+	echo "</table></fieldset>";
 		
 		
 		

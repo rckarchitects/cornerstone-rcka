@@ -2,7 +2,9 @@
 
 if ($_GET[company_id] > 0) { $company_id = CleanNumber($_GET[company_id]); } elseif ($company_id_added > 0) {$company_id = $company_id_added; } else { $company_id = 0; }
 
-if ($company_id == NULL) { header("location:index2.php"); }
+echo "<h1>Contact Database</h1>";
+
+if ($company_id > 0) {
 
 $sql_company = "SELECT * FROM contacts_companylist WHERE company_id = '$company_id' LIMIT 1";
 $result_company = mysql_query($sql_company, $conn) or die(mysql_error());
@@ -26,7 +28,10 @@ $array_company = mysql_fetch_array($result_company);
 			$array_country = mysql_fetch_array($result_country);
 			$country_printable_name = $array_country['country_printable_name'];
 
-			print "<h1>$company_name&nbsp;<a href=\"index2.php?page=contacts_company_edit&amp;company_id=$company_id&amp;status=edit\"><img src=\"images/button_edit.png\" alt=\"Edit Entry\" /></a></h1>";
+			print "<h2>$company_name&nbsp;";
+			if ($user_usertype_current > 1) { echo "<a href=\"index2.php?page=contacts_company_edit&amp;company_id=$company_id&amp;status=edit\"><img src=\"images/button_edit.png\" alt=\"Edit Entry\" /></a>"; }
+			
+			echo "</h2>";
 			
 			print "<fieldset><legend>Company Details</legend>";
 			
@@ -88,4 +93,15 @@ if (mysql_num_rows($result_contact) > 0) {
 
 if ($company_notes != NULL) { echo "<fieldset><legend>Notes</legend><blockquote>".DeCode($company_notes)."</blockquote></fieldset>"; }
 
-?>
+
+
+
+
+} else {
+
+
+echo "<p>No company found.</p>";
+
+
+
+}
