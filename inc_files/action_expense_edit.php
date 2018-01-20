@@ -81,8 +81,9 @@ if ($ts_expense_id > 0) {
 		WHERE ts_expense_id = '$ts_expense_id' LIMIT 1";
 		
 		$result = mysql_query($sql_edit, $conn) or die(mysql_error());
-		$actionmessage = "Expense edited successfully with ID <strong>$ts_expense_id</strong>. <a href=\"index2.php?page=timesheet_expense_edit&amp;status=edit&amp;ts_expense_id=$ts_expense_id\"><img src=\"images/button_edit.png\" alt=\"Edit\"></a>";
+		$actionmessage = "<p>Expense edited successfully: <a href=\"index2.php?page=timesheet_expense_view&amp;ts_expense_id=$ts_expense_id\">" . $ts_expense_desc . "</a></p>";
 		$techmessage = $sql_edit;
+		AlertBoxInsert($_COOKIE[user],"Expense Edited",$actionmessage,$ts_expense_id,0);
 		
 } else {
 
@@ -125,7 +126,10 @@ if ($_POST[ts_expense_user] != NULL) { $ts_expense_user = $_POST[ts_expense_user
 		
 		$result = mysql_query($sql_add, $conn) or die(mysql_error());
 		$id_num = mysql_insert_id();
-		$actionmessage = "Expense added successfully - with ID <strong>$id_num</strong>. <a href=\"index2.php?page=timesheet_expense_edit&status=edit&amp;ts_expense_id=$id_num\"><img src=\"images/button_edit.png\" alt=\"Edit\"></a>";
+		$actionmessage = "<p>Expense added successfully: <a href=\"index2.php?page=timesheet_expense_view&amp;ts_expense_id=$id_num\">" . $ts_expense_desc . "</a></p>";
+		
+		AlertBoxInsert($_COOKIE[user],"Expense Added",$actionmessage,$id_num,0);
+		
 		$techmessage = $sql_add;
 		
 		$ts_expense_id = $id_num;

@@ -13,8 +13,9 @@ if ($set_id > 0 && $proj_id > 0 && $issue_drawing > 0) {
 		//$result = mysql_query($sql_delete_drawing, $conn) or die(mysql_error());
 		echo "<p>" . $sql_delete_drawing . "</p>";
 		
-		$actionmessage = "Drawing issue deleted successfully.";
+		$actionmessage = "<p>Drawing issue set ref. $set_id deleted successfully.</p>";
 		$techmessage = $sql_delete_drawing . "<br />" . $sql_delete_revision;
+		AlertBoxInsert($_COOKIE[user],"Drawing Issue Deleted",$actionmessage,$set_id,0,0);
 
 }
 

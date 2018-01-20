@@ -70,7 +70,7 @@ $pdf->SetFillColor(220, 220, 220);
 
 // Begin the array through all users
 
-$sql = "SELECT * FROM intranet_user_details, intranet_timesheet LEFT JOIN intranet_timesheet_fees ON ts_project = ts_fee_stage WHERE ts_user = user_id AND ts_project = '$proj_submit' AND ts_entry BETWEEN '$time_submit_begin' AND '$time_submit_end' ORDER BY ts_fee_commence, ts_stage_fee, ts_fee_time_begin";
+$sql = "SELECT * FROM intranet_user_details, intranet_timesheet LEFT JOIN intranet_timesheet_fees ON ts_project = ts_fee_stage WHERE ts_user = user_id AND ts_project = '$proj_submit' AND ts_entry BETWEEN '$time_submit_begin' AND '$time_submit_end' ORDER BY ts_fee_commence, ts_stage_fee, ts_fee_time_begin, ts_entry, ts_id";
 $result = mysql_query($sql, $conn) or die(mysql_error());
 
 $current_fee_stage = NULL;
@@ -109,7 +109,7 @@ $hours_total = 0;
 	$ts_projectrate = $array['ts_projectrate'];
 	$ts_fee_id = $array['ts_fee_id'];
 	$ts_stage_fee = $array['ts_stage_fee'];
-	//$ts_rate = $array['ts_cost_factored'];
+
 	$ts_cost_factored = $array['ts_cost_factored'] * (1 - $user_prop_target);
 	
 	$ts_cost_factored = $ts_cost_factored * ((1 - $user_prop) / (1 - $user_prop_target));
@@ -177,10 +177,10 @@ $hours_total = 0;
 					
 					$entry_cost = $ts_cost_factored ;
 					
-					$line_cost = "= £" . number_format($entry_cost * $ts_hours,2);
+					$line_cost = "= " . PDFCurrencyFormat($entry_cost * $ts_hours);
 					
-					$entry_cost_print = "£" . number_format($entry_cost,2);
-					$ts_cost_nf_print = "(£" . number_format($ts_cost_nf,2) . ")";
+					$entry_cost_print = PDFCurrencyFormat($entry_cost);
+					$ts_cost_nf_print = "(" . PDFCurrencyFormat($ts_cost_nf) . ")";
 					
 					
 					
@@ -193,8 +193,8 @@ $hours_total = 0;
 					
 					$stage_total = $stage_total + ($ts_cost_factored);
 					
-					$running_cost_print = "£" . number_format($stage_total,2);
-					$running_cost_nf_print = "(£" . number_format($running_cost_nf,2) . ")";
+					$running_cost_print = PDFCurrencyFormat($stage_total);
+					$running_cost_nf_print = "(" . PDFCurrencyFormat($running_cost_nf) . ")";
 					
 					$pdf->SetFont($format_font,'',8);
 					$pdf->SetTextColor(0,0,0);
@@ -250,9 +250,9 @@ $hours_total = 0;
 
 	if ($_POST[separate_pages] != 1) {
 
-			$cost_total_print = "£".number_format($running_cost,2);
+			$cost_total_print = PDFCurrencyFormat($running_cost);
 			
-			$total_cost_nf_print = "(£".number_format($total_cost_nf,2) . ")";
+			$total_cost_nf_print = "(" . PDFCurrencyFormat($total_cost_nf) . ")";
 
 			$pdf->SetFont($format_font,'',8);
 			$pdf->Ln();	

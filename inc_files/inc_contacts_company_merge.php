@@ -33,13 +33,22 @@ if (intval ($_POST[company_old]) > 0 && intval ($_POST[company_new]) > 0) {
 	
 	}
 	
+	$actionmessage = "<p>Company ID. " . $company_old . " has been merged with company ID <a href=\"index2.php?page=contacts_company_view&amp;company_id=" . $company_new . "\">" . $company_new . "</a>";
+	
 	if ($_POST[delete_old] == "yes") {
 		$sql_merge_5 = "DELETE FROM contacts_companylist WHERE company_id = $company_old LIMIT 1";
 		$result_merge_5 = mysql_query($sql_merge_5, $conn) or die(mysql_error());
 		echo "<li>Removing Obsolete Company: " . mysql_affected_rows() . " row(s) deleted</li>";
+		$actionmessage = $actionmessage . ", and company ID " . $company_old . " has been deleted.";
+	} else {
+		$actionmessage = $actionmessage . ".";
 	}
 	
+	$actionmessage = $actionmessage . "</p>";
+	
 	echo "</ol>";
+	
+	AlertBoxInsert($_COOKIE[user],"Company Merged",$actionmessage,$company_new,0,0);
 	
 }
 

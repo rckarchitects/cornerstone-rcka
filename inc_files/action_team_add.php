@@ -88,7 +88,11 @@ print $sql_add;
 
 $result = mysql_query($sql_add, $conn) or die(mysql_error());
 
-$actionmessage = "User added successfully.";
+$user_id = mysql_insert_id();
+
+$actionmessage = "<p>User <a href=\"http://intranet.rcka.co/index2.php?page=user_view&mp;user_id=$user_id\">" . $user_name_first . " " . $user_name_second . "</a> added successfully.</p>";
+
+AlertBoxInsert($_COOKIE[user],"User Added",$actionmessage,$user_id,0,0);
 
 $techmessage = $sql_add;
 

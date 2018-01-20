@@ -2,23 +2,23 @@
 
 // Check that the required values have been entered, and alter the page to show if these values are invalid
 
-if ($_POST[tasklist_notes] == "") { $alertmessage = "The task description was left empty."; $status = "tasklist_edit"; $action = "add"; }
-
-else {
-	
 		// Begin to clean up the $_POST submissions
 
 		$tasklist_project = $_POST[tasklist_project];
 		$tasklist_status = $_POST[tasklist_status];
 		$tasklist_fee = $_POST[tasklist_fee];
-		$tasklist_notes = CleanUp($_POST[tasklist_notes]);
-		$tasklist_comment = CleanUp($_POST[tasklist_comment]);
+		$tasklist_notes = addslashes($_POST[tasklist_notes]);
+		$tasklist_comment = addslashes($_POST[tasklist_comment]);
 		$tasklist_updated = time();
 		$tasklist_added = time();
 		if ($_POST[tasklist_percentage] == 100) { $tasklist_completed = time(); } else { $tasklist_completed = "NULL"; }
 		$tasklist_person = $_POST[tasklist_person];
 		$tasklist_due = $_POST[tasklist_due];
 		$tasklist_percentage = $_POST[tasklist_percentage];
+		$tasklist_access = intval ( $_POST[tasklist_access] );
+		$tasklist_id = intval ( $_POST[tasklist_id] );
+		
+
 		
 	if ($_POST[tasklist_id] > 0) {
 	
@@ -32,14 +32,15 @@ else {
 		tasklist_comment = '$tasklist_comment',
 		tasklist_percentage = '$tasklist_percentage',
 		tasklist_completed = $tasklist_completed,
-		tasklist_due = '$tasklist_due'
-		WHERE tasklist_id = '$_POST[tasklist_id]' LIMIT 1
+		tasklist_due = '$tasklist_due',
+		tasklist_access = '$tasklist_access'
+		WHERE tasklist_id = $tasklist_id LIMIT 1
 		";
 		
 		$result = mysql_query($sql_edit, $conn) or die(mysql_error());
-		$actionmessage = "Task updated successfully.";
 		$techmessage = $sql_edit;
-	
+		$actionmessage = "<p>Task edited successfully. <a href=\"index2.php?page=tasklist_detail&amp;tasklist_id=$tasklist_id\">Click here to view</a>.</p>";
+		AlertBoxInsert($_COOKIE[user],"Task Added",$actionmessage,$tasklist_id,0,0);
 	
 	} else {
 
@@ -57,7 +58,8 @@ else {
 		tasklist_person,
 		tasklist_due,
 		tasklist_comment,
-		tasklist_percentage
+		tasklist_percentage,
+		tasklist_access
 		) values (
 		'NULL',
 		'$tasklist_project',
@@ -70,15 +72,15 @@ else {
 		'$tasklist_person',
 		'$tasklist_due',
 		'$tasklist_comment',
-		'$tasklist_percentage'
+		'$tasklist_percentage',
+		'$tasklist_access'
 		)";
 	
 		$result = mysql_query($sql_add, $conn) or die(mysql_error());
-		$actionmessage = "Task added successfully.";
 		$techmessage = $sql_add;
+		$task_id = mysql_affected_rows();
+		
+		$actionmessage = "<p>Task added successfully. <a href=\"index2.php?page=tasklist_detail&amp;tasklist_id=$tasklist_id\">Click here to view</a>.</p>";
+		AlertBoxInsert($_COOKIE[user],"Task Added",$actionmessage,$tasklist_id,0,0);
 		
 	}
-
-}
-
-?>

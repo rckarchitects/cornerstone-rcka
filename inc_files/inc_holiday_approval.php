@@ -101,6 +101,8 @@ while ($counter_time < $beginnning_of_next_year) {
 				elseif ($holiday_paid == 2) { $user_initials = $user_initials . ": <i>Study Leave</i>"; }
 				elseif ($holiday_paid == 3) { $user_initials = $user_initials . ": <i>Jury Service</i>"; }
 				elseif ($holiday_paid == 4) { $user_initials = $user_initials . ": <i>TOIL</i>"; }
+				elseif ($holiday_paid == 5) { $user_initials = $user_initials . ": <i>Discretionary Leave</i>"; }
+				elseif ($holiday_paid == 6) { $user_initials = $user_initials . ": <i>Maternity / Paternity Leave</i>"; }
 				
 				if ($holiday_length == 0.5) { $user_initials = $user_initials . " (half day)"; }
 				

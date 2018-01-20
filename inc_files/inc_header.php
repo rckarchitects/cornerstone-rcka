@@ -11,8 +11,6 @@
   
   echo "<meta name=\"robots\" content=\"noindex\">";
   
-  ?>
-  <?php
   echo "
   <title>
   $settings_name
@@ -91,14 +89,23 @@
 					 });
 				});
 				</script>
-
+				
+				<script type=\"text/javascript\">
+				function myFunction() {
+					var popup = document.getElementById(\"myPopup\");
+					popup.classList.toggle(\"show\");
+				}
+				</script>
 
 ";
 
-if ($module_contacts == 1) { ToggleTargetList() ;}
+echo "<script src=\"/plugins/tinymce/tinymce.min.js\"></script>";
+
+if ($module_contacts == 1) { ToggleTargetList(); }
 
 
 echo "
 	
 </head>
+
 ";

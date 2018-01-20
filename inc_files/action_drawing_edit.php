@@ -99,9 +99,8 @@ if ($drawing_id > 0) {
 		$actionmessage = "Drawing updated successfully.";
 		$techmessage = $sql_edit;
 		
-		//echo "<p>$sql_edit</p>";
-
-		$drawing_affected = mysql_affected_rows();		
+		$actionmessage = "<p>Drawing ref. <a href=\"index2.php?page=drawings_detailed&amp;drawing_id=$drawing_id&amp;proj_id=$drawing_id\">$drawing_number</a> updated successfully.</p>";
+		AlertBoxInsert($_COOKIE[user],"Drawing Issue",$actionmessage,$drawing_id,0,0);
 		
 } else {
 
@@ -139,10 +138,12 @@ if ($drawing_id > 0) {
 		
 		//echo $sql_add;
 		$result = mysql_query($sql_add, $conn) or die(mysql_error());
-		$actionmessage = "Drawing added successfully.";
+		$drawing_affected = mysql_insert_id();
+		$actionmessage = "<p>Drawing ref. <a href=\"index2.php?page=drawings_detailed&amp;drawing_id=$drawing_affected&amp;proj_id=$drawing_project\">$drawing_number</a> added successfully.</p>";
+		AlertBoxInsert($_COOKIE[user],"Drawing Issue",$actionmessage,$drawing_affected,0,0);
 		$techmessage = $sql_add;
 		
-		$drawing_affected = mysql_affected_rows();
+		
 }	
 
 		$page_variables = "proj_id=$drawing_project";

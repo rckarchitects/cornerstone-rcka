@@ -1,14 +1,6 @@
 <?php
 
-// Set the week beginning variable from either POST or GET
 
-	if ($_POST[ts_weekbegin] != NULL) {
-	$ts_weekbegin = $_POST[ts_weekbegin];
-	} elseif ($_GET[week] != NULL) {
-	$ts_weekbegin = $_GET[week];
-	} else {
-	$ts_weekbegin = BeginWeek(time());
-	}
 	
 // Titles
 

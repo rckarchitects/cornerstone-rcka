@@ -35,9 +35,13 @@ contact_proj_company
 '$contact_proj_company '
 )";
 
+$contact_proj_id = mysql_insert_id();
+
 $result = mysql_query($sql_add, $conn) or die(mysql_error());
 
-$actionmessage = "The project contact was added successfully";
+$actionmessage = "<p>Project contact id " . $contact_proj_id . " added to project ref. " . $contact_proj_contact . " edited successfully.</p>";
+
+AlertBoxInsert($_COOKIE[user],"Project Contact Added",$actionmessage,$contact_proj_id,0,1);
 
 $techmessage = $sql_add;
 

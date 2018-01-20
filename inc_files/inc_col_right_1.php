@@ -87,5 +87,25 @@ SearchPanel($user_usertype_current);
 		
 				
 	SideMenu ("Team", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images, "r");
+	
+	
+	//Menu - Pinned Blog Entries
+	
+	$sql = "SELECT blog_id, blog_title FROM intranet_projects_blog WHERE blog_pinned = 1 ORDER BY blog_date DESC";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	if (mysql_num_rows($result) > 0) {
+		$array_pages = array();
+		$array_title = array();
+		$array_access = array();
+		$array_images = array();
+		while ($array = mysql_fetch_array($result)) {
+				$array_pages[] = "index2.php?page=project_blog_view&amp;blog_id=" . $array['blog_id'];
+				$array_title[] = $array['blog_title'];
+				$array_images[] = "button_list.png";
+				$array_access[] = 1;
+		}
+		SideMenu ("Pinned Journal Entries", $array_pages, $array_title, $array_access, $user_usertype_current,$array_images, "r");
+	}
+	
 
 

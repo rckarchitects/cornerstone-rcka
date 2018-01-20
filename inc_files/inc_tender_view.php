@@ -77,7 +77,7 @@ $sql = "SELECT * FROM intranet_tender, intranet_tender_answers LEFT JOIN intrane
 $result = mysql_query($sql, $conn) or die(mysql_error());
 
 
-
+$tender_id = intval ( $_GET[tender_id] );
 
 		$counter = 0;
 		

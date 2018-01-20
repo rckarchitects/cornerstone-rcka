@@ -23,13 +23,11 @@ if (mysql_num_rows($result) > 0) {
 	$tasklist_user = $array['tasklist_user'];
 	$tasklist_added = $array['tasklist_added'];
 	$tasklist_due = $array['tasklist_due'];
+	$tasklist_access = $array['tasklist_access'];
+	$tasklist_project = $array['tasklist_project'];
 
 
-print "<h1>";
-print $array['proj_num'];
-print "&nbsp;";
-print $array['proj_name'];
-print "</h1>";
+ProjectTitle(1,$proj_id);
 
 // Menu bar
 

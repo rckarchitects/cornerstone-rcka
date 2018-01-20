@@ -1,27 +1,45 @@
-<?php
+ <?php
+ 
+if ($_GET[timestamp] > 0) { $time = intval ( $_GET[timestamp] ); } else { $time = time(); }
+ 
+		echo "<h1>".TimeFormatDay($time)."</h1>";
+ 
+function DateBook($time) {
 
-$hour_begin = 7;
-$hour_end = 13;
+			$hour_begin = 7;
+			$hour_end = 13;
 
-print "<h1>".TimeFormatDay($time)."</h1>";
+			echo "
+			<div class=\"menu_bar\">
+			<a class=\"menu_tab\" href=\"index2.php?page=datebook_view_day&amp;timestamp=".($time - 31536000)."\"><< ".Date("Y",($time - 31536000))."</a>
+			<a class=\"menu_tab\" href=\"index2.php?page=datebook_view_day&amp;timestamp=".time()."\">Today</a>
+			<a class=\"menu_tab\" href=\"index2.php?page=datebook_view_day&amp;time=".($time + 31536000)."\">".Date("Y",($time + 31536000))." >></a>
+			</div>
+			<div class=\"menu_bar\">
+			<a class=\"submenu_bar\" href=\"index2.php?page=datebook_view_day&amp;timestamp=".($time - 604800)."\"><< ".TimeFormat($time - 604800)."</a>
+			<a class=\"submenu_bar\" href=\"index2.php?page=datebook_view_day&amp;timestamp=".($time - 86400)."\">< ".TimeFormat($time - 86400)."</a>
+			<a class=\"submenu_bar\" href=\"index2.php?page=datebook_view_day&amp;timestamp=".($time + 86400)."\">".TimeFormat($time + 86400)." ></a>
+			<a class=\"submenu_bar\" href=\"index2.php?page=datebook_view_day&amp;timestamp=".($time + 604800)."\">".TimeFormat($time + 604800)." >></a>
+			</div>";
 
-print "
-<p class=\"menu_bar\">
-<a class=\"menu_tab\" href=\"index2.php?page=datebook_view_day&amp;time=".($time - 31536000)."\"><< ".Date("Y",($time - 31536000))."</a>
-<a class=\"menu_tab\" href=\"index2.php?page=datebook_view_day&amp;time=".($time - 604800)."\"><< ".TimeFormat($time - 604800)."</a>
-<a class=\"menu_tab\" href=\"index2.php?page=datebook_view_day&amp;time=".($time - 86400)."\">< ".TimeFormat($time - 86400)."</a>
-<a class=\"menu_tab\" href=\"index2.php?page=datebook_view_day&amp;time=".time()."\">Today</a>
-<a class=\"menu_tab\" href=\"index2.php?page=datebook_view_day&amp;time=".($time + 86400)."\">".TimeFormat($time + 86400)." ></a>
-<a class=\"menu_tab\" href=\"index2.php?page=datebook_view_day&amp;time=".($time + 604800)."\">".TimeFormat($time + 604800)." >></a>
-<a class=\"menu_tab\" href=\"index2.php?page=datebook_view_day&amp;time=".($time + 31536000)."\">".Date("Y",($time + 31536000))." >></a>
-</p>";
+			$startday_day = date("j", $time);
+			$startday_month = date("n", $time);
+			$startday_year = date("Y", $time);
 
-$startday_day = date("j", $time);
-$startday_month = date("n", $time);
-$startday_year = date("Y", $time);
+			$startday = mktime($hour_begin, 0, 0, $startday_month, $startday_day, $startday_year);
+			$endday = $startday + 86400;
+			
+			$time_array = array($startday,$endday);	
+			return $time_array;
+}
 
-$startday = mktime($hour_begin, 0, 0, $startday_month, $startday_day, $startday_year);
-$endday = $startday + 86400;
+$day_scope = DateBook($time);
+$startday = $day_scope[0];
+$endday = $day_scope[1];
+
+function DayBook_Invoice($time,$startday,$endday) {
+	
+		global $conn;
 
 // Invoices issued today
 
@@ -30,8 +48,8 @@ $endday = $startday + 86400;
 		
 		if (mysql_num_rows($result_invoices) > 0 AND $user_usertype_current > 2) {
 		
-			print "<h2>Invoices Issued Today</h2>";
-			print "<table summary=\"Invoices due on ".TimeFormat($time)."\">";
+			echo "<h2>Invoices Issued Today</h2>";
+			echo "<table summary=\"Invoices due on ".TimeFormat($time)."\">";
 		
 		while ($array_invoices = mysql_fetch_array($result_invoices)) {
 			$invoice_id = $array_invoices['invoice_id'];
@@ -45,12 +63,12 @@ $endday = $startday + 86400;
 			
 			if ($invoice_due < time() AND $invoice_paid == 0) { $highlight = "background-color: #$settings_alertcolor"; } else { $highlight = NULL; }
 			
-			print "<tr><td style=\"width: 100px; $highlight\"><a href=\"index2.php?page=timesheet_invoice_view&amp;invoice_id=$invoice_id\">$invoice_ref</a>";
-			print "</td><td style=\"$highlight\"><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a>";
-			if ($invoice_paid > 0) { print " (paid <a href=\"index2.php?page=datebook_view_day&amp;time=$invoice_paid\">".TimeFormat($invoice_paid)."</a>)"; }
-			print "</td></tr>";
+			echo "<tr><td style=\"width: 100px; $highlight\"><a href=\"index2.php?page=timesheet_invoice_view&amp;invoice_id=$invoice_id\">$invoice_ref</a>";
+			echo "</td><td style=\"$highlight\"><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a>";
+			if ($invoice_paid > 0) { echo " (paid <a href=\"index2.php?page=datebook_view_day&amp;time=$invoice_paid\">".TimeFormat($invoice_paid)."</a>)"; }
+			echo "</td></tr>";
 		}
-			print "</table>";
+			echo "</table>";
 		}
 
 // Invoices due today
@@ -60,8 +78,8 @@ $endday = $startday + 86400;
 		
 		if (mysql_num_rows($result_invoices) > 0 AND $user_usertype_current > 2) {
 		
-			print "<h2>Invoices Due Today</h2>";
-			print "<table summary=\"Invoices due on ".TimeFormat($time)."\">";
+			echo "<h2>Invoices Due Today</h2>";
+			echo "<table summary=\"Invoices due on ".TimeFormat($time)."\">";
 		
 		while ($array_invoices = mysql_fetch_array($result_invoices)) {
 			$invoice_id = $array_invoices['invoice_id'];
@@ -75,12 +93,12 @@ $endday = $startday + 86400;
 			
 			if ($invoice_due < time() AND $invoice_paid == 0) { $highlight = "background-color: #$settings_alertcolor"; } else { $highlight = NULL; }
 			
-			print "<tr><td style=\"width: 100px; $highlight\"><a href=\"index2.php?page=timesheet_invoice_view&amp;invoice_id=$invoice_id\">$invoice_ref</a>";
-			print "</td><td style=\"$highlight\"><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a>";
-			if ($invoice_paid > 0) { print " (paid <a href=\"index2.php?page=datebook_view_day&amp;time=$invoice_paid\">".TimeFormat($invoice_paid)."</a>)"; }
-			print "</td></tr>";
+			echo "<tr><td style=\"width: 100px; $highlight\"><a href=\"index2.php?page=timesheet_invoice_view&amp;invoice_id=$invoice_id\">$invoice_ref</a>";
+			echo "</td><td style=\"$highlight\"><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a>";
+			if ($invoice_paid > 0) { echo " (paid <a href=\"index2.php?page=datebook_view_day&amp;time=$invoice_paid\">".TimeFormat($invoice_paid)."</a>)"; }
+			echo "</td></tr>";
 		}
-			print "</table>";
+			echo "</table>";
 		}
 		
 // Invoices paid today
@@ -90,8 +108,8 @@ $endday = $startday + 86400;
 		
 		if (mysql_num_rows($result_invoices) > 0 AND $user_usertype_current > 2) {
 		
-			print "<h2>Invoices Paid Today</h2>";
-			print "<table summary=\"Invoices paid on ".TimeFormat($time)."\">";
+			echo "<h2>Invoices Paid Today</h2>";
+			echo "<table summary=\"Invoices paid on ".TimeFormat($time)."\">";
 		
 		while ($array_invoices = mysql_fetch_array($result_invoices)) {
 			$invoice_id = $array_invoices['invoice_id'];
@@ -103,14 +121,23 @@ $endday = $startday + 86400;
 			$proj_id = $array_invoices['proj_id'];
 
 			
-			print "<tr><td style=\"width: 100px; $highlight\"><a href=\"index2.php?page=timesheet_invoice_view&amp;invoice_id=$invoice_id\">$invoice_ref</a>";
-			print "</td><td style=\"$highlight\"><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a>";
-			print " (issued <a href=\"index2.php?page=datebook_view_day&amp;time=$invoice_date\">".TimeFormat($invoice_date)."</a>)";
-			print "</td></tr>";
+			echo "<tr><td style=\"width: 100px; $highlight\"><a href=\"index2.php?page=timesheet_invoice_view&amp;invoice_id=$invoice_id\">$invoice_ref</a>";
+			echo "</td><td style=\"$highlight\"><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a>";
+			echo " (issued <a href=\"index2.php?page=datebook_view_day&amp;time=$invoice_date\">".TimeFormat($invoice_date)."</a>)";
+			echo "</td></tr>";
 		}
-			print "</table>";
+			echo "</table>";
 		}
 		
+		
+}
+	
+		if ($user_usertype_current > 3) {DayBook_Invoice($time,$startday,$endday); }
+		
+function DayBook_Expenses($time,$startday,$endday) {
+	
+		global $conn;
+	
 // Expenses added today
 
 		$sql_expense = "SELECT ts_expense_date, ts_expense_desc, ts_expense_id, ts_expense_vat, user_initials FROM intranet_timesheet_expense, intranet_user_details WHERE user_id = ts_expense_user AND ts_expense_date BETWEEN '$startday' AND '$endday' ORDER BY ts_expense_date";
@@ -118,8 +145,8 @@ $endday = $startday + 86400;
 	
 		if (mysql_num_rows($result_expense) > 0 AND $user_usertype_current > 3) {
 		
-			print "<h2>Expenses Added</h2>";
-			print "<table summary=\"Expenses added on ".TimeFormat($time)."\">";
+			echo "<h2>Expenses Added</h2>";
+			echo "<table summary=\"Expenses added on ".TimeFormat($time)."\">";
 			
 			$list1 = 0;
 			$count = 1;
@@ -133,7 +160,7 @@ $endday = $startday + 86400;
 			echo "<tr><td><a href=\"index2.php?page=timesheet_expense_view&amp;ts_expense_id=$ts_expense_id\">".$ts_expense_desc." [".$ts_expense_id."]</a><td>".MoneyFormat($ts_expense_vat)."</td></td><td>$user_initials</td></tr>";
 			
 		}
-			print "</table>";
+			echo "</table>";
 		}
 		
 // Expenses verified today
@@ -143,8 +170,8 @@ $endday = $startday + 86400;
 	
 		if (mysql_num_rows($result_expense) > 0 AND $user_usertype_current > 3) {
 		
-			print "<h2>Expenses Verified Today</h2>";
-			print "<table summary=\"Expenses verified on ".TimeFormat($time)."\">";
+			echo "<h2>Expenses Verified Today</h2>";
+			echo "<table summary=\"Expenses verified on ".TimeFormat($time)."\">";
 			
 			$list1 = 0;
 			$count = 1;
@@ -153,14 +180,22 @@ $endday = $startday + 86400;
 			$ts_expense_verified = $array_expense['ts_expense_verified'];			
 			
 			if ($ts_expense_verified != $list1) {
-					print "<tr><td><a href=\"index2.php?page=timesheet_expense_list_verified&amp;time=$ts_expense_verified\">Group $count: ".TimeFormatDetailed($ts_expense_verified)."</a>&nbsp;<a href=\"pdf_expense_verified_list.php?time=$ts_expense_verified\"><img src=\"images/button_pdf.png\" alt=\"PDF Output\" /></a></td></tr>";
+					echo "<tr><td><a href=\"index2.php?page=timesheet_expense_list_verified&amp;time=$ts_expense_verified\">Group $count: ".TimeFormatDetailed($ts_expense_verified)."</a>&nbsp;<a href=\"pdf_expense_verified_list.php?time=$ts_expense_verified\"><img src=\"images/button_pdf.png\" alt=\"PDF Output\" /></a></td></tr>";
 					$list1 = $ts_expense_verified;
 					$count++;
 			}
 			
 		}
-			print "</table>";
+			echo "</table>";
 		}
+
+}
+
+		if ($user_usertype_current > 3) { DayBook_Expenses($time,$startday,$endday); }
+		
+function DayBook_Drawings($time,$startday,$endday) {
+	
+		global $conn;
 
 // Drawings issued today
 
@@ -170,8 +205,8 @@ $endday = $startday + 86400;
 	
 		if (mysql_num_rows($result_drawings) > 0) {
 		
-			print "<h2>Drawings Issued</h2>";
-			print "<table summary=\"Drawings issued on ".TimeFormat($time)."\">";
+			echo "<h2>Drawings Issued</h2>";
+			echo "<table summary=\"Drawings issued on ".TimeFormat($time)."\">";
 
 		
 		while ($array_drawings = mysql_fetch_array($result_drawings)) {
@@ -181,25 +216,34 @@ $endday = $startday + 86400;
 			$set_id = $array_drawings['set_id'];
 			$set_reason = $array_drawings['set_reason'];
 			$drawing_id = $array_drawings['drawing_id'];
-					print "<tr><td style=\"width: 40%;\"><a href=\"index2.php?page=drawings_issue_list&amp;set_id=$set_id&amp;proj_id=$proj_id\">$proj_num $proj_name</a>&nbsp;<a href=\"pdf_drawing_issue.php?issue_set=$set_id&amp;proj_id=$proj_id\"><img src=\"images/button_pdf.png\"></a></td><td>$set_reason</td><td>Issue ID: $set_id</td></tr>";
+					echo "<tr><td style=\"width: 40%;\"><a href=\"index2.php?page=drawings_issue_list&amp;set_id=$set_id&amp;proj_id=$proj_id\">$proj_num $proj_name</a>&nbsp;<a href=\"pdf_drawing_issue.php?issue_set=$set_id&amp;proj_id=$proj_id\"><img src=\"images/button_pdf.png\"></a></td><td>$set_reason</td><td>Issue ID: $set_id</td></tr>";
 
 			$issue_count = $issue_date;
 			
 		}
-			print "</table>";
+			echo "</table>";
 		}
+		
+}
 
+		DayBook_Drawings($time,$startday,$endday);
+
+function DayBook_Tasks($time,$startday,$endday) {
+	
+		global $conn;
+		
 // Tasks due today
 
-$count = $hour_begin;
+		$count = $hour_begin;
 
 		$sql_tasks = "SELECT tasklist_id, tasklist_project, tasklist_notes, tasklist_percentage, tasklist_due, tasklist_completed, proj_num, proj_id, user_id, user_name_first, user_name_second FROM intranet_tasklist, intranet_projects, intranet_user_details WHERE tasklist_person = user_id AND tasklist_project = proj_id AND tasklist_due BETWEEN '$startday' AND '$endday' ORDER BY proj_num";
+		
 		$result_tasks = mysql_query($sql_tasks, $conn) or die(mysql_error());
 		
 		if (mysql_num_rows($result_tasks) > 0) {
 		
-			print "<h2>Tasks Due Today</h2>";
-			print "<table summary=\"Tasks due on ".TimeFormat($time)."\">";
+			echo "<h2>Tasks Due Today</h2>";
+			echo "<table summary=\"Tasks due on ".TimeFormat($time)."\">";
 		
 		while ($array_tasks = mysql_fetch_array($result_tasks)) {
 			$tasklist_id = $array_tasks['tasklist_id'];
@@ -225,29 +269,37 @@ $count = $hour_begin;
 				$strike2 = NULL;
 			}
 			
-			print "<tr><td style=\"width: 50px; $highlight\">$strike<a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num</a>$strike2</td><td style=\"$highlight\">$strike<a href=\"index2.php?page=tasklist_detail&amp;tasklist_id=$tasklist_id&amp;time=$tasklist_due\">$tasklist_notes</a>$strike2&nbsp;$tasklist_completed_text</td><td style=\"$highlight\">$strike<a href=\"index2.php?page=user_view&amp;user_id=$user_id\">$user_name_first&nbsp;$user_name_second</a>$strike2</td></tr>";
+			echo "<tr><td style=\"width: 50px; $highlight\">$strike<a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num</a>$strike2</td><td style=\"$highlight\">$strike<a href=\"index2.php?page=tasklist_detail&amp;tasklist_id=$tasklist_id&amp;time=$tasklist_due\">$tasklist_notes</a>$strike2&nbsp;$tasklist_completed_text</td><td style=\"$highlight\">$strike<a href=\"index2.php?page=user_view&amp;user_id=$user_id\">$user_name_first&nbsp;$user_name_second</a>$strike2</td></tr>";
 		}
-			print "</table>";
+			echo "</table>";
 		}
+
+}
+
+		DayBook_Tasks($time,$startday,$endday);
+
+function DayBook_Journal($time,$startday,$endday) {
+	
+		global $conn;
 		
 // Journal entries
 
-print "<h2>Journal Entries &amp; Telephone Messages</h2>";
+echo "<h2>Journal Entries</h2>";
 
-print "<table summary=\"Datebook for ".TimeFormat($time)."\">";
+echo "<table summary=\"Datebook for ".TimeFormat($time)."\">";
 
-while($count < ($hour_begin + $hour_end)) {
+while ($count < ($hour_begin + $hour_end)) {
 
 	$startday_next = $startday + 3599;
 
-	print "<tr><td colspan=\"3\"><strong>";
-	print date("g.00a",$startday);
-	print "</strong></td></tr>";
+	echo "<tr><td colspan=\"3\"><strong>";
+	echo date("g.00a",$startday);
+	echo "</strong></td></tr>";
 	
-			$type_find = array("phone","filenote","meeting","email");
-			$type_replace = array("Telephone Call","File Note","Meeting Note","Email Message");
+		$type_find = array("phone","filenote","meeting","email");
+		$type_replace = array("Telephone Call","File Note","Meeting Note","Email Message");
 	
-		$sql_blog = "SELECT blog_id, blog_title, blog_date, blog_type, proj_num, proj_id FROM intranet_projects_blog, intranet_projects WHERE proj_id = blog_proj AND blog_date BETWEEN '$startday' AND '$startday_next' ORDER BY '$blog_date'";
+		$sql_blog = "SELECT blog_id, blog_title, blog_date, blog_type, proj_num, proj_id FROM intranet_projects_blog, intranet_projects WHERE proj_id = blog_proj AND blog_date BETWEEN '$startday' AND '$startday_next' ORDER BY blog_date DESC";
 		$result_blog = mysql_query($sql_blog, $conn) or die(mysql_error());
 		while ($array_blog = mysql_fetch_array($result_blog)) {
 			$blog_id = $array_blog['blog_id'];
@@ -257,8 +309,10 @@ while($count < ($hour_begin + $hour_end)) {
 			$proj_id = $array_blog['proj_id'];
 			$proj_num = $array_blog['proj_num'];
 			$blog_type = str_replace($type_find,$type_replace,$blog_type);
-			print "<tr><td style=\"width: 50px;\"><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num</a></td><td>$blog_type</td><td><a href=\"index2.php?page=project_blog_view&amp;blog_id=$blog_id\">$blog_title</a></td></tr>";
+			echo "<tr><td style=\"width: 50px;\"><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num</a></td><td>$blog_type</td><td><a href=\"index2.php?page=project_blog_view&amp;blog_id=$blog_id\">$blog_title</a></td></tr>";
 		}
+		
+}
 		
 		// Telephone Messages
 		$sql_phone = "SELECT message_id, message_for_user, message_from_id, message_from_name, message_text FROM intranet_phonemessage WHERE message_date BETWEEN '$startday' AND '$startday_next' ORDER BY message_date";
@@ -269,11 +323,11 @@ while($count < ($hour_begin + $hour_end)) {
 			$message_from_id = $array_phone['message_from_id'];
 			$message_from_name = $array_phone['message_from_name'];
 			$message_text = $array_phone['message_text'];
-			print "<tr><td colspan=\"2\">Telephone Message for ";
+			echo "<tr><td colspan=\"2\">Telephone Message for ";
 			$data_user_id = $message_for_user; include("dropdowns/inc_data_user_name.php");
-			print "</td><td>Message from ";
-			if ($message_from_id > 0) { $data_contact = $message_from_id; include("dropdowns/inc_data_contacts_name.php"); } else { print $message_from_name; }
-			print "<br /><span class=\"minitext\"><a href=\"index2.php?page=phonemessage_view_detailed&amp;message_id=$message_id\">$message_text</a></span></td></tr>";
+			echo "</td><td>Message from ";
+			if ($message_from_id > 0) { $data_contact = $message_from_id; include("dropdowns/inc_data_contacts_name.php"); } else { echo $message_from_name; }
+			echo "<br /><span class=\"minitext\"><a href=\"index2.php?page=phonemessage_view_detailed&amp;message_id=$message_id\">$message_text</a></span></td></tr>";
 		}
 
 $startday = $startday + 3600;
@@ -281,24 +335,4 @@ $count++;
 	
 }
 
-		$sql_blog = "SELECT blog_id, blog_title, blog_date, blog_type, proj_num, proj_id FROM intranet_projects_blog, intranet_projects WHERE proj_id = blog_proj AND blog_date BETWEEN '$startday_next' AND '$endday' ORDER BY '$blog_date'";
-		$result_blog = mysql_query($sql_blog, $conn) or die(mysql_error());
-		
-		if (mysql_num_rows($result_blog) > 0) {
-		
-		print "<tr><td colspan=\"3\"><strong>Later</strong></td></tr>";
-		
-		while ($array_blog = mysql_fetch_array($result_blog)) {
-			$blog_id = $array_blog['blog_id'];
-			$blog_title = $array_blog['blog_title'];
-			$blog_date = $array_blog['blog_date'];
-			$blog_type = $array_blog['blog_type'];
-			$proj_id = $array_blog['proj_id'];
-			$proj_num = $array_blog['proj_num'];
-			$blog_type = str_replace($type_find,$type_replace,$blog_type);
-			print "<tr><td width=\"50\"><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num</a></td><td>$blog_type</td><td><a href=\"index2.php?page=project_blog_view&amp;blog_id=$blog_id\">$blog_title</a></td></tr>";
-		}
-		
-}
-
-print "</table>";
+		DayBook_Journal($time,$startday,$endday);

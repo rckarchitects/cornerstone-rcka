@@ -28,6 +28,7 @@ $blog_type = CleanUp($_POST[blog_type]);
 $blog_contact = CleanNumber($_POST[blog_contact]);
 $blog_link = CleanUp($_POST[blog_link]);
 $blog_task = CleanUp($_POST[blog_task]);
+$blog_task = intval($_POST[blog_pinned]);
 
 	$blog_date_minute = CleanNumber($_POST[blog_date_minute]);
 	$blog_date_hour = CleanNumber($_POST[blog_date_hour]);
@@ -50,7 +51,8 @@ blog_view,
 blog_type,
 blog_contact,
 blog_link,
-blog_task
+blog_task,
+blog_pinned
 ) values (
 'NULL',
 '$blog_date',
@@ -62,16 +64,17 @@ blog_task
 '$blog_type',
 '$blog_contact',
 '$blog_link',
-'$blog_task'
+'$blog_task',
+'$blog_pinned'
 )";
 
 $result = mysql_query($sql_add, $conn) or die(mysql_error());
 
 $id_added = mysql_insert_id();
 
-$actionmessage = "<p><a href=\"index2.php?page=project_blog_view&amp;blog_id=$id_added&amp;proj_id=$blog_proj\">Journal Entry</a> was added successfully.</p>";
+$actionmessage = "<p>Journal Entry<a href=\"index2.php?page=project_blog_view&amp;blog_id=$id_added&amp;proj_id=$blog_proj\">\" " . $blog_title . "\"</a> was added successfully.</p>";
 
-AlertBoxInsert($_COOKIE[user],"Journal",$actionmessage,$id_added,0);
+AlertBoxInsert($_COOKIE[user],"Journal Entry Added",$actionmessage,$id_added,0);
 
 $techmessage = $sql_add;
 

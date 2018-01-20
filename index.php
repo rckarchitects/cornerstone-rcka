@@ -16,4 +16,3 @@ header ("Location: index2.php?cookie=$_COOKIE[user]");
 if ($_COOKIE[user] == NULL) {
 header ("Location: login.php");
 }
-?>

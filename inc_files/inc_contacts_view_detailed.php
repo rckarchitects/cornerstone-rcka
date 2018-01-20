@@ -35,6 +35,7 @@
 	$contact_phone = $array_contact['contact_telephone'];
 	$contact_fax = $array_contact['contact_fax'];
 	$contact_include = $array_contact['contact_include'];
+	$contact_linkedin = $array_contact['contact_linkedin'];
 	
 	$user_name_first = $array_contact['user_name_first'];
 	$user_name_second = $array_contact['user_name_second'];
@@ -61,7 +62,7 @@
 			
 			if ($contact_prefix > 0) { $prefix_name = "(".$prefix_name.")"; }
 	
-	echo "<h1>Contact Details</h1>";
+	echo "<h1>$contact_namefirst $contact_namesecond</h1>";
 	
 			echo "<div class=\"menu_bar\">";
 			if ($user_usertype_current > 1) {
@@ -118,6 +119,10 @@
 			echo "<tr><td class=\"color\">M</td><td class=\"color\">";
 			if ($contact_mobile != NULL) { echo $contact_mobile; } else { echo "--"; }
 			echo "</td></tr>";
+			
+			if ($contact_linkedin) {
+				echo "<tr><td>L</td><td colspan=\"3\"><a href=\"$contact_linkedin\">$contact_linkedin</a></td></tr>";				
+			}
 			
 			if ($contact_include == 1) { $marketing = ".&nbsp;This person receives both emails and hard copy marketing.";
 			

@@ -1,5 +1,7 @@
 <?php
 
+$proj_id = intval($_POST[proj_id]);
+
 // Check that the required values have been entered, and alter the page to show if these values are invalid
 
 if ($_POST[proj_num] == "") { $alertmessage = "The project number was left empty."; $page = "project_edit"; $action = "edit"; $proj_id = $_POST[proj_id]; }
@@ -7,9 +9,11 @@ elseif ($_POST[proj_name] == "") { $alertmessage = "The project name was left em
 
 else {
 
+
+
 // This determines the page to show once the form submission has been successful
 
-$page = "project_view&amp;proj_id=$_POST[proj_id]";
+$page = "project_view&amp;proj_id=$proj_id";
 
 // Calculate the project start and completion dates from the pull-down lists
 
@@ -65,6 +69,7 @@ $proj_rep_black = $_POST[proj_rep_black];
 $proj_active = $_POST[proj_active];
 $proj_desc = CleanUp($_POST[proj_desc]);
 //$proj_riba = $_POST[proj_riba];
+$proj_type = addslashes($_POST[proj_type]);
 $proj_riba_begin = $_POST[proj_riba_begin];
 $proj_riba_conclude = $_POST[proj_riba_conclude];
 $proj_procure = $_POST[proj_procure];
@@ -96,6 +101,8 @@ $proj_planning_ref = $_POST[proj_planning_ref];
 $proj_buildingcontrol_ref = $_POST[proj_buildingcontrol_ref];
 $proj_fee_percentage = $_POST[proj_fee_percentage];
 
+$proj_info = addslashes($_POST[proj_info]);
+
 $proj_ambition_internal = trim(addslashes($_POST[proj_ambition_internal]));
 $proj_ambition_client = trim(addslashes($_POST[proj_ambition_client]));
 
@@ -125,6 +132,7 @@ proj_date_appointment = '$proj_date_appointment',
 proj_date_start = '$proj_date_start',
 proj_date_complete = '$proj_date_complete',
 proj_desc = '$proj_desc',
+proj_type = '$proj_type',
 proj_riba_begin = '$proj_riba_begin',
 proj_riba_conclude = '$proj_riba_conclude',
 proj_procure = '$proj_procure',
@@ -151,7 +159,8 @@ proj_consult_19 = '$proj_consult_19',
 proj_tenant_1 = '$proj_tenant_1',
 proj_planning_ref = '$proj_planning_ref',
 proj_buildingcontrol_ref = '$proj_buildingcontrol_ref',
-proj_location = '$proj_location'
+proj_location = '$proj_location',
+proj_info = '$proj_info'
 WHERE proj_id = '$_POST[proj_id]'";
 
 $result = mysql_query($sql_add, $conn) or die(mysql_error());
@@ -166,16 +175,16 @@ proj_fee_type = '$proj_fee_type',
 proj_fee_percentage = '$proj_fee_percentage',
 proj_ambition_internal = '$proj_ambition_internal',
 proj_ambition_client = '$proj_ambition_client'
-WHERE proj_id = '$_POST[proj_id]'";
+WHERE proj_id = $proj_id";
 
 $result2 = mysql_query($sql_add2, $conn) or die(mysql_error());
 
 }
 
-$actionmessage = "The entry for project <b>$proj_num $proj_name</b> was updated successfully.";
+$actionmessage = "<p>The entry for <a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">" . $proj_num . " " . $proj_name . "</a> was updated successfully.</p>";
+
+AlertBoxInsert($_COOKIE[user],"Project Updated",$actionmessage,$proj_id,0,0);
 
 $techmessage = $sql_add."<br />".$result."<br />".$sql_add2."<br/ >".$result2;
 
 }
-
-?>

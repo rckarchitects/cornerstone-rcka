@@ -8,15 +8,9 @@ function UserDetailRow($name,$entry) {
 	
 }
 
-if (mysql_insert_id() != NULL) {
-	
-	$user_id = mysql_insert_id();
-	
-} else {
 
-	$user_id = CleanUp($_GET[user_id]);
+	$user_id = intval($_GET[user_id]);
 
-}
 
 $sql = "SELECT * FROM intranet_user_details WHERE user_id = $user_id LIMIT 1";
 $result = mysql_query($sql, $conn);

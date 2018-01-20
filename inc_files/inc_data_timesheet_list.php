@@ -1,9 +1,11 @@
 <?php
 
+
+//function TimesheetList($ts_weekbegin,$user_timesheet_hours,$user_usertype_current) {
+	
+//	global $conn;
+
 if ($user_timesheet_hours > 0) { $weekly_hours_required = $user_timesheet_hours; } else { $weekly_hours_required = 40; }
-
-
-if ($TSFormat == "popup") { $TSPage = "popup_timesheet.php?"; } else { $TSPage = "index2.php?page=timesheet_edit&amp;"; }
 
 	$ts_list_total = 0;
 	
@@ -17,9 +19,9 @@ if ($TSFormat == "popup") { $TSPage = "popup_timesheet.php?"; } else { $TSPage =
 $ts_day_begin = $ts_weekbegin;
 $ts_day_end = $ts_day_begin+86400;
 
-print "<table summary=\"Timesheet for week beginning".TimeFormat($_GET[week])."\">";
+echo "<table summary=\"Timesheet for week beginning".TimeFormat($_GET[week])."\">";
 
-print "<tr><th style=\"width: 30%;\"><strong>Project</strong></th><th style=\"width: 15%;\"><strong>Day</strong></th><th><strong>Description</strong></th><th><strong>Hours</strong></th>";
+echo "<tr><th style=\"width: 30%;\"><strong>Project</strong></th><th style=\"width: 15%;\"><strong>Day</strong></th><th><strong>Description</strong></th><th><strong>Hours</strong></th>";
 
 if ($user_usertype_current > 3) { echo "<th>Cost</th>"; }
 
@@ -84,7 +86,7 @@ for($weekcount=0; $weekcount<=6;$weekcount++) {
 		
 		 if ($ts_item_new > 0 AND $ts_item_new == $ts_list_id) { $bg = " style=\"bgcolor: red;\" "; } else { unset($bg); }
 		
-		print "<tr $bg>";
+		echo "<tr $bg>";
 		
 		if ( time() - $ts_list_datestamp < 86400 AND $_GET[editref] == NULL)  {
 			$editbutton = 1;
@@ -98,7 +100,7 @@ for($weekcount=0; $weekcount<=6;$weekcount++) {
 		
 		 if ($ts_list_day_complete != 1) { $style = "color: #999;\""; $week_complete_check = 0; } else { unset($style); }
 		
-			print "<td style=\"width: 30%; " . $style . "\"><a href=\"index2.php?page=project_view&amp;proj_id=$ts_list_project\" <td style=\"" . $style . "\">$ts_list_project_num $ts_list_project_name</a>";
+			echo "<td style=\"width: 30%; " . $style . "\"><a href=\"index2.php?page=project_view&amp;proj_id=$ts_list_project\" <td style=\"" . $style . "\">$ts_list_project_num $ts_list_project_name</a>";
 			
 			if ($ts_list_stage != 0) {
 				$sql_fee = "SELECT ts_fee_text, riba_desc, riba_letter FROM intranet_timesheet_fees LEFT JOIN riba_stages ON riba_id = ts_fee_stage WHERE ts_fee_id = $ts_list_stage LIMIT 1";
@@ -114,14 +116,14 @@ for($weekcount=0; $weekcount<=6;$weekcount++) {
 			echo "<td style=\"" . $style . "\">" . $ts_list_date . "</td>";
 			echo "<td style=\"" . $style . "\">" . $ts_list_desc;
 			if ($editbutton == 1) {
-				print "&nbsp;<a href=\"".$TSPage."week=$ts_weekbegin&amp;ts_id=$ts_list_id&amp;user_view=$viewuser\"><img src=\"images/button_edit.png\" alt=\"Edit this entry\" /></a>"; }
-			print "</td><td style=\"text-align: right;" . $style . "\">";
+				echo "&nbsp;<a href=\"index2.php?page=timesheet&amp;week=$ts_weekbegin&amp;ts_id=$ts_list_id&amp;user_view=$viewuser\"><img src=\"images/button_edit.png\" alt=\"Edit this entry\" /></a>"; }
+			echo "</td><td style=\"text-align: right;" . $style . "\">";
 	
-			print $ts_list_hours;
+			echo $ts_list_hours;
 		  
 		unset($editbutton);
 		
-		print "</td>";
+		echo "</td>";
 		
 		if ($user_usertype_current > 3 && $ts_cost_factored == 0) {
 			echo "<td style=\"text-align: right;" . $style . "\">" . PresentCost($ts_list_unitcost) . "</td>";
@@ -157,7 +159,7 @@ for($weekcount=0; $weekcount<=6;$weekcount++) {
 		}
 
 
-		print "<tr><td colspan=\"2\" style=\"font-weight: bold; text-align: right; $background\"><u>Total Hours for $dayname</u></td><td style=\"font-weight: bold; text-align: right; $background\" colspan=\"2\"><u>$ts_day_total</u></td>";
+		echo "<tr><td colspan=\"2\" style=\"font-weight: bold; text-align: right; $background\"><u>Total Hours for $dayname</u></td><td style=\"font-weight: bold; text-align: right; $background\" colspan=\"2\"><u>$ts_day_total</u></td>";
 		
 		if ($user_usertype_current > 3) { echo "<td style=\"font-weight: bold; text-decoration: underline; text-align: right; $background\">" . MoneyFormat($ts_day_total_factored) . "</td>"; }
 		
@@ -198,7 +200,7 @@ if ($user_datum > $settings_timesheetstart) { $timesheet_datum = $user_datum; } 
 
 } else {
 	
-print "<tr><td colspan=\"4\">There have been no entries added for this week.</td>";
+echo "<tr><td colspan=\"4\">There have been no entries added for this week.</td>";
 
 if ($user_usertype_current > 3) { echo "<td style=\"text-align: right; $background\"></td>"; }
 
@@ -207,12 +209,11 @@ echo "</tr>";
 }
 		
 
-		print "</table>";
+		echo "</table>";
 		
 
 // Now update the user's factored values based on the total number of hours this week
-		
-//if ($_POST[ts_hours] != NULL) {
+
 
 		$user_rate_standard = $ts_list_rate + $ts_list_overhead + $ts_list_projectrate;
 
@@ -222,7 +223,7 @@ echo "</tr>";
 		
 		$ts_weekend = $ts_weekbegin + 604800;
 		
-		//if ($_POST[ts_project] != NULL) {
+
 		if ($ts_list_total >= $weekly_hours_required	) {
 		$sql_update_factor = "UPDATE intranet_timesheet SET ts_cost_factored = ( ts_hours * $user_hourly_factor) WHERE ts_entry > $ts_weekbegin AND ts_entry < $ts_weekend AND ts_user = $viewuser";
 		$result_update_factor = mysql_query($sql_update_factor, $conn) or die(mysql_error());
@@ -236,8 +237,4 @@ echo "</tr>";
 		echo "<h3>Cost Data</h3><p>User factored rate for week: &pound;" . $user_hourly_factor . "<br />User standard rate for week: &pound;" . $user_rate_standard . "<br />Weekly cost for user: " . MoneyFormat($ts_week_total_factored) .  "<br />User hours required: " . $weekly_hours_required . "</p>";
 		}
 		
-		
-
 //}
-	
-?>

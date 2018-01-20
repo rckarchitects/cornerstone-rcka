@@ -30,7 +30,8 @@ if ($answer_id > 0) {
 		WHERE answer_id = '$answer_id' LIMIT 1";
 		
 		$result = mysql_query($sql_edit, $conn) or die(mysql_error());
-		$actionmessage = "Response updated successfully.";
+		$actionmessage = "<p>Tender response ref. " . $insert_id . "  updated successfully.</p>";
+		AlertBoxInsert($_COOKIE[user],"Tender Response Edited",$actionmessage,$answer_id,0,0);
 		$techmessage = $sql_edit;		
 		
 } else {
@@ -56,7 +57,9 @@ if ($answer_id > 0) {
 		)";
 		
 		$result = mysql_query($sql_add, $conn) or die(mysql_error());
-		$actionmessage = "Response added successfully.";
+		$insert_id = mysql_insert_id();
+		$actionmessage = "<p>Tender response ref. " . $insert_id . " added successfully.</p>";
+		AlertBoxInsert($_COOKIE[user],"Tender Response Added",$actionmessage,$insert_id,0,0);
 		$techmessage = $sql_add;
 }
 

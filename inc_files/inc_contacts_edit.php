@@ -38,6 +38,7 @@ $contact_city = $array['contact_city'];
 $contact_county = $array['contact_county'];
 $contact_postcode = $array['contact_postcode'];
 $contact_country = $array['contact_country'];
+$contact_linkedin = $array['contact_linkedin'];
 
 if ($contact_title == '0') { $contact_title = NULL; }
 
@@ -65,7 +66,7 @@ $contact_city = $_POST[contact_city];
 $contact_county = $_POST[contact_county];
 $contact_postcode = $_POST[contact_postcode];
 $contact_country = $_POST[contact_country];
-
+$contact_linkedin = $_POST[contact_linkedin];
 
 }
 
@@ -80,10 +81,10 @@ $contact_country = $_POST[contact_country];
 	print "</p>";
 	
 	print "<p>First Name*<br />";
-	print "<input type=\"text\" name=\"contact_namefirst\" class=\"inputbox\" size=\"45\" value=\"$contact_namefirst\" />";
+	print "<input type=\"text\" name=\"contact_namefirst\" class=\"inputbox\" size=\"45\" value=\"$contact_namefirst\" required=\"required\" />";
 	print "</p>";
 	print "<p>Second Name*<br />";
-	print "<input type=\"text\" name=\"contact_namesecond\" class=\"inputbox\" size=\"45\" value=\"$contact_namesecond\" />";
+	print "<input type=\"text\" name=\"contact_namesecond\" class=\"inputbox\" size=\"45\" value=\"$contact_namesecond\" required=\"required\" />";
 
 	print "<p>Title<br />";
 	print "<input type=\"text\" name=\"contact_title\" class=\"inputbox\" size=\"45\" maxlength=\"100\" value=\"$contact_title\" />";
@@ -137,7 +138,8 @@ $contact_country = $_POST[contact_country];
 	print "<p>Discipline<br />";
 	include("inc_data_contacts_disciplinelist.php");
 
-	
+	print "<p>LinkedIn Profile<br />";
+	print "<input type=\"text\" name=\"contact_linkedin\" class=\"inputbox\" size=\"45\" maxlength=\"255\" value=\"$contact_linkedin\" />";
 	
 	
 	print "<p>Marketing issue</p>";

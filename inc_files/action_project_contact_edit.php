@@ -16,7 +16,8 @@ if ($contact_proj_id > 0) {
 		WHERE contact_proj_id = '$contact_proj_id' LIMIT 1";
 		
 		$result = mysql_query($sql_edit, $conn) or die(mysql_error());
-		$actionmessage = "Project contact updated successfully.";
+		$actionmessage = "<p>Project contact id " . $contact_proj_id . " for project ref. " . $contact_proj_contact . " updated successfully.</p>";
+		AlertBoxInsert($_COOKIE[user],"Project Contact Edited",$actionmessage,$contact_proj_id,0,1);
 		$techmessage = $sql_edit;
 		
 }

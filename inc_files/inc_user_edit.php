@@ -33,7 +33,7 @@ function UserForm ($user_id) {
 	$user_num_mob = $array['user_num_mob'];
 	$user_num_home = $array['user_num_home'];
 	$user_email = $array['user_email'];
-	$user_usertype = $array['user_usertype'];
+	$user_usertype = intval ( $array['user_usertype'] );
 	$user_active = $array['user_active'];
 	$user_username = $array['user_username'];
 	$user_user_rate = $array['user_user_rate'];
@@ -96,30 +96,7 @@ function UserForm ($user_id) {
 		
 		echo "<p>User Type<br />";
 		
-		echo "<select name=\"user_usertype\">";
-		
-			echo "<option value=\"1\"";
-				if ($user_usertype == 1) { echo " selected=\"selected\" "; }
-			echo ">Guest</option>";
-			
-			echo "<option value=\"2\"";
-				if ($user_usertype == 2) { echo " selected=\"selected\" "; }
-			echo ">Basic User</option>";
-			
-			echo "<option value=\"3\"";
-				if ($user_usertype == 3) { echo " selected=\"selected\" "; }
-			echo ">Standard User</option>";
-			
-			echo "<option value=\"4\"";
-				if ($user_usertype == 4) { echo " selected=\"selected\" "; }
-			echo ">Power User</option>";
-			
-			echo "<option value=\"5\"";
-				if ($user_usertype > 4) { echo " selected=\"selected\" "; }
-			echo ">Administrator</option>";
-		
-	
-		echo "</select>";
+		UserAccessType("user_usertype",0,$user_usertype,0);
 		
 		echo "<p><input type=\"checkbox\" name=\"user_active\" value=\"1\"";
 		if ($user_active == 1 OR $user_id == NULL) { echo "checked=checked "; }

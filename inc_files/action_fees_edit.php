@@ -216,6 +216,9 @@ if ($ts_fee_id > 0) {
 		
 		UpdateAll($ts_fee_id);
 		
+		$actionmessage = "<p>Fee stage \"<a href=\"index2.php?page=project_view&amp;proj_id=$ts_fee_project\">$ts_fee_text</a>\" updated successfully.</p>";
+		AlertBoxInsert($_COOKIE[user],"Fee Stage Updated",$actionmessage,$ts_fee_id,0);
+		
 		//echo "<p>$sql_edit</p>";
 		
 } else {
@@ -260,8 +263,10 @@ if ($ts_fee_id > 0) {
 		
 		
 		$result = mysql_query($sql_add, $conn) or die(mysql_error());
-		$actionmessage = "Fee stage added successfully.";
+		$ts_fee_id = mysql_affected_rows();
+		$actionmessage = "<p>Fee stage \"<a href=\"index2.php?page=project_view&amp;proj_id=$ts_fee_project\">$ts_fee_text</a>\" added successfully.</p>";
 		$techmessage = $sql_add;
+		AlertBoxInsert($_COOKIE[user],"Fee Stage Added",$actionmessage,$ts_fee_id,0);
 }
 
 

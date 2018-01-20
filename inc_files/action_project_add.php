@@ -66,6 +66,7 @@ $proj_rep_black = $_POST[proj_rep_black];
 $proj_active = 1;
 $proj_desc = CleanUp($_POST[proj_desc]);
 $proj_riba = $_POST[proj_riba];
+$proj_type = addslashes($_POST[proj_type]);
 $proj_riba_begin = $_POST[proj_riba_begin];
 $proj_riba_conclude = $_POST[proj_riba_conclude];
 $proj_procure = $_POST[proj_procure];
@@ -98,6 +99,7 @@ $proj_buildingcontrol_ref = CleanUp($_POST[proj_buildingcontrol_ref]);
 $proj_ambition_internal = trim(addslashes($_POST[proj_ambition_internal]));
 $proj_ambition_client = trim(addslashes($_POST[proj_ambition_client]));
 $proj_location = addslashes($_POST[proj_location]);
+$proj_info = addslashes($_POST[proj_info]);
 
 // Construct the MySQL instruction to add these entries to the database
 
@@ -125,6 +127,7 @@ proj_rep_black,
 proj_active,
 proj_desc,
 proj_riba,
+proj_type,
 proj_riba_begin,
 proj_riba_conclude,
 proj_procure,
@@ -157,7 +160,8 @@ proj_buildingcontrol_ref,
 proj_fee_percentage,
 proj_ambition_internal,
 proj_ambition_client,
-proj_location
+proj_location,
+proj_info
 ) values (
 'NULL',
 '$proj_num',
@@ -182,6 +186,7 @@ proj_location
 '1',
 '$proj_desc',
 '$proj_riba',
+'$proj_type',
 '$proj_riba_begin',
 '$proj_riba_conclude',
 '$proj_procure',
@@ -214,7 +219,8 @@ proj_location
 '$proj_fee_percentage',
 '$proj_ambition_internal',
 '$proj_ambition_client',
-'$proj_location'
+'$proj_location',
+'$proj_info'
 )";
 
 $result = mysql_query($sql_add, $conn) or die(mysql_error());

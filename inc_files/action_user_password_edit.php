@@ -16,7 +16,7 @@ $user_password = $array['user_password'];
 // Check that the required values have been entered, and alter the page to show if these values are invalid
 
 if ($user_password != $password_old) {
-$alertmessage = "Youhave entered your existing password incorrectly."; $page_redirect = "user_password";
+$alertmessage = "You have entered your existing password incorrectly."; $page_redirect = "user_password";
 } elseif ($password_new1 != $password_new2) {
 $alertmessage = "Your new passwords do not match. Please try again."; $page_redirect = "user_password";
 } elseif ($_POST[user_password_new1] == "") {
@@ -33,9 +33,9 @@ else {
 		LIMIT 1";
 		
 		$result = mysql_query($sql_edit, $conn) or die(mysql_error());
-		$actionmessage = "Password changed successfully.";
-		$techmessage = $sql_edit;		
+		$actionmessage = "<p><a href=\"index2.php?page=user_view&amp;user_id=$user_id_current\">User password</a> changed successfully.</p>";
+		$techmessage = $sql_edit;
+		
+		AlertBoxInsert($_COOKIE[user],"User Password Updated",$actionmessage,$user_id_current,1,0);
 		
 }
-
-?>

@@ -9,6 +9,33 @@ $currency_junk = array("£","€");
 
 $text_remove = array("Ã","Â");
 
+function ProjectProcurement($proj_procure) {
+	
+		GLOBAL $conn;
+
+		$sql = "SELECT * FROM intranet_procure order by procure_title";
+		$result = mysql_query($sql, $conn) or die(mysql_error());
+
+		echo "<p>Procurement Method<br /><select name=\"proj_procure\" class=\"inputbox\">";
+
+		echo "<option value=\"\">-- N/A --</option>";
+
+		while ($array = mysql_fetch_array($result)) {
+		$procure_id = $array['procure_id'];
+		$procure_title = $array['procure_title'];
+		$procure_desc = $array['procure_desc'];
+
+		echo "<option value=\"$procure_id\" class=\"inputbox\"";
+		if ($procure_id == $proj_procure) {
+		echo " selected";
+		}
+		echo ">".$procure_title."</option>";
+		}
+
+		echo "</select></p>";
+
+}
+
 function PresentCost($input) { 
 		$output = "&pound;" . numberformat($input, 2);
 		return $output;
@@ -25,17 +52,17 @@ function StageTabs ($group_id_selected, $proj_id, $page, $filter) {
 	}
 	$result_group = mysql_query($sql_group, $conn) or die(mysql_error());
 	if (mysql_num_rows($result_group) > 0) {
-		echo "<p class=\"submenu_bar\"><span class=\"minitext\">Project Stage: </span>";
+		echo "<div class=\"submenu_bar\">";
 			while ($array_group = mysql_fetch_array($result_group)) {
 				$group_id = $array_group['group_id'];
 				$group_code = $array_group['group_code'];
 				if ($group_id_selected == $group_id) { $group_code = "<strong>$group_code</strong>";
-					echo "<span class=\"submenu_bar\" style=\"background: #eee;\">$group_code</span>"; $group_description = $group_code . ": " . $array_group['group_description'];
+					echo "<a href=\"" . $page . "group_id=" . $group_id . "\" class=\"submenu_bar\">$group_code</a>";
 				} else {
 					echo "<a href=\"" . $page . "group_id=" . $group_id . "\" class=\"submenu_bar\">$group_code</a>";
 				}
 			}
-		echo "</p>";
+		echo "</div>";
 		
 		echo "<h3>" . $group_description . "</h3>";
 	}
@@ -100,11 +127,12 @@ function SearchPanel($user_usertype_current) {
 	
 }
 
-function ProjectTitle() {
+function ProjectTitle($show,$proj_id) {
 
 	GLOBAL $conn;
 	
-	if ($_GET[proj_id] > 0) { $proj_id = intval($_GET[proj_id]); }
+	if ($proj_id > 0) { $proj_id = intval($proj_id); }
+	elseif ($_GET[proj_id] > 0) { $proj_id = intval($_GET[proj_id]); }
 	elseif ($_POST[proj_id] > 0) { $proj_id = intval($_POST[proj_id]); }
 	else { unset($proj_id); }
 	
@@ -116,8 +144,16 @@ function ProjectTitle() {
 		$proj_num = $array['proj_num'];
 		$proj_name = $array['proj_name'];
 		
+		if ($show == 1) {
+			
+		echo "<h1><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></h1>";
+			
+		} else {
+		
 		$output = array($proj_id,$proj_num,$proj_name);
 		return $output;
+		
+		}
 		
 	}
 
@@ -126,54 +162,358 @@ function ProjectTitle() {
 
 }
 
+function ProjectSubMenu($proj_id,$user_usertype_current,$page) {
+
+				$array_menu_page = array();
+				$array_menu_text = array();
+				$array_menu_image = array();
+				$array_menu_usertype = array();
+
+	if ($page == "project_edit") {
+
+				$array_menu_page[] = "index2.php?page=project_edit&amp;status=edit&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Edit Project";
+				$array_menu_image[] = "button_edit.png";
+				$array_menu_usertype = 3;
+			
+				$array_menu_page[] = "index2.php?page=project_blog_edit&amp;status=add&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Add Project";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype = 0;
+			
+				$array_menu_page[] = "pdf_project_sheet.php?proj_id=$proj_id";
+				$array_menu_text[] = "Project Sheet";
+				$array_menu_image[] = "button_pdf.png";
+				$array_menu_usertype = 2;
+			
+		
+	} elseif ($page == "project_invoice") {
+				
+				$array_menu_page[] = "index2.php?page=timesheet_invoice_edit&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Add Invoice";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype = 3;
+
+				$array_menu_page[] = "index2.php?page=timesheet_invoice_items_edit&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Add Invoice Item";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype = 3;
+				
+	} elseif ($page == "project_fee") {
+	
+				$array_menu_page[] = "index2.php?page=project_hourlyrates_view&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Edit Hourly Rates";
+				$array_menu_image[] = "button_edit.png";
+				$array_menu_usertype = 3;
+				
+				$array_menu_page[] = "index2.php?page=project_timesheet_view&amp;proj_id=$proj_id";
+				$array_menu_text[] = "View Expenditure";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 3;
+				
+				$array_menu_page[] = "index2.php?page=timesheet_fees_edit&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Add Fee Stage";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype = 3;
+				
+				$array_menu_page[] = "pdf_fee_drawdown.php?proj_id=$proj_id";
+				$array_menu_text[] = "View Fee Drawdown";
+				$array_menu_image[] = "button_pdf.png";
+				$array_menu_usertype = 3;
+				
+				$array_menu_page[] = "pdf_fee_drawdown.php?proj_id=$proj_id&amp;showinvoices=yes";
+				$array_menu_text[] = "View Fee Drawdown (with invoices)";
+				$array_menu_image[] = "button_pdf.png";
+				$array_menu_usertype = 3;
+				
+	} elseif ($page == "project_contacts") {
+	
+				$array_menu_page[] = "index2.php?page=project_contacts&amp;contact_proj_add=add&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Add Project Contact";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype = 3;
+				
+	} elseif ($page == "project_blog" OR $page == "project_blog_list" OR $page == "project_blog_edit") {
+	
+				$array_menu_page[] = "index2.php?page=project_blog_edit&status=add&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Add Journal Entry";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype = 1;
+				
+				$array_menu_page[] = "index2.php?page=project_blog_list&amp;proj_id=$proj_id";
+				$array_menu_text[] = "List Journal Entries";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 1;
+				
+	} elseif ($page == "project_tasks") {
+	
+				$array_menu_page[] = "index2.php?page=tasklist_edit&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Add New Task";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype = 1;
+		
+				$array_menu_page[] = "index2.php?page=tasklist_project&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Outstanding Tasks";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 1;
+				
+				$array_menu_page[] = "index2.php?page=tasklist_project&amp;view=complete&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Completed Tasks";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 1;
+	}
+
+
+		$count = 0;
+		
+		echo "<div class=\"submenu_bar\">";
+
+		foreach ($array_menu_page AS $menu_link) {
+		 		 
+				echo "<a href=\"$array_menu_page[$count]\" class=\"submenu_bar\">$array_menu_text[$count]";
+				if ($array_menu_image[$count]) { echo "&nbsp;<img src=\"images/$array_menu_image[$count]\" />"; }
+				echo "</a>";
+		 
+				$count++;
+		 
+		}
+
+		echo "</div>";
+
+
+
+		
+}
+
+function ProjectList($proj_id) {
+
+	global $conn;
+	
+	$sql = "SELECT * FROM intranet_projects where proj_id = $_GET[proj_id]";
+$result = mysql_query($sql, $conn);
+$array = mysql_fetch_array($result);
+
+$proj_num = $array['proj_num'];
+$proj_name = $array['proj_name'];
+$proj_address_1 = $array['proj_address_1'];
+$proj_address_2 = $array['proj_address_2'];
+$proj_address_3 = $array['proj_address_3'];
+$proj_address_town = $array['proj_address_town'];
+$proj_address_county = $array['proj_address_county'];
+$proj_address_country = $array['proj_address_country'];
+$proj_address_postcode = $array['proj_address_postcode'];
+$proj_client_contact_id = $array['proj_client_contact_id'];
+
+$proj_rep_black = $array['proj_rep_black'];
+$proj_active = $array['proj_active'];
+$proj_desc = $array['proj_desc'];
+$proj_riba = $array['proj_riba'];
+$proj_type = $array['proj_type'];
+$proj_riba_begin = $array['proj_riba_begin'];
+$proj_riba_conclude = $array['proj_riba_conclude'];
+$proj_procure = $array['proj_procure'];
+$proj_conc = $array['proj_conc'];
+$proj_value = $array['proj_value'];
+$proj_value_type = $array['proj_value_type'];
+$proj_id = $array['proj_id'];
+
+$proj_date_proposal = $array['proj_date_proposal'];
+$proj_date_appointment = $array['proj_date_appointment'];
+$proj_date_commence = $array['proj_date_start'];
+$proj_date_complete = $array['proj_date_complete'];
+
+$proj_planning_ref = $array['proj_planning_ref'];
+$proj_buildingcontrol_ref = $array['proj_buildingcontrol_ref'];
+$proj_fee_percentage = $array['proj_fee_percentage'];
+
+$proj_ambition_internal = $array['proj_ambition_internal'];
+$proj_ambition_client = $array['proj_ambition_client'];
+$proj_tenant_1 = $array['proj_tenant_1'];
+$proj_location = $array['proj_location'];
+
+$proj_info = $array['proj_info'];
+
+// Determine the country
+$sql = "SELECT country_printable_name FROM intranet_contacts_countrylist where country_id = '$proj_address_country' LIMIT 1";
+$result = mysql_query($sql, $conn);
+$array = mysql_fetch_array($result);
+$country_printable_name = $array['country_printable_name'];
+
+					echo "<h2>Project Information</h2>";
+
+					echo "<table summary=\"Project Information\">";
+
+					echo "<tr><td style=\"width: 40%;\">Site Address</td><td>";
+
+					if ($proj_address_1 != "") { echo $proj_address_1."<br />"; }
+					if ($proj_address_2 != "") {echo $proj_address_2."<br />"; }
+					if ($proj_address_3 != "") {echo $proj_address_3."<br />"; }
+					if ($proj_address_town != "") {echo $proj_address_town."<br />"; }
+					if ($proj_address_county != "") {echo $proj_address_county."<br />"; }
+					if ($proj_address_postcode != "") {
+					    $proj_address_postcode_link = PostcodeFinder($proj_address_postcode);
+					    echo "<a href=\"".$proj_address_postcode_link."\">".$proj_address_postcode."</a><br />";
+					    }
+					if ($country_printable_name != "") {echo $country_printable_name."<br />"; }
+
+					echo "</td></tr>";
+					
+					if ($proj_type) { echo "<tr><td>Project Type</td><td>$proj_type</td></tr>"; }
+
+					if ($proj_date_start > 0) { echo "<tr><td  >Project Start Date</td><td  >$proj_date_start</td></tr>"; }
+					if ($proj_date_complete > 0) { echo "<tr><td  >Project Completion Date</td><td>" . TimeFormat($proj_date_complete) . "</td></tr>"; }
+
+					if ($proj_desc) { echo "<tr><td>Project Description</td><td>" . nl2br ($proj_desc) . "</td></tr>"; }
+					if ($proj_ambition_internal) { echo "<tr><td>Project Ambition</td><td>" . nl2br ($proj_ambition_internal) . "</td></tr>"; }
+					if ($proj_ambition_client) { echo "<tr><td>Client Ambition</td><td>" . nl2br ($proj_ambition_client) . "</td></tr>"; }
+					if ($proj_info) { echo "<tr><td>Project Information</td><td>" . nl2br ($proj_info) . "</td></tr>"; }
+
+					if ($proj_procure > 0) {
+					echo "<tr><td>Procurement Method</td><td>$proj_procure</td></tr>";
+					}
+
+					if ($proj_value != 0) {
+					$proj_value_show = MoneyFormat($proj_value);
+					echo "<tr><td>Contract Value</td><td><a href=\"index2.php?page=timesheet_value_view&amp;proj_id=$proj_id\">$proj_value_show</a></td></tr>";
+					}
+					
+					if ($proj_fee_percentage > 0) {
+					echo "<tr><td>Fee Percentage</td><td>".$proj_fee_percentage."%</td></tr>";
+					echo "<tr><td>Total Fee<br /><span class=\"minitext\">(Assuming 100% of fee)</span></td><td>".MoneyFormat(($proj_value * ($proj_fee_percentage / 100)))."</td></tr>";
+					}
+					
+					
+					if ($proj_location) {
+						echo "<tr><td>Project Location</td><td>$proj_location</td></tr>";
+					}
+
+					echo "</table>";
+					
+}
+
+
+function ProjectClientList($proj_id,$user_usertype_current) {
+
+global $conn;
+
+		$proj_id = intval($proj_id);
+
+		$sql_project = "SELECT proj_rep_black FROM intranet_projects WHERE proj_id = $proj_id LIMIT 1";
+		$result_project = mysql_query($sql_project, $conn);
+		$array_project = mysql_fetch_array($project_project);
+		$proj_rep_black = $array_project['proj_rep_black'];
+
+					// Pull the details from the contact database
+
+					echo "<h2>Client</h2>";
+					echo "<table summary=\"Client Details\">";
+
+						$sql_contact = "SELECT * FROM contacts_contactlist WHERE contact_id = '$proj_client_contact_id' LIMIT 1";
+						$result_contact = mysql_query($sql_contact, $conn);
+						$array_contact = mysql_fetch_array($result_contact);
+						
+						$contact_id = $array_contact['contact_id'];
+						$contact_namefirst = $array_contact['contact_namefirst'];
+						$contact_namesecond = $array_contact['contact_namesecond'];
+						$contact_company = $array_contact['contact_company'];
+						
+				
+						// And then pull the company details from the company database if required
+						
+							if ($contact_company > 0) {
+							$sql_company = "SELECT * FROM contacts_companylist WHERE company_id = '$contact_company' LIMIT 1";
+							$result_company = mysql_query($sql_company, $conn);
+							$array_company = mysql_fetch_array($result_company);
+							$company_id = $array_company['company_id'];
+							$company_name = $array_company['company_name'];
+							}	
+						
+						// Compile the full name and email address, and then create a mailto link if the email address is returned
+						
+						$contact_email = $array_contact['contact_email'];
+						$print_contact_name = $contact_namefirst." ".$contact_namesecond;
+
+							if (strlen($contact_email) > 3) {
+								$print_client_name = "<a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=$contact_id\">".$contact_namefirst."&nbsp;".$contact_namesecond."</a>&nbsp;<a href=\"mailto:$contact_email\"><img src=\"images/button_email.png\" alt=\"Send email to $contact_namefirst&nbsp;$contact_namesecond \" /></a>";
+							} else {
+								$print_client_name = "<a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=$contact_id\">".$contact_namefirst."&nbsp;".$contact_namesecond."</a>";
+					        }
+							if (strlen($company_name) > 1) {
+								$print_client_name = $print_client_name."<br /><a href=\"index2.php?page=contacts_company_view&amp;company_id=".$company_id."\">".$company_name."</a>";
+							}
+							
+							if ($proj_client_contact_id > 0) {
+								echo "<tr><td style=\"width: 40%;\">Invoices / Accounts</td><td >$print_client_name</td></tr>";
+							}
+				
+					
+					echo "</table>";
+					
+}
+
 function ProjectSelect($proj_id_select,$field_name) {
 	
 		GLOBAL $conn;
+		
+		if ($proj_id_select > 0) {
+			$proj_id_select_add = "(proj_active = 1 OR proj_id = $proj_id_select)";
+		} else {
+			$proj_id_select_add = "proj_active = 1";			
+		}
 	
-		print "<select name=\"" . $field_name .  "\">";
-		$sql = "SELECT * FROM intranet_projects order by proj_num DESC";
+		echo "<select name=\"" . $field_name .  "\">";
+		$sql = "SELECT * FROM intranet_projects WHERE $proj_id_select_add ORDER BY proj_num DESC";
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		while ($array = mysql_fetch_array($result)) {
 				$proj_num = $array['proj_num'];
 				$proj_name = $array['proj_name'];
 				$proj_id = $array['proj_id'];
-				print "<option value=\"$proj_id\" class=\"inputbox\"";
-				if ($proj_id_select == $proj_id) { print " selected";}
-				elseif ($proj_id == $proj_id_page) { print " selected";}
-				print ">$proj_num $proj_name</option>";
+				echo "<option value=\"$proj_id\" class=\"inputbox\"";
+				if ($proj_id_select == $proj_id) { echo " selected";}
+				elseif ($proj_id == $proj_id_page) { echo " selected";}
+				echo ">$proj_num $proj_name</option>";
 		}
-		print "</select>";
+		echo "</select>";
 	
 	
 }
 
-function ProjectSwitcher ($page,$proj_id, $proj_active, $proj_fee) {
+function ProjectSwitcher ($page, $proj_id, $proj_active, $proj_fee) {
 	
-	GLOBAL $conn;
-
-	echo "<form action=\"index2.php\" method=\"get\">";
-	echo "<p><input type=\"hidden\" name=\"page\" value=\"$page\" />";
+	if (intval($proj_id) > 0) {
 	
-	if ($proj_active == 1) { $proj_active_switch = "WHERE proj_active > 0"; }
-	if ($proj_fee == 1 && $proj_active == 1) { $proj_fee_switch = "AND proj_fee_track > 0"; }
-	elseif ($proj_fee != 1 && $proj_active == 1) { $proj_fee_switch = "WHERE proj_fee_track > 0"; }
+					GLOBAL $conn;
+					
+					$start = NULL;
 
-	$sql_switcher = "SELECT proj_id, proj_name, proj_num FROM intranet_projects $proj_active_switch $proj_fee_switch ORDER BY proj_num DESC";
-	$result_switcher = mysql_query($sql_switcher, $conn) or die(mysql_error());
-	echo "<select onchange=\"this.form.submit()\" name=\"proj_id\">";
-	while ($array_switcher = mysql_fetch_array($result_switcher)) {
-		$proj_id_switcher = $array_switcher['proj_id'];
-		$proj_num_switcher = $array_switcher['proj_num'];
-		$proj_name_switcher = $array_switcher['proj_name'];
-		if ($proj_id == $proj_id_switcher) { $select = " selected=\"selected\" "; } else { unset($select); }
-		echo "<option value=\"$proj_id_switcher\" $select>$proj_num_switcher $proj_name_switcher</option>";
+					echo "<form action=\"index2.php\" method=\"get\">";
+					echo "<input type=\"hidden\" name=\"page\" value=\"$page\" />";
+					
+					//if ($proj_active == 1) { $project_filter = $project_filter . "AND proj_active > 0 "; }
+					if ($proj_fee == 1) { $project_filter = $project_filter . "AND proj_fee_track > 0 "; }
+					
+					if ($project_filter) { $project_filter = ltrim($project_filter,"AND "); $project_filter = "WHERE " . $project_filter; }
+
+					$sql_switcher = "SELECT proj_id, proj_name, proj_num, proj_active FROM intranet_projects $project_filter ORDER BY proj_active DESC, proj_num DESC";
+					
+					$result_switcher = mysql_query($sql_switcher, $conn) or die(mysql_error());
+					echo "<select onchange=\"this.form.submit()\" name=\"proj_id\">";
+					while ($array_switcher = mysql_fetch_array($result_switcher)) {
+					
+						if (!$start && $array_switcher['proj_active'] == 1) { echo "<option disabled=\"disabled\">Active Projects</option>"; $start = 1; }
+						if ($start == 1 && $array_switcher['proj_active'] == 0) { echo "<option disabled=\"disabled\">Inactive Projects</option>"; $start = 0; }
+					
+						$proj_id_switcher = $array_switcher['proj_id'];
+						$proj_num_switcher = $array_switcher['proj_num'];
+						$proj_name_switcher = $array_switcher['proj_name'];
+						if ($proj_id == $proj_id_switcher) { $select = " selected=\"selected\" "; } else { unset($select); }
+						echo "<option value=\"$proj_id_switcher\" $select>$proj_num_switcher $proj_name_switcher</option>";
+					}
+					echo "</select>";
+
+
+					echo "</form>";
 	}
-	echo "</select>";
-	echo "</p>";
-
-
-	echo "</form>";
-
 }
 
 function CreateDays($date,$hour) {
@@ -407,33 +747,33 @@ function DateDropdown($input, $timecode) {
 		$date_month_display = array("January","February","March","April","May","June","July","September","October","November","December");
 		$date_month = array("1","2","3","4","5","6","7","8","9","10","11","12");
 		$date_year = array("2000","2001","2002","2003","2004","2006","2007","2008","2009","2010");
-		print "Day:&nbsp;";
-		print "<select name=\"".$input."_day\">";
-		print "<option value=\"\">-- N/A --";
+		echo "Day:&nbsp;";
+		echo "<select name=\"".$input."_day\">";
+		echo "<option value=\"\">-- N/A --";
 		$counter = 0;
 		while ($counter < count($date_day)) {
-			print "<option value=\"$date_day[$counter]\">$date_day[$counter]</option>";
-			if (date("j", $timecode) == $date_month[$counter]) { print " selected "; }
+			echo "<option value=\"$date_day[$counter]\">$date_day[$counter]</option>";
+			if (date("j", $timecode) == $date_month[$counter]) { echo " selected "; }
 			$counter++;
 		}
-		print "</select>";
-		print "&nbsp;Month:&nbsp;";
-		print "<select name=\"".$input."_month\">";
-		print "<option value=\"\">-- N/A --";
+		echo "</select>";
+		echo "&nbsp;Month:&nbsp;";
+		echo "<select name=\"".$input."_month\">";
+		echo "<option value=\"\">-- N/A --";
 		$counter = 0;
 		while ($counter < count($date_month)) {
-			print "<option value=\"$date_month[$counter]\">$date_month_display[$counter]</option>";
-			if (date("n", $timecode) == $date_month[$counter]) { print " selected "; }
+			echo "<option value=\"$date_month[$counter]\">$date_month_display[$counter]</option>";
+			if (date("n", $timecode) == $date_month[$counter]) { echo " selected "; }
 			$counter++;
 		}
-		print "</select>";
-		print "&nbsp;Year:&nbsp;";
-		print "<select name=\"".$input."_year\">";
-		print "<option value=\"\">-- N/A --";
+		echo "</select>";
+		echo "&nbsp;Year:&nbsp;";
+		echo "<select name=\"".$input."_year\">";
+		echo "<option value=\"\">-- N/A --";
 		$counter = 0;
 		while ($counter < count($date_year)) {
-			print "<option value=\"$date_year[$counter]\">$date_year[$counter]</option>";
-			if (date("Y", $timecode) == $date_month[$counter]) { print " selected "; }
+			echo "<option value=\"$date_year[$counter]\">$date_year[$counter]</option>";
+			if (date("Y", $timecode) == $date_month[$counter]) { echo " selected "; }
 			$counter++;			
 		}
 }
@@ -788,31 +1128,14 @@ GLOBAL $conn;
 	
 }
 
-function TextAreaEdit_OLD() {
-
-				echo "	<script type=\"text/javascript\" src=\"tiny_mce\tiny_mce.js\"></script>
-						<script type=\"text/javascript\">
-						tinyMCE.init({
-						mode : \"textareas\",
-						theme : \"advanced\",
-						theme_advanced_layout_manager : \"SimpleLayout\",
-						theme_advanced_toolbar_align : \"left\",
-						theme_advanced_toolbar_location : \"top\",
-						theme_advanced_disable : \"styleselect,formatselect,image,anchor,help,code,cleanup,hr,removeformat,charmap,visualaid,sub,sup,separator\",
-						content_css : \"tiny_mce/editor.css\",
-						theme_advanced_buttons3 : \"\" });
-						</script>";
-
-}
-
 function TextAreaEdit() {
 
-				echo "<script src=\"//tinymce.cachefly.net/4.1/tinymce.min.js\"></script>
+				echo "
 					<script type=\"text/javascript\">
 					tinymce.init({
 					selector: \"textarea\",
 					plugins: [
-						\"advlist autolink lists link charmap print preview anchor textcolor\"
+						\"advlist autolink lists link charmap preview anchor textcolor\"
 					],
 					menubar: false,
 					toolbar: \"undo redo | bold italic underline strikethrough | bullist numlist outdent indent | link unlink | forecolor \",
@@ -820,9 +1143,8 @@ function TextAreaEdit() {
 					height : 300,
 					max_height: 1000,
 					min_height: 160
-				});
+					});
 				</script>";
-
 }
 
 function EditForm($answer_id,$answer_question,$answer_ref,$answer_words,$answer_weighting,$tender_id) {
@@ -1154,8 +1476,6 @@ function WorkingDays($year) {
 	
 }
 
-
-
 function HolidaySchedule($year,$user_usertype_current,$working_days,$beginnning_of_this_year,$beginnning_of_next_year) {
 
 GLOBAL $conn;
@@ -1327,7 +1647,6 @@ GLOBAL $conn;
 
 }
 
-
 function ChangeHolidays($year) {
 	
 		$year_before = $year - 1;
@@ -1350,7 +1669,10 @@ function ChangeHolidays($year) {
 		<td><input type=\"radio\" value=\"$year_before\" name=\"approve\" />&nbsp;Assign to " . $year_before . "</td>
 		<td><input type=\"radio\" value=\"$year\" name=\"approve\" />&nbsp;Assign to " . $year . "</td>
 		<td><input type=\"radio\" value=\"$year_after\" name=\"approve\" />&nbsp;Assign to " . $year_after . "</td>
-		<td><input type=\"hidden\" value=\"$_COOKIE[user]\" name=\"user_id\" /><input type=\"submit\" value=\"Submit\" /></td>
+		<td><input type=\"radio\" value=\"to_maternity\" name=\"approve\" />&nbsp;Make Maternity / Paternity Leave</td>
+		</tr>
+		<tr>
+		<td colspan=\"5\"><input type=\"hidden\" value=\"$_COOKIE[user]\" name=\"user_id\" /><input type=\"submit\" value=\"Submit\" /></td>
 		</tr>
 		</table>
 		";
@@ -1497,7 +1819,6 @@ function NewPage() {
 
 }
 
-
 function Paragraph ($input) {
 	
 	GLOBAL $pdf;
@@ -1554,7 +1875,6 @@ function Paragraph ($input) {
 	
 	
 }
-
 
 function UpDate ($qms_date) {
 						
@@ -1725,7 +2045,7 @@ function ListProjectJournalEntries($proj_id) {
 	
 		global $conn;
 
-					print "<h2>Journal Entries</h2>";
+					echo "<h2>Journal Entries</h2>";
 
 					$sql = "SELECT * FROM intranet_projects_blog, intranet_projects, intranet_user_details WHERE blog_proj = proj_id AND proj_id = '$proj_id' AND blog_user = user_id order by blog_date DESC";
 					$result = mysql_query($sql, $conn) or die(mysql_error());
@@ -1739,7 +2059,7 @@ function ListProjectJournalEntries($proj_id) {
 
 					// Include a bar to navigate through the pages
 
-							print "<p class=\"submenu_bar\">";
+							echo "<p class=\"submenu_bar\">";
 
 							$items_to_view = 10;
 
@@ -1748,16 +2068,16 @@ function ListProjectJournalEntries($proj_id) {
 							$page_prev = $limit - $items_to_view;
 							$page_next = $limit + $items_to_view;
 							
-							if ($limit > 0) { print "<a href=\"index2.php?page=project_blog_list&amp;proj_id=$proj_id&amp;limit=$page_prev\" class=\"submenu_bar\">Previous Page</a>"; }
-							if ($page_next < $total_items) { print "<a href=\"index2.php?page=project_blog_list&amp;proj_id=$proj_id&amp;limit=$page_next\" class=\"submenu_bar\">Next Page</a>"; }
-							print "</p>";
+							if ($limit > 0) { echo "<a href=\"index2.php?page=project_blog_list&amp;proj_id=$proj_id&amp;limit=$page_prev\" class=\"submenu_bar\">Previous Page</a>"; }
+							if ($page_next < $total_items) { echo "<a href=\"index2.php?page=project_blog_list&amp;proj_id=$proj_id&amp;limit=$page_next\" class=\"submenu_bar\">Next Page</a>"; }
+							echo "</p>";
 
 
 					$nowtime = time();
 
 					if (mysql_num_rows($result) > 0) {
 
-					print "<table summary=\"List of Journal Entries for $proj_num $proj_name\">";
+					echo "<table summary=\"List of Journal Entries for $proj_num $proj_name\">";
 
 					$counter = 0;
 					$title = NULL;
@@ -1783,12 +2103,12 @@ function ListProjectJournalEntries($proj_id) {
 						
 					 if ($counter >= $limit AND $counter < $page_next) {
 							$counter_title++;
-							print "<tr>";
-							print "<td>$type.</td><td><a href=\"index2.php?page=project_blog_view&amp;blog_id=$blog_id&amp;proj_id=$proj_id\">".$blog_title."</a>&nbsp;<a href=\"pdf_journal.php?blog_id=$blog_id\"><img src=\"images/button_pdf.png\" /></a></td>";
-							print "<td style=\"width: 20%;\"><a href=\"index2.php?page=datebook_view_day&amp;time=$blog_date\">".TimeFormat($blog_date)."</a></td>";
-							print "<td><a href=\"index2.php?page=user_view&amp;user_id=$user_id\">".$blog_user_name_first."&nbsp;".$blog_user_name_second."</a></td>";
-							print "<td style=\"width: 20%;\"><span class=\"minitext\">$blog_type_view</span></td>";
-							print "</tr>";
+							echo "<tr>";
+							echo "<td>$type.</td><td><a href=\"index2.php?page=project_blog_view&amp;blog_id=$blog_id&amp;proj_id=$proj_id\">".$blog_title."</a>&nbsp;<a href=\"pdf_journal.php?blog_id=$blog_id\"><img src=\"images/button_pdf.png\" /></a></td>";
+							echo "<td style=\"width: 20%;\"><a href=\"index2.php?page=datebook_view_day&amp;time=$blog_date\">".TimeFormat($blog_date)."</a></td>";
+							echo "<td><a href=\"index2.php?page=user_view&amp;user_id=$user_id\">".$blog_user_name_first."&nbsp;".$blog_user_name_second."</a></td>";
+							echo "<td style=\"width: 20%;\"><span class=\"minitext\">$blog_type_view</span></td>";
+							echo "</tr>";
 					}
 
 					$title = $blog_type;
@@ -1797,11 +2117,11 @@ function ListProjectJournalEntries($proj_id) {
 					}
 
 
-					print "</table>";
+					echo "</table>";
 
 					} else {
 
-					print "<p>There are no journal entries on the system for this project.</p>";
+					echo "<p>There are no journal entries on the system for this project.</p>";
 
 					}
 
@@ -1840,13 +2160,19 @@ function AlertBoxInsert($user_id,$alert_category,$alert_message,$alert_entryref,
 	
 		global $conn;
 		
-		$verbose = intval($verbose);
+		$alert_entryref = intval ( $alert_entryref );
 		
-		$sql = "SELECT * FROM intranet_alerts WHERE alert_timestamp > " . (time() - $snoozetime) . " AND alert_user = " . $user_id . " AND alert_category = '" . $alert_category . "' AND alert_entryref = " . $alert_entryref . " LIMIT 1";
-		$result = mysql_query($sql, $conn) or die(mysql_error());
-		if (mysql_num_rows($result) == 0) {
-			$sql_add = "INSERT INTO intranet_alerts (alert_id, alert_user, alert_category, alert_message, alert_timestamp, alert_status, alert_entryref) VALUES (NULL, " . $user_id . ",'" . $alert_category . "','" . $alert_message . "'," . time() . "," . $verbose . ", " . $alert_entryref . ")";
-			$result_add = mysql_query($sql_add, $conn) or die(mysql_error());
+		if ($alert_entryref > 0) {
+		
+			$verbose = intval($verbose);
+			
+			$sql = "SELECT * FROM intranet_alerts WHERE alert_timestamp > " . (time() - $snoozetime) . " AND alert_user = " . $user_id . " AND alert_category = '" . $alert_category . "' AND alert_entryref = " . $alert_entryref . " LIMIT 1";
+			$result = mysql_query($sql, $conn) or die(mysql_error());
+			if (mysql_num_rows($result) == 0) {
+				$sql_add = "INSERT INTO intranet_alerts (alert_id, alert_user, alert_category, alert_message, alert_timestamp, alert_status, alert_entryref) VALUES (NULL, " . $user_id . ",'" . $alert_category . "','" . $alert_message . "'," . time() . "," . $verbose . ", " . $alert_entryref . ")";
+				$result_add = mysql_query($sql_add, $conn) or die(mysql_error());
+			}
+		
 		}
 }
 
@@ -1942,19 +2268,19 @@ function CheckCheckList() {
 	
 }
 
-function CheckInvoicesToBeIssued() {
+function CheckInvoicesToBeIssued($user_id) {
 	
 	global $conn;
 	
 			$today_day = date("j",time()); $today_month = date("n",time()); $today_year = date("Y",time());
 		$day_begin = mktime(0,0,0,$today_month,$today_day,$today_year);
 		$day_end = $day_begin + 86400;
-		$sql3 = "SELECT invoice_id, invoice_ref, proj_name FROM intranet_timesheet_invoice, intranet_projects WHERE `invoice_date` BETWEEN '$day_begin' AND '$day_end' AND `proj_rep_black` = '$_COOKIE[user]' AND `proj_id` = `invoice_project` ORDER BY `invoice_ref` ";
+		$sql3 = "SELECT invoice_id, invoice_ref, proj_name, proj_num FROM intranet_timesheet_invoice, intranet_projects WHERE `invoice_date` BETWEEN '$day_begin' AND '$day_end' AND `proj_rep_black` = $user_id AND `proj_id` = `invoice_project` ORDER BY `invoice_ref` ";
 		$result3 = mysql_query($sql3, $conn) or die(mysql_error());
 		if (mysql_num_rows($result3) > 0) {
 			while ($array3 = mysql_fetch_array($result3)) {
-			$invoicemessage = "<p<a href=\"index2.php?page=timesheet_invoice_view&amp;invoice_id=" . $array3['invoice_id'] . "\">" . $array3['invoice_ref'] . "</a></td><td>" . $array3['proj_name'] . "</p>";
-			AlertBoxInsert($_COOKIE[user],"Invoices To Be Issued",$invoicemessage,$array3['invoice_id'],86400);
+			$invoicemessage = "<p>Invoice ref. <a href=\"index2.php?page=timesheet_invoice_view&amp;invoice_id=" . $array3['invoice_id'] . "\">" . $array3['invoice_ref'] . "</a> for" . $array3['proj_num'] . " " . $array3['proj_name'] . " to be issued today.</p>";
+			AlertBoxInsert($user_id,"Invoices Issued",$invoicemessage,$array3['invoice_id'],86400);
 			}
 			
 		}
@@ -2033,13 +2359,15 @@ function AlertDelete($alert_id, $user_id) {
 			
 }
 
-function AlertsList($user_id) {
+function AlertsList($user_id,$user_usertype_current) {
 
 	global $conn;
 	
 	$user_id = intval($user_id);
+	
+		if ($_GET[view] == "all" && $user_usertype_current > 4) { unset($filter); } else { $filter = "WHERE alert_user = " . $user_id; }
 
-		$sql = "SELECT * FROM intranet_alerts WHERE alert_user = $user_id ORDER BY alert_timestamp DESC";
+		$sql = "SELECT * FROM intranet_alerts LEFT JOIN intranet_user_details ON user_id = alert_user $filter ORDER BY alert_timestamp DESC";
 		
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		
@@ -2047,11 +2375,15 @@ function AlertsList($user_id) {
 			
 			echo "<table>";
 			
-			echo "<tr><th>ID</th><th style=\"width: 20%;\">Subject</th><th style=\"width: 50%;\">Content</th><th style=\"text-align: right;\">Date</th><th style=\"text-align: right;\">Updated</th></tr>";
+			echo "<tr><th>ID</th><th style=\"width: 20%;\">Subject</th><th style=\"width: 50%;\">Content</th><th>User</th><th style=\"text-align: right;\">Date</th><th style=\"text-align: right;\">Dismissed</th></tr>";
 		
-			while ($array = mysql_fetch_array($result)) {
+			while ($array = mysql_fetch_array($result)) { 
+				
+				if ($array['alert_status'] == 0) { $alert_message = "<strong>" . $array['alert_message'] . "</strong>"; } else { $alert_message = $array['alert_message']; }
+				
+				if ($array['alert_updated']) { $time_format = TimeFormat($array['alert_updated']) . "<br /><span class=\"minitext\">" . date("H:i",$array['alert_updated']) ."</span>"; } else { $time_format = "-"; }
 			
-				echo "<tr><td>" . $array['alert_id'] . "</td><td>" . $array['alert_category'] . "</td><td>" . $array['alert_message'] . "</td><td style=\"text-align: right;\">" . TimeFormat($array['alert_timestamp'])  . "</td><td style=\"text-align: right;\">" . TimeFormat($array['alert_updated'])  . "</td></tr>";
+				echo "<tr><td>" . $array['alert_id'] . "</td><td>" . $array['alert_category'] . "</td><td>" . $alert_message . "</td><td>" . $array['user_name_first'] . " " . $array['user_name_second'] . "</td><td style=\"text-align: right;\">" . TimeFormat($array['alert_timestamp'])  . "<br /><span class=\"minitext\">" . date("H:i",$array['alert_timestamp']) ."</span></td><td style=\"text-align: right;\">" . $time_format  . "</td></tr>";
 			
 			}
 			
@@ -2063,5 +2395,1086 @@ function AlertsList($user_id) {
 			echo "<p>No log entries found.</p>";
 			
 		}
+
+}
+
+function UserAccessType($selectname,$user_usertype,$currentlevel,$maxlevel) {
+	
+
+	echo "<select name=\"$selectname\">";
+		
+			echo "<option value=\"1\"";
+				if ($currentlevel == 1) { echo " selected=\"selected\" "; }
+			echo ">Guest</option>";
+			
+			echo "<option value=\"2\"";
+				if ($currentlevel == 2) { echo " selected=\"selected\" "; }
+			echo ">Basic User</option>";
+			
+			echo "<option value=\"3\"";
+				if ($currentlevel == 3) { echo " selected=\"selected\" "; }
+			echo ">Standard User</option>";
+			
+			echo "<option value=\"4\"";
+				if ($currentlevel == 4) { echo " selected=\"selected\" "; }
+			echo ">Power User</option>";
+			
+			echo "<option value=\"5\"";
+				if ($currentlevel > 4) { echo " selected=\"selected\" "; }
+			echo ">Administrator</option>";
+		
+	
+		echo "</select>";
+		
+}
+
+function UsersList($active) {
+	
+	GLOBAL $conn;
+	
+			echo "<h1>Users</h1>";
+	
+			if ($active == 0) {
+				echo "<h2>Active Users</h2>";
+				echo "<div class=\"sub_menu\"><a class=\"menu_tab\" href=\"index2.php?page=user_list&amp;list_active=1\">All Users</a></div>";
+				
+				$showactive = " WHERE user_active = 1 ";
+			
+			} else {
+				echo "<h2>All Users</h2>";
+				
+				echo "<div class=\"sub_menu\"><a class=\"menu_tab\" href=\"index2.php?page=user_list\">Active Users</a></div>";
+				
+				unset($showactive);
+			}
+
+			$sql = "SELECT * FROM intranet_user_details $showactive ORDER BY user_active DESC, user_name_second";
+			$result = mysql_query($sql, $conn);
+			
+			
+			echo "<table><tr><th>Name</th><th>Initials</th><th>Date Started</th><th>Date Ended</th><th>Mobile</th><th>Email</th><th colspan=\"2\">User Type</th><th style=\"text-align: right;\">Hourly Rate (Cost)</th><th style=\"text-align: right;\">Weekly Hours</th><th style=\"text-align: right;\" colspan=\"2\">Target Fee-Earning Hours<span class=\"minitext\"><br />Equivalent Hourly Rate<br />Total Weekly Rate</span></th></tr>";
+			
+			$cost_per_hour_total = 0;
+			$cost_per_week_total = 0;
+			$total_hours_week = 0;
+			$total_hourly_worked = 0;
+			$total_people = 0;
+			$total_hourly_cost = 0;
+			
+			while ($array = mysql_fetch_array($result)) {
+				
+					$user_id = $array['user_id'];
+					$user_name_first = $array['user_name_first'];
+					$user_name_second = $array['user_name_second'];
+					$user_initials = $array['user_initials'];
+					$user_num_mob = $array['user_num_mob'];
+					$user_email = $array['user_email'];
+					$user_active = $array['user_active'];
+					$user_usertype = $array['user_usertype'];
+					$user_timesheet_hours = $array['user_timesheet_hours'];
+					$user_prop_target = $array['user_prop_target'];
+					if ($array['user_user_added'] > 0) { $user_user_added = TimeFormatDay($array['user_user_added']); } else { $user_user_added = "-"; }
+					if ($array['user_user_ended'] > 0) { $user_user_ended = TimeFormatDay($array['user_user_ended']); } else { $user_user_ended = "-"; }
+					$user_user_rate = "&pound;" . number_format($array['user_user_rate'],2);
+					
+					if ($user_active != 1) { $user_timesheet_hours = 0; }
+					
+					$fee_earning_hours_per_week = intval((1 - $user_prop_target) * $user_timesheet_hours);
+					
+					$cost_per_hour = $fee_earning_hours_per_week * $array['user_user_rate'] / $user_timesheet_hours;
+					
+					if ($cost_per_hour > 0) { $total_people++ ; $total_hourly_cost = $total_hourly_cost + $cost_per_hour; }
+					
+					$cost_per_week = $cost_per_hour * $fee_earning_hours_per_week;
+					
+					$cost_per_hour_total = $cost_per_hour_total + $cost_per_hour;
+					$cost_per_week_total = $cost_per_week_total + $cost_per_week;
+					$total_hours_week = $total_hours_week + $fee_earning_hours_per_week;
+					
+					if ($user_usertype == 1) { $user_usertype = "(1)</td><td>Guest"; }
+					elseif ($user_usertype == 2) { $user_usertype = "(2)</td><td>Basic User"; }
+					elseif ($user_usertype == 3) { $user_usertype = "(3)</td><td>Standard User"; }
+					elseif ($user_usertype == 4) { $user_usertype = "(4)</td><td>Power User"; }
+					elseif ($user_usertype == 5) { $user_usertype = "(5)</td><td>Administrator"; }
+					
+					if ($user_active == "1") { $user_active_print = "Active Users"; } else { $user_active_print = "Inactive Users"; }
+					
+					if ($current_active != $user_active) { echo "<tr><td colspan=\"12\"><strong>$user_active_print</strong></td></tr>"; $current_active = $user_active;  }
+					
+					echo "<tr><td><a href=\"index2.php?page=user_view&amp;user_id=$user_id\">$user_name_first $user_name_second</a></td><td>$user_initials</td><td>$user_user_added</td><td>$user_user_ended</td><td>$user_num_mob</td><td>$user_email</td><td>$user_usertype</td><td style=\"text-align: right;\">$user_user_rate</td><td style=\"text-align: right;\">$user_timesheet_hours</td><td style=\"text-align: right;\">" . $fee_earning_hours_per_week . "<span class=\"minitext\"><br />&pound;" . number_format($cost_per_hour,2) . "<br />&pound;" . number_format($cost_per_week,2) . "</span>
+					</td><td><a href=\"index2.php?page=user_edit&amp;status=edit&user_id=$user_id\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a></td></tr>";
+
+								
+			}
+			
+			echo "<tr><td>Total Fee Hours</td><td colspan=\"10\" style=\"text-align: right;\">" . number_format ( $total_hours_week ) . "</td><td rowspan=\"6\"></td></tr>";
+			echo "<tr><td>Total Hourly Fee</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat($cost_per_hour_total) . "</td></tr>";
+			echo "<tr><td>Total Weekly Fee</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat($cost_per_week_total) . "</td></tr>";
+			echo "<tr><td>Total Fee Earners</td><td colspan=\"10\" style=\"text-align: right;\">" . number_format ($total_people) . "</td></tr>";
+			echo "<tr><td>Average Hourly Fee</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat($total_hourly_cost / $total_people) . "</td></tr>";
+			echo "<tr><td>Average Weekly Cost</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat(($total_hourly_cost / $total_people) * 40) . "</td></tr>";
+			echo "</table>";
+		
+						
+}
+
+
+function CheckListRows($proj_id,$group_id,$showhidden) {
+
+	global $conn;
+	
+	if ($showhidden != "yes") { $sqlhidden = " AND checklist_required != 1 "; } else { unset($sqlhidden); }
+	
+	$sql_checklist = "SELECT * FROM intranet_project_checklist_items LEFT JOIN intranet_project_checklist ON checklist_item = item_id AND checklist_project = $proj_id LEFT JOIN intranet_timesheet_group ON group_id = item_stage WHERE ((group_id = '$group_id') OR (item_stage IS NULL)) $sqlhidden ORDER BY item_group, item_order, checklist_date, item_name";
+
+	$result_checklist = mysql_query($sql_checklist, $conn) or die(mysql_error());
+
+	echo "
+
+		<script type=\"text/javascript\">
+
+			function hideRow(row, hideVal) {
+			if (document.getElementById(row)) {
+			  var displayStyle = (hideVal!=true)? '' : 'none' ;
+			  document.getElementById(row).style.display = displayStyle;
+			}
+		  }
+
+			
+		</script>
+			
+	";
+
+
+
+	echo "<table>";
+	echo "<tr><th>Item</th><th>Stage</th><th>Required</th><th style=\"width: 15%;\">Date Completed</th><th colspan=\"4\">Comment</th></tr>";
+
+	$current_item = 0;
+
+	if (mysql_num_rows($result_checklist) > 0) {
+
+	$group = NULL;
+
+	while ($array_checklist = mysql_fetch_array($result_checklist)) {
+	$item_id = $array_checklist['item_id'];
+	$item_name = $array_checklist['item_name'];
+	$item_date = $array_checklist['item_date'];
+	$item_group = $array_checklist['item_group'];
+	$item_required = $array_checklist['item_required'];
+	$item_notes = $array_checklist['item_notes'];
+	
+	$group_code = $array_checklist['group_code'];
+	
+	$checklist_id = $array_checklist['checklist_id'];
+	$checklist_required = $array_checklist['checklist_required'];
+	$checklist_date	= $array_checklist['checklist_date'];
+	$checklist_comment = htmlentities ( $array_checklist['checklist_comment']);
+	$checklist_user = $_COOKIE[user];
+	$checklist_link	= $array_checklist['checklist_link'];
+	$checklist_item	= $array_checklist['checklist_item'];
+	$checklist_timestamp = time();
+	$checklist_deadline = $array_checklist['checklist_deadline'];
+	//$checklist_project = $proj_id;
+	
+	if ($item_group != $group) { echo "<tr><td colspan=\"8\"><strong>$item_group</strong></td></tr>"; }
+	
+		// Change the background color depending on status
+		if ($checklist_required == 2 && ( $checklist_date == "0000-00-00" OR $checklist_date == NULL ) ) { $bg =  "style=\"background: rgba(255,0,0, 0.4); \""; } // red
+		elseif ($checklist_required == 2 && ( $checklist_date != "0000-00-00" OR $checklist_date != NULL ) ) { $bg =  "style=\"background: rgba(0,255,0,0.4); \""; } // green
+		elseif ($checklist_required == 1) { $bg =  "style=\"background: rgba(200,200,200, 0.4); \""; } // grey
+		else { $bg =  "style=\"background: rgba(255,220,0, 0.4); \""; } // grey
+		
+		
+		
+		
+		if ($checklist_deadline != "0000-00-00" && $checklist_deadline != NULL) {
+			$checklist_date = $checklist_date . "<br /><span class=\"minitext\">Deadline: $checklist_deadline</span>";
+		}
+	
+	
+	echo "<tr><td $bg>";
+	//if ($item_name_current != $item_name) { 
+	
+	echo $item_name;
+
+	$item_name_current = $item_name;
+	echo "</td>";
+	
+	echo "<td $bg>$group_code</td>";
+	
+	echo "<td $bg>";
+	
+	if (!$item) {
+	
+		if ($checklist_required == 1) { echo "Not Required"; }
+		elseif ($checklist_required == 2) { echo "Required"; }
+		else { echo "?"; }
+	
+	}
+	
+	echo "</td>";
+
+	if (!$item) {	
+		if ($checklist_date == 0) { $checklist_date = "-";}
+		echo "<td $bg>$checklist_date</td>";
+		echo "<td $bg>$checklist_comment</td>";
+		if ($checklist_link) {
+			echo "<td colspan=\"2\" $bg><a href=\"$checklist_link\" target=\"_blank\"><img src=\"images/button_internet.png\" /></a></td>";
+		} elseif ($_GET[item] == $item_id) {
+			echo "<td colspan=\"3\"  $bg></td>";
+		} else {
+			echo "<td colspan=\"2\" $bg></td>";
+		}
+	}
+
+	
+	if ($item_notes != NULL) {
+	
+		if ($_GET[item] != $item_id AND $_POST[item] != $item_id) { $hidden = "none"; } else { unset($hidden); }
+	
+		if (!$item) {
+			echo "<td $bg><a href=\"javascript:void(0);\" onclick=\"hideRow($item_id, false);\"><img src=\"images/button_help.png\" alt=\"Help\" /></a></td>";
+		}
+		
+		echo "</tr>";
+		
+		echo "<tr id=\"$item_id\" style=\"display: $hidden;\"><td colspan=\"7\" style=\"padding: 12px; background: rgba(255,255,255,1);\">$item_notes</td>";
+		
+	} else { echo "<td $bg></td>"; }
+	
+		echo "</tr>";
+
+	
+	$group = $item_group;
+	
+	$current_item = $item_id;
+
+	}
+
+}
+
+
+echo "</table>";
+
+
+}
+
+function InvoiceLineItems ($ts_fee_id, $highlight, $stage_fee) {
+	
+	global $conn;
+	
+	$highlight = $highlight . " font-size: 75%;";
+	
+	$ts_fee_id = intval($ts_fee_id);
+	
+	$invoice_total = 0;
+	$invoice_paid_total = 0;
+	$invoice_paid_remaining = 0;
+	
+	$sql = "SELECT * FROM intranet_timesheet_invoice_item, intranet_timesheet_invoice WHERE invoice_id = invoice_item_invoice AND invoice_item_stage = $ts_fee_id ORDER BY invoice_date, invoice_ref";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	
+	if (mysql_num_rows($result) > 0) {
+	
+				while ($array = mysql_fetch_array($result)) {
+					
+					$invoice_id = $array['invoice_id'];
+					$invoice_item_id = $array['invoice_item_id'];
+					$invoice_item_invoice = $array['invoice_item_invoice'];
+					$invoice_date = $array['invoice_date'];
+					$invoice_paid = $array['invoice_paid'];
+					$invoice_ref = $array['invoice_ref'];
+					$invoice_item_novat = $array['invoice_item_novat'];
+					$invoice_project = $array['invoice_project'];
+					
+					$invoice_total = $invoice_total + $invoice_item_novat;
+					
+					if ($invoice_paid) { $invoice_paid_total = $invoice_paid_total + $invoice_item_novat; }
+					
+					echo "	<tr>
+							<td style=\"" . $highlight . "\" colspan=\"2\"></td>
+							<td style=\"" . $highlight . "\"><a href=\"index2.php?page=timesheet_invoice_view&amp;invoice_id=$invoice_id\">" . $invoice_ref . "</a>";
+					
+					if (!$invoice_date_paid) { echo "&nbsp;<a href=\"index2.php?page=timesheet_invoice_items_edit&amp;proj_id=" . $invoice_project . "&amp;invoice_item_id=" . $invoice_item_id . "\"><img src=\"images/button_edit.png\" alt=\"Edit\" />"; }
+					
+					echo "</td>
+							<td style=\"" . $highlight . "\">" . TimeFormat($invoice_date) . "</td>
+							<td style=\"" . $highlight . "text-align: right;" . "\" colspan=\"3\">" . MoneyFormat($invoice_item_novat) . "</td>
+							<td style=\"" . $highlight . "\" colspan=\"2\"></td>
+							</tr>
+						";
+					}
+					
+					$stage_fee_remaining = $stage_fee - $invoice_total;
+					
+					if ($stage_fee_remaining > 0) { $stage_fee_remaining = "<span style=\"color: red; font-weight: bold;\">" . MoneyFormat($stage_fee_remaining) . "</span>"; }
+					else { $stage_fee_remaining = MoneyFormat($stage_fee_remaining); }
+					
+					
+					echo "	<tr>
+							<td style=\"" . $highlight . "\" colspan=\"2\"></td>
+							<td style=\"" . $highlight . "\" colspan=\"2\">Remaining to invoice</td>
+							<td style=\"" . $highlight . "text-align: right;" . "\" colspan=\"3\">" . $stage_fee_remaining . "</td>
+							<td style=\"" . $highlight . "\" colspan=\"2\"></td>
+							</tr>
+						";
+				
+				$invoice_paid_remaining = $invoice_total - $invoice_paid_total;
+				
+				if ($invoice_paid_remaining > 0) { $invoice_paid_remaining_print = "<span style=\"color: red;\">" . MoneyFormat($invoice_paid_remaining) . "</span>"; }
+				else { $invoice_paid_remaining_print = MoneyFormat($invoice_paid_remaining); }
+						
+				if ($invoice_paid_remaining > 0) {
+						
+					echo "	<tr>
+							<td style=\"" . $highlight . "\" colspan=\"2\"></td>
+							<td style=\"" . $highlight . "\" colspan=\"2\">Remaining to be paid</td>
+							<td style=\"" . $highlight . "text-align: right;" . "\" colspan=\"3\">" . $invoice_paid_remaining_print . "</td>
+							<td style=\"" . $highlight . "\" colspan=\"2\"></td>
+							</tr>
+					";
+					
+				}
+	
+	}
+	
+	$output = array();
+	$output[] = $invoice_total;
+	$output[] = $invoice_paid_total;
+	
+	return $output;
+	
+}
+
+function ProjectFees($proj_id,$user_usertype_current) {
+
+	global $conn;
+
+	$proj_id = intval ( $proj_id );
+
+				// Check if we're updating the current fee stage
+
+				if ($_POST[fee_stage_current] > 0) { 
+
+					$fee_stage_current = CleanNumber($_POST[fee_stage_current]);
+					$sql_update = "UPDATE intranet_projects SET proj_riba = '$fee_stage_current' WHERE proj_id = '$proj_id' LIMIT 1";
+					$result_update = mysql_query($sql_update, $conn) or die(mysql_error());
+
+				}
+
+
+				echo "<h2>Fee Stages</h2>";
+
+				$sql = "SELECT * FROM intranet_projects, intranet_timesheet_fees LEFT JOIN intranet_timesheet_group ON group_id = ts_fee_group WHERE ts_fee_project = $proj_id AND proj_id = ts_fee_project ORDER BY ts_fee_commence, ts_fee_text";
+				$result = mysql_query($sql, $conn) or die(mysql_error());
+
+
+						if (mysql_num_rows($result) > 0) {
+							
+						echo "<table summary=\"Lists the fees for the selected project\">";
+						
+						echo "<form method=\"post\" action=\"index2.php?page=project_fees&amp;proj_id=$proj_id\">";
+						
+						echo "<tr><th colspan=\"3\">Stage</th><th>Begin Date</th><th>End Date</th><th>Likelihood</th><th";
+						if ($user_usertype_current > 2) { echo " colspan=\"3\""; }
+						echo ">Fee for Stage</th></tr>";
+						
+
+						$fee_total = 0;
+						$invoice_total = 0;
+						$counter = 0;
+						$prog_begin = $proj_date_commence;
+						
+						$target_cost_total = 0;
+						
+						$invoice_total = 0;
+						$invoice_paid_total = 0;
+						
+										while ($array = mysql_fetch_array($result)) {
+												
+												$ts_fee_id = $array['ts_fee_id'];
+												$ts_fee_time_begin = $array['ts_fee_time_begin'];
+												$ts_fee_time_end = $array['ts_fee_time_end'];
+												$prog_end = $prog_begin + $ts_fee_time_end;
+												$ts_fee_value = $array['ts_fee_value'];
+												$ts_fee_text = $array['ts_fee_text'];
+												$ts_fee_comment = $array['ts_fee_comment'];
+												$ts_fee_commence = $array['ts_fee_commence'];
+												$ts_fee_percentage = $array['ts_fee_percentage'];
+												$ts_fee_invoice = $array['ts_fee_invoice'];
+												$ts_fee_project = $array['ts_fee_project'];
+												$ts_fee_pre = $array['ts_fee_pre'];
+												$ts_fee_stage = $array['ts_fee_stage'];
+												$group_code = $array['group_code'];
+												if ($group_code == NULL) { $group_code = "-"; }
+												$ts_fee_target = 1 / $array['ts_fee_target'];
+												$ts_fee_prospect = $array['ts_fee_prospect'];
+												$ts_fee_pre_lag = $array['ts_fee_pre_lag']; 
+												$proj_value = $array['proj_value'];
+												$proj_fee_percentage = $array['proj_fee_percentage'];
+												$proj_riba = $array['proj_riba'];
+												if ($array['proj_date_start'] != 0) { $proj_date_start = $array['proj_date_start']; } else { $proj_date_start = time(); }
+												
+												if ($ts_fee_comment != NULL) { $ts_fee_text = $ts_fee_text . "<span class=\"minitext\"><br />". $ts_fee_comment . "</span>"; }
+												
+												//  Pull any invoices from the system which relate to this fee stage
+													$sql2 = "SELECT * FROM intranet_timesheet_invoice WHERE invoice_id = '$ts_fee_invoice' LIMIT 1";
+													$result2 = mysql_query($sql2, $conn) or die(mysql_error());
+													$array2 = mysql_fetch_array($result2);
+													$invoice_id = $array2['invoice_id'];
+													$invoice_ref = $array2['invoice_ref'];
+													$invoice_date = $array2['invoice_date'];
+												
+												$proj_fee_total = $proj_value * ($proj_fee_percentage / 100);
+												
+												if ($ts_fee_percentage > 0) { $ts_fee_calc = ($proj_fee_total * ($ts_fee_percentage / 100)); } else { $ts_fee_calc = $ts_fee_value; }
+												
+												$fee_total = $fee_total + $ts_fee_calc;
+												
+												//  This bit needs re-writing to cross out any completed stages	
+												// if ($proj_riba > $riba_order) { $highlight = $highlight."text-decoration: line-through;"; }
+												
+												$prog_begin = AssessDays ($ts_fee_commence);
+												if ($prog_begin > 0) { $prog_end = $prog_begin + $ts_fee_time_end; } else { $prog_begin = time(); }
+												
+												// Calculate the time we are through the stage
+														if (time() > $prog_begin && time() < $prog_end) {
+														
+															$percent_complete = time() - $prog_begin;
+															$percent_complete = $percent_complete / $ts_fee_time_end;
+														
+														}
+														elseif (time() > $prog_end) { $percent_complete = 1; }
+														else { $percent_complete = 0; }
+														$percent_complete = $percent_complete * 100;
+														
+														$percent_complete = round ($percent_complete,0);
+														
+														$fee_period_length = intval(($prog_end - $prog_begin) / 604800);
+												
+												if ($prog_begin > 0) { $prog_begin_print = "<a href=\"index2.php?page=datebook_view_day&amp;time=$prog_begin\">".TimeFormat($prog_begin)."</a>"; } else { $prog_begin_print = "-"; }
+												if ($prog_end > 0) { $prog_end_print = "<a href=\"index2.php?page=datebook_view_day&amp;time=$prog_end\">".TimeFormat($prog_end)."</a>"; } else { $prog_end_print = "-"; }
+												
+												if ($prog_end > 0 && $fee_period_length > 0) { $prog_end_print = $prog_end_print . "<br /><span class=\"minitext\">Length: "  . $fee_period_length . " wks</span>"; }
+									
+												if ($ts_fee_pre) { $prog_begin_print_add = $ts_fee_pre ; }
+												
+												if ($ts_fee_pre_lag > 0) { $prog_begin_print_add = $prog_begin_print_add . " + " . round($ts_fee_pre_lag / 604800) . " weeks"; }
+												
+												if ($prog_begin_print_add) { $prog_begin_print = $prog_begin_print . "<br /><span class=\"minitext\"  onmouseover=\"ChangeBackgroundColor(\"stage_" . $prog_begin_print_add . "\")\">[" . $prog_begin_print_add . "]</span>"; }
+												
+
+												
+												
+												$proj_duration_print = "Complete: " . $percent_complete . "%</span>";
+												
+												if ( $percent_complete < 100) { $bg_color = "rgba(255,0,0,0.5)"; } else { $bg_color = "rgba(150,200,25,1)"; }
+												
+												$proj_duration_print = $proj_duration_print . "<div style=\"margin: 5px 0 0 0; background: $bg_color; height: 3px; width:" . $percent_complete . "%\"></div>";
+												
+												if ($ts_fee_id == $proj_riba) { $ts_fee_id_selected = " checked=\"checked\""; $highlight = " background: rgba(200,200,200,0.5);"; } else { unset($ts_fee_id_selected); unset($highlight); }
+												
+												if ($prog_end < time()) { $highlight = $highlight . " background: rgba(175,213,0,0.3);"; } elseif ( $ts_fee_id == $proj_riba ) { $highlight = $highlight . " background: rgba(255,175,0,0.3);"; } else { $highlight = $highlight . " background: rgba(255,0,0,0.3);"; }
+												
+												
+												$fee_factored = $ts_fee_calc * $ts_fee_target; $fee_target = "<br /><span class=\"minitext\">Cumulative: "  . MoneyFormat($fee_total) . "<br />Target Cost: " . MoneyFormat($fee_factored). " + " .  number_format(((1 / $ts_fee_target) * 100) - 100 ) . "% profit</span>"; $target_cost_total = $target_cost_total + $fee_factored;
+												
+												if ($ts_fee_prospect == 0) { $ts_fee_likelihood = "Dead"; }
+												elseif ($ts_fee_prospect == 10) { $ts_fee_likelihood = "Unlikely"; }
+												elseif ($ts_fee_prospect == 25) { $ts_fee_likelihood = "Possible"; }
+												elseif ($ts_fee_prospect == 50) { $ts_fee_likelihood = "Neutral"; }
+												elseif ($ts_fee_prospect == 75) { $ts_fee_likelihood = "Probable"; }
+												else { $ts_fee_likelihood = "Definite"; }
+												
+												$ts_fee_prospect = $ts_fee_likelihood . "&nbsp;(" . $ts_fee_prospect . "%)";
+												
+												
+												echo "<tr id=\"stage_$ts_fee_id\"><td style=\"$highlight\"><input type=\"radio\" name=\"fee_stage_current\" value=\"$ts_fee_id\" $ts_fee_id_selected /> </td><td style=\"$highlight\">$group_code<br /><span class=\"minitext\">[$ts_fee_id]</span></td><td style=\"$highlight\">$ts_fee_text</td><td style=\"$highlight\">".$prog_begin_print."</td><td style=\"$highlight\">".$prog_end_print."</td><td style=\"$highlight\">".$ts_fee_prospect."</td><td  style=\"$highlight; text-align: right;\">".MoneyFormat($ts_fee_calc) . $fee_target ."</td>\n";
+												echo "<td style=\"$highlight\">".$proj_duration_print."</td>";
+												if ($user_usertype_current > 2) { echo "<td style=\"$highlight\"><a href=\"index2.php?page=timesheet_fees_edit&amp;ts_fee_id=$ts_fee_id\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a></td>"; }
+												echo "</tr>";
+												
+												$totals_array = InvoiceLineItems($ts_fee_id,$highlight,$ts_fee_calc);
+
+												$invoice_total = $invoice_total + $totals_array[0];
+												$invoice_paid_total = $invoice_paid_total + $totals_array[1];				
+												
+												// Include a line if the invoice has been issued
+												
+												if ($invoice_id > 0) {
+												
+												echo "<tr>";
+												if ($user_usertype_current > 2) { echo "<td colspan=\"5\">"; } else { echo "<td colspan=\"4\">"; }
+													echo "Invoice Ref: <a href=\"index2.php?page=timesheet_invoice_view&amp;invoice_id=$invoice_id\">$invoice_ref</a>, issued: ".TimeFormat($invoice_date);
+														if ($invoice_paid > 0) { echo ", paid: ".TimeFormat($invoice_paid); }
+													echo "</td></tr>";
+												}
+												
+												$counter++;
+												$prog_begin = $prog_begin + $ts_fee_time_end;
+												
+												unset($highlight);
+												
+											}
+					
+						unset($highlight);
+						
+						if ($user_usertype_current > 3) { 
+						
+								echo "<tr><td colspan=\"6\"><strong>Total Fee for All Stages</strong></td><td style=\"text-align: right;\"><strong>". MoneyFormat($fee_total) . "</strong></td><td colspan=\"2\"></td></tr>";
+								
+								$profit = (( $fee_total / $target_cost_total ) - 1) * 100;
+								
+								$target_fee_percentage = number_format ($profit,2);
+								
+								echo "<tr><td colspan=\"6\"><strong>Target Cost for All Stages</strong></td><td style=\"text-align: right;\"><strong>".MoneyFormat($target_cost_total). "</strong></td><td colspan=\"2\">" . $target_fee_percentage . "% profit overall</td></tr>";
+
+								if ($invoice_total > 0) {
+									echo "<tr><td colspan=\"6\">Invoice Total</td><td style=\"text-align: right;\">".MoneyFormat($invoice_total). "</td><td colspan=\"2\"></td></tr>";
+								}
+								
+								if ($invoice_paid_total > 0) {
+									echo "<tr><td colspan=\"6\">Invoice Paid Total</td><td style=\"text-align: right;\">".MoneyFormat($invoice_paid_total). "</td><td colspan=\"2\"></td></tr>";
+								}
+						
+						}
+						
+						echo "<tr><td colspan=\"9\"><input type=\"submit\" value=\"Update Current Fee Stage\" /></td></tr>";
+						
+						echo "</form>";
+						
+						echo "</table>";
+						
+						$sql = "SELECT ts_fee_id, ts_fee_text FROM intranet_timesheet_fees WHERE ts_fee_project = $proj_id ORDER BY ts_fee_text, ts_fee_time_begin";
+						$result = mysql_query($sql, $conn) or die(mysql_error());
+						
+						$sql_count = "SELECT ts_project FROM intranet_timesheet WHERE ts_project = $proj_id AND ts_stage_fee = 0";
+						$result_count = mysql_query($sql_count, $conn) or die(mysql_error());
+						$null_rows = mysql_num_rows($result_count);
+						
+						
+						if ($user_usertype_current > 3 && mysql_num_rows($result) > 0 && $null_rows > 0) { 
+						
+									echo "<fieldset><legend>Reconcile Unassigned Hours</legend>";
+									
+											echo "<p>Move all unassigned hours ($null_rows entries) to this fee stage:</p>";
+											
+											echo "<p><form action=\"index2.php?page=project_fees&amp;proj_id=$proj_id\" method=\"post\">";
+											echo "<input type=\"hidden\" name=\"action\" value=\"fee_move_unassigned\" />";
+											
+											echo "<select name=\"ts_fee_id\">";
+											
+											while ($array = mysql_fetch_array($result)) {
+												
+												$ts_fee_id = $array['ts_fee_id'];
+												$ts_fee_text = $array['ts_fee_text'];
+												
+												if ($proj_riba == $ts_fee_id) { $selected = "selected = \"selected\""; } else { unset($selected); }
+												
+												echo "<option value=\"$ts_fee_id\" $selected>$ts_fee_text</option>";
+												
+											
+											}
+											
+											echo "</select>";
+											echo "&nbsp;<input type=\"hidden\" name=\"proj_id\" value=\"$proj_id\" />";
+											echo "<input type=\"submit\"  onclick=\"return confirm('Are you sure you want to move all unallocated hours to this fee stage?')\">";
+											
+											echo "</form></p>";
+											
+											echo "<p>Alternatively, <a href=\"index2.php?page=timesheet_fee_reconcile&amp;proj_id=$proj_id\">click here</a> to undertake detailed reconciliation.</p>";
+									
+									echo "</fieldset>";
+						
+						}
+						
+				} else {
+
+					echo "<p>There are no fee stages on the system for this project.</p>";
+					
+				}
+				
+}
+				
+function ProjectParticulars($proj_id) {
+
+global $conn;
+
+echo "<div id=\"item_switch_3\">";
+
+		// Project Page Menu
+		echo "<div class=\"submenu_bar\">";
+			if ($user_usertype_current > 3 OR $user_id_current == $proj_rep_black) {
+				echo "<a href=\"index2.php?page=project_edit&amp;status=edit&amp;proj_id=$proj_id\" class=\"submenu_bar\">Edit</a>";
+			}
+			if ($user_usertype_current > 1) {
+				echo "<a href=\"index2.php?page=project_blog_edit&amp;status=add&amp;proj_id=$proj_id\" class=\"submenu_bar\">Add Project Journal Entry</a>";
+			}
+		echo "</div>";
+
+					if ($proj_date_start > 0 OR $proj_date_complete > 0 OR $proj_date_proposal > 0 OR $proj_date_appointment > 0) {
+							echo "<h2>Project Dates</h2><table summary=\"Project Dates\">";
+							if ($proj_date_proposal > 0) { echo "<tr><td style=\"width: 40%;\">Date of Proposal</td><td>".TimeFormat($proj_date_proposal)."</td></tr>"; }
+							if ($proj_date_appointment > 0) { echo "<tr><td style=\"width: 40%;\">Date of Appointment</td><td>".TimeFormat($proj_date_appointment)."</td></tr>"; }
+							if ($proj_date_start > 0) { echo "<tr><td style=\"width: 40%;\">Start Date</td><td>".TimeFormat($proj_date_start)."</td></tr>"; }
+							if ($proj_date_complete > 0) { echo "<tr><td style=\"width: 40%;\">Completion Date</td><td>".TimeFormat($proj_date_complete)."</td></tr>"; }
+							echo "</table>";
+					}		
+					
+
+					echo "<h2>Project Particulars</h2><table summary=\"Project Particulars\">";
+
+					if ($array['proj_date_start'] != NULL) { $proj_date_start = date("jS F Y", $array['proj_date_start']); } else { unset($proj_date_start); }
+					if ($array['proj_date_compelte'] != NULL) { $proj_date_complete = date("jS F Y", $array['proj_date_complete']); } else { unset($proj_date_complete); }
+
+					// Determine the procurement method
+
+					if ($proj_procure != NULL) {
+
+						$sql_procure = "SELECT * FROM intranet_procure where procure_id = $proj_procure LIMIT 1";
+						$result_procure = mysql_query($sql_procure, $conn);
+						$array_procure = mysql_fetch_array($result_procure);
+						$proj_procure = $array_procure['procure_title'];
+					}
+
+					echo "<tr><td style=\"width: 40%;\">Project Leader</td><td>";
+
+					// Get the user details
+
+						$sql_proj_leader = "SELECT user_name_first, user_name_second, user_email FROM intranet_user_details where user_id = '$proj_rep_black' LIMIT 1 ";
+						$result_proj_leader = mysql_query($sql_proj_leader, $conn) or die(mysql_error());
+
+						$array_proj_leader = mysql_fetch_array($result_proj_leader);
+						$name_first = $array_proj_leader['user_name_first'];
+						$name_second = $array_proj_leader['user_name_second'];
+						$user_email = $array_proj_leader['user_email'];
+						
+						echo "<a href=\"index2.php?page=user_view&amp;user_id=111\">".$name_first." ".$name_second."</a>";
+
+						if ($user_email != NULL) { echo "<a href=\"mailto:".$user_email."\"><img src=\"images/button_email.png\" alt=\"Send email to $name_first&nbsp;$name_second \" /></a>"; }
+
+					echo "</td></tr>
+					<tr><td>Database ID</td><td  >$proj_id</td></tr>
+					<tr><td>Active</td><td  >";
+					if ($proj_active == 0) {
+					echo "No";
+					} else {
+					echo "Yes";
+					}
+					echo "</td></tr>";
+
+					echo "</table>";
+
+echo "</div>";
+
+}
+
+
+function ProjectInvoices($proj_id) {
+
+		echo "<h2>Project Invoices</h2>";
+
+
+		global $conn;
+
+		$sql = "SELECT * FROM intranet_timesheet_invoice WHERE invoice_project = '$proj_id' order by invoice_date, invoice_ref";
+		$result = mysql_query($sql, $conn) or die(mysql_error());
+
+		if (mysql_num_rows($result) > 0) {
+
+		echo "<table summary=\"Invoice Schedule\">";
+
+		echo "<tr><td><strong>Invoice Number</strong></td><td><strong>Issued</strong></td><td><strong>Due</strong></td><td><strong>Paid</strong></td></tr>";
+
+		$invoice_total_sub = 0;
+		$invoice_total_paid = 0;
+		$invoice_total_all = 0;
+
+		while ($array = mysql_fetch_array($result)) {
+
+				$invoice_item_total = 0;
+		  
+				$invoice_id = $array['invoice_id'];
+				$invoice_date = $array['invoice_date'];
+				$invoice_due = $array['invoice_due'];
+				$invoice_project = $array['invoice_project'];
+				$invoice_ref = $array['invoice_ref'];
+				$invoice_paid = $array['invoice_paid'];
+				$invoice_notes = $array['invoice_notes'];
+				$invoice_baddebt = $array['invoice_baddebt'];
+				$rowspan = 3;
+				
+				if ($invoice_date < time()) {
+				$confirm = "onClick=\"javascript:return confirm('This item has been invoiced - are you sure you want to edit it?')\""; }
+				else { unset($confirm); }
+				
+						// Pull the corresponding results from the Invoice Item list
+						$sql2 = "SELECT * FROM intranet_timesheet_invoice_item WHERE invoice_item_invoice = '$invoice_id'";
+						$result2 = mysql_query($sql2, $conn) or die(mysql_error());
+						if (mysql_num_rows($result2) > 0) { $rowspan++; }
+						// Pull the corresponding results from the Expenses List
+						$sql3 = "SELECT ts_expense_value, ts_expense_vat FROM intranet_timesheet_expense WHERE ts_expense_invoiced = '$invoice_id'";
+						$result3 = mysql_query($sql3, $conn) or die(mysql_error());
+						if (mysql_num_rows($result3) > 0) { $rowspan++; }
+				
+				if (time() > $invoice_due AND $invoice_paid < 1) { $highlight = " style=\"background-color: #$settings_alertcolor\" "; $highlight2 = "style=\"background-color: #$settings_alertcolor; text-align: right;\"";  } else { $highlight = ""; $highlight2 = "style=\"text-align: right;\""; }
+				
+		if ($invoice_baddebt == "yes") { echo "<tr><td colspan=\"4\" $highlight><strong>Listed as a bad debt</strong></td></tr>"; }
+			
+		echo "<tr>";	
+		echo "<td $highlight rowspan=\"$rowspan\" style=\"width: 25%;\"><a href=\"index2.php?page=timesheet_invoice_view&amp;invoice_id=$invoice_id\">".$invoice_ref."</a>";
+		if ($user_usertype_current > 3) {echo "&nbsp;<a href=\"index2.php?page=timesheet_invoice_edit&amp;status=edit&amp;invoice_id=$invoice_id\" $confirm><img src=\"images/button_edit.png\" alt=\"Edit Invoice\" /></a>"; }
+		if ($invoice_notes != NULL) { echo "<br />".TextPresent($invoice_notes); }
+		echo "</td>";
+		echo "<td $highlight>".TimeFormat($invoice_date)."</td>";
+		echo "<td $highlight>".TimeFormat($invoice_due)."</td>";
+		if ($invoice_paid > 0) { echo "<td $highlight>".TimeFormat($invoice_paid)."</td>"; } else { echo "<td $highlight></td>"; }
+		echo "</tr>";
+
+
+				// Output the Invoice Item details
+				if (mysql_num_rows($result2) > 0) {
+					while ($array2 = mysql_fetch_array($result2)) {
+					$invoice_item_novat = $array2['invoice_item_novat'];
+					$invoice_item_vat = $array2['invoice_item_vat'];
+					if ($invoice_paid > 0) { $invoice_total_paid = $invoice_total_paid + $invoice_item_novat; }
+					$invoice_item_vat_total = $invoice_item_vat_total + $invoice_item_vat;
+					$invoice_item_total = $invoice_item_total + $invoice_item_novat;
+					$invoice_total_all = $invoice_total_all + $invoice_item_novat;
+					$invoice_total_sub = $invoice_total_sub + $invoice_item_novat;
+				}
+					echo "<tr><td colspan=\"2\" $highlight>Fees</td><td $highlight2>".MoneyFormat($invoice_item_total)."</td></tr>";
+				}
+				
+						// Output the Expenses details
+				if (mysql_num_rows($result3) > 0) {
+					$invoice_expense_total = 0;
+					while ($array3 = mysql_fetch_array($result3)) {
+					$ts_expense_novat = $array3['ts_expense_novat'];
+					$ts_expense_vat = $array3['ts_expense_vat'];
+					$invoice_expense_total = $invoice_expense_total + $ts_expense_value;
+					$invoice_item_vat_total = $invoice_item_vat_total + $ts_expense_vat;
+					}
+					echo "<tr><td colspan=\"2\" $highlight>Expenses</td><td $highlight2>".MoneyFormat($invoice_expense_total)."</td></tr>";
+					//$invoice_total_all = $invoice_total_all + $invoice_expense_total;
+					$invoice_total_sub = $invoice_total_sub + $invoice_expense_total;
+					// if ($invoice_paid > 0) { $invoice_total_paid = $invoice_total_paid + $invoice_expense_total; }
+					}
+					
+		echo "<tr><td colspan=\"2\" $highlight>Sub Total</td><td $highlight2>".MoneyFormat($invoice_total_sub)."</td></tr>";
+		echo "<tr><td colspan=\"2\" $highlight><u>Invoice Total</u> (gross, including expenses)</td><td $highlight2><u>".MoneyFormat($invoice_item_vat_total)."</u></td></tr>";
+				
+				$invoice_total_sub = 0;
+				$invoice_item_vat_total = 0;
+
+
+		}
+
+		echo "<tr><td colspan=\"3\"><strong>Issued (net, excluding expenses)</strong><td style=\"text-align: right\"><strong>".MoneyFormat($invoice_total_all)."</strong></td></tr>";
+
+		echo "<tr><td colspan=\"3\"><strong>Paid (net)</strong><td style=\"text-align: right\"><strong>".MoneyFormat($invoice_total_paid)."</strong></td></tr>";
+
+		$invoice_outstanding = $invoice_total_all - $invoice_total_paid;
+
+		echo "<tr><td colspan=\"3\"><strong>Outstanding (net)</strong><td style=\"text-align: right\"><strong>".MoneyFormat($invoice_outstanding)."</strong></td></tr>";
+
+		echo "</table>";
+
+		} else {
+
+			echo "<p>There are no invoices on the system for this project.</p>";
+
+		}
+
+}
+
+function ProjectDrawingList($proj_id) {
+
+
+}
+
+
+function ProjectContacts($proj_id,$user_usertype_current) {
+
+global $conn;
+
+			echo "<h2>Project Contacts</h2>";
+			$sql_contact = "SELECT * FROM contacts_disciplinelist, contacts_contactlist, intranet_contacts_project LEFT JOIN contacts_companylist ON contact_proj_company = contacts_companylist.company_id WHERE contact_proj_contact = contact_id  AND discipline_id = contact_proj_role AND contact_proj_project = $proj_id ORDER BY discipline_name, contact_namesecond";
+			$result_contact = mysql_query($sql_contact, $conn) or die(mysql_error());
+
+			if (mysql_num_rows($result_contact) > 0) {
+
+			echo "<table>";
+				while ($array_contact = mysql_fetch_array($result_contact)) {
+					$contact_id = $array_contact['contact_id'];
+					$contact_namefirst = $array_contact['contact_namefirst'];
+					$contact_namesecond = $array_contact['contact_namesecond'];
+					$company_name = $array_contact['company_name'];
+					$company_id = $array_contact['company_id'];
+					$contact_email = $array_contact['contact_email'];
+					$contact_telephone = $array_contact['contact_telephone'];
+					$contact_mobile = $array_contact['contact_mobile'];
+					$company_phone = $array_contact['company_phone'];
+					$contact_company = $array_contact['contact_company'];
+					$discipline_id = $array_contact['discipline_id'];
+					$discipline_name = $array_contact['discipline_name'];
+					$contact_proj_id = $array_contact['contact_proj_id'];
+					$contact_proj_note = $array_contact['contact_proj_note'];
+					$contact_proj_company = $array_contact['contact_proj_company'];
+				
+					
+			print "<tr><td style=\"width: 30%;\"><a href=\"index2.php?page=discipline_view&amp;discipline_id=$discipline_id\">$discipline_name</a></td>";
+			echo "<td";
+			if (trim($contact_proj_note) == "") { echo " colspan=\"2\" "; }
+			echo "><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=$contact_id\">";
+			echo "$contact_namefirst $contact_namesecond";
+			echo "</a>";
+			if ($company_name != NULL) { echo ",&nbsp;<a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">".$company_name."</a>"; }
+			if ($company_change != NULL) { echo "$company_change"; }
+			if ($contact_email != NULL) { echo "<br />Email: $contact_email&nbsp;<a href=\"mailto:$contact_email\"><img src=\"images/button_email.png\" alt=\"Email\"/></a>"; }
+			if ($contact_telephone != NULL) { echo "<br />T: $contact_telephone"; } elseif ($company_phone != NULL) { echo "<br />T: $company_phone"; }
+			if ($contact_mobile != NULL) { echo "<br />M: $contact_mobile"; }
+			echo "</td>";
+			if (trim($contact_proj_note) != "") {
+			echo "<td style=\"width: 25%;\">".$contact_proj_note.$note."</td>";
+			}
+			echo "<td><a href=\"index2.php?page=project_contacts&amp;contact_proj_id=$contact_proj_id&amp;proj_id=$_GET[proj_id]&amp;action=project_contact_remove&amp;contact_proj_id=$contact_proj_id\" onClick=\"javascript:return confirm('Are you sure you want to delete this project contact?');\"><img src=\"images/button_delete.png\" /></a></td><td><a href=\"index2.php?page=project_contacts&amp;contact_proj_id=$contact_proj_id&amp;proj_id=$_GET[proj_id]\"><img src=\"images/button_edit.png\" /></a></td></tr>";
+
+
+			}
+			echo "</table>";
+
+			} else { echo "<p>- None - </p>"; }
+
+}
+
+
+function ProjectContactEdit($proj_id,$contact_proj_contact) {
+
+global $conn;
+
+		$proj_id = intval($proj_id);
+		$contact_proj_id = intval($contact_proj_contact);
+
+		// First, identify if we're adding or editing
+
+		if ( intval ( $contact_proj_id ) > 0 ) {
+
+				$contact_proj_array = ProjectContactCheck($_GET[contact_proj_id]);
+				$contact_proj_id = $contact_proj_array[0]; 
+				$contact_proj_contact = $contact_proj_array[1];
+				$contact_proj_role = $contact_proj_array[2];
+				$contact_proj_note = $contact_proj_array[3];
+				$contact_proj_company = $contact_proj_array[4];
+				$contact_id = $contact_proj_array[5];
+
+		// work out the CURRENT company to see if the contact has changed
+
+		$sql_check_previous = "SELECT contact_namefirst, contact_namesecond, contact_company FROM contacts_contactlist WHERE contact_id = " . intval ( $contact_id ) . " LIMIT 1 ";
+		$result_check_previous = mysql_query($sql_check_previous, $conn) or die(mysql_error());
+		$array_check_previous = mysql_fetch_array($result_check_previous);
+		$contact_company_previous = $array_check_previous['contact_company'];
+		$contact_namefirst = $array_check_previous['contact_namefirst'];
+		$contact_namesecond = $array_check_previous['contact_namesecond'];
+
+		echo "<h2>Edit Project Contact Entry for $contact_namefirst $contact_namesecond</h2>";
+		} else {
+		echo "<h2>Add Project Contacts</h2>";
+		}
+
+		echo "<form method=\"post\" action=\"index2.php?page=project_contacts&amp;proj_id=$proj_id\">";
+
+		if ($contact_proj_id > 0) {
+
+					if ($contact_proj_company != $contact_company_previous) {
+					echo "<div class=\"form_50\"><p><strong>$contact_proj_company / $contact_company_previous <br />Note:</strong><br />The contact listed for this project is no longer with the company which undertook the work on this project. Please ensure that the company listed below is correct.</p></div>";
+					}
+
+					// Contact company
+
+					print "<div class=\"form_50\">Company:<br /><select name=\"contact_proj_company\">";
+
+					$sql_company = "SELECT company_name, company_postcode, company_id FROM contacts_companylist ORDER BY company_name, company_postcode";
+					$result_company = mysql_query($sql_company, $conn) or die(mysql_error());
+					
+					if ($contact_proj_company > 0) { $company_selected = $contact_proj_company;} elseif ($project_company > 0) { $company_selected = $project_company;} else { $company_selected = NULL; }
+					
+					echo "<option value=\"\">-- None --</option>";
+						while ($array_company = mysql_fetch_array($result_company)) {
+
+							$company_id = $array_company['company_id'];
+							$company_name = $array_company['company_name'];
+							$company_postcode = $array_company['company_postcode'];
+							
+							if ($company_id == $company_selected) { $selected = "selected=\"selected\""; } else { $selected = NULL; }
+							echo "<option value=\"$company_id\" $selected>$company_name, $company_postcode</option>\n";
+					}
+
+					echo "</select>";
+					echo "<input type=\"hidden\" value=\"$contact_id\" name=\"contact_proj_contact\" >";
+					echo "</div>";
+
+		} else {
+		
+			$sql_contact = "SELECT contact_id, contact_namefirst, contact_namesecond, contact_company, company_name, company_postcode, company_id FROM contacts_contactlist LEFT JOIN contacts_companylist ON contacts_contactlist.contact_company = contacts_companylist.company_id WHERE contact_namefirst != '' AND contact_namesecond != '' AND contact_namesecond NOT LIKE '&%' AND contact_namesecond NOT LIKE '-%' AND contact_namesecond NOT LIKE '?%' ORDER BY contact_namesecond, contact_namefirst, contact_company";
+			$result_contact = mysql_query($sql_contact, $conn) or die(mysql_error());
+			echo "<div class=\"form_50\">Contact:<br />";
+			echo "<select name=\"contact_proj_contact\">";
+			
+					while ($array_contact = mysql_fetch_array($result_contact)) {
+
+						$contact_id = $array_contact['contact_id'];
+						$company_id = $array_contact['company_id'];
+						$contact_namefirst = $array_contact['contact_namefirst'];
+						$contact_namesecond = $array_contact['contact_namesecond'];
+						$contact_company = $array_contact['contact_company'];
+						$contact_postcode = $array_contact['contact_postcode'];
+						$company_name = $array_contact['company_name'];
+						$company_postcode = $array_contact['company_postcode'];
+						
+						$name_print = $contact_namesecond.", ".$contact_namefirst;
+						
+						if ($contact_proj_id == NULL AND $contact_company) { $print_company = "- " . $company_name." [".$company_postcode."]"; } else { $print_company = NULL; }
+						if ($contact_proj_contact == $contact_id) { $selected = "selected=\"selected\""; $project_company = $company_id; } else { $selected = NULL; }
+						echo "<option value=\"$contact_id\" $selected>$name_print $print_company</option>\n";
+			}
+			
+			echo "</select></div>";
+		
+		
+		}
+
+		echo "<div class=\"form_50\">Role<br />";
+		$sql_disc = "SELECT discipline_id, discipline_name, discipline_ref FROM contacts_disciplinelist ORDER BY discipline_name";
+		$result_disc = mysql_query($sql_disc, $conn) or die(mysql_error());
+		print "<select name=\"contacts_discipline\">";
+
+			while ($array_disc = mysql_fetch_array($result_disc)) {
+
+				$discipline_id = $array_disc['discipline_id'];
+				$discipline_name = $array_disc['discipline_name'];
+				if ($contact_proj_role == $discipline_id) { $selected = "selected=\"selected\""; } else { $selected = NULL; }
+				echo "<option value=\"$discipline_id\" $selected>$discipline_name</option>\n";
+		}
+
+		echo "</select></div><div class=\"form_50\">Notes:<br /><textarea name=\"contact_proj_note\" cols=\"38\" rows=\"3\">";
+		if ($_GET[contact_proj_id] > 0) { echo $contact_proj_note; }
+		echo "</textarea></div>";
+
+		echo "<div class=\"form_100\">";
+
+		if ($_GET[contact_proj_id] > 0) {
+		echo "<input type=\"hidden\" name=\"action\" value=\"project_contact_edit\" /><input type=\"hidden\" name=\"contact_proj_project\" value=\"$_GET[proj_id]\" /><input type=\"hidden\" name=\"contact_proj_id\" value=\"$contact_proj_id\" /><input type=\"submit\" value=\"Update Contact\" />";
+		} else {
+		echo "<input type=\"hidden\" name=\"action\" value=\"project_contact_add\" /><input type=\"hidden\" name=\"contact_proj_project\" value=\"$_GET[proj_id]\" /><input type=\"submit\" value=\"Add Contact\" />";
+		}
+
+		echo "</div>";
+
+		echo "</form>";
+
+}
+
+function ProjectContactCheck($contact_proj_id) {
+
+	global $conn;
+
+		$sql_check = "SELECT contact_proj_contact, contact_proj_role, contact_proj_note, contact_proj_company FROM intranet_contacts_project WHERE contact_proj_id = '$contact_proj_id' LIMIT 1 ";
+		$result_check = mysql_query($sql_check, $conn) or die(mysql_error());
+		$array_check = mysql_fetch_array($result_check);
+		
+		$return_array = array();
+		
+		$return_array[] = $contact_proj_id;
+		$return_array[] = $array_check['contact_proj_contact'];
+		$return_array[] = $array_check['contact_proj_role'];
+		$return_array[] = $array_check['contact_proj_note'];
+		$return_array[] = $array_check['contact_proj_company'];
+		$return_array[] = $array_check['contact_proj_contact'];
+		
+		return $return_array;
+		
+}
+
+
+function ProjActive($input,$input2,$proj_id) {
+	if ($input != "1") { $output = "<del><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$input2</a></del>"; } else { $output = "<a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$input2</a>"; }
+	return $output;
+}
+			
+function TimeRemaining($proj_id, $ts_fee_id, $ts_fee_target, $ts_fee_value) {
+		GLOBAL $conn;
+		GLOBAL $user_id;
+		GLOBAL $user_usertype_current;
+		if ($ts_fee_id != NULL) {
+			
+			// Establish cost of stage to date for this user
+			$sql_user = "SELECT SUM(ts_cost_factored), user_user_rate FROM intranet_timesheet, intranet_user_details WHERE ts_user = user_id AND ts_user = $_COOKIE[user] AND ts_stage_fee = $ts_fee_id";
+			$result_user = mysql_query($sql_user, $conn) or die(mysql_error());
+			$array_user = mysql_fetch_array($result_user);
+			$ts_cost_factored_user = $array_user['SUM(ts_cost_factored)'];
+			$user_user_rate = $array_user['user_user_rate'];
+			
+			// Establish cost of stage to date for all users
+			$sql_all = "SELECT SUM(ts_cost_factored) FROM intranet_timesheet WHERE ts_stage_fee = $ts_fee_id";
+			$result_all = mysql_query($sql_all, $conn) or die(mysql_error());
+			$array_all = mysql_fetch_array($result_all);
+			$ts_cost_factored_all = $array_all['SUM(ts_cost_factored)'];
+			$cost_remaining_all = $ts_fee_value - $ts_cost_factored_all;
+			
+			// Establish hours to date on project if no fee stage
+			if ($ts_fee_value == 0) {
+			$sql_hours = "SELECT SUM(ts_hours) FROM intranet_timesheet WHERE ts_project = $proj_id AND ts_user = $_COOKIE[user]";
+			$result_hours = mysql_query($sql_hours, $conn) or die(mysql_error());
+			$array_hours = mysql_fetch_array($result_hours);
+			$ts_hours_total = $array_hours['SUM(ts_hours)'];
+			}
+			
+			$user_percent = $ts_cost_factored_user / $ts_cost_factored_all;
+			$user_cost = $user_percent * $cost_remaining_all;
+			$hours_remaining_user = round ( $user_cost / $user_user_rate );
+			
+					$cost_percentage = $ts_cost_factored_all / ( $ts_fee_value / $ts_fee_target);
+			
+			$cost_percentage_cost = $ts_cost_factored_all / $ts_fee_value;
+
+			if ($hours_remaining_user > 0 && $user_percent > 0.1 && $cost_percentage > 0.2 && $cost_percentage < 1) {
+			$row_text = "<span class=\"minitext\"><i>You have <strong>" . round($hours_remaining_user) . "</strong> hour(s) remaining on this stage</i></span>";
+			$row_color = "rgba(0,255,0,0.4)";
+			} elseif ( $cost_percentage > 1 && $cost_percentage_cost < 1 ) {
+			$percent_over = round(100 * ($cost_percentage - 1) );
+			$row_text = "<span class=\"minitext\"><i>This fee stage has overspent target profitability by <strong>" . $percent_over . "%</strong>.</i></span>";
+			$row_color = "rgba(255,220,0, 0.4)";
+			} elseif ( $cost_percentage_cost > 1) {
+			$percent_over = round(100 * ($cost_percentage_cost - 1) );
+			$row_text = "<span class=\"minitext\"><i>This fee stage has overspent by <strong>" . $percent_over . "%</strong> and is now losing money.</i></span>";
+			$row_color = "rgba(255,0,0, 0.4)";
+			} elseif ( $ts_fee_value == 0 && $ts_fee_id > 0) {
+			$row_text = "<span class=\"minitext\"><i>There is no fee currently associated with this stage.<br />Your project hours to date: <strong>" . number_format ( $ts_hours_total,1) . "</strong></i></span>";
+			$row_color = "rgba(200,200,200, 0.4)";
+			} elseif ( $ts_fee_value == 0) {
+			$row_text = "<span class=\"minitext\"><i>There is no fee stage currently associated with this project.<br />Your project hours to date: <strong>" . number_format ( $ts_hours_total,1) . "</strong></i></span>";
+			$row_color = "rgba(200,200,200, 0.4)";
+			} else {
+			$row_color = "rgba(0,255,0,0.4)";
+			}
+			
+			if ($user_usertype_current > 4 && $_GET[maintenance] == "yes") {
+				$row_text = $row_text . "<br />user_user_rate = $user_user_rate";
+				$row_text = $row_text . "<br />ts_cost_factored_user = $ts_cost_factored_user";
+				$row_text = $row_text . "<br />ts_cost_factored_all = $ts_cost_factored_all";
+				$row_text = $row_text . "<br />cost_remaining_all = $cost_remaining_all";
+				$row_text = $row_text . "<br />ts_fee_value = $ts_fee_value";
+				$row_text = $row_text . "<br />user_percent = $user_percent";
+				$row_text = $row_text . "<br />user_cost = $user_cost";
+				$row_text = $row_text . "<br />hours_remaining_user = $hours_remaining_user";
+				$row_text = $row_text . "<br />proj_id = $proj_id";
+				$row_text = $row_text . "<br />ts_fee_id = $ts_fee_id";
+				$row_text = $row_text . "<br />ts_hours_total = $ts_hours_total";
+			}
+		}
+		
+	return array ($row_text, $row_color);
 
 }

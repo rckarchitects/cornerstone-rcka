@@ -86,7 +86,8 @@ if ($_POST[assess] < 1) {
 			<br /><input type=\"radio\" value=\"0\" name=\"paid\" />&nbsp;Unpaid
 			<br /><input type=\"radio\" value=\"1\" name=\"paid\" checked=\"checked\" />&nbsp;Paid
 			<br /><input type=\"radio\" value=\"2\" name=\"paid\" />&nbsp;Study Leave
-			<br /><input type=\"radio\" value=\"3\" name=\"paid\" />&nbsp;Jury Service</p>";
+			<br /><input type=\"radio\" value=\"3\" name=\"paid\" />&nbsp;Jury Service
+			<br /><input type=\"radio\" value=\"4\" name=\"paid\" />&nbsp;Maternity / Paternity Leave</p>";
 
 			echo "<p><input type=\"hidden\" name=\"user_id\" value=\"$user_id\" /><input type=\"hidden\" name=\"action\" value=\"holiday_request\" />";
 
@@ -118,7 +119,8 @@ if (mysql_num_rows($result_holiday_list) > 0) {
 		$holiday_paid = $array_holiday_list['holiday_paid'];
 		if ($holiday_length == 0.5) { $holiday_length_print = "Half Day"; } else { $holiday_length_print = "Full Day"; }
 		
-		if ($holiday_paid != 1) { $holiday_length = 0; $holiday_length_print = $holiday_length_print . " (Unpaid)";  }
+		if ($holiday_paid == 4) { $holiday_length = 0; $holiday_length_print = $holiday_length_print . " (Maternity / Paternity Leave)";  }
+		elseif ($holiday_paid != 1) { $holiday_length = 0; $holiday_length_print = $holiday_length_print . " (Unpaid)";  }
 		$holiday_total = $holiday_total + $holiday_length;
 		
 		if ($holiday_approved != NULL) { $holiday_approved = "Approved"; } else { $holiday_approved = "Pending Approval"; }

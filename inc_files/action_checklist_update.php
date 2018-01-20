@@ -36,17 +36,6 @@ foreach ($array_item_counter AS $counter) {
 	$checklist_deadline = $array_checklist_deadline[$counter];
 	
 	
-	//Check whether this is an existing entry
-	
-	
-	//$sql_check = "SELECT checklist_id FROM intranet_project_checklist WHERE checklist_id = '$checklist_id' AND checklist_project = '$checklist_project'";
-
-	//$result_check = mysql_query($sql_check, $conn) or die(mysql_error());
-	
-	//echo "<p>$sql_check</p>";
-	
-	//echo "<h1>$counter: checklist_id: $checklist_id / item_id: $item_id</h1>";
-	
 	if ($checklist_id > 0) {
 
 				$sql_checklist_update = "
@@ -94,6 +83,8 @@ foreach ($array_item_counter AS $counter) {
 	
 	}
 	
+	
+	
 	//echo "<p><strong>$counter:</strong> $sql_checklist_update</p>";
 	
 	
@@ -107,6 +98,6 @@ foreach ($array_item_counter AS $counter) {
 			
 }
 
-$$actionmessage = "<p>Checklist for project id $checklist_project updated.</p>";
+$actionmessage = "<p>Checklist for project id " . $checklist_project  . " updated.</p>";
 
-AlertBoxInsert($_COOKIE[user],"Checklist",$actionmessage,$checklist_project,0,1);
+AlertBoxInsert($_COOKIE[user],"Project Checklist Updated",$actionmessage,$checklist_project,0,1);

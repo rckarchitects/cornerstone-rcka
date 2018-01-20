@@ -20,12 +20,14 @@ $proj_name = $array['proj_name'];
 
 if (!$_GET[proj_id]) { echo "<h1><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></h1>"; }
 
+
+
 if ($blog_user != $user_id_current AND $blog_view == 1 AND $user_usertype_current < 4) { echo "<h1 class=\"alert\">Error</h1>"; echo "<p>You do not have sufficient privileges to view this entry.</p>"; }
 
 else {
 
 // Project Page Menu
-echo "<p class=\"submenu_bar\">";
+echo "<div class=\"submenu_bar\">";
 	if ($user_usertype_current > 2 OR $user_id_current == $proj_rep_black OR $blog_user == $user_id_current) {
 		echo "<a href=\"index2.php?page=project_blog_edit&amp;status=edit&amp;proj_id=$proj_id&amp;blog_id=$blog_id\" class=\"submenu_bar\">Edit</a>";
 	}
@@ -36,7 +38,7 @@ echo "<p class=\"submenu_bar\">";
 	if ($user_usertype_current > 1) {
 		echo "<a href=\"/pdf_journal.php?blog_id=$blog_id\" class=\"submenu_bar\"><img src=\"images/button_pdf.png\" alt=\"PDF version\" />&nbsp;PDF Output</a>";
 	}
-echo "</p>";
+echo "</div>";
 
 echo "<h2>".$blog_title.", ".TimeFormat($blog_date)."</h2>";
 if ($blog_contact) {

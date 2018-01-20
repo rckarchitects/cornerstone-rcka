@@ -52,7 +52,9 @@ $counter_time = $start;
 	
 	echo "</ul>";
 	
-	//if ($inserted == 0) { echo "<p>No holidays requested.</p>"; }
+	$actionmessage = "<p>Holiday Request for user #<a href=\"index2.php?page=user_view&amp;user_id=$user\">" . $user . "</a> beginning $start for $length day(s) added successfully.</p>";
+
+	AlertBoxInsert($_COOKIE[user],"Holiday Request",$actionmessage,$user,0);
 
 	return $counter_days;
 

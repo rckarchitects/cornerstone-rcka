@@ -7,8 +7,7 @@ if ($_GET[status] != NULL) { $status = $_GET[status]; } else { $status = "add"; 
 if ($_GET[blog_id] != NULL) { $blog_id = intval($_GET[blog_id]); } else { unset($blog_id); }
 if ($_POST[contact_id]) { $contact_id = intval($_POST[contact_id]); } elseif ($_GET[contact_id]) { $contact_id = intval($_GET[contact_id]); } else { unset($contact_id); }
 
-
-
+ProjectSubMenu($proj_id,$user_usertype_current,"project_blog_edit");
 
 if(intval($blog_id) > 0 && intval($proj_id) > 0) {
 
@@ -25,6 +24,7 @@ if(intval($blog_id) > 0 && intval($proj_id) > 0) {
 	$blog_contact = $array['blog_contact'];
 	$blog_link = $array['blog_link'];
 	$blog_task = $array['blog_task'];
+	$blog_pinned = $array['blog_pinned'];
 	
 	$contact_id = $blog_contact;
 	
@@ -35,7 +35,7 @@ if(intval($blog_id) > 0 && intval($proj_id) > 0) {
 	$blog_date_year = date("Y",$blog_date);
 	
 	if ($blog_id > 0) {
-		echo "<form method=\"post\" action=\"index2.php?page=project_blog_list\">";
+		echo "<form method=\"post\" action=\"index2.php?page=project_blog_view&amp;blog_id=$blog_id&amp;proj_id=$blog_proj\">";
 	} else {
 		echo "<form method=\"post\" action=\"index2.php?page=project_blog_add\">";
 	}
@@ -58,15 +58,13 @@ if(intval($blog_id) > 0 && intval($proj_id) > 0) {
 	$blog_contact = $_POST[blog_contact];
 	$blog_link = $_POST[blog_link];
 	$blog_task = $_POST[blog_task];
-	
+	$blog_pinned = $array['blog_pinned'];
 	
 	$blog_date_minute = date("i",time());
 	$blog_date_hour = date("G",time());
 	$blog_date_day = date("j",time());
 	$blog_date_month = date("n",time());
 	$blog_date_year = date("Y",time());
-
-	echo "<h2>Add New Project Blog Entry</h2>";
 	
 	echo "<form method=\"post\" action=\"index2.php?page=project_blog_list\">";
 
@@ -112,7 +110,7 @@ echo "<input type=\"hidden\" value=\"$blog_id\" name=\"blog_id\" />";
 
 }
 
-TextAreaEdit();
+TextAreaEdit("blog_text");
 
 echo "
 <h3>Entry</h3><p><textarea name=\"blog_text\" rows=\"12\" cols=\"48\">".$blog_text."</textarea></p>
@@ -221,6 +219,9 @@ echo "Year&nbsp;
 		<input type=\"text\" name=\"blog_date_year\" value=\"$blog_date_year\" maxlength=\"4\" size=\"5\"  />
 		";
 		
+if ($blog_pinned == 1 ) { $blog_pinned = "checked=\"checked\""; } else { unset($blog_pinned); }
+echo "<p><input type=\"checkbox\" value=\"1\" name=\"blog_pinned\" $blog_pinned />&nbsp;Pin to menu?</p>";
+		
 		if ($blog_id > 0) {		
 			echo "<input type=\"hidden\" value=\"blog_edit\" name=\"action\" />";
 			echo "<p><input type=\"submit\" value=\"Update\" class=\"inputsubmit\" /></p>";
@@ -228,9 +229,7 @@ echo "Year&nbsp;
 			echo "<input type=\"hidden\" value=\"blog_add\" name=\"action\" />";
 			echo "<p><input type=\"submit\" value=\"Add\" class=\"inputsubmit\" /></p>";
 		}
+		
+
 
 echo "</form>";
-
-
-
-?>

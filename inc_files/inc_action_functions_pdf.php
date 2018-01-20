@@ -1,5 +1,12 @@
 <?php
 
+function PDFCurrencyFormat($input) {
+	
+	$output = utf8_decode( "£". number_format (($input),2) );
+	
+	return $output;
+	
+}
 
 function HolidayCalendar($year) {	
 	
@@ -116,7 +123,6 @@ function HolidayCalendar($year) {
 							
 }
 
-
 function Checklist($proj_id) {
 
 		GLOBAL $pdf;
@@ -162,21 +168,25 @@ function Checklist($proj_id) {
 			$pdf->SetY($current_y);
 }
 
-
 function PDFHeader ($proj_id,$sheet_title) {
 
 		$current_date = TimeFormat(time());
+		
+		$proj_id = intval($proj_id);
 
 		GLOBAL $pdf;
 		GLOBAL $conn;
 		GLOBAL $format_font;
 		GLOBAL $format_font_2;
+		
+		if ($proj_id > 0) {
 
 						$sql_proj = "SELECT * FROM intranet_projects WHERE proj_id = $proj_id LIMIT 1";
 						$result_proj = mysql_query($sql_proj, $conn) or die(mysql_error());
 						$array_proj = mysql_fetch_array($result_proj);
 						$proj_num = $array_proj['proj_num'];
 						$proj_name = $array_proj['proj_name'];
+		}
 							
 							if (!$sheet_title) { $sheet_title = "Project Checklist"; }
 							$pdf->SetXY(10,45);
@@ -185,11 +195,10 @@ function PDFHeader ($proj_id,$sheet_title) {
 							$pdf->SetDrawColor(0, 0, 0);
 							$pdf->Cell(0,10,$sheet_title);
 							$pdf->SetXY(10,55);
-							$pdf->SetFont('Helvetica','',14);
 							
-							$sheet_subtitle = $proj_num." ".$proj_name;
+							
 							$sheet_date = "Current at ". $current_date;
-							$pdf->Cell(0,7.5,$sheet_subtitle,0,1,L,0);
+							if ($proj_id > 0) { $pdf->SetFont('Helvetica','',14); $sheet_subtitle = $proj_num." ".$proj_name; $pdf->Cell(0,7.5,$sheet_subtitle,0,1,L,0); }
 							$pdf->SetFont('Helvetica','',12);
 							$pdf->Cell(0,7.5,$sheet_date,0,1,L,0);
 							$pdf->SetXY(10,70);
@@ -197,7 +206,6 @@ function PDFHeader ($proj_id,$sheet_title) {
 							$pdf->SetLineWidth(0.5);
 
 }
-
 
 function TableHeader() {		
 
@@ -223,7 +231,6 @@ function TableHeader() {
 						$pdf->SetLineWidth(0.1);
 						
 }
-
 
 function TaskArrays($proj_id, $group_id) {
 
@@ -320,7 +327,6 @@ function TaskArrays($proj_id, $group_id) {
 					} else { $pdf->SetFont($format_font,'',9); $pdf->Cell(0,1,'No checklist items for this stage',$border,2);  }
 }
 
-
 function Footer() {
 
 		GLOBAL $pdf;
@@ -354,7 +360,6 @@ function Footer() {
 						
 						
 }
-
 
 function StageArrays($proj_id) {
 
@@ -460,7 +465,6 @@ function ProjectHeading($proj_id,$heading) {
 
 }
 
-		
 function Notes($input) {
 			Global $pdf;
 			Global $x_current;
@@ -469,17 +473,14 @@ function Notes($input) {
 			$print_string = $input;
 			if ($input != NULL) {
 			StyleBody(9);
-			$pdf->SetTextColor(150, 150, 150);
 			$pdf->MultiCell(90,3,$print_string,0, L, false);
 			$pdf->MultiCell(90,1,'',0, L, false);
 			}
 		}
 	
-	
 function AddLine($input) {
 			if ($input != NULL AND $input != '0' AND strlen($input) > 3) { $input = $input."\n"; return $input; }
 		}
-	
 	
 function SplitBag($input) {
 			Global $pdf;
@@ -497,7 +498,6 @@ function SplitBag($input) {
 			$x_current = 10;
 			$y_current = $pdf->GetY();
 		}
-	
 	
 function ChecklistSummary($proj_id) {
 	
@@ -538,7 +538,7 @@ function ChecklistSummary($proj_id) {
 	
 }
 
-		function PDF_Notes($input) {
+function PDF_Notes($input) {
 			Global $pdf;
 			Global $x_current;
 			Global $y_current;
@@ -554,7 +554,7 @@ function ChecklistSummary($proj_id) {
 			}
 		}
 		
-		function StyleHeading1($title,$text,$notes){
+function StyleHeading1($title,$text,$notes){
 			Global $pdf;
 			Global $x_current;
 			Global $y_current;
@@ -588,11 +588,11 @@ function ChecklistSummary($proj_id) {
 			
 		}
 		
-		function AddLine1($input) {
+function AddLine1($input) {
 			if ($input != NULL AND $input != '0' AND strlen($input) > 3) { $input = $input."\n"; return $input; }
 		}
 		
-		function SplitBag1($input) {
+function SplitBag1($input) {
 			Global $pdf;
 			Global $x_current;
 			Global $y_current;
@@ -608,7 +608,6 @@ function ChecklistSummary($proj_id) {
 			$x_current = 10;
 			$y_current = $pdf->GetY();
 		}
-		
 		
 function PDF_Fee_Drawdown ($proj_id) {
 	
@@ -918,7 +917,7 @@ function PDF_TaskDeadlines($day_begin) {
 	GLOBAL $conn;
 	GLOBAL $pdf;
 	
-		$sql = "SELECT * FROM  `intranet_projects`, `intranet_tasklist` LEFT JOIN intranet_user_details ON user_id = tasklist_person WHERE tasklist_project = proj_id AND tasklist_percentage < 100 AND tasklist_due > 0 AND tasklist_due < ($day_begin + 604800) ORDER BY DATE(from_unixtime(tasklist_due)), proj_num";
+		$sql = "SELECT * FROM  `intranet_projects`, `intranet_tasklist` LEFT JOIN intranet_user_details ON user_id = tasklist_person WHERE tasklist_project = proj_id AND tasklist_percentage < 100 AND tasklist_due > 0 AND tasklist_due < ($day_begin + 604800) AND (tasklist_access <= 3 OR tasklist_access IS NULL) ORDER BY DATE(from_unixtime(tasklist_due)), proj_num";
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		
 		if (mysql_num_rows($result) > 0) {
@@ -963,7 +962,6 @@ function PDF_TaskDeadlines($day_begin) {
 		}
 				
 }
-
 
 function PDF_ListStages($day_begin) {
 
@@ -1074,8 +1072,6 @@ function PDF_ListStages($day_begin) {
 
 }
 
-
-
 function WorkingDaysInPeriod ($period_start, $period_end, $daily_fee) {
 
 		$start_period_count = $period_start;
@@ -1143,7 +1139,7 @@ function PDF_FileName ($proj_id, $file_name) {
 	
 }
 
-	function StageTotal() {
+function StageTotal() {
 		GLOBAL $pdf;
 		GLOBAL $stage_total;
 		GLOBAL $hours_total;
@@ -1151,10 +1147,10 @@ function PDF_FileName ($proj_id, $file_name) {
 		GLOBAL $ts_fee_target;
 		
 		$invoice_cost = $stage_total * $ts_fee_target;
-		$invoice_cost_print = "£" . number_format($invoice_cost,2);
-		$running_cost_nf_print =  "(£" . number_format($running_cost_nf,2) . ")";
+		$invoice_cost_print = PDFCurrencyFormat($invoice_cost);
+		$running_cost_nf_print =  "(" . PDFCurrencyFormat($running_cost_nf) . ")";
 		
-				$stage_total_print = "£" . number_format($stage_total,2);
+				$stage_total_print = PDFCurrencyFormat($stage_total);
 				$pdf->Cell(0,1,'',T,1);
 				$pdf->Cell(20,4,'Stage Total', 0, 0, L);
 				$pdf->Cell(8,4,$hours_total, 0, 0, R);
@@ -1177,7 +1173,7 @@ function PDF_FileName ($proj_id, $file_name) {
 	
 		}
 		
-	function StageFee($ts_fee_id) {
+function StageFee($ts_fee_id) {
 			
 			if ($ts_fee_id > 0) {
 				GLOBAL $conn;

@@ -14,7 +14,7 @@ $page = "contacts_view";
 
 // Begin to clean up the $_POST submissions
 
-$contact_id = $_POST[contact_id];
+$contact_id = intval($_POST[contact_id]);
 $contact_prefix = $_POST[contact_prefix];
 $contact_namefirst = CleanUpNames($_POST[contact_namefirst]);
 $contact_namesecond = CleanUpNames($_POST[contact_namesecond]);
@@ -36,6 +36,7 @@ $contact_city = CleanUp($_POST[contact_city]);
 $contact_county = CleanUp($_POST[contact_county]);
 $contact_postcode = CleanUpPostcode($_POST[contact_postcode]);
 $contact_country = $_POST[contact_country];
+$contact_linkedin = addslashes($_POST[contact_linkedin]);
 
 // Construct the MySQL instruction to add these entries to the database
 
@@ -60,13 +61,16 @@ contact_address = '$contact_address',
 contact_city = '$contact_city',
 contact_county = '$contact_county',
 contact_postcode = '$contact_postcode',
-contact_country = '$contact_country'
+contact_country = '$contact_country',
+contact_linkedin = '$contact_linkedin'
 WHERE contact_id = '$contact_id' LIMIT 1
 ";
 
 $result = mysql_query($sql_add, $conn) or die(mysql_error());
 
-$actionmessage = "The entry for contact <b>$contact_namefirst $contact_namesecond</b> was updated successfully.";
+$actionmessage = "<p><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=$contact_id\">" . $contact_namefirst . " " . $contact_namesecond . "</a> has been updated.</p>";
+
+AlertBoxInsert($_COOKIE[user],"Contact Updated",$actionmessage,$contact_id,86400);
 
 $techmessage = $sql_add;
 

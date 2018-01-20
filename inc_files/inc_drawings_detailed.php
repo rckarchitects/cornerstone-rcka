@@ -145,7 +145,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 				
 				if ($revision_letter == NULL) { $revision_letter = "-"; }
 				
-					echo "<tr><td><a href=\"index2.php?page=datebook_view_day&amp;time=$set_date\">" . TimeFormat($set_date) . "</a></td><td><a href=\"index2.php?page=drawings_issue_list&amp;set_id=$issue_set&amp;proj_id=$proj_id\">$set_id</a></td><td>$revision_letter</td><td><a href=\"index2.php?page=drawings_issue_list&amp;set_id=$issue_set&amp;proj_id=$proj_id\">$set_reason</a></td><td style=\"width: 20px;\">&nbsp;<a href=\"pdf_drawing_issue.php?issue_set=$issue_set&amp;proj_id=$proj_id\"><img src=\"images/button_pdf.png\" alt=\"PDF drawing issue sheet\" /></a></td></tr>";
+					echo "<tr><td><a href=\"index2.php?page=datebook_view_day&amp;timestamp=$set_date\">" . TimeFormat($set_date) . "</a></td><td><a href=\"index2.php?page=drawings_issue_list&amp;set_id=$issue_set&amp;proj_id=$proj_id\">$set_id</a></td><td>$revision_letter</td><td><a href=\"index2.php?page=drawings_issue_list&amp;set_id=$issue_set&amp;proj_id=$proj_id\">$set_reason</a></td><td style=\"width: 20px;\">&nbsp;<a href=\"pdf_drawing_issue.php?issue_set=$issue_set&amp;proj_id=$proj_id\"><img src=\"images/button_pdf.png\" alt=\"PDF drawing issue sheet\" /></a></td></tr>";
 			
 					}
 					

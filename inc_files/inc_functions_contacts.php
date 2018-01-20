@@ -472,7 +472,6 @@ function ToggleTarget($target_contact) {
 			ListUserTargets($_COOKIE[user]);
 }
 
-
 function DeleteContact($contact_id_old,$contact_id_new) {
 
 	global $conn;
@@ -525,7 +524,13 @@ function DeleteContact($contact_id_old,$contact_id_new) {
 					
 					$output = array($techmessage,$affected_rows);
 					
+					$actionmessage = "<p>Contact with ID $contact_id_new has been updated.</p>";
+					
+					AlertBoxInsert($_COOKIE[user],"Contact Merged",$actionmessage,$contact_id_new,0,0);
+					
 					return $output;
+					
+					
 					
 			}
 

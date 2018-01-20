@@ -191,6 +191,32 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 
 echo "</table>";
 
+
+// Tender (Details only)
+
+echo "<h3>Tenders</h3>";
+
+echo "<table>";
+
+
+$sql = "SELECT * FROM intranet_tender WHERE ".SearchTerms($keywords_array, "tender_name")." OR ".SearchTerms($keywords_array, "tender_description")." ORDER BY tender_date DESC";
+
+
+$result = mysql_query($sql, $conn) or die(mysql_error());
+	if (mysql_num_rows($result) == 0) {
+		echo "<tr><td colspan=\"2\">- No results found for Tenders -</td></tr>";
+	} else {
+			while ($array = mysql_fetch_array($result)) {
+			$tender_id = $array['tender_id'];
+			$tender_name = $array['tender_name'];
+			$tender_client = $array['tender_client'];
+			$tender_date = $array['tender_date'];
+				echo "<tr><td style=\"width: 25%;\"><a href=\"index2.php?page=tender_view&amp;tender_id=$tender_id\">". $tender_name ."</a></td><td>$tender_client</td><td>Deadline: ". TimeFormatDetailed ( $tender_date ) . "</td></tr>";
+	}
+}
+
+echo "</table>";
+
 // Expenses
 
 echo "<h3>Expenses</h3>";

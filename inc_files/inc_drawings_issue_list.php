@@ -19,6 +19,7 @@ $proj_id = $_GET[proj_id];
 		$set_comment = $array_issued['set_comment'];
 		$user_name_first = $array_issued['user_name_first'];
 		$user_name_second = $array_issued['user_name_second'];
+		$user_usertype = $array_issued['user_usertype'];
 		$proj_id = $array_issued['proj_id'];
 		$proj_num = $array_issued['proj_num'];
 		$proj_name = $array_issued['proj_name'];
@@ -28,7 +29,7 @@ $proj_id = $_GET[proj_id];
 		
 		echo "<div class=\"menu_bar\"><a href=\"pdf_drawing_issue.php?issue_set=$set_id&amp;proj_id=$proj_id\" class=\"menu_tab\">Drawing Issue Sheet&nbsp;<img src=\"images/button_pdf.png\" alt=\"PDF Drawing Issue Sheet\" /></a>";
 		
-		if ((time() - $set_date) < 172800) {
+		if (((time() - $set_date) < 172800) OR ($user_usertype > 3)) {
 			echo "<a href=\"index2.php?page=drawings_list&amp;proj_id=$proj_id&amp;set_id=$set_id&amp;action=drawing_issue_delete\" class=\"menu_tab\" onClick=\"javascript:return confirm('Are you sure you want to delete this drawing issue? Deleted drawings issues will be permanently deleted and cannot be recovered.')\">Delete Drawing Issue&nbsp;<img src=\"images/button_delete.png\" alt=\"Delete Drawing Issue\" /></a>";
 		}
 		

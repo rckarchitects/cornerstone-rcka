@@ -1,6 +1,6 @@
 <?php
 
-echo "<p class=\"submenu_bar\"><a href=\"index2.php?page=tasklist_edit\" class=\"submenu_bar\">Add New Task</a>";
+echo "<div class=\"submenu_bar\"><a href=\"index2.php?page=tasklist_edit\" class=\"submenu_bar\">Add New Task</a>";
 
 // Determine the date a week ago
 
@@ -8,7 +8,7 @@ $date_lastweek = time() - 604800;
 
 if ($_GET[order] == "time") { $order = " tasklist_due DESC"; echo "<a href=\"index2.php?page=tasklist_view&amp;subcat=user\" class=\"submenu_bar\">List by project</a>"; } else { $order = " proj_num, tasklist_due"; echo "<a href=\"index2.php?page=tasklist_view&amp;subcat=user&amp;order=time\" class=\"submenu_bar\">List by time</a>"; }
 
-echo "</p>";
+echo "</div>";
 
 $sql = "SELECT * FROM intranet_tasklist, intranet_projects WHERE tasklist_project = proj_id  AND tasklist_person = $_COOKIE[user] AND tasklist_percentage < 100 order by $order";
 

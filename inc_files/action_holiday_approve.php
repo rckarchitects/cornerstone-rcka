@@ -123,6 +123,18 @@ if ($_POST[approve] == "delete") {
 		$holiday_counter++;		
 		}
 
+}	 elseif ($_POST[approve] == "to_maternity") {
+
+
+		while ($holiday_counter < count($holiday_id_array)) {
+
+						$sql2 = "UPDATE intranet_user_holidays SET holiday_paid = 6, holiday_length = 0 WHERE holiday_id = $holiday_id_array[$holiday_counter] LIMIT 1";
+						$result = mysql_query($sql2, $conn) or die(mysql_error());
+					
+						
+		$holiday_counter++;		
+		}
+		
 }	 elseif ($_POST[approve] == "compassionate") {
 
 
@@ -151,4 +163,9 @@ if ($_POST[approve] == "delete") {
 		
 }
 
-?>
+foreach ($_POST['holiday_id'] AS $holiday_id) {
+
+	$actionmessage = "<p>Holiday ref. $holiday_id updated.</p>";
+	AlertBoxInsert($_COOKIE[user],"Holiday Updated",$actionmessage,$holiday_id,0,1);
+
+}

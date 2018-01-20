@@ -36,8 +36,9 @@ $contact_address = CleanUpAddress($_POST[contact_address]);
 $contact_city = CleanUp($_POST[contact_city]);
 $contact_county = CleanUp($_POST[contact_county]);
 $contact_postcode = CleanUpPostcode($_POST[contact_postcode]);
-$contact_country = $_POST[contact_country];
+$contact_country = addslashes($_POST[contact_country]);
 $contact_added_by = $_COOKIE[user];
+$contact_linkedin = addslashes($_POST[contact_linkedin]);
 
 // Construct the MySQL instruction to add these entries to the database
 
@@ -65,7 +66,8 @@ contact_city,
 contact_county,
 contact_postcode,
 contact_country,
-contact_added_by
+contact_added_by,
+contact_linkedin
 ) values (
 'NULL',
 '$contact_prefix',
@@ -90,21 +92,21 @@ contact_added_by
 '$contact_county',
 '$contact_postcode',
 '$contact_country',
-'$contact_added_by'
+'$contact_added_by',
+'$contact_linkedin'
 )";
 
 $result = mysql_query($sql_add, $conn) or die(mysql_error());
 
-$contact_id_added = mysql_insert_id();
-
-$actionmessage = "The entry for contact <b>$contact_namefirst $contact_namesecond</b> was added successfully.";
+$contact_id = mysql_insert_id();
 
 $techmessage = $sql_add;
 
-$contact_add_message = "<p><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=$contact_id_added\">" . $contact_namefirst . " " . $contact_namesecond . "</a> has been added to the database.</p>";
+$actionmessage = "<p><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=$contact_id\">" . $contact_namefirst . " " . $contact_namesecond . "</a> has been added to the database.</p>";
 
-AlertBoxInsert($_COOKIE[user],"Contact Added",$contact_add_message,$contact_id_added,86400);
+AlertBoxInsert($_COOKIE[user],"Contact Edited",$actionmessage,$contact_id,86400);
 
 }
+
 
 ?>

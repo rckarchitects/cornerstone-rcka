@@ -50,8 +50,11 @@ if ($tender_id == 0) {
 		$tender_submitted,
 		'$tender_notes'
 		)";
+		
+		$tender_id = mysql_insert_id();
 
-		$actionmessage = "Tender added successfully.";
+		$actionmessage = "<p>Tender for <a href=\"index2.php?page=tender_view&amp;tender_id=" . $tender_id . "\">" . $tender_name . "</a> added successfully.</p>";
+		AlertBoxInsert($_COOKIE[user],"Tender Added",$actionmessage,$tender_id,0,0);
 
 } else {
 
@@ -71,8 +74,11 @@ if ($tender_id == 0) {
 		WHERE
 		tender_id = $tender_id
 		LIMIT 1";
+		
+		
 
-		$actionmessage = "Tender updated successfully.";
+		$actionmessage = "<p>Tender for <a href=\"index2.php?page=tender_view&amp;tender_id=" . $tender_id . "\">" . $tender_name . "</a> updated successfully.</p>";
+		AlertBoxInsert($_COOKIE[user],"Tender Edited",$actionmessage,$tender_id,0,0);
 }
 
 

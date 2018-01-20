@@ -2,35 +2,41 @@
 
 echo "<h1>Tenders</h1>";
 
-$tender_id = intval($_GET[tender_id]);
+if (!$tender_id && $_GET[tender_id])  { $tender_id = intval($_GET[tender_id]); }
 
 
 function Tender_Form($tender_id) {
 
 	echo "<form action=\"index2.php?page=tender_list\" method=\"post\">";
 	
-	global $conn;
-	$sql = "SELECT * FROM intranet_tender WHERE tender_id = $tender_id LIMIT 1";
-	$result = mysql_query($sql, $conn) or die(mysql_error());
-	$array = mysql_fetch_array($result);
-	$tender_id = $array['tender_id'];
-	$tender_name = $array['tender_name'];
-	$tender_client = $array['tender_client'];
-	$tender_date = $array['tender_date'];
-	$tender_type = $array['tender_type'];
-	$tender_procedure = $array['tender_procedure'];
-	$tender_description = $array['tender_description'];
-	$tender_keywords = $array['tender_keywords'];
-	$tender_source = $array['tender_source'];
-	$tender_instructions = $array['tender_instructions'];
-	$tender_result = $array['tender_result'];
-	$tender_submitted = $array['tender_submitted'];
-	$tender_notes = $array['tender_notes'];
+	if ($tender_id > 0) {
 	
-	if (!$tender_date) { $tender_date = time(); }
+		global $conn;
+		$sql = "SELECT * FROM intranet_tender WHERE tender_id = $tender_id LIMIT 1";
+		$result = mysql_query($sql, $conn) or die(mysql_error());
+		$array = mysql_fetch_array($result);
+		$tender_id = $array['tender_id'];
+		$tender_name = $array['tender_name'];
+		$tender_client = $array['tender_client'];
+		$tender_date = $array['tender_date'];
+		$tender_type = $array['tender_type'];
+		$tender_procedure = $array['tender_procedure'];
+		$tender_description = $array['tender_description'];
+		$tender_keywords = $array['tender_keywords'];
+		$tender_source = $array['tender_source'];
+		$tender_instructions = $array['tender_instructions'];
+		$tender_result = $array['tender_result'];
+		$tender_submitted = $array['tender_submitted'];
+		$tender_notes = $array['tender_notes'];
+		
+	}
+		
+		if (!$tender_date) { $tender_date = time(); }
+		
+		$tender_date_day = CreateDateFromTimestamp($tender_date);
+		$tender_date_time = CreateTimeFromTimestamp($tender_date);
 	
-	$tender_date_day = CreateDateFromTimestamp($tender_date);
-	$tender_date_time = CreateTimeFromTimestamp($tender_date);
+	
 	
 	$tender_type_array = array("","Invitation to Tender","Pre-Qualification Questionnaire","Expression of Interest","Design Competition");
 	sort($tender_type_array);

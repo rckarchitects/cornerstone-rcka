@@ -29,7 +29,7 @@ $sql_edit = "UPDATE intranet_timesheet_expense SET
 		
 		$result = mysql_query($sql_edit, $conn) or die(mysql_error());
 		$actionmessage = "Expense <strong>$ts_expense_id</strong> deleted successfully.";
-		//echo $sql_edit;
+		AlertBoxInsert($_COOKIE[user],"Expense Delete",$actionmessage,$ts_expense_id,0,0);
 		
 }
 

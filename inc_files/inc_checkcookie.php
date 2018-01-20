@@ -98,12 +98,10 @@ $user_timesheet_hours = $array_ipcheck['user_timesheet_hours'];
 include_once("inc_functions_general.php");
 if ($module_timesheets == 1) {  include_once("inc_functions_timesheet.php"); }
 if ($module_contacts == 1) { include_once("inc_functions_contacts.php"); }
-
+if ($module_tasks == 1) { include_once("inc_functions_tasks.php"); }
 
 
 // Set the page-wide definitions from the $_GET submissions if they exist
 
 if ($_GET[page] != NULL ) { $page = $_GET[page]; }
 if ($_GET[action] != NULL ) { $action = $_GET[action]; }
- 
-?>

@@ -47,20 +47,9 @@ $proj_num = $array_proj['proj_num'];
 $proj_name = $array_proj['proj_name'];
 $proj_desc = $array_proj['proj_desc'];
 	
-	$sheet_title = "Project Contacts";
-	$pdf->SetXY(10,45);
-	$pdf->SetFont($format_font,'',24);
-	$pdf->SetTextColor(0, 0, 0);
-	$pdf->SetDrawColor(0, 0, 0);
-	$pdf->Cell(0,10,$sheet_title);
-	$pdf->SetXY(10,55);
-	$pdf->SetFont($format_font,'',14);
+	PDFHeader ($proj_id,"Project Information Sheet");
 	
-	$sheet_subtitle = $proj_num." ".$proj_name;
-	$sheet_date = "Current at ". $current_date;
-	$pdf->Cell(0,7.5,$sheet_subtitle,0,1,L,0);
-	$pdf->SetFont($format_font,'',12);
-	$pdf->Cell(0,5,$sheet_date,0,1,L,0);
+
 	$pdf->SetXY(10,70);
 	
 	$pdf->SetLineWidth(0.5);
@@ -79,6 +68,8 @@ $proj_desc = $array_proj['proj_desc'];
 	$proj_client_contact_id = $array_proj['proj_client_contact_id'];
 	$proj_planning_ref = $array_proj['proj_planning_ref'];
 	$proj_buildingcontrol_ref = $array_proj['proj_buildingcontrol_ref'];
+	
+	$proj_info = $array_proj['proj_info'];
 
 	$proj_address = $proj_address.AddLine($proj_address_1);
 	$proj_address = $proj_address.AddLine($proj_address_2);
@@ -89,6 +80,8 @@ $proj_desc = $array_proj['proj_desc'];
 	StyleHeading("Site Address",$proj_address);
 	
 // Project Description
+		if ($proj_info) { StyleHeading("Key Information",$proj_info); }
+		
 		if ($proj_desc == NULL) { $proj_desc = "-- None --"; }
 		StyleHeading("Project Description",$proj_desc);
 	

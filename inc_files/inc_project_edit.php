@@ -1,5 +1,21 @@
 <?php
 
+function ProjectTypeList($list_name,$current_value) {
+	
+	global $conn;
+	$sql = "SELECT DISTINCT proj_type FROM intranet_projects ORDER BY proj_type";
+	$result = mysql_query($sql, $conn);
+	echo "<datalist id=\"" . $list_name . "\">";
+		while ($array = mysql_fetch_array($result)) {
+			if ($array['proj_type']) {
+				echo "<option value=\"" . $array['proj_type'] . "\">";
+			}
+		}
+	echo "</datalist>";
+	
+	echo "<input type=\"text\" class=\"inputbox\" id=\"$list_name\" size=\"54\" name=\"proj_type\" maxlength=\"50\" value=\"$current_value\" />";
+}
+
 // First, determine the title of the page
 
 if($_GET[proj_id] != NULL) {
@@ -67,6 +83,7 @@ $proj_date_complete = $array['proj_date_complete'];
 $proj_rep_black = $array['proj_rep_black'];
 $proj_active = $array['proj_active'];
 $proj_desc = $array['proj_desc'];
+$proj_type = $array['proj_type'];
 $proj_riba = $array['proj_riba'];
 $proj_riba_begin = $array['proj_riba_begin'];
 $proj_riba_conclude = $array['proj_riba_conclude'];
@@ -86,6 +103,8 @@ $proj_fee_percentage = $array['proj_fee_percentage'];
 
 $proj_ambition_internal = $array['proj_ambition_internal'];
 $proj_ambition_client = $array['proj_ambition_client'];
+
+if (!$array['proj_info']) { $proj_info = file_get_contents('library/template_proj_info.txt') ;} else { $proj_info = $array['proj_info']; }
 
 $proj_location = $array['proj_location'];
 
@@ -130,6 +149,7 @@ $proj_client_accounts_email = $_POST[proj_client_accounts_email];
 $proj_rep_black = $_POST[proj_rep_black];
 $proj_active = $_POST[proj_active];
 $proj_desc = $_POST[proj_desc];
+$proj_type = $_POST[proj_type];
 $proj_riba = $_POST[proj_riba];
 $proj_riba_begin = $_POST[proj_riba_begin];
 $proj_riba_conclude = $_POST[proj_riba_conclude];
@@ -149,7 +169,7 @@ $proj_fee_percentage = $_POST[proj_fee_percentage];
 
 $proj_ambition_internal = $_POST[proj_ambition_internal];
 $proj_ambition_client = $_POST[proj_ambition_client];
-
+$proj_info = $_POST[proj_info];
 $proj_location = $_POST[proj_location];
 
 // Find the next number in the sequence
@@ -190,9 +210,13 @@ echo "</p>";
 
 echo "<p>Project Description<br /><textarea name=\"proj_desc\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_desc</textarea></p>";
 
+echo "<p>Project Type<br />"; ProjectTypeList("proj_type",$proj_type); echo "</p>";
+
 echo "<p>Practice Ambition for Project<br /><textarea name=\"proj_ambition_internal\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_ambition_internal</textarea></p>";
 
 echo "<p>Client Ambition for Project<br /><textarea name=\"proj_ambition_client\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_ambition_client</textarea></p>";
+
+echo "<p>General Project Information<br /><textarea name=\"proj_info\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_info</textarea></p>";
 
 // Now echo the admin only options if applicable
 
@@ -250,11 +274,7 @@ echo "</p>
 
 echo "</div><div id=\"item_switch_3\">";
 
-echo "
-
-<h2>Project Particulars</h2>
-
-<p>Procurement Method<br />";
+echo "<h2>Project Particulars</h2>";
 
 //<p>Planning Reference Number<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_planning_ref\" maxlength=\"50\" value=\"$proj_planning_ref\" /></p>
 
@@ -273,7 +293,7 @@ echo "
 //include("inc_files/inc_data_project_timecomplete.php");
 
 
-include("inc_files/inc_data_project_procurement.php"); echo "</p>";
+ProjectProcurement($proj_procure);
 
 echo "<p>Contract Value (approx.)<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_value\" maxlength=\"12\" value=\"$proj_value\" /></p>";
 

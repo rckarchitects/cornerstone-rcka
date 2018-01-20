@@ -6,47 +6,51 @@ if ($_COOKIE[user] != NULL) {
 header( "Location: index.php");
 }
 
+function LoginScreen ($settings_name,$user_name) {
+
+	echo "<body>";
+
+	echo "<div id=\"pagewrapper\">";
+
+	echo "<div id=\"login_head\">$settings_name</div>";
+
+	echo "<div id=\"login_body\">";
+
+	echo "<form method=\"post\" action=\"logincheck.php\">";
+
+	echo "<br /><p>Username:<br /><input type=text value=\"$user_name\" class=\"inputbox\" name=\"checkform_username\" /></p>";
+	echo "<p>Password:<br /><input type=\"password\" name=\"password\" class=\"inputbox\" /></p>";
+
+	if ($user_name == NULL) {
+	echo "Public Computer?&nbsp;&nbsp;<input type=\"checkbox\" name=\"publicpc\" value=\"1\" checked />";
+	}
+
+
+	echo "<input type=\"hidden\" name=\"password_check\" value=\"yes\" />";
+	echo "<input type=\"hidden\" name=\"usercheck\" value=\"yes\" />";
+	echo "<p><input type=\"submit\" value=\"Login\" class=\"inputsubmit\" /></p>";
+
+	echo "</form>";
+
+	echo "</div>";
+
+	echo "<div id=\"login_footer\"></div>";
+
+	echo "</div>";
+
+	echo "</body>";
+	echo "</html>";
+
+}
+
 // Include the cookie check information
 
-include("inc_files/inc_checkcookie_logincheck.php");
+include_once("inc_files/inc_checkcookie_logincheck.php");
 
 // Include the header information
 
-include("inc_files/inc_header.php");
+include_once("inc_files/inc_header.php");
 
-// Header
-
-print "<body>";
-
-print "<div id=\"pagewrapper\">";
-
-print "<div id=\"login_head\">$settings_name</div>";
-
-print "<div id=\"login_body\">";
-
-print "<form method=\"post\" action=\"logincheck.php\">";
-
-print "<br /><p>Username:<br /><input type=text value=\"$_COOKIE[name]\" class=\"inputbox\" name=\"checkform_username\" /></p>";
-print "<p>Password:<br /><input type=\"password\" name=\"password\" class=\"inputbox\" /></p>";
-
-if ($_COOKIE[name] == NULL) {
-print "Public Computer?&nbsp;&nbsp;<input type=\"checkbox\" name=\"publicpc\" value=\"1\" checked />";
-}
+LoginScreen ($settings_name,$_COOKIE[name]);
 
 
-print "<input type=\"hidden\" name=\"password_check\" value=\"yes\" />";
-print "<input type=\"hidden\" name=\"usercheck\" value=\"yes\" />";
-print "<p><input type=\"submit\" value=\"Login\" class=\"inputsubmit\" /></p>";
-
-print "</form>";
-
-print "</div>";
-
-print "<div id=\"login_footer\"></div>";
-
-print "</div>";
-
-print "</body>";
-print "</html>";
-
-?>

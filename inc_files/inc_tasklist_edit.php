@@ -1,7 +1,5 @@
 <?php
 
-print "<h1>Task Management</h1>";
-
 if ($_GET[tasklist_id] != NULL) {
 
 	$sql = "SELECT * FROM intranet_tasklist WHERE tasklist_id = $_GET[tasklist_id] LIMIT 1";
@@ -19,43 +17,35 @@ if ($_GET[tasklist_id] != NULL) {
 	$tasklist_added = $array['tasklist_added'];
 	$tasklist_due = $array['tasklist_due'];
 	$tasklist_project = $array['tasklist_project'];
+	$tasklist_access = $array['tasklist_access'];
 	
-	print "<form action=\"index2.php?page=tasklist_view&amp;status=add\" method=\"post\">";
-	print "<input type=\"hidden\" name=\"tasklist_id\" value=\"$tasklist_id\" />";
-	print "<h2>Edit Existing Task</h2>";
+	echo "<form action=\"index2.php?page=tasklist_view&amp;status=add\" method=\"post\">";
+	echo "<input type=\"hidden\" name=\"tasklist_id\" value=\"$tasklist_id\" />";
+	echo "<h2>Edit Existing Task</h2>";
 
 } elseif ($_GET[proj_id] != NULL) {
 
-	print "<form action=\"index2.php?page=tasklist_project&amp;proj_id=$_GET[proj_id]\" method=\"post\">";
-	print "<h2>Add New Task</h2>";
+	echo "<form action=\"index2.php?page=tasklist_project&amp;proj_id=$_GET[proj_id]\" method=\"post\">";
+	echo "<h2>Add New Task</h2>";
 
 } else {
 
-	print "<form action=\"index2.php?page=tasklist_view&amp;status=add\" method=\"post\">";
-	print "<h2>Add New Task</h2>";
+	echo "<form action=\"index2.php?page=tasklist_view&amp;status=add\" method=\"post\">";
+	echo "<h2>Add New Task</h2>";
 
 }
 
-print "<p>Select Project<br />";
+echo "<p>Select Project<br />";
 
 if ($tasklist_project > 0) { $tasklist_select = $tasklist_project; } elseif ($_GET[proj_id] != NULL) { $tasklist_select = $_GET[proj_id]; }
 
-$sql = "SELECT * FROM intranet_projects WHERE proj_active = 1 order by proj_num";
-$result = mysql_query($sql, $conn) or die(mysql_error());
-print "<select name=\"tasklist_project\">";
-while ($array = mysql_fetch_array($result)) {
-$proj_num = $array['proj_num'];
-$proj_name = $array['proj_name'];
-$proj_id = $array['proj_id'];
-print "<option value=\"$proj_id\" class=\"inputbox\"";
-if ($tasklist_select == $proj_id) { print " selected"; }
-print ">$proj_num&nbsp;$proj_name";
-}
-print "</select></p>";
+ProjectSelect($tasklist_select,"tasklist_project");
+
+echo "</p>";
 
 // Now the description
 
-print "<p>Details:<br /><textarea name=\"tasklist_notes\" class=\"inputbox\" cols=\"48\" rows=\"4\">$tasklist_notes</textarea></p>";
+echo "<p>Details:<br /><textarea name=\"tasklist_notes\" class=\"inputbox\" cols=\"48\" rows=\"4\">$tasklist_notes</textarea></p>";
 
 
 $sql = "SELECT * FROM intranet_user_details WHERE user_active = '1' order by user_name_second";
@@ -63,18 +53,18 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 
 $counter = 0;
 if ($tasklist_percentage == NULL) { $tasklist_percentage = 0; }
-print "<p>Percentage Complete<br />";
+echo "<p>Percentage Complete<br />";
 while ($counter <= 100) {
-print "<input type=\"radio\" name=\"tasklist_percentage\" value=\"$counter\"";
-	if ($counter == $tasklist_percentage) { print " checked "; }
-print "/>&nbsp;$counter%";
+echo "<input type=\"radio\" name=\"tasklist_percentage\" value=\"$counter\"";
+	if ($counter == $tasklist_percentage) { echo " checked "; }
+echo "/>&nbsp;$counter%";
 $counter = $counter + 10;
 }
-print "</p>";
+echo "</p>";
 
-print "<p>Person Responsible:<br />";
+echo "<p>Person Responsible:<br />";
 
-print "<select name=\"tasklist_person\" class=\"inputbox\">";
+echo "<select name=\"tasklist_person\" class=\"inputbox\">";
 
 while ($array = mysql_fetch_array($result)) {
 $user_name_first = $array['user_name_first'];
@@ -83,15 +73,15 @@ $user_id = $array['user_id'];
 
 if ($tasklist_person > 0) { $tasklist_user_select = $tasklist_person; } else { $tasklist_user_select = $_COOKIE[user]; }
 
-print "<option value=\"$user_id\"";
-if ($tasklist_user_select == $user_id) { print " selected"; }
-print ">".$user_name_first."&nbsp;".$user_name_second."</option>";
+echo "<option value=\"$user_id\"";
+if ($tasklist_user_select == $user_id) { echo " selected"; }
+echo ">".$user_name_first."&nbsp;".$user_name_second."</option>";
 }
 
-print "</select></p>";
+echo "</select></p>";
 
 
-print "<p>Due Date:<br />";
+echo "<p>Due Date:<br />";
 
 $nowtime = time();
 $nowtime_week_pre = $nowtime;
@@ -99,14 +89,14 @@ $nowday = date("d", $nowtime);
 
 $todayday = date("d", $_POST[ts_date]);
 
-print "<select name=\"tasklist_due\">";
+echo "<select name=\"tasklist_due\">";
 
-print "<option value=\"0\">-- None --</option>";
+echo "<option value=\"0\">-- None --</option>";
 
 if ($tasklist_due > 0) {
-	print "<option value=\"$tasklist_due\" selected>";
-	print date("l j F Y", $tasklist_due);
-	print "</option>";
+	echo "<option value=\"$tasklist_due\" selected>";
+	echo date("l j F Y", $tasklist_due);
+	echo "</option>";
 }
 
 for ($datecount=1; $datecount<=40; $datecount++) {
@@ -116,30 +106,34 @@ $thenday = date("d", $listday);
 if (date("D", $listday) == "Sat" or date("D", $listday) == "Sun") {
 
 } else {
-print "<option value=\"$listday\"";
-if (date("z",$tasklist_due) == date("z",$listday)) { print " selected "; }
-print ">";
-print date("l j F Y", $listday);
-print "</option>";
+echo "<option value=\"$listday\"";
+if (date("z",$tasklist_due) == date("z",$listday)) { echo " selected "; }
+echo ">";
+echo date("l j F Y", $listday);
+echo "</option>";
 }
 
 }
 
 if ($tasklist_due > $listday) {
-	print "<option value=\"$tasklist_due\" selected>";
-	print date("l j F Y", $tasklist_due);
-	print "</option>";
+	echo "<option value=\"$tasklist_due\" selected>";
+	echo date("l j F Y", $tasklist_due);
+	echo "</option>";
 }
 
-print "</select>";
-
-print "<p>Comment:<br /><textarea name=\"tasklist_comment\" cols=\"48\" rows=\"6\">$tasklist_comment</textarea></p>";
 
 
-print "<input type=\"hidden\" name=\"action\" value=\"tasklist_edit\" />";
-print "<p><input type=\"submit\" value=\"Submit\" /></p>";
+echo "</select>";
+
+echo "<p>Accessible To:<br />";
+UserAccessType("tasklist_access",$user_usertype,$tasklist_access,$maxlevel);
+echo "</p>";
+
+echo "<p>Comment:<br /><textarea name=\"tasklist_comment\" cols=\"48\" rows=\"6\">$tasklist_comment</textarea></p>";
 
 
-print "</form>";
+echo "<input type=\"hidden\" name=\"action\" value=\"tasklist_edit\" />";
+echo "<p><input type=\"submit\" value=\"Submit\" /></p>";
 
-?>
+
+echo "</form>";

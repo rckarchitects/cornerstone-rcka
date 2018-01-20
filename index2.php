@@ -11,8 +11,8 @@ include "inc_files/inc_checkcookie.php";
 $usercheck = $_POST[usercheck];
 $checkform_user = $_POST[checkform_user];
 
-if ($_POST[action] != "") { include("inc_files/action_$_POST[action].php"); }
-elseif ($_GET[action] != "") { include("inc_files/action_$_GET[action].php"); }
+if ($_POST[action] != "") { include_once("inc_files/inc_functions_actions.php"); include("inc_files/action_$_POST[action].php"); }
+elseif ($_GET[action] != "") { include_once("inc_files/inc_functions_actions.php"); include("inc_files/action_$_GET[action].php"); }
 
 // Check for details of any projects
 
@@ -83,7 +83,7 @@ echo "</div>";
 
 	if ($user_usertype_current > 4) { CheckExpenses(); }
 	if ($user_usertype_current > 3) { CheckFutureTenders(); }
-	if ($user_usertype_current > 3) { CheckInvoicesToBeIssued(); }
+	if ($user_usertype_current > 3) { CheckInvoicesToBeIssued($_COOKIE[user]); }
 	if ($user_usertype_current > 3) { CheckInvoicesOverdue($_COOKIE[user]); }
 	CheckOutstandingTimesheets($_COOKIE[user]);
 	CheckOutstandingTasks($_COOKIE[user]);

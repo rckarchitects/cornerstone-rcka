@@ -77,7 +77,8 @@ if ($answer_feedback != NULL) { $feedback_inc = ", answer_feedback = '$answer_fe
 		WHERE answer_id = '$answer_id' LIMIT 1";
 		
 		$result = mysql_query($sql_edit, $conn) or die(mysql_error());
-		$actionmessage = "Response updated successfully.";
+		$actionmessage = "<p>Response ref. " . $answer_id . " updated successfully.</p>";
+		AlertBoxInsert($_COOKIE[user],"Tender Response Edited",$actionmessage,$answer_id,0,1);
 		$techmessage = $sql_edit;
 		
 }

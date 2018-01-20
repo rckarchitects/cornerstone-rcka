@@ -23,7 +23,7 @@ $array_issued = $_POST['drawing_issued'];
 $issue_method = $_POST['issue_method'];
 $issue_format = $_POST['issue_format'];
 $issue_comment = addslashes($_POST['issue_comment']);
-$issue_project = $_POST['issue_project'];
+$issue_project = intval ( $_POST['issue_project'] );
 $issue_checked = $_POST['set_checked'];
 
 if ($_POST[issue_reason] == NULL) { $issue_reason = CleanUp($_POST[issue_revision_other]); } else { $issue_reason = $_POST[issue_reason]; }
@@ -123,6 +123,8 @@ $issue_set = mysql_insert_id();
 		}
 		
 
-$actionmessage = "The drawing issue was added successfully.";
+$actionmessage = "<p>Drawing issue set ref. <a href=\"index2.php?page=drawings_issue_list&amp;set_id=$issue_set&amp;proj_id=$issue_project\">$issue_set</a> was added successfully.</p>";
+
+AlertBoxInsert($_COOKIE[user],"Drawing Issue",$actionmessage,$issue_set,0,0);
 
 ?>

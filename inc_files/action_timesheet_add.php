@@ -44,10 +44,11 @@ $profit = 1;
 
 	// Establish the current hourly rate for the form submission
 
-	$sql2 = "SELECT user_user_rate FROM intranet_user_details WHERE user_id = '$viewuser' LIMIT 1";
+	$sql2 = "SELECT user_user_rate, user_prop_target FROM intranet_user_details WHERE user_id = '$viewuser' LIMIT 1";
 	$result2 = mysql_query($sql2, $conn) or die(mysql_error());
 	$array2 = mysql_fetch_array($result2);
 	$rate_value_user = $array2['user_user_rate'];
+	$user_prop_target = $array2['user_prop_target'];
 	
 	// Establish the current hourly rate and current stage for the project in question
 	
@@ -73,7 +74,7 @@ $profit = 1;
 	
 	
 
-	$sql3 = "INSERT INTO intranet_timesheet (ts_id, ts_user, ts_project, ts_hours, ts_desc, ts_day, ts_month, ts_year, ts_entry, ts_datestamp, ts_rate, ts_overhead, ts_projectrate, ts_stage_fee, ts_day_complete, ts_cost_factored) values ('NULL', '$viewuser', '$timesheet_add_project', '$timesheet_add_hours', '$timesheet_add_desc', '$timesheet_add_day', '$timesheet_add_month', '$timesheet_add_year', '$timesheet_add_date', '$nowtime', '$rate_value', '$overhead_rate_latest', '$rate_profit', '$timesheet_stage_fee', 0, '$cost_for_week' )";
+	$sql3 = "INSERT INTO intranet_timesheet (ts_id, ts_user, ts_project, ts_hours, ts_desc, ts_day, ts_month, ts_year, ts_entry, ts_datestamp, ts_rate, ts_overhead, ts_projectrate, ts_stage_fee, ts_day_complete, ts_cost_factored, ts_prop_adjust) values ('NULL', '$viewuser', '$timesheet_add_project', '$timesheet_add_hours', '$timesheet_add_desc', '$timesheet_add_day', '$timesheet_add_month', '$timesheet_add_year', '$timesheet_add_date', '$nowtime', '$rate_value', '$overhead_rate_latest', '$rate_profit', '$timesheet_stage_fee', 0, '$cost_for_week', '$ts_prop_adjust' )";
 	mysql_query($sql3, $conn);
 	
 	$ts_item_new = mysql_affected_rows();

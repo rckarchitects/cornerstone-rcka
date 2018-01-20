@@ -75,7 +75,8 @@ $ts_id = $_POST[ts_id];
 	ts_projectrate = '$ts_profit',
 	ts_stage_fee = '$ts_stage_fee',
 	ts_day_complete = '$ts_day_complete',
-	ts_cost_factored = '$ts_cost_factored'
+	ts_cost_factored = '$ts_cost_factored',
+	ts_prop_adjust = '$ts_prop_adjust'
 	WHERE ts_id = '$ts_id' LIMIT 1";
 	
 	mysql_query($sql3, $conn);
