@@ -52,6 +52,8 @@ if ($tender_id == 0) {
 		)";
 		
 		$tender_id = mysql_insert_id();
+		
+		$result = mysql_query($sql_edit, $conn) or die(mysql_error());
 
 		$actionmessage = "<p>Tender for <a href=\"index2.php?page=tender_view&amp;tender_id=" . $tender_id . "\">" . $tender_name . "</a> added successfully.</p>";
 		AlertBoxInsert($_COOKIE[user],"Tender Added",$actionmessage,$tender_id,0,0);
@@ -75,17 +77,10 @@ if ($tender_id == 0) {
 		tender_id = $tender_id
 		LIMIT 1";
 		
-		
+		$result = mysql_query($sql_edit, $conn) or die(mysql_error());
 
 		$actionmessage = "<p>Tender for <a href=\"index2.php?page=tender_view&amp;tender_id=" . $tender_id . "\">" . $tender_name . "</a> updated successfully.</p>";
 		AlertBoxInsert($_COOKIE[user],"Tender Edited",$actionmessage,$tender_id,0,0);
 }
 
 
-$result = mysql_query($sql_edit, $conn) or die(mysql_error());
-
-
-
-$techmessage = $sql_edit;
-
-?>

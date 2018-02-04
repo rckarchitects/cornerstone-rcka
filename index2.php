@@ -29,23 +29,7 @@ elseif ($_GET[action] != "") { include_once("inc_files/inc_functions_actions.php
 
 include("inc_files/inc_header.php");
 
-// Begin setting out the page
-
-$logo = "skins/" . $settings_style . "/images/logo.png";
-
-echo "<div id=\"maintitle\">";
-
-		echo "<a href=\"index2.php\" class=\"image\">";
-
-		if (file_exists($logo)) {
-				echo "<img src=\"$logo\" alt=\"$settings_name\" style=\"text-align: center;\" />";
-		} else {
-				echo $settings_name;
-		}
-
-		echo "</a>";
-
-echo "</div>";
+Logo($settings_style,$settings_name);
 
 
     echo "<div id=\"mainpage\">";
@@ -156,21 +140,7 @@ if ($_GET[page] == NULL) {
 		if (file_exists($inc_file)) { include($inc_file); } else { include("inc_files/inc_default.php?$page_variables"); }
 		}
 	
-	// And now echo some debugging information if the option is selected within the global options page
-	if ($settings_showtech > 0 AND $user_usertype_current > 3) {
-	if ($sql_add != "") { echo "<p>Database entry:<br /><strong>$sql_add</strong></p>"; }
-	echo "<h1>Technical Information</h1>";
-	echo "<p>Included file:<br /><strong>&nbsp;".CleanUp($inc_file)."</strong></p>";
-	echo "<p>Last Updated:<br /><strong>&nbsp;".date("r",filectime($inc_file))."</strong></p>";
-	echo "<p>Server IP Address:<br /><strong>&nbsp;".CleanUp($_SERVER["SERVER_ADDR"])."</strong></p>";
-	echo "<p>Server Name:<br /><strong>&nbsp;".CleanUp($_SERVER["SERVER_NAME"])."</strong></p>";
-	echo "<p>Client IP Address:<br /><strong>&nbsp;".CleanUp($_SERVER["REMOTE_ADDR"])."</strong></p>";
-	echo "<p>Script Name:<br /><strong>&nbsp;".CleanUp($_SERVER["SCRIPT_NAME"])."</strong></p>";
-	echo "<p>Query String:<br /><strong>&nbsp;".CleanUp($_SERVER["QUERY_STRING"])."</strong></p>";
-	echo "<p>PHP Version:<br /><strong>&nbsp;".phpversion ()."</strong></p>";
-	echo "<p>Server Software:<br /><strong>&nbsp;".CleanUp($_SERVER["SERVER_SOFTWARE"])."</strong></p>";
-	if ($techmessage != NULL) { echo "<p>$techmessage</p>"; }
-	}
+
 
     echo "</div>";
 	

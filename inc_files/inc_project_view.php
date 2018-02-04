@@ -43,7 +43,7 @@ if ($user_usertype_current > 2) {
 	
 			if ($module_fees == 1) {
 				echo "<div id=\"item_switch_5\">";
-					ProjectSubMenu($proj_id,$user_usertype_current,"project_fee"); ProjectFees($proj_id,$user_usertype_current);
+					ProjectFees($proj_id,$user_usertype_current);
 				echo "</div>";				
 			}
 			

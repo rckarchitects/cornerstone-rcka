@@ -72,17 +72,7 @@ array_push($array_projects_recent,$array_timesheet_projects['ts_project']);
 		if (mysql_num_rows($result) > 0) {
 
 		echo "<table summary=\"Lists of projects\">";
-		
-		if ($_GET[active] == "current") { 
-			echo "<tr><td colspan=\"4\" style=\"width: 40%;\">Project</td>";
-		} else {
-			echo "<tr><td colspan=\"3\">Project</td>";
-		}
-			
-		echo "<td colspan=\"3\">Current Stage</td>";
-		
-		echo "</td>";
-		echo "<td colspan=\"2\">Leader</td></tr>";
+	
 
 		while ($array = mysql_fetch_array($result)) {
 		
@@ -132,23 +122,25 @@ array_push($array_projects_recent,$array_timesheet_projects['ts_project']);
 								if ($array_projectcheck[1]!= NULL) { $row_color = "background-color: " . $array_projectcheck[1] . ";"; } else { unset($row_color); } 
 								if ($array_projectcheck[0]!= NULL) { $row_text = "<br />" . $array_projectcheck[0]; } else { unset($row_text); } 
 
-											echo "<tr><td $row_color_style><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">".ProjActive($proj_active,$proj_num,$proj_id)."</a>";
+											echo "<tr><td $row_color_style>";
 											
-											
-
-											echo "</td><td style=\"width: 24px; text-align: center; $row_color\">";
-
 											if ($user_usertype_current > 3 OR $user_id_current == $proj_rep_black) {
-											echo "<a href=\"index2.php?page=project_edit&amp;proj_id=$proj_id&amp;status=edit\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a>&nbsp;";
+												echo "<a href=\"index2.php?page=project_edit&amp;proj_id=$proj_id&amp;status=edit\" style=\"float: right;\" class=\"HideThis\"><img src=\"images/button_edit.png\" alt=\"Edit\" />";
 											}
-
-											echo "</td><td $alert_task $row_color_style >".ProjActive($proj_active,$proj_name,$proj_id).$add_task . "</td>";
 											
-											if ($_GET[active] == "current") { echo "<td><span class=\"minitext\">" . $proj_desc . "</span></td>"; }
+											echo ProjActive($proj_active,$proj_num,$proj_id) . "&nbsp";
+
+											echo ProjActive($proj_active,$proj_name,$proj_id).$add_task;
+											
+											
+											
+											echo "</td>";
+											
+											if ($_GET[active] == "current") { echo "<td class=\"HideThis\"><span class=\"minitext\">" . $proj_desc . "</span></td>"; }
 											
 											// Project Stage
 											
-											echo "<td style=\"width: 18px; text-align: center; $row_color\">";
+											echo "<td style=\"width: 18px; text-align: center; $row_color\" class=\"HideThis\">";
 												
 												$deadline = $ts_fee_time_begin + $ts_fee_time_end;
 												$remaining = $deadline - time();
@@ -164,12 +156,12 @@ array_push($array_projects_recent,$array_timesheet_projects['ts_project']);
 												
 											echo "</td><td $row_color_style>$current_stage $row_text</td>";
 											
-											echo "<td style=\"text-align: center; $row_color\">";
+											echo "<td style=\"text-align: center; $row_color\" class=\"HideThis\">";
 													echo "<a href=\"index2.php?page=project_checklist&amp;proj_id=$proj_id\"><img src=\"images/button_list.png\" alt=\"Checklist\" /></a>";
 											echo "</td>";
 											
 											echo "<td $row_color_style><a href=\"index2.php?page=user_view&amp;user_id=$user_id\">$user_initials</a></td>
-														<td style=\"text-align: center; $row_color\"><a href=\"pdf_project_sheet.php?proj_id=$proj_id\"><img src=\"images/button_pdf.png\" alt=\"Project Detailed (PDF)\" /></a></td>";
+														<td style=\"text-align: center; $row_color\" class=\"HideThis\"><a href=\"pdf_project_sheet.php?proj_id=$proj_id\"><img src=\"images/button_pdf.png\" alt=\"Project Detailed (PDF)\" /></a></td>";
 
 
 											echo "</tr>";

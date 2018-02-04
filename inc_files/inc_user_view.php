@@ -8,6 +8,24 @@ function UserDetailRow($name,$entry) {
 	
 }
 
+function UserRatesList($user_id) {
+
+	global $conn;
+	$user_id = intval($user_id);
+	$sql = "SELECT ts_rate, COUNT(ts_rate) FROM `intranet_timesheet` WHERE ts_user = $user_id GROUP BY ts_rate ORDER BY ts_rate";
+	$result = mysql_query($sql, $conn);
+	$counter = 0;
+	echo "<fieldset><legend>Hourly Rates from Timesheets</legend><table>";
+	echo "<th>Rate</th><th style=\"text-align: right;\">Timesheet Entries</th></tr>";
+	while ($array = mysql_fetch_array($result)) {
+			
+			echo "<tr><td>" . MoneyFormat($array['ts_rate']) . "</td><td style=\"text-align: right;\">" . number_format($array['COUNT(ts_rate)']) . "</td></tr>";
+			$counter = $counter + $array['COUNT(ts_rate)'];
+	}
+	echo "<tr><td><u>Total</u></td><td style=\"text-align: right;\"><u>" . number_format ($counter)  . "</u></td></tr>";
+	echo "</table></fieldset>";
+
+}
 
 	$user_id = intval($_GET[user_id]);
 
@@ -31,7 +49,7 @@ $array = mysql_fetch_array($result);
 	$user_usertype = $array['user_usertype'];
 	$user_active = $array['user_active'];
 	$user_username = $array['user_username'];
-	$user_user_rate = "&pound;" . number_format($array['user_user_rate'],2);
+	$user_user_rate = $array['user_user_rate'];
 	$user_user_added = $array['user_user_added'];
 	$user_user_ended = $array['user_user_ended'];
 	$user_user_timesheet = $array['user_user_timesheet'];
@@ -61,7 +79,7 @@ echo "<h1>".$full_name."</h1>";
 	if ($user_holidays > 0) { $user_holidays = $user_holidays . " days"; }
 	if ($user_timesheet_hours > 0) { $user_timesheet_hours = $user_timesheet_hours . " hours"; }
 	
-	if ($user_prop_target) { $user_prop_target = ( ( 1 - $user_prop_target) * 100 ) . "%"; }
+	if ($user_prop_target) { $hours_per_week = ( ( 1 - $user_prop_target) * 100 ) . "%"; }
 
 // Project Page Menu
 
@@ -99,8 +117,12 @@ echo "<fieldset><legend>Contact Details</legend>";
 echo "</fieldset>";
 
 if ($user_usertype_current > 3) {
+
+			$weekly_cost_rate =  MoneyFormat ( ($user_user_rate * ( (1 - $user_prop_target) * $user_timesheet_hours) ) ) ;
+			
+			$user_prop_target_print = (100 * $user_prop_target) . "%";
 	
-			echo "<fieldset><legend>Permissions</legend>";
+			echo "<fieldset><legend>Technical Information</legend>";
 
 				echo 	"<table>";
 				
@@ -112,13 +134,16 @@ if ($user_usertype_current > 3) {
 						UserDetailRow("Date Ended",$user_user_ended);
 						UserDetailRow("Require Timesheets?",$user_user_timesheet);
 						UserDetailRow("Annual Holiday Allowance",$user_holidays);
-						UserDetailRow("Allocated Fee-Working Hours",$user_prop_target);
-						UserDetailRow("Weekly Timesheet Hours",$user_timesheet_hours);
-						UserDetailRow("Hourly Cost Rate",$user_user_rate);
+						UserDetailRow("Allocated Non Fee-Earning Hours",$user_prop_target_print);
+						UserDetailRow("Weekly Timesheet Hours",$hours_per_week);
+						UserDetailRow("Hourly Cost Rate",MoneyFormat($user_user_rate));
+						UserDetailRow("Weekly Cost Rate",$weekly_cost_rate);
 						
 				echo "</table>";
 
 			echo "</fieldset>";
+			
+			UserRatesList($user_id);
 
 }
 

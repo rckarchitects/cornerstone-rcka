@@ -86,6 +86,7 @@ unset($alertmessage);
 		
 			GLOBAL $conn;
 			GLOBAL $ts_fee_project;
+			global $user_usertype_current;
 			
 			$count = 0;
 	
@@ -136,6 +137,12 @@ unset($alertmessage);
 
 				
 				$count++;
+				
+				// Let's try and find what's happening inside this loop...
+				if ($user_usertype_current > 3) {
+						$actionmessage = "<p>" . addslashes ( $sql_push ) . "</p>";
+						AlertBoxInsert($_COOKIE[user],"Fee Stages Updated",$actionmessage,$ts_id,0,0);
+				}
 				
 				if ($updated_rows == 0) { break; }
 				

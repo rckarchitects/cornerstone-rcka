@@ -1,7 +1,7 @@
 <?php
 
 
-//function TimesheetList($ts_weekbegin,$user_timesheet_hours,$user_usertype_current) {
+//function TimesheetList($viewuser,$ts_weekbegin,$user_timesheet_hours,$user_usertype_current) {
 	
 //	global $conn;
 
@@ -21,9 +21,9 @@ $ts_day_end = $ts_day_begin+86400;
 
 echo "<table summary=\"Timesheet for week beginning".TimeFormat($_GET[week])."\">";
 
-echo "<tr><th style=\"width: 30%;\"><strong>Project</strong></th><th style=\"width: 15%;\"><strong>Day</strong></th><th><strong>Description</strong></th><th><strong>Hours</strong></th>";
+echo "<tr><th style=\"width: 30%;\">Project</th><th style=\"width: 15%;\">Day</th><th>Description</th><th style=\"text-align: right;\">Hours</th>";
 
-if ($user_usertype_current > 3) { echo "<th>Cost</th>"; }
+if ($user_usertype_current > 3) { echo "<th style=\"text-align: right;\">Cost</th>"; }
 
 echo "</tr>";
 	  

@@ -39,8 +39,8 @@
 		
 		$result = mysql_query($sql_edit, $conn) or die(mysql_error());
 		$techmessage = $sql_edit;
-		$actionmessage = "<p>Task edited successfully. <a href=\"index2.php?page=tasklist_detail&amp;tasklist_id=$tasklist_id\">Click here to view</a>.</p>";
-		AlertBoxInsert($_COOKIE[user],"Task Added",$actionmessage,$tasklist_id,0,0);
+		$actionmessage = "<p>Task \'<a href=\"index2.php?page=tasklist_detail&amp;tasklist_id=$tasklist_id\">". $tasklist_notes ."</a>\' edited successfully.</p>";
+		AlertBoxInsert($_COOKIE[user],"Task Updated",$actionmessage,$tasklist_id,0,0);
 	
 	} else {
 
@@ -78,9 +78,9 @@
 	
 		$result = mysql_query($sql_add, $conn) or die(mysql_error());
 		$techmessage = $sql_add;
-		$task_id = mysql_affected_rows();
+		$tasklist_id = mysql_insert_id();
 		
-		$actionmessage = "<p>Task added successfully. <a href=\"index2.php?page=tasklist_detail&amp;tasklist_id=$tasklist_id\">Click here to view</a>.</p>";
+		$actionmessage = "<p>Task \'<a href=\"index2.php?page=tasklist_detail&amp;tasklist_id=$tasklist_id\">". $tasklist_notes ."</a>\' added successfully.</p>";
 		AlertBoxInsert($_COOKIE[user],"Task Added",$actionmessage,$tasklist_id,0,0);
 		
 	}

@@ -9,6 +9,26 @@ $currency_junk = array("£","€");
 
 $text_remove = array("Ã","Â");
 
+function Logo($settings_style,$settings_name) {
+
+	$logo = "skins/" . $settings_style . "/images/logo.png";
+
+	echo "<div id=\"maintitle\" class=\"HideThis\">";
+
+			echo "<a href=\"index2.php\" class=\"image\">";
+
+			if (file_exists($logo)) {
+					echo "<img src=\"$logo\" alt=\"$settings_name\" style=\"text-align: center;\" />";
+			} else {
+					echo $settings_name;
+			}
+
+			echo "</a>";
+
+	echo "</div>";
+
+}
+
 function ProjectProcurement($proj_procure) {
 	
 		GLOBAL $conn;
@@ -270,8 +290,10 @@ function ProjectSubMenu($proj_id,$user_usertype_current,$page) {
 
 		foreach ($array_menu_page AS $menu_link) {
 		 		 
-				echo "<a href=\"$array_menu_page[$count]\" class=\"submenu_bar\">$array_menu_text[$count]";
-				if ($array_menu_image[$count]) { echo "&nbsp;<img src=\"images/$array_menu_image[$count]\" />"; }
+				echo "<a href=\"$array_menu_page[$count]\" class=\"submenu_bar\">";
+				if ($array_menu_image[$count]) { echo "<img src=\"images/$array_menu_image[$count]\" />&nbsp;"; }
+				echo $array_menu_text[$count];
+				
 				echo "</a>";
 		 
 				$count++;
@@ -896,90 +918,6 @@ $current_page = $_SERVER['QUERY_STRING'];
 
 }
 
-function TimeSheetHours($user_id,$display) {
-
-// $display variable: if NULL, then checks the user_id and returns the percentage completed, if "list" then returns a formatted list showing incomplete days, and if "return", just returns the total percentage instead.
-
-GLOBAL $database_location;
-GLOBAL $database_username;
-GLOBAL $database_password;
-GLOBAL $database_name;
-GLOBAL $settings_timesheetstart;
-
-$conn = mysql_connect("$database_location", "$database_username", "$database_password");
-mysql_select_db("$database_name", $conn);
-$sql_user = "SELECT user_timesheet_hours, user_user_added, user_user_ended FROM intranet_user_details WHERE user_id = '$user_id' LIMIT 1";
-$result_user = mysql_query($sql_user, $conn) or die(mysql_error());
-$array_user = mysql_fetch_array($result_user);
-$user_user_added = $array_user['user_user_added'];
-$user_user_ended = $array_user['user_user_ended'];
-$user_timesheet_hours = $array_user['user_timesheet_hours'];
-
-
-if ($user_user_added > $settings_timesheetstart) { $timesheet_datum = $user_user_added; } else { $timesheet_datum = $settings_timesheetstart; }
-
-if ($user_user_ended > 0) { $end_time = $user_user_ended; } else { $end_time = time(); }
-
-
-		$startweek = BeginWeek($timesheet_datum);
-
-		$this_week = BeginWeek(time());
-
-		$sql4 = " SELECT ts_id, ts_user, ts_day, ts_month, ts_year, ts_entry FROM intranet_timesheet WHERE ts_entry > $startweek AND ts_entry < $end_time AND ts_entry < $this_week AND ts_day_complete = 1 AND ts_user = $user_id ORDER BY ts_entry";
-		
-		$current_day_check = 0;
-		
-		$day_complete_total = 0;
-		
-		if ($display == "list") { echo "<ul>"; }
-		
-		$result4 = mysql_query($sql4, $conn) or die(mysql_error());
-		while ($array4 = mysql_fetch_array($result4)) {
-
-		$ts_hours = $array4['ts_hours'];
-		$ts_entry = BeginWeek($array4['ts_entry']);
-		//$ts_beginweek = BeginWeek($array4['ts_entry']);
-		$ts_check = $array4['ts_day'] . "-" .  $array4['ts_month'] . "-" . $array4['ts_year'];
-		$ts_id = $array4['ts_id'];
-		
-		$dayofweek = date("w",$array4['ts_entry']);
-		
-		if	($ts_check != $current_day_check AND $dayofweek > 0 AND $dayofweek < 6 ) {
-				
-				$day_complete_total = $day_complete_total + 1;
-				
-				if ($display == "list") { echo "<li><a href=\"popup_timesheet.php?week=$ts_entry&amp;user_view=$user_id\">" .TimeFormat($array4['ts_entry']) . "</li>"; }
-				
-				
-				$current_day_check = $ts_check;
-				
-			}
-			
-				
-		
-		
-		
-		}
-		
-		if ($display == "list") { echo "</ul>"; }
-		
-		
-		// Now work out number of possible days since start
-		
-		$total_days = floor((5/7) * ((BeginWeek(time()) - BeginWeek($timesheet_datum)) / 86400));
-		
-		$timesheet_percentage_complete = round(100 * ($day_complete_total/$total_days));
-		
-		if ($display == NULL) { setcookie(timesheetcomplete, $timesheet_percentage_complete, time() + 86400); return $timesheet_percentage_complete; }
-		
-		if ($display == "return") { return $timesheet_percentage_complete; }
-		
-		$sql_update_completion = "UPDATE intranet_user_details SET user_timesheet_completion = $timesheet_percentage_complete WHERE user_id = $user_id LIMIT 1";
-		mysql_query($sql_update_completion, $conn) or die(mysql_error());
-		
-
-}
-
 function UserHolidays($user_id,$text,$year) {
 
 	GLOBAL $database_location;
@@ -1044,56 +982,6 @@ function UserHolidays($user_id,$text,$year) {
 	
 	return $total_holidays_allowed;
 	
-}
-
-function TimeSheetListIncomplete($user_id) {
-
-GLOBAL $database_location;
-GLOBAL $database_username;
-GLOBAL $database_password;
-GLOBAL $database_name;
-GLOBAL $settings_timesheetstart;
-GLOBAL $user_user_added;
-
-if ($user_user_added > $settings_timesheetstart) { $timesheet_datum = $user_user_added; } else { $timesheet_datum = $settings_timesheetstart; }
-
-$conn = mysql_connect("$database_location", "$database_username", "$database_password");
-mysql_select_db("$database_name", $conn);
-
-		$startweek = BeginWeek($timesheet_datum);
-
-		$this_week = BeginWeek(time());
-
-		$sql4 = " SELECT ts_id, ts_user, ts_day, ts_month, ts_year, ts_entry FROM intranet_timesheet WHERE ts_entry > $startweek AND ts_entry < $this_week AND ts_day_complete != 1 AND ts_user = $user_id ORDER BY ts_entry";
-		
-		$current_day_check = 0;
-		
-		if ($display == "list") { echo "<ul>"; }
-		
-		$result4 = mysql_query($sql4, $conn) or die(mysql_error());
-		while ($array4 = mysql_fetch_array($result4)) {
-
-		$ts_hours = $array4['ts_hours'];
-		$ts_entry = BeginWeek($array4['ts_entry']);
-		$ts_check = $array4['ts_day'] . "-" .  $array4['ts_month'] . "-" . $array4['ts_year'];
-		$ts_id = $array4['ts_id'];
-		
-		$dayofweek = date("w",$array4['ts_entry']);
-		
-		if	($ts_check != $current_day_check AND $dayofweek > 0 AND $dayofweek < 6 ) {
-				
-				echo "<li><a href=\"popup_timesheet.php?week=$ts_entry&amp;user_view=$user_id\">" .TimeFormat($array4['ts_entry']) . "</li>";
-				
-				$current_day_check = $ts_check;
-				
-			}	
-		
-		
-		}
-		echo "</ul>";
-	
-	
-
 }
 
 function UserDropdown($input_user) {
@@ -2165,11 +2053,15 @@ function AlertBoxInsert($user_id,$alert_category,$alert_message,$alert_entryref,
 		if ($alert_entryref > 0) {
 		
 			$verbose = intval($verbose);
+			$snoozetime = intval($snoozetime);
+			$user_id = intval($user_id);
+			
+			$alert_url = "'" . addslashes ( $_SERVER['HTTP_REFERER'] ) . "'";
 			
 			$sql = "SELECT * FROM intranet_alerts WHERE alert_timestamp > " . (time() - $snoozetime) . " AND alert_user = " . $user_id . " AND alert_category = '" . $alert_category . "' AND alert_entryref = " . $alert_entryref . " LIMIT 1";
 			$result = mysql_query($sql, $conn) or die(mysql_error());
 			if (mysql_num_rows($result) == 0) {
-				$sql_add = "INSERT INTO intranet_alerts (alert_id, alert_user, alert_category, alert_message, alert_timestamp, alert_status, alert_entryref) VALUES (NULL, " . $user_id . ",'" . $alert_category . "','" . $alert_message . "'," . time() . "," . $verbose . ", " . $alert_entryref . ")";
+				$sql_add = "INSERT INTO intranet_alerts (alert_id, alert_user, alert_category, alert_message, alert_timestamp, alert_status, alert_entryref, alert_url) VALUES (NULL, " . $user_id . ",'" . $alert_category . "','" . $alert_message . "'," . time() . "," . $verbose . ", " . $alert_entryref . ", " . $alert_url . ")";
 				$result_add = mysql_query($sql_add, $conn) or die(mysql_error());
 			}
 		
@@ -2362,6 +2254,9 @@ function AlertDelete($alert_id, $user_id) {
 function AlertsList($user_id,$user_usertype_current) {
 
 	global $conn;
+	global $user_usertype_current;
+	
+	$user_usertype_current = intval($user_usertype_current);
 	
 	$user_id = intval($user_id);
 	
@@ -2382,8 +2277,12 @@ function AlertsList($user_id,$user_usertype_current) {
 				if ($array['alert_status'] == 0) { $alert_message = "<strong>" . $array['alert_message'] . "</strong>"; } else { $alert_message = $array['alert_message']; }
 				
 				if ($array['alert_updated']) { $time_format = TimeFormat($array['alert_updated']) . "<br /><span class=\"minitext\">" . date("H:i",$array['alert_updated']) ."</span>"; } else { $time_format = "-"; }
-			
+				
+				
+							
 				echo "<tr><td>" . $array['alert_id'] . "</td><td>" . $array['alert_category'] . "</td><td>" . $alert_message . "</td><td>" . $array['user_name_first'] . " " . $array['user_name_second'] . "</td><td style=\"text-align: right;\">" . TimeFormat($array['alert_timestamp'])  . "<br /><span class=\"minitext\">" . date("H:i",$array['alert_timestamp']) ."</span></td><td style=\"text-align: right;\">" . $time_format  . "</td></tr>";
+				
+				if ($user_usertype_current > 4 && $array['alert_url']) { echo "<tr><td colspan=\"2\"></td><td colspan=\"4\"><p><span class=\"minitext\">". $array['alert_url'] . "</span></p></td></tr>"; }
 			
 			}
 			
@@ -2747,9 +2646,10 @@ function InvoiceLineItems ($ts_fee_id, $highlight, $stage_fee) {
 	
 }
 
-function ProjectFees($proj_id,$user_usertype_current) {
+function ProjectFees($proj_id) {
 
 	global $conn;
+	global $user_usertype_current;
 
 	$proj_id = intval ( $proj_id );
 
@@ -2763,7 +2663,9 @@ function ProjectFees($proj_id,$user_usertype_current) {
 
 				}
 
-
+				
+				ProjectSubMenu($proj_id,$user_usertype_current,"project_fee");
+				
 				echo "<h2>Fee Stages</h2>";
 
 				$sql = "SELECT * FROM intranet_projects, intranet_timesheet_fees LEFT JOIN intranet_timesheet_group ON group_id = ts_fee_group WHERE ts_fee_project = $proj_id AND proj_id = ts_fee_project ORDER BY ts_fee_commence, ts_fee_text";

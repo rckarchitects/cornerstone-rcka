@@ -94,8 +94,6 @@ $actionmessage = "<p>User <a href=\"http://intranet.rcka.co/index2.php?page=user
 
 AlertBoxInsert($_COOKIE[user],"User Added",$actionmessage,$user_id,0,0);
 
-$techmessage = $sql_add;
-
 }
 
 ?>

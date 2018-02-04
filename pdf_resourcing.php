@@ -358,14 +358,14 @@ DrawGrid();
 		
 		// Add cost of staff
 		
-		function StaffCost($time,$prop) {
+		function StaffCost($time) {
 			
 			GLOBAL $conn;
 			GLOBAL $pdf;
 			$start = $time;
 			$end = $time + 604800;
 			//$sql_staff = "SELECT user_timesheet_hours, user_user_rate, user_prop, user_prop_target FROM intranet_user_details WHERE user_user_added < $start AND ( user_user_ended > $start OR user_user_ended IS NULL OR user_user_ended = 0 ) OR (user_user_added < $start AND user_user_ended > $start)";
-			$sql_staff = "SELECT user_id, user_name_first, user_timesheet_hours, user_user_rate, user_prop, user_prop_target FROM intranet_user_details WHERE (user_user_added < $end) AND (user_user_ended > $start OR user_user_ended = 0)";
+			$sql_staff = "SELECT user_id, user_name_first, user_timesheet_hours, user_user_rate, user_prop_target, (user_user_rate * (1 - user_prop_target) * user_timesheet_hours) FROM intranet_user_details WHERE (user_user_added < $end) AND (user_user_ended > $start OR user_user_ended = 0)";
 			
 			
 			
@@ -377,18 +377,19 @@ DrawGrid();
 				$user_id = $array_staff['user_id'];
 				$user_timesheet_hours = $array_staff['user_timesheet_hours'];
 				$user_user_rate = $array_staff['user_user_rate'];
-				$user_prop = $array_staff['user_prop'];
 				$user_prop_target = $array_staff['user_prop_target'];
-				if ($user_prop == 0 OR $user_prop == NULL) { $user_prop = $user_prop_target; }
-				if ($prop != "target")	{ $user_prop_multiplier = $user_prop / $user_prop_target; } else { $user_prop_multiplier = 1; }
-				$this_user = (($user_timesheet_hours * $user_prop_multiplier * $user_user_rate) * ( 1 - $user_prop));
+				$this_user = (($user_timesheet_hours * $user_user_rate) * ( 1 - $user_prop_target));
 				$weekly_cost = $weekly_cost + $this_user;
+				
+				//$weekly_cost = $weekly_cost + $array_staff['(user_user_rate * (1 - user_prop_target) * user_timesheet_hours)'];
 				
 				//$array_total_cost[] = $this_user; //remove
 							
 				//$print = $user_id . ": " . round ($this_user); $pdf->Cell(15,4,$print,1,0); // remove
 				
 			}
+			
+			//$pdf->MultiCell(0,5,$sql_staff);
 			
 			//$weekly_cost = array_sum($array_total_cost); //remove
 			

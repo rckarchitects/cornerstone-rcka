@@ -4,7 +4,7 @@ function ProjectTasks($proj_id) {
 
 global $conn;
 
-if ($proj_id == NULL AND $_GET[proj_id] != NULL) { $proj_id = $_GET[proj_id]; }
+if ($proj_id == NULL AND intval($_GET[proj_id]) > 0) { $proj_id = intval($_GET[proj_id]); } else { $proj_id = intval($proj_id); }
 
 
 if ($_GET[view] == "complete") {
@@ -51,15 +51,16 @@ $tasklist_due = $array['tasklist_due'];
 					
 					
 					if ($proj_id != $proj_id_repeat AND $counter > 1) { echo "</table>"; unset($proj_id_repeat); }
-					if ($proj_id != $proj_id_repeat) {
-					   		echo "<h2>";
+					if ($proj_id != $proj_id_repeat && $proj_id == 0) {
 							if ($proj_fee_track == "1") {
-							echo "<a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\" name=\"view_task_$proj_id\">" . ProjectData($proj_id, "name") . "</a>";
+								echo "<h2><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\" name=\"view_task_$proj_id\">" . ProjectData($proj_id, "name") . "</a></h2>";
 							} else {
-							echo ProjectData($proj_id, "name");
+								echo "<h2>" . ProjectData($proj_id, "name") . "</h2>";
 							}
-							echo "</h2><table summary=\"Outstanding tasks for $proj_num\">";
+							
 					}
+					
+					echo "<table summary=\"Outstanding tasks for $proj_num\">";
 					
 					$proj_id_repeat = $proj_id;
 					

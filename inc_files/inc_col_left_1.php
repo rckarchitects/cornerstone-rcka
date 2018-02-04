@@ -5,10 +5,10 @@
 
 // Menu - System
 
-	$array_pages = array("index2.php","index2.php?page=admin_settings","backup.php","index2.php?page=alert_list","logout.php");
-	$array_title = array("Home","Configuration","Backup Database","Activity Log","Log Out");
-	$array_images = array("button_home.png","button_settings.png","button_save.png","button_settings.png","button_logout.png");
-	$array_access = array(0,4,4,1,0);
+	$array_pages = array("index2.php","index2.php?page=admin_settings","backup.php","index2.php?page=alert_list","index2.php?page=system_php_info","logout.php");
+	$array_title = array("Home","Configuration","Backup Database","Activity Log","System Information","Log Out");
+	$array_images = array("button_home.png","button_settings.png","button_save.png","button_settings.png","button_settings.png","button_logout.png");
+	$array_access = array(0,4,4,1,4,0);
 
 	SideMenu ("System", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 	
