@@ -109,9 +109,12 @@ if ($_GET[page] == NULL) {
 
 	echo "<h1>$today</h1>";
 
+	echo "<div style=\"float: left;\">";
 	ListHolidays();
+	echo "</div>";
 	
-	
+	echo "<div style=\"float: left;\">";
+	echo "</div>";
 	
 }
 

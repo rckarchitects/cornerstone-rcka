@@ -98,8 +98,10 @@ $proj_planning_ref = CleanUp($_POST[proj_planning_ref]);
 $proj_buildingcontrol_ref = CleanUp($_POST[proj_buildingcontrol_ref]);
 $proj_ambition_internal = trim(addslashes($_POST[proj_ambition_internal]));
 $proj_ambition_client = trim(addslashes($_POST[proj_ambition_client]));
+$proj_ambition_marketing = trim(addslashes($_POST[proj_ambition_marketing]));
 $proj_location = addslashes($_POST[proj_location]);
 $proj_info = addslashes($_POST[proj_info]);
+$proj_lpa = addslashes($_POST[proj_lpa]);
 
 // Construct the MySQL instruction to add these entries to the database
 
@@ -160,8 +162,10 @@ proj_buildingcontrol_ref,
 proj_fee_percentage,
 proj_ambition_internal,
 proj_ambition_client,
+proj_ambition_marketing,
 proj_location,
-proj_info
+proj_info,
+proj_lpa
 ) values (
 'NULL',
 '$proj_num',
@@ -219,8 +223,10 @@ proj_info
 '$proj_fee_percentage',
 '$proj_ambition_internal',
 '$proj_ambition_client',
+'$proj_ambition_marketing',
 '$proj_location',
-'$proj_info'
+'$proj_info',
+'$proj_lpa'
 )";
 
 $result = mysql_query($sql_add, $conn) or die(mysql_error());

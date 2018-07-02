@@ -66,15 +66,18 @@ $profit = 1;
 		$rate_profit = 0 ; //($rate_value_user+$overhead_rate_latest) * $profit;
 		
 		// Calculate the total hourly rate
+	
 		
-		$rate_value = $rate_value_user;
+		$ts_cost_factored = ( $timesheet_add_hours * $rate_value_user) * ( 1 / ( 1  + $ts_non_fee_earning ) );
 		
 
 	// And now stick the whole lot into the database
 	
 	
+	
+	
 
-	$sql4 = "INSERT INTO intranet_timesheet (ts_id, ts_user, ts_project, ts_hours, ts_desc, ts_day, ts_month, ts_year, ts_entry, ts_datestamp, ts_rate, ts_overhead, ts_projectrate, ts_stage_fee, ts_day_complete, ts_cost_factored, ts_prop_adjust, ts_non_fee_earning) values ('NULL', '$viewuser', '$timesheet_add_project', '$timesheet_add_hours', '$timesheet_add_desc', '$timesheet_add_day', '$timesheet_add_month', '$timesheet_add_year', '$timesheet_add_date', '$nowtime', '$rate_value', '$overhead_rate_latest', '$rate_profit', '$timesheet_stage_fee', 0, '$cost_for_week', '$ts_prop_adjust', '$ts_non_fee_earning' )";
+	$sql4 = "INSERT INTO intranet_timesheet (ts_id, ts_user, ts_project, ts_hours, ts_desc, ts_day, ts_month, ts_year, ts_entry, ts_datestamp, ts_rate, ts_overhead, ts_projectrate, ts_stage_fee, ts_day_complete, ts_cost_factored, ts_prop_adjust, ts_non_fee_earning) values ('NULL', '$viewuser', '$timesheet_add_project', '$timesheet_add_hours', '$timesheet_add_desc', '$timesheet_add_day', '$timesheet_add_month', '$timesheet_add_year', '$timesheet_add_date', '$nowtime', '$rate_value_user', '$overhead_rate_latest', '$rate_profit', '$timesheet_stage_fee', 0, '$ts_cost_factored', '$ts_prop_adjust', '$ts_non_fee_earning' )";
 	mysql_query($sql4, $conn);
 	
 	$ts_item_new = mysql_affected_rows();

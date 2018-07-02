@@ -256,27 +256,21 @@ if ($user_user_ended > 0) { $end_time = $user_user_ended; } else { $end_time = t
 
 function TimeSheetListIncomplete($user_id) {
 
-GLOBAL $database_location;
-GLOBAL $database_username;
-GLOBAL $database_password;
-GLOBAL $database_name;
+GLOBAL $conn;
 GLOBAL $settings_timesheetstart;
 GLOBAL $user_user_added;
 
 if ($user_user_added > $settings_timesheetstart) { $timesheet_datum = $user_user_added; } else { $timesheet_datum = $settings_timesheetstart; }
 
-$conn = mysql_connect("$database_location", "$database_username", "$database_password");
-mysql_select_db("$database_name", $conn);
 
 		$startweek = BeginWeek($timesheet_datum);
 
 		$this_week = BeginWeek(time());
 
-		$sql4 = " SELECT ts_id, ts_user, ts_day, ts_month, ts_year, ts_entry FROM intranet_timesheet WHERE ts_entry > $startweek AND ts_entry < $this_week AND ts_day_complete != 1 AND ts_user = $user_id ORDER BY ts_entry";
+		$sql4 = " SELECT ts_id, ts_user, ts_day, ts_month, ts_year, ts_entry FROM intranet_timesheet WHERE ts_entry > $startweek AND ts_entry < $this_week AND ts_day_complete != 1 AND ts_user = $user_id ORDER BY ts_entry DESC";
 		
 		$current_day_check = 0;
 		
-		if ($display == "list") { echo "<ul>"; }
 		
 		$result4 = mysql_query($sql4, $conn) or die(mysql_error());
 		while ($array4 = mysql_fetch_array($result4)) {
@@ -290,7 +284,7 @@ mysql_select_db("$database_name", $conn);
 		
 		if	($ts_check != $current_day_check AND $dayofweek > 0 AND $dayofweek < 6 ) {
 				
-				echo "<li><a href=\"popup_timesheet.php?week=$ts_entry&amp;user_view=$user_id\">" .TimeFormat($array4['ts_entry']) . "</li>";
+				echo "<div style=\"float: left; width: 100px; height; 25px; display: block; margin: 0 3px 3px 0; border: 2px solid #ccc; padding: 5px;\"><a href=\"index2.php?page=timesheet&amp;week=$ts_entry&amp;user_view=$user_id\">" .TimeFormat($array4['ts_entry']) . "</div>";
 				
 				$current_day_check = $ts_check;
 				
@@ -298,8 +292,6 @@ mysql_select_db("$database_name", $conn);
 		
 		
 		}
-		echo "</ul>";
-	
 	
 
 }
@@ -363,7 +355,7 @@ function TimeSheetHeader($ts_weekbegin,$user_id) {
 
 					echo "</div>";
 
-					TimeSheetMenuUsers($user_id,$ts_weekbegin,6);
+					TimeSheetMenuUsers($user_id,$ts_weekbegin);
 					
 					$timesheetcomplete = TimeSheetHours($user_id,"return");	
 					echo "<p>Timesheets " . $timesheetcomplete . "% complete"; if ($user_id > 0) { echo " $user_name"; } echo " - Week " . $week_number . "</p>";
@@ -452,19 +444,22 @@ echo "</select>&nbsp;";
 			$array_edit = mysql_fetch_array($result_edit);
 			$test_first = $array_edit['ts_project'];
 			$stage_first = $array_edit['ts_stage_fee'];
+
 	}
 
 echo "<select name=\"ts_stage_fee\">";
 		echo "<option value=\"\">-- None --</option>";
 		
 		if ($test_first > 0) {
-			$sql_first = "SELECT * FROM  intranet_timesheet_fees WHERE ts_fee_project = $test_first ORDER BY ts_fee_text";
+			$sql_first = "SELECT * FROM  intranet_timesheet_fees WHERE ts_fee_project = $test_first AND ts_fee_prospect = 100 ORDER BY ts_fee_text";
+			
+			
 			$result_first = mysql_query($sql_first, $conn) or die(mysql_error());
 			while ($array_first = mysql_fetch_array($result_first)) {
 				if ($stage_first == $array_first['ts_fee_id']) { 
 					echo "<option value=\"" . $array_first['ts_fee_id'] . "\" selected=\"selected\">" . $array_first['ts_fee_text'] . "</option>";
 				} else {
-					echo "<option value=\"" . $array_first['ts_fee_id'] . "\">" . $array_first['ts_fee_text'] . "</option>";
+					echo "<option value=\"" . $array_first['ts_fee_id'] . "\">" . $array_first['ts_fee_text'] .  "</option>";
 				}
 			}
 		}
@@ -476,20 +471,20 @@ echo "if (!assocArray) var assocArray = new Object();";
 
 
 	$fee_repeat = NULL;
-	$sql2 = "SELECT * FROM  intranet_projects, intranet_timesheet_fees LEFT JOIN intranet_timesheet_group ON ts_fee_group = group_id WHERE ts_fee_project = proj_id AND proj_active = 1 ORDER BY proj_num, ts_fee_time_begin";
+	$sql2 = "SELECT * FROM  intranet_projects, intranet_timesheet_fees LEFT JOIN intranet_timesheet_group ON ts_fee_group = group_id WHERE ts_fee_project = proj_id AND proj_active = 1 AND ts_fee_prospect = 100 ORDER BY proj_num, ts_fee_commence";
 	$result2 = mysql_query($sql2, $conn) or die(mysql_error());
 	while ($array2 = mysql_fetch_array($result2)) {
 	$ts_fee_text = $array2['ts_fee_text'];
 	$ts_fee_id = $array2['ts_fee_id'];
 	$ts_fee_stage = $array2['ts_fee_stage'];
 	$group_code = $array2['group_code'];
-		if ($ts_fee_stage > 0) {
+		if ($ts_fee_stage > 0 && $ts_fee_text == NULL ) {
 				$sql3 = "SELECT riba_letter, riba_desc FROM riba_stages WHERE riba_id = '$ts_fee_stage' LIMIT 1";
 				$result3 = mysql_query($sql3, $conn) or die(mysql_error());
 				$array3 = mysql_fetch_array($result3);
 				$ts_fee_text = $array3['riba_letter']." - ".$array3['riba_desc'];
 		}
-	if ($group_code) { $ts_fee_text = $group_code . ": " . $ts_fee_text; }
+	if ($group_code && $ts_fee_text == NULL) { $ts_fee_text = $group_code . ": " . $ts_fee_text; }
 	$proj_id = $array2['proj_id'];
 	$proj_num = $array2['proj_nume'];
 	$proj_name = $array2['proj_name'];
@@ -532,7 +527,7 @@ function TimeSheetList($user_id,$ts_weekbegin,$user_timesheet_hours) {
 
 						// Begin the daily loop
 
-						$ts_day_begin = $ts_weekbegin;
+						$ts_day_begin = BeginWeek($ts_weekbegin);
 						$ts_day_end = $ts_day_begin + 86400;
 
 						echo "<table summary=\"Timesheet for week beginning".TimeFormat($ts_weekbegin)."\">";
@@ -589,7 +584,7 @@ function TimeSheetList($user_id,$ts_weekbegin,$user_timesheet_hours) {
 								$ts_list_project_id = $array['id'];
 								$ts_list_project_fee_track = $array['proj_fee_track'];
 								$ts_ = $array['proj_fee_track'];
-								$ts_non_fee_earning = number_format (( 100 * $array['ts_prop_adjust']),2);
+								$ts_non_fee_earning = number_format (( 100 * $array['ts_non_fee_earning']),2);
 								
 								 if ($ts_item_new > 0 AND $ts_item_new == $ts_list_id) { $bg = " style=\"bgcolor: red;\" "; } else { unset($bg); }
 								
@@ -736,13 +731,14 @@ function TimeSheetUserUpdates($user_id, $week_begin, $weeks_to_analyse) {
 		
 		$user_id = intval($user_id);
 		
-		$sql_user = "SELECT user_timesheet_hours, user_user_rate, user_prop_target, user_name_first FROM intranet_user_details WHERE user_id = $user_id LIMIT 1";
+		$sql_user = "SELECT user_timesheet_hours, user_user_rate, user_prop_target, user_name_first, user_name_second FROM intranet_user_details WHERE user_id = $user_id LIMIT 1";
 		$result_user = mysql_query($sql_user, $conn) or die(mysql_error());
 		$array_user = mysql_fetch_array($result_user);
 		$user_timesheet_hours = $array_user['user_timesheet_hours'];
 		$user_user_rate = $array_user['user_user_rate'];
 		$user_prop_target = $array_user['user_prop_target'];
 		$user_name_first = $array_user['user_name_first'];
+		$user_name_second = $array_user['user_name_second'];
 		
 		$sql_hours = "SELECT ts_hours, proj_fee_track, ts_rate FROM intranet_timesheet LEFT JOIN intranet_projects ON ts_project = proj_id WHERE ts_user = $user_id AND ts_entry > $week_begin AND ts_entry < $week_end";
 		$result_hours = mysql_query($sql_hours, $conn) or die(mysql_error());
@@ -762,42 +758,50 @@ function TimeSheetUserUpdates($user_id, $week_begin, $weeks_to_analyse) {
 		
 		$total_hours = $total_hours_non_fee + $total_hours_fee;
 		
-		if ($user_usertype_current > 4 && $total_hours > 0) {
+		if ($total_hours > 0) {
 			
 			$percent_actual = TimeSheetCountHours($user_id,$week_begin,$weeks_to_analyse);
 			
 			$target = $user_timesheet_hours - ($user_timesheet_hours * $user_prop_target);
 			$actual = $user_timesheet_hours - ($user_timesheet_hours * $percent_actual);
 			
-			$ts_adjustment_factor =  $target / $actual;
+			$ts_adjustment_factor =  ($user_timesheet_hours * (1 - $user_prop_target)) / ($user_timesheet_hours * (1 - $percent_actual));
 			
-			echo "<blockquote><p>Over the previous " . $weeks_to_analyse . " weeks, " . $user_name_first . " has registered non-fee-earning time of " . number_format(($percent_actual*100),2) . "%, compared to an expected rate of " . number_format(($user_prop_target * 100),2) ."%. Based on the ratio of non-fee-earning hours, this figure has been adjusted with a factor of " . number_format($ts_adjustment_factor,2) . ". Anticipated cost per week (based on current figures) is " . MoneyFormat($user_user_rate * (1 - $user_prop_target) * $user_timesheet_hours) . ".</p>";
+			if ($user_usertype_current > 3) { 
+				echo "<blockquote><p><a href=\"index2.php?page=user_view&amp;user_id=162\">" . $user_name_first . "&nbsp;" . $user_name_second . "</a> is currently required to complete " . number_format($user_timesheet_hours) . " hours each week, with a currently hourly rate of <strong>&pound;" . number_format($user_user_rate,2) ."</strong>. " . $user_name_first . "'s weekly proportion of non-working hours is " . number_format(($user_prop_target * 100),2) . "%, ie. " . number_format(((1 - $user_prop_target) * $user_timesheet_hours),2) . " hours. Anticipated cost per week (based on current figures) is therefore <strong>" . MoneyFormat($user_user_rate * (1 - $user_prop_target) * $user_timesheet_hours) . "</strong>.</p><p>Over the previous " . $weeks_to_analyse . " weeks, " . $user_name_first . " has registered non-fee-earning time of " . number_format(($percent_actual*100),2) . "%, compared to this expected rate of " . number_format(($user_prop_target * 100),2) ."%. On this basis, " . $user_name_first . "'s weekly cost has been adjusted to <strong>" . MoneyFormat( ($user_timesheet_hours * (1 - $user_prop_target)) / ($user_timesheet_hours * (1 - $percent_actual)) * ($user_user_rate * (1 - $user_prop_target) * $user_timesheet_hours) ) . "</strong> across $user_timesheet_hours hours. This is an adjustment factor of " . number_format ((100 * $ts_adjustment_factor),2) . "%.</p>";
+			}
 			
+			// (($user_user_rate * (1 - $user_prop_target) * $user_timesheet_hours)) / ($user_timesheet_hours * (1 - $percent_actual)
+			
+
+		
+				if ($total_hours > $user_timesheet_hours && $user_timesheet_hours > 0) {
+					
+					$ts_adjustment_factor = $ts_adjustment_factor * ($user_timesheet_hours / $total_hours);
+				
+					if ($user_usertype_current > 3) {  echo "<p>In addition, " . $user_name_first . " has entered more hours than expected: " . $total_hours . ", rather than " . $user_timesheet_hours . ". Accordingly, " . $user_name_first . "'s hourly rate for this week has been adjusted with a further factor of " . number_format((100*($user_timesheet_hours / $total_hours)),2) . "%  giving a total hourly cost of <strong>" . MoneyFormat(($ts_adjustment_factor * ($user_user_rate * (1 - $user_prop_target) * $user_timesheet_hours)) / $user_timesheet_hours) . "</strong>.</p>"; }
+				
+				}
+				
+				$ts_adjustment_factor = $ts_adjustment_factor * (1 - $user_prop_target);
+				
+				if ($user_usertype_current > 3) { echo "<p>The total adjustment figure is " . number_format( ( 100 * $ts_adjustment_factor) ,2) . "%.</p></blockquote>"; }
+
+				
 		}
 		
-		if ($user_usertype_current > 4 && $total_hours > $user_timesheet_hours) {
-			
-			$ts_adjustment_factor = $ts_adjustment_factor * ($user_timesheet_hours / $total_hours);
-		
-			echo "<p>In addition, " . $user_name_first . " has entered more hours than expected: " . $total_hours . ", rather than " . $user_timesheet_hours . ". Accordingly, " . $user_name_first . "'s hourly rate for this week has been adjusted with a factor of " . number_format(($user_timesheet_hours / $total_hours),2) . "  giving a total adjustment factor of " . number_format(($ts_adjustment_factor),2) . ".</p>";
-		}
-		
-		$ts_adjustment_factor = $ts_adjustment_factor * (1 - $user_prop_target) ;
-		
-		if ($user_usertype_current > 4 && $total_hours > 0) {
-		
-			echo "<p>Assuming weekly fee-earning hours of " . number_format($user_timesheet_hours * (1 - $user_prop_target))  . " (from a possible " . number_format($user_timesheet_hours) . "), this results in an overall adjustment factor of " . number_format(($ts_adjustment_factor),2) . ".</p></blockquote>";
-		
-		}
 			
 		
 		// Now update the user's factored values based on the total number of hours this week
 			
 
-		if ($total_hours > 0) {
+		if ($total_hours > 0 && $total_hours >= $user_timesheet_hours && $user_timesheet_hours > 0) {
 			$sql_update_factor = "UPDATE intranet_timesheet SET ts_cost_factored = ( ts_hours * ts_rate * " . round( $ts_adjustment_factor,2) . ") WHERE ts_entry >= $week_begin AND ts_entry < $week_end AND ts_user = $user_id";
 			//echo "<p>$sql_update_factor</p>";
 			$result_update_factor = mysql_query($sql_update_factor, $conn) or die(mysql_error());
+		} elseif ($user_usertype_current > 3) {
+			
+			echo "<blockquote><p>- No timesheet entries for this week. -</p></blockquote>";
 		}
 
 }
@@ -829,18 +833,16 @@ function TimeSheetCountHours($user_id,$time_begin,$weeks) {
 	
 }
 
-function TimeSheetMenuUsers($user_id_current,$ts_weekbegin,$weeks_expired) {
+function TimeSheetMenuUsers($user_id_current,$ts_weekbegin) {
 
 			global $conn;
 			global $user_usertype_current;
-						
-			$weeks_expired = $weeks_expired * 604800;
-			$weeks_expired = $ts_weekbegin - $weeks_expired;
+					
 
 			echo "<div class=\"submenu_bar\">";
 			echo "<a href=\"index2.php?page=timesheet&amp;week=$ts_weekbegin\" class=\"submenu_bar\"><img src=\"/images/button_new.png\" alt=\"Add New Timesheet Entry\" />&nbsp;Add New</a>";
 			if ($user_usertype_current > 3) {
-				$sql_userlist = "SELECT user_initials, user_id, user_name_first, user_name_second FROM intranet_user_details WHERE (user_user_ended IS NULL OR user_user_ended = 0) AND (user_user_ended < $weeks_expired OR  user_user_ended IS NULL OR user_user_ended = 0) ORDER BY user_initials";
+				$sql_userlist = "SELECT user_initials, user_id, user_name_first, user_name_second FROM intranet_user_details WHERE user_user_added < $ts_weekbegin AND (user_user_ended > $ts_weekbegin OR user_user_ended = 0) ORDER BY user_initials";
 				$result_userlist = mysql_query($sql_userlist, $conn);
 				while ($array_userlist = mysql_fetch_array($result_userlist)) {
 					$user_id = $array_userlist['user_id'];
@@ -858,5 +860,86 @@ function TimeSheetMenuUsers($user_id_current,$ts_weekbegin,$weeks_expired) {
 			}
 			
 			echo "</div>";
+
+}
+
+function TimesheetListZeroCost($user_id) {
+	
+	
+		global $conn;
+		
+		if ($user_id) { $sql = "SELECT * FROM intranet_timesheet LEFT JOIN intranet_user_details ON ts_user = user_id WHERE ts_cost_factored = 0 AND user_timesheet_hours > 0 AND user_user_rate > 0 AND ts_user = $user_id ORDER BY ts_entry"; } else { $sql = "SELECT * FROM intranet_timesheet LEFT JOIN intranet_user_details ON ts_user = user_id WHERE ts_cost_factored = 0 AND user_timesheet_hours > 0 AND user_user_rate > 0 ORDER BY ts_entry"; }
+		
+				
+				$result = mysql_query($sql, $conn);
+
+				
+				if (mysql_num_rows($result) > 0) {
+				
+					echo "<fieldset><legend>Timesheet Entries with Zero Cost</legend><table>";
+					
+					echo "<tr><th>Date</th><th>User</th><th>ID</th><th style=\"text-align: right;\">Hours</th><th style=\"text-align: right;\">Factored Cost (&pound;)</th><th style=\"text-align: right;\">Hours</th><th style=\"text-align: right;\">Hourly Cost (&pound;)</th><th style=\"text-align: right;\">Non Fee-Earning Time (%)</th></tr>";
+					
+					while ($array = mysql_fetch_array($result)) {
+						
+						echo "<tr><td>" . TimeFormat($array['ts_entry']) . "</td><td>" . $array['user_name_first'] . "&nbsp;" . $array['user_name_second'] . "</td><td>" . $array['ts_id'] . "&nbsp;<a href=\"index2.php?page=timesheet&amp;user_view=" . $array['ts_user'] . "&amp;week=" . $array['ts_entry'] . "\"><img src=\"images/button_edit.png\" /></a></td><td style=\"text-align: right;\">" . $array['ts_hours'] . "</td><td style=\"text-align: right;\">&pound;" . number_format($array['ts_cost_factored'],2) . "</td><td style=\"text-align: right;\">" . number_format($array['ts_hours'],2) . "</td><td style=\"text-align: right;\">&pound;" . number_format($array['ts_rate'],2) . "</td><td style=\"text-align: right;\">" . $array['ts_non_fee_earning'] . "</td></tr>";
+						
+					}
+					
+					echo "</table></fieldset>";
+				
+				}
+	
+}
+
+function TimesheetListLowCost($user_id) {
+	
+	
+		global $conn;
+		
+		$sql = "SELECT * FROM intranet_timesheet LEFT JOIN intranet_user_details ON ts_user = user_id WHERE ts_cost_factored < ((ts_hours * ts_rate * (1 - ts_non_fee_earning)) / 2) AND user_timesheet_hours > 0 AND user_user_rate > 0 AND ts_non_fee_earning < 1 ORDER BY ts_entry DESC";
+		
+				
+				$result = mysql_query($sql, $conn);
+
+				
+				if (mysql_num_rows($result) > 0) {
+				
+					echo "<fieldset><legend>Timesheet Entries with Low Cost</legend><table>";
+				
+					echo "<p class=\"minitext\">The table below shows any timesheet entries which have a factored cost less than half of expected cost (ie. hourly rate x number of hours). This is useful for identifying any entries which may not have been factored correctly.</p>";
+					echo "<tr><th>Date</th><th>User</th><th>ID</th><th style=\"text-align: right;\">Hours</th><th style=\"text-align: right;\">Factored Cost (&pound;)</th><th style=\"text-align: right;\">Hours</th><th style=\"text-align: right;\">Hourly Cost (&pound;)</th><th style=\"text-align: right;\">Non Fee-Earning Time (%)</th></tr>";
+					
+					while ($array = mysql_fetch_array($result)) {
+						
+						echo "<tr><td>" . TimeFormat($array['ts_entry']) . "</td><td>" . $array['user_name_first'] . "&nbsp;" . $array['user_name_second'] . "</td><td>" . $array['ts_id'] . "&nbsp;<a href=\"index2.php?page=timesheet&amp;user_view=" . $array['ts_user'] . "&amp;week=" . $array['ts_entry'] . "\"><img src=\"images/button_edit.png\" /></a></td><td style=\"text-align: right;\">" . $array['ts_hours'] . "</td><td style=\"text-align: right;\">&pound;" . number_format($array['ts_cost_factored'],2) . "</td><td style=\"text-align: right;\">" . number_format($array['ts_hours'],2) . "</td><td style=\"text-align: right;\">&pound;" . number_format($array['ts_rate'],2) . "</td><td style=\"text-align: right;\">" . $array['ts_non_fee_earning'] . "</td></tr>";
+						
+					}
+					
+					echo "</table></fieldset>";
+				
+				}
+	
+}
+
+function TimesheetListFactored ($week) {
+	
+	echo "<h1>Factored Timesheets</h1>";
+
+	global $conn;
+
+	if (intval($week) > 0) {  $week_begin = BeginWeek($week); } else { $week_begin = BeginWeek(time() - 86400); }
+	
+	echo "<p>Calculates factored timesheets for each current member of staff, week beginning " . TimeFormat($week_begin) . ".</p>";
+
+	$sql = "SELECT user_id, user_name_first, user_name_second FROM intranet_user_details WHERE user_active = 1 ORDER BY user_name_second";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	while ($array = mysql_fetch_array($result)) {
+		
+		echo "<h2><a href=\"index2.php?page=timesheet&week=" . $week . "&amp;user_view=" . $array['user_id'] . "\">" . $array['user_name_first'] . "&nbsp;" . $array['user_name_second'] . "</a></h2>";
+		
+		TimeSheetUserUpdates($array['user_id'], $week_begin, $weeks_to_analyse);
+		
+	}
 
 }

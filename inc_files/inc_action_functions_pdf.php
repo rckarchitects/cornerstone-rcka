@@ -783,7 +783,7 @@ function PDF_Fee_Invoice_Reduce($stage_fee, $fee_id) {
 
 		$fee_id	= intval($fee_id);	
 		
-		$sql = "SELECT SUM(invoice_item_novat), invoice_ref, invoice_paid FROM intranet_timesheet_invoice, intranet_timesheet_invoice_item WHERE invoice_item_invoice = invoice_id AND invoice_item_stage = $fee_id AND invoice_paid > 0 GROUP BY invoice_id";
+		$sql = "SELECT SUM(invoice_item_novat), invoice_ref, invoice_paid FROM intranet_timesheet_invoice, intranet_timesheet_invoice_item WHERE invoice_item_invoice = invoice_id AND invoice_item_stage = $fee_id GROUP BY invoice_id";
 		
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		
@@ -792,12 +792,23 @@ function PDF_Fee_Invoice_Reduce($stage_fee, $fee_id) {
 		while ($array = mysql_fetch_array($result)) {
 			
 		$invoice_ref = $array['invoice_ref'];
-		$fee_remaining = $fee_remaining - $array['SUM(invoice_item_novat)'];
+		
+		if ($array['invoice_paid']) { $fee_remaining = $fee_remaining - $array['SUM(invoice_item_novat)']; }
+		
+		
 		$fee_remaining_print = utf8_decode( "£" . number_format ( $fee_remaining , 2 ) );
 		$invoice_paid = TimeFormat ( $array['invoice_paid'] );
 		$pdf->SetFont($format_font,'',8);
 		
-		$invoice_ref_print = "Less invoice ref. " . $invoice_ref . " (" . utf8_decode( "£" . number_format ( $array['SUM(invoice_item_novat)'] , 2 ) ) . ", paid " . $invoice_paid . ")";
+		
+
+		if ($array['invoice_paid']) {
+				$invoice_ref_print = "Less invoice ref. " . $invoice_ref . " (" . utf8_decode( "£" . number_format ( $array['SUM(invoice_item_novat)'] , 2 ) );
+				$invoice_ref_print = $invoice_ref_print . ", paid " . $invoice_paid . ")";
+		}  else {
+				$invoice_ref_print = "Invoice ref. " . $invoice_ref . " (" . utf8_decode( "£" . number_format ( $array['SUM(invoice_item_novat)'] , 2 ) );
+				$invoice_ref_print = $invoice_ref_print . ")";
+		}
 		
 		
 		$pdf->Cell(125,4,$invoice_ref_print,0,0);
@@ -1139,12 +1150,9 @@ function PDF_FileName ($proj_id, $file_name) {
 	
 }
 
-function StageTotal() {
+function StageTotal($stage_total, $hours_total, $running_cost_nf, $ts_fee_target ) {
+	
 		GLOBAL $pdf;
-		GLOBAL $stage_total;
-		GLOBAL $hours_total;
-		GLOBAL $running_cost_nf;
-		GLOBAL $ts_fee_target;
 		
 		$invoice_cost = $stage_total * $ts_fee_target;
 		$invoice_cost_print = PDFCurrencyFormat($invoice_cost);
@@ -1222,7 +1230,7 @@ function PDFStageAnalysis($proj_id,$proj_value) {
 	$pdf->Cell(25,5,"Target / Actual Cost",0,0,'R');
 	$pdf->Cell(0,5,"Stage Fee %",0,1,'R');
 	
-	$sql = "SELECT * FROM intranet_timesheet_fees LEFT JOIN intranet_timesheet_group ON ts_fee_group = group_id WHERE ts_fee_project = $proj_id ORDER BY ts_fee_commence";
+	$sql = "SELECT * FROM intranet_timesheet_fees LEFT JOIN intranet_timesheet_group ON ts_fee_group = group_id WHERE ts_fee_project = $proj_id AND ts_fee_prospect = 100 ORDER BY ts_fee_commence";
 	$result = mysql_query($sql, $conn) or die(mysql_error());
 	
 	$fee_total = 0;
@@ -1234,7 +1242,7 @@ function PDFStageAnalysis($proj_id,$proj_value) {
 	while ($array = mysql_fetch_array($result)) {
 			
 			$ts_fee_text = $array['ts_fee_text'];			
-			if ($array['group_code']) { $ts_fee_text = $array['group_code']. ltrim( trim( $ts_fee_text ),$array['group_code']); }
+			if ($array['group_code']) { $ts_fee_text = $array['group_code'] . " " . ltrim( trim( $ts_fee_text ),$array['group_code']); }
 		
 			
 			$pdf->SetFont('Helvetica','',9);
@@ -1307,20 +1315,20 @@ function PDFStageAnalysis($proj_id,$proj_value) {
 	if ($proj_value) { $fee_target_percent_total_print = number_format( ($fee_target_total / $proj_value * 100),2) . "%"; }
 	if ($proj_value) { $cost_actual_percent_print = number_format( ($target_fee_percentage_actual_total * 100),2) . "%"; }
 	
-	$pdf->Ln(2);
-	$pdf->SetLineWidth(0.75);
+	$pdf->Ln(1);
+	$pdf->SetLineWidth(0.5);
 	$pdf->SetFont('Helvetica','B',10);
 	$pdf->Cell(100,10,"Total Fee",'B',0);
 	$pdf->Cell(25,10,$fee_total_print,'B',0,'R');
 	$pdf->SetFont('Helvetica','',9);
-	$pdf->Cell(50,5,"Target Fee",0,0,'R');
+	$pdf->Cell(50,5,"Target Cost",0,0,'R');
 	$pdf->SetFont('Helvetica','B',10);
 	if ($fee_target_total > $fee_total) { $pdf->SetTextColor(255,0,0); } else { $pdf->SetTextColor(0,0,0); }
 	$pdf->Cell(50,5,$fee_target_total_print,0,0,'R');
 	$pdf->Cell(0,5,$fee_target_percent_total_print,0,1,'R');
 	$pdf->SetX(135);
 	$pdf->SetFont('Helvetica','',9);
-	$pdf->Cell(50,5,"Actual Fee",'B',0,'R');
+	$pdf->Cell(50,5,"Actual Cost",'B',0,'R');
 	$pdf->SetFont('Helvetica','B',10);
 	if ($cost_actual > $fee_target_total) { $pdf->SetTextColor(255,0,0); } else { $pdf->SetTextColor(0,0,0); }
 	$pdf->Cell(50,5,$cost_actual_print,'B',0,'R');

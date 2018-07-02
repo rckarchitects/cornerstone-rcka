@@ -1,6 +1,6 @@
 <?php
 
-$sql = "SELECT * FROM intranet_projects_blog, intranet_projects where blog_id = '$_GET[blog_id]' AND blog_proj = proj_id LIMIT 1";
+$sql = "SELECT * FROM intranet_projects_blog, intranet_projects where blog_id = '$_GET[blog_id]' AND blog_proj = proj_id AND (blog_access <= " . intval($user_usertype_current) . " OR blog_access IS NULL) LIMIT 1";
 $result = mysql_query($sql, $conn);
 $array = mysql_fetch_array($result);
 

@@ -101,10 +101,12 @@ $proj_planning_ref = $_POST[proj_planning_ref];
 $proj_buildingcontrol_ref = $_POST[proj_buildingcontrol_ref];
 $proj_fee_percentage = $_POST[proj_fee_percentage];
 
+$proj_lpa = addslashes($_POST[proj_lpa]);
 $proj_info = addslashes($_POST[proj_info]);
 
 $proj_ambition_internal = trim(addslashes($_POST[proj_ambition_internal]));
 $proj_ambition_client = trim(addslashes($_POST[proj_ambition_client]));
+$proj_ambition_marketing = trim(addslashes($_POST[proj_ambition_marketing]));
 
 $proj_location = trim(addslashes($_POST[proj_location]));
 
@@ -160,7 +162,8 @@ proj_tenant_1 = '$proj_tenant_1',
 proj_planning_ref = '$proj_planning_ref',
 proj_buildingcontrol_ref = '$proj_buildingcontrol_ref',
 proj_location = '$proj_location',
-proj_info = '$proj_info'
+proj_info = '$proj_info',
+proj_lpa = '$proj_lpa'
 WHERE proj_id = '$_POST[proj_id]'";
 
 $result = mysql_query($sql_add, $conn) or die(mysql_error());
@@ -174,7 +177,8 @@ proj_fee_track = '$proj_fee_track',
 proj_fee_type = '$proj_fee_type',
 proj_fee_percentage = '$proj_fee_percentage',
 proj_ambition_internal = '$proj_ambition_internal',
-proj_ambition_client = '$proj_ambition_client'
+proj_ambition_client = '$proj_ambition_client',
+proj_ambition_marketing = '$proj_ambition_marketing'
 WHERE proj_id = $proj_id";
 
 $result2 = mysql_query($sql_add2, $conn) or die(mysql_error());

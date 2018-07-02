@@ -46,7 +46,7 @@ function UserForm ($user_id) {
 	$user_timesheet_hours = $array['user_timesheet_hours'];
 	$user_notes = $array['user_notes'];
 	
-	echo "<form method=\"post\" action=\"index2.php?page=user_view&amp;user_id=$user_id\">";
+	echo "<form method=\"post\" action=\"index2.php?page=user_list\">";
 	
 	echo "<fieldset><legend>Name</legend>";
 	

@@ -46,8 +46,6 @@ print "<ul class=\"button_left\">";
 
     print "</ul>";
 
-?>
-
 
 
 

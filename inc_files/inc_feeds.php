@@ -1,6 +1,7 @@
 <?php
 
 
+
 if ($_GET[type] == "lad") {
 $feed_address = "http://www.londonarchitecturediary.com/rss";
 $feed_title = "Upcoming Events from <a href=\"http://www.londonarchitecturediary.com\">London Architecture Diary</a>";

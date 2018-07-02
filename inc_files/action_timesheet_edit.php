@@ -41,11 +41,12 @@ function Action_TimeSheetEdit($ts_id) {
 			$rate_value_user = $array2['user_user_rate'];
 			$user_prop_target = $array2['user_prop_target'];
 			
-			echo "<p>$sql2</p>";
 			
 			// Calculate the total hourly rate
 				
 				$rate_value = $rate_value_user;
+				
+				$ts_cost_factored = ( $timesheet_add_hours * $rate_value_user) * (1 / (1 + $user_prop_target));
 				
 			// Calculate the profit
 				
@@ -71,10 +72,12 @@ function Action_TimeSheetEdit($ts_id) {
 			ts_projectrate = '$ts_profit',
 			ts_stage_fee = '$ts_stage_fee',
 			ts_day_complete = '$ts_day_complete',
-			ts_cost_factored = '$ts_cost_factored',
+			ts_cost_factored = $ts_cost_factored,
 			ts_prop_adjust = '$ts_prop_adjust',
-			ts_non_fee_earning = '$user_prop_target'
-			WHERE ts_id = '$ts_id' LIMIT 1";
+			ts_non_fee_earning = $user_prop_target
+			WHERE ts_id = $ts_id LIMIT 1";
+			
+			//echo "<p>$sql3</p>";
 			
 			mysql_query($sql3, $conn);
 			

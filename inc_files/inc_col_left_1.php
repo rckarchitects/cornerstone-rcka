@@ -107,10 +107,10 @@ if ($module_qms == "1") {
 
 if ($module_timesheets == "1") {
 
-	$array_pages = array("index2.php?page=timesheet","index2.php?page=timesheet_analysis","pdf_timesheet_analysis.php","pdf_resourcing.php","pdf_timesheet_personal.php","index2.php?page=timesheet_incomplete_list","pdf_project_performance_summary.php");
-	$array_title = array("Timesheets","Analysis","Projects","Resourcing","My Timesheets","List incomplete","Project Performance Summary");
-	$array_images = array("button_list.png","button_analysis.png","button_pdf.png","button_pdf.png","button_pdf.png","button_list.png","button_pdf.png");
-	$array_access = array(1,4,4,4,1,1,4);
+	$array_pages = array("index2.php?page=timesheet","index2.php?page=timesheet_analysis","index2.php?page=timesheet_factored","pdf_timesheet_analysis.php","pdf_resourcing.php","pdf_timesheet_personal.php","index2.php?page=timesheet_incomplete_list","pdf_project_performance_summary.php");
+	$array_title = array("Timesheets","Analysis","Factored Timesheets","Projects","Resourcing","My Timesheets","List incomplete","Project Performance Summary");
+	$array_images = array("button_list.png","button_analysis.png","button_list.png","button_pdf.png","button_pdf.png","button_pdf.png","button_list.png","button_pdf.png");
+	$array_access = array(1,4,4,4,4,1,1,4);
 
 	SideMenu ("Timesheets", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 	
@@ -128,6 +128,17 @@ if ($module_invoices == "1") {
 	SideMenu ("Invoices", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 	
 }
+
+// Menu - Media
+
+
+	$array_pages = array("index2.php?page=media","index2.php?page=media&amp;action=upload");
+	$array_title = array("Browse Library","Upload");
+	$array_images = array("button_library.png","button_list.png");
+	$array_access = array(0,3);
+
+	SideMenu ("Media Library", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
+	
 
 // Menu - Expenses
 
@@ -151,7 +162,7 @@ if ($module_library == 1) {
 	$array_images = array("button_library.png");
 	$array_access = array(1);
 
-	SideMenu ("Library", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
+	//SideMenu ("Library", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 
 }
 
@@ -181,6 +192,19 @@ if ($module_phonemessages == 1) {
 	
 }
 
+// Menu - Office Manuals
+
+if ($module_manual == 1) {
+
+	$array_pages = array("index2.php?page=manual_page");
+	$array_title = array("Contents");
+	$array_images = array("button_list.png");
+	$array_access = array(0,0);
+
+	SideMenu ("Office Manual", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
+	
+}
+
 // Menu - System Information
 
 	$array_pages = array("index2.php?page=info_usertypes");
@@ -189,6 +213,3 @@ if ($module_phonemessages == 1) {
 	$array_access = array(5);
 
 	SideMenu ("System Information", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
-
-
-?>

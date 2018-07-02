@@ -28,7 +28,7 @@ $issue_checked = $_POST['set_checked'];
 
 if ($_POST[issue_reason] == NULL) { $issue_reason = CleanUp($_POST[issue_revision_other]); } else { $issue_reason = $_POST[issue_reason]; }
 
-$issue_timestamp = time();
+$issue_timestamp = intval(time());
 
 // First add the actual drawing set to the database
 
@@ -59,6 +59,8 @@ $sql_set = "INSERT INTO intranet_drawings_issued_set (
 $result_set = mysql_query($sql_set, $conn) or die(mysql_error());
 
 $issue_set = mysql_insert_id();
+
+if ($issue_set > 0) {
 
 	// Loop through each of the contacts selected
 	
@@ -123,8 +125,14 @@ $issue_set = mysql_insert_id();
 		}
 		
 
-$actionmessage = "<p>Drawing issue set ref. <a href=\"index2.php?page=drawings_issue_list&amp;set_id=$issue_set&amp;proj_id=$issue_project\">$issue_set</a> was added successfully.</p>";
+$actionmessage = "<p>Drawing issue set ref. <a href=\"index2.php?page=drawings_issue_list&amp;set_id=$issue_set&amp;proj_id=$issue_project\">$issue_set</a> was added successfully and issued to " . $counter_drawing . " people, with issue status \"" . strtoupper($issue_status) . "\".</p>";
 
 AlertBoxInsert($_COOKIE[user],"Drawing Issue",$actionmessage,$issue_set,0,0);
 
-?>
+} else {
+	
+	$actionmessage = "<p>Drawing issue set ref. <a href=\"index2.php?page=drawings_issue_list&amp;set_id=$issue_set&amp;proj_id=$issue_project\">$issue_set</a> failed for some reason.</p>";
+
+	AlertBoxInsert($_COOKIE[user],"Drawing Issue",$actionmessage,$issue_set,0,0);
+	
+}

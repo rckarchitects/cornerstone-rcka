@@ -177,7 +177,7 @@ $result_issued_to = mysql_query($sql_issued_to, $conn) or die(mysql_error());
 		$issue_method_list = array("Email","CD / USB", "Post", "Basecamp", "Woobius", "Planning Portal", "Google Drive","Dropbox","FTP","4Projects","WeTransfer","By Hand");
 		sort($issue_method_list);
 		
-		$issue_format_list = array("PDF", "DGN", "DWG", "DXF", "Hard Copy","RVT");
+		$issue_format_list = array("PDF", "DGN", "DWG", "DXF", "Hard Copy","RVT","SKT");
 		sort($issue_method_list);
 		
 		if (count($issue_method_list) > count($issue_format_list)) { $total = count($issue_method_list); } else { $total = count($issue_format_list); }

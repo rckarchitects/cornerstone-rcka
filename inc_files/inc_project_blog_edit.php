@@ -2,6 +2,8 @@
 
 // Retrieve and process the values passed using the $_GET submission
 
+echo "<h2>Add Journal Entry</h2>";
+
 if ($_GET[proj_id] != NULL) { $proj_id = intval($_GET[proj_id]); } else { unset ( $proj_id ); }
 if ($_GET[status] != NULL) { $status = $_GET[status]; } else { $status = "add"; }
 if ($_GET[blog_id] != NULL) { $blog_id = intval($_GET[blog_id]); } else { unset($blog_id); }
@@ -25,6 +27,7 @@ if(intval($blog_id) > 0 && intval($proj_id) > 0) {
 	$blog_link = $array['blog_link'];
 	$blog_task = $array['blog_task'];
 	$blog_pinned = $array['blog_pinned'];
+	$blog_access = $array['blog_access'];
 	
 	$contact_id = $blog_contact;
 	
@@ -59,6 +62,7 @@ if(intval($blog_id) > 0 && intval($proj_id) > 0) {
 	$blog_link = $_POST[blog_link];
 	$blog_task = $_POST[blog_task];
 	$blog_pinned = $array['blog_pinned'];
+	$blog_access = $array['blog_access'];
 	
 	$blog_date_minute = date("i",time());
 	$blog_date_hour = date("G",time());
@@ -132,6 +136,9 @@ echo "<option value=\"stage\" ";	if ($blog_type == "stage") { echo "selected"; }
 
 echo "</select>";
 
+echo "<h3>Access Level</h3><p>Accessible to this level and below:<br />";
+	UserAccessType("blog_access",$user_usertype_current,$blog_access,$user_usertype_current);
+echo "</p>";
 
 echo "<h3>Contact</h3><p>";
 	ContactsDropdownSelect($contact_id,"blog_contact");

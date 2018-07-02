@@ -29,6 +29,7 @@ $blog_contact = CleanNumber($_POST[blog_contact]);
 $blog_link = CleanUp($_POST[blog_link]);
 $blog_task = CleanUp($_POST[blog_task]);
 $blog_task = intval($_POST[blog_pinned]);
+$blog_access = intval($_POST[blog_access]);
 
 	$blog_date_minute = CleanNumber($_POST[blog_date_minute]);
 	$blog_date_hour = CleanNumber($_POST[blog_date_hour]);
@@ -52,7 +53,8 @@ blog_type,
 blog_contact,
 blog_link,
 blog_task,
-blog_pinned
+blog_pinned,
+blog_access
 ) values (
 'NULL',
 '$blog_date',
@@ -65,7 +67,8 @@ blog_pinned
 '$blog_contact',
 '$blog_link',
 '$blog_task',
-'$blog_pinned'
+'$blog_pinned',
+'$blog_access'
 )";
 
 $result = mysql_query($sql_add, $conn) or die(mysql_error());

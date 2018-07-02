@@ -20,21 +20,11 @@ echo "<p>The following form allows you to output a PDF file which lists the acti
 
 echo "<form method=\"post\" action=\"timesheet_project_month_pdf_redirect.php\">";
 
-echo "<p>Select Project<br />";
+    echo "<p>Select Project<br />";
+		ProjectSelect($proj_id,'submit_project');
+	echo "</p>";
 
-echo "<select name=\"submit_project\" class=\"inputbox\">";
 
-	$sql = "SELECT * FROM intranet_projects order by proj_num";
-	$result = mysql_query($sql, $conn) or die(mysql_error());
-	while ($array = mysql_fetch_array($result)) {
-	$proj_num = $array['proj_num'];
-	$proj_name = $array['proj_name'];
-	$proj_id = $array['proj_id'];
-
-	echo "<option value=\"$proj_id\" class=\"inputbox\">$proj_num $proj_name</option>";
-	}
-	echo "</select></p>";
-	
 echo "<p>Select Date<br />";
 echo "<select name=\"submit_month\" class=\"inputbox\">";
 echo "<option value=\"1\">January</option>";
@@ -82,20 +72,9 @@ echo "<p>The following form allows you to output a PDF file which lists the acti
 
 echo "<form method=\"post\" action=\"timesheet_pdf_2.php\">";
 
-    echo "<p>Select Project<br /><select name=\"submit_project\" class=\"inputbox\">";
-
-	$sql = "SELECT * FROM intranet_projects order by proj_num";
-	$result = mysql_query($sql, $conn) or die(mysql_error());
-	while ($array = mysql_fetch_array($result)) {
-	$proj_num = $array['proj_num'];
-	$proj_name = $array['proj_name'];
-	$proj_id = $array['proj_id'];
-
-	echo "<option value=\"$proj_id\" class=\"inputbox\"";
-	if ($_POST[submit_project] == $proj_id) { echo " selected";}
-	echo ">$proj_num $proj_name</option>";
-	}
-	echo "</select></p>";
+    echo "<p>Select Project<br />";
+		ProjectSelect($proj_id,'submit_project');
+	echo "</p>";
 
 	// Array through recent dates of week ending
 
@@ -197,7 +176,7 @@ echo "</form>";
 echo "</fieldset>";
 
 
-echo "<fieldset><legend>List Project by User</legend>";
+echo "<fieldset><legend>List Project Cost by User</legend>";
 
 echo "<form action=\"index2.php?page=timesheet_analysis_output\" method=\"post\">";
 
@@ -219,5 +198,6 @@ echo "</form>";
 
 echo "</fieldset>";
 
+TimesheetListZeroCost();
 
-?>
+TimesheetListLowCost();

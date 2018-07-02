@@ -35,7 +35,6 @@ if (intval($_POST[ts_weekbegin]) > 0 ) {
 TimeSheetHeader($ts_weekbegin, $viewuser);
 
 if ($viewuser == $_COOKIE[user] OR $_GET[ts_id] > 0 OR $viewuser == NULL OR $user_usertype_current > 3 ) {
-	$ts_weekbegin = intval ($_GET[week]);
 	TimeSheetEdit($ts_weekbegin,$viewuser,$ts_id);
 }
 

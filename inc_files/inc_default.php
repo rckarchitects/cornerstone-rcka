@@ -1,5 +1,7 @@
 <?
 
+echo "<div style=\"width: 100%; float: left;\">";
+
 echo "<div class=\"menu_bar\">";
 
 echo "<a href=\"#\" onclick=\"itemSwitch(1); return false;\" class=\"menu_tab\">Projects</a>";
@@ -13,7 +15,7 @@ echo "</div>";
 
 echo "<div id=\"item_switch_1\">";
 
-	include("inc_files/inc_project_list.php");
+	ProjectListFrontPage($user_id_current);
 
 echo "</div>";
 
@@ -40,5 +42,5 @@ echo "
 		</script>
 ";
 
-?>
+echo "</div>";
 

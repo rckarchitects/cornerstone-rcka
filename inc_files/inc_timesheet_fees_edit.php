@@ -46,7 +46,7 @@ if ($ts_fee_id != NULL) {
 		
 		if ($_GET[proj_id] != NULL) { $proj_id_page = $_GET[proj_id]; }
 		
-		echo "<h1>Add Fee Stage</h1>";
+		echo "<h2>Add Fee Stage</h2>";
 		
 
 }
@@ -123,32 +123,8 @@ echo "<fieldset><legend>Details</legend><p>";
 	// Select Project Stage / Group
 	
 	echo "<h3>Project Stage</h3>";
-	
-	$sql_group = "SELECT * FROM intranet_timesheet_group WHERE group_active = 1 ORDER BY group_code, group_order";
-	$result_group = mysql_query($sql_group, $conn) or die(mysql_error());
-	$array_group = mysql_fetch_array($result_group);
-	
-	echo "<select name=\"ts_fee_group\">";
-	
-	echo "<option value=\"\">-- None --</option>"; 
-	
-	while ($array_group = mysql_fetch_array($result_group)) {
-	
-		$group_id = $array_group['group_id'];
-		$group_order = $array_group['group_order'];
-		$group_code = $array_group['group_code'];
-		$group_description = $array_group['group_description'];
-		$group_active = $array_group['group_active'];
-		
-		if ($group_code != NULL) { $group_code = $group_code . ": "; }
-		
-		if ($group_id == $ts_fee_group ) { $select_group = " selected=\"selected\""; } else { unset($select_group); }
-		
-		echo "<option value=\"$group_id\" $select_group>" . $group_code . $group_description . "</option>";
-		
-	}
-	
-	echo "</select>";
+
+	SelectProjectStage("ts_fee_group" , $ts_fee_group);
 		
 	// Text field
 

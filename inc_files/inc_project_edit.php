@@ -19,9 +19,9 @@ function ProjectTypeList($list_name,$current_value) {
 // First, determine the title of the page
 
 if($_GET[proj_id] != NULL) {
-echo "<h2>Edit Project</h2>";
+echo "<h1>Edit Project</h1>";
 } else {
-echo "<h2>Add New Project</h2>";
+echo "<h1>Add New Project</h1>";
 }
 
 echo "<p class=\"menu_bar\">";
@@ -101,8 +101,11 @@ $proj_planning_ref = $array['proj_planning_ref'];
 $proj_buildingcontrol_ref = $array['proj_buildingcontrol_ref'];
 $proj_fee_percentage = $array['proj_fee_percentage'];
 
+$proj_lpa = $array['proj_lpa'];
+
 $proj_ambition_internal = $array['proj_ambition_internal'];
 $proj_ambition_client = $array['proj_ambition_client'];
+$proj_ambition_marketing = $array['proj_ambition_marketing'];
 
 if (!$array['proj_info']) { $proj_info = file_get_contents('library/template_proj_info.txt') ;} else { $proj_info = $array['proj_info']; }
 
@@ -167,8 +170,11 @@ $proj_planning_ref = $_POST[proj_planning_ref];
 $proj_buildingcontrol_ref = $_POST[proj_buildingcontrol_ref];
 $proj_fee_percentage = $_POST[proj_fee_percentage];
 
+$proj_lpa = $_POST[proj_lpa];
+
 $proj_ambition_internal = $_POST[proj_ambition_internal];
 $proj_ambition_client = $_POST[proj_ambition_client];
+$proj_ambition_client = $_POST[proj_ambition_marketing];
 $proj_info = $_POST[proj_info];
 $proj_location = $_POST[proj_location];
 
@@ -208,6 +214,10 @@ echo "<p>Country<br />";
 include("inc_files/inc_data_project_address_country.php");
 echo "</p>";
 
+ProjectListLPA();
+
+echo "<p>Local Planning Authority (LPA)<br /><input name=\"proj_lpa\" class=\"inputbox\" value=\"$proj_lpa\" style=\"width: 75%;\" maxlength=\"250\" list=\"proj_lpa\" /></p>";
+
 echo "<p>Project Description<br /><textarea name=\"proj_desc\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_desc</textarea></p>";
 
 echo "<p>Project Type<br />"; ProjectTypeList("proj_type",$proj_type); echo "</p>";
@@ -215,6 +225,8 @@ echo "<p>Project Type<br />"; ProjectTypeList("proj_type",$proj_type); echo "</p
 echo "<p>Practice Ambition for Project<br /><textarea name=\"proj_ambition_internal\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_ambition_internal</textarea></p>";
 
 echo "<p>Client Ambition for Project<br /><textarea name=\"proj_ambition_client\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_ambition_client</textarea></p>";
+
+echo "<p>Marketing Strategy<br /><textarea name=\"proj_ambition_marketing\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_ambition_marketing</textarea></p>";
 
 echo "<p>General Project Information<br /><textarea name=\"proj_info\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_info</textarea></p>";
 

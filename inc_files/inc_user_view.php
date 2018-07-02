@@ -27,8 +27,10 @@ function UserRatesList($user_id) {
 
 }
 
-	$user_id = intval($_GET[user_id]);
 
+
+	$user_id = intval($_GET[user_id]);
+	
 
 $sql = "SELECT * FROM intranet_user_details WHERE user_id = $user_id LIMIT 1";
 $result = mysql_query($sql, $conn);
@@ -144,6 +146,8 @@ if ($user_usertype_current > 3) {
 			echo "</fieldset>";
 			
 			UserRatesList($user_id);
+			
+			TimesheetListZeroCost($user_id);
 
 }
 
@@ -155,9 +159,6 @@ if ($user_notes) {
 	echo "</fieldset>";
 
 }
-
-
-?>
 
 
 

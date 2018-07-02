@@ -1,6 +1,10 @@
 <?php
 
-$proj_id = $_GET[proj_id];
+$proj_id = intval ($_GET[proj_id]);
+
+function ProjectTimesheetView($proj_id) {
+	
+	global $conn;
 
 	$sql_proj = "SELECT proj_num, proj_name, proj_value, proj_fee_percentage  FROM intranet_projects where proj_id = $proj_id";
 	$result_proj = mysql_query($sql_proj, $conn);
@@ -9,11 +13,17 @@ $proj_id = $_GET[proj_id];
 	$proj_name = $array_proj['proj_name'];
 	$proj_value = $array_proj['proj_value'];
 	$proj_fee_percentage = $array_proj['proj_fee_percentage'];
+	
+ProjectSwitcher ("project_timesheet_view", $proj_id, 1, 1);
 
-print "<h2>Project Expenditure</h2>";
+echo "<h2>Project Expenditure</h2>";
+
+echo "<div class=\"submenu_bar\"><a href=\"pdf_project_performance_summary.php?proj_id=$proj_id\" class=\"submenu_bar\">Project Performance Summary <img src=\"images/button_pdf.png\"  alt=\"Project Performance Summary\" /></a></div>";
+
+echo "<p>The table below shows each project stage with confirmed fees, profit target and timesheet costs at this moment in time.<br />Stages highlighted in <span style=\"background-color: rgba(255,126,0,0.5); padding: 0 5px 0 5px;\">orange</span> have exceeded their profit target, those in <span style=\"background-color: rgba(255,0,0,0.5); padding: 0 5px 0 5px;\">red</span> are losing money.</p>";
 
 	print "<table summary=\"Schedule of expenditure\">";
-	print "<tr><td><strong>Stage</strong></td><td><strong>Fee for Stage</strong></td><td><strong>Time Expenditure</strong></td><td><strong>Invoiced</strong></td></tr>";
+	print "<tr><th>Stage</th><th style=\"text-align: right;\">Fee for Stage</th><th style=\"text-align: right;\">Profit</th><th style=\"text-align: right;\">Target Cost</th><th style=\"text-align: right;\">Cost Expended</th><th style=\"text-align: right;\">Invoiced</th></tr>";
 	
 	$stage_total = 0;
 	$fee_total = 0;
@@ -21,8 +31,10 @@ print "<h2>Project Expenditure</h2>";
 	$project_fee_total = 0;
 	$invoice_item_total = 0;
 	$project_invoiced_total = 0;
+	$profit_total = 0;
+	$cost_total = 0;
 
-	$sql = "SELECT * FROM intranet_timesheet_fees WHERE ts_fee_project = '$proj_id' order by ts_fee_time_begin";
+	$sql = "SELECT * FROM intranet_timesheet_fees WHERE ts_fee_project = '$proj_id' AND ts_fee_prospect = 100 order by ts_fee_time_begin";
 	
 	$result = mysql_query($sql, $conn) or die(mysql_error());
 	while ($array = mysql_fetch_array($result)) {
@@ -32,6 +44,8 @@ print "<h2>Project Expenditure</h2>";
 					$ts_fee_text = $array['ts_fee_text'];
 					$ts_fee_value = $array['ts_fee_value'];
 					$ts_fee_percentage = $array['ts_fee_percentage'];
+					$ts_fee_profit = $ts_fee_value - ( $array['ts_fee_value'] / $array['ts_fee_target'] ); $profit_total = $profit_total + $ts_fee_profit;
+					$ts_fee_cost = $array['ts_fee_value'] / $array['ts_fee_target']; $cost_total = $cost_total + $ts_fee_cost;
 					
 								if ($ts_fee_stage > 0) {
 											$sql_riba = "SELECT * FROM riba_stages WHERE riba_id = '$ts_fee_stage' LIMIT 1";
@@ -42,16 +56,11 @@ print "<h2>Project Expenditure</h2>";
 											$ts_fee_text = $riba_letter." - ".$riba_desc;
 								}
 					
-						$sql2 = "SELECT * FROM intranet_timesheet where ts_stage_fee = '$ts_fee_id' AND ts_project = '$proj_id' ";
+						$sql2 = "SELECT SUM(ts_cost_factored) FROM intranet_timesheet where ts_stage_fee = '$ts_fee_id' AND ts_project = '$proj_id' ";
 						$result2 = mysql_query($sql2, $conn) or die(mysql_error());
-						while ($array2 = mysql_fetch_array($result2)) {
-							$ts_rate = $array2['ts_rate'];
-							$ts_overhead = $array2['ts_overhead'];
-							$ts_projectrate = $array2['ts_projectrate'];
-							$ts_hours = $array2['ts_hours'];
-							$stage_total = $stage_total + ($ts_hours * ($ts_rate + $ts_overhead + $ts_projectrate));
-							}
-							
+						$array2 = mysql_fetch_array($result2);
+							$stage_cost = $array2['SUM(ts_cost_factored)'];
+							$stage_total = $stage_total + $stage_cost;						
 							
 						// Work out how much has been invoiced for each stage
 						
@@ -60,7 +69,7 @@ print "<h2>Project Expenditure</h2>";
 						while ($array_invoice = mysql_fetch_array($result_invoice)) {
 							$invoice_item_novat = $array_invoice['invoice_item_novat'];
 							$invoice_item_total = $invoice_item_total + $invoice_item_novat;
-							}
+						}
 							
 						
 						// Calculate the Fee Stages for this project
@@ -69,9 +78,20 @@ print "<h2>Project Expenditure</h2>";
 							$fee_total = $fee_total + $ts_fee_value;
 
 						
-							if ($stage_total > $fee_total AND $ts_fee_value > 0) { $highlight = " style=\"background-color: #$settings_alertcolor;\""; $highlight2 = "background-color: #$settings_alertcolor;"; } else { $highlight = NULL; $highlight2 = NULL; }
+							if ($stage_total > $fee_total AND $ts_fee_value > 0) { $highlight = " background-color: rgba(255,0,0,0.5);\""; }
+							elseif ($stage_total > $ts_fee_cost AND $ts_fee_value > 0) { $highlight = " background-color: rgba(255,126,0,0.5);\"";  }
+							else { $highlight = NULL; }
+							
 							if ($fee_total < 1) { $fee_total_print = "Hourly Rate"; } else { $fee_total_print = MoneyFormat($fee_total); }
-							print "<tr><td $highlight>$ts_fee_text</td><td style=\"text-align: right;$highlight2\">".$fee_total_print."</td><td style=\"text-align: right;$highlight2\">".MoneyFormat($stage_total)."</td><td style=\"text-align: right;$highlight2\">".MoneyFormat($invoice_item_total)."</td></tr>";
+							print "<tr><td style=\"$highlight\">" . $ts_fee_text . "&nbsp;<a href=\"http://intranet.rcka.co/index2.php?page=timesheet_fees_edit&amp;ts_fee_id=$ts_fee_id\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a></td><td style=\"text-align: right; $highlight\">".$fee_total_print."</td><td style=\"text-align: right;$highlight\">" . MoneyFormat($ts_fee_profit) . "</td><td style=\"text-align: right;$highlight\">" . MoneyFormat($ts_fee_cost) . "</td><td style=\"text-align: right;$highlight\">".MoneyFormat($stage_total)."</td>";
+							
+							if (($invoice_item_total < $fee_total) OR ($invoice_item_total < $stage_total)) { 
+								echo "<td style=\"text-align: right; $highlight\"><span style=\"color: red;\"><strong>".MoneyFormat($invoice_item_total)."</strong> </span></td></tr>";
+							} else {
+								echo "<td style=\"text-align: right; $highlight\"><strong>".MoneyFormat($invoice_item_total)."</strong></td></tr>";
+							}
+							
+							
 							$project_total = $project_total + $stage_total;
 							$stage_total = 0;
 					
@@ -85,24 +105,27 @@ print "<h2>Project Expenditure</h2>";
 	
 	}
 	
-		$sql3 = "SELECT * FROM intranet_timesheet where ts_project = '$proj_id' AND ts_stage_fee < 1 ";
-		$result3 = mysql_query($sql3, $conn) or die(mysql_error());
-		while ($array3 = mysql_fetch_array($result3)) {
-			$ts_rate = $array3['ts_rate'];
-			$ts_overhead = $array3['ts_overhead'];
-			$ts_projectrate = $array3['ts_projectrate'];
-			$ts_hours = $array3['ts_hours'];
-			$stage_total = $stage_total + ($ts_hours * ($ts_rate + $ts_overhead + $ts_projectrate));
-			}
-
-		if ($stage_total > 0) {
-			print "<tr><td colspan=\"2\">Not Assigned</td><td style=\"text-align: right;\">".MoneyFormat($stage_total)."</td><td></td></tr>";
-		}
+		$sql3 = "SELECT SUM(ts_cost_factored) FROM intranet_timesheet WHERE ts_stage_fee = '$ts_fee_stage' AND ts_project = '$proj_id'";
 		
-		$project_total = $project_total + $stage_total;
+		$result3 = mysql_query($sql3, $conn) or die(mysql_error());
+		$array3 = mysql_fetch_array($result3);
+		
+		if ($array3['SUM(ts_cost_factored)'] > 0) {
+			$highlight = " background-color: rgba(255,0,0,0.5);\"";
+			echo "<tr><td colspan=\"4\" style=\"$highlight\"><a href=\"index2.php?page=timesheet_fee_reconcile&amp;proj_id=$proj_id\">Not Assigned</a></td><td style=\"text-align: right; $highlight;\">".MoneyFormat($array3['SUM(ts_cost_factored)'])."</td><td style=\"$highlight\"></td></tr>";
+			$project_total = $project_total + $array3['SUM(ts_cost_factored)'];
+		}
 	
-	print "<tr><td><strong>TOTAL</strong></td><td style=\"text-align: right;\"><strong>".MoneyFormat($project_fee_total)."</strong></td><td style=\"text-align: right;\"><strong>".MoneyFormat($project_total)."</strong></td><td style=\"text-align: right;\"><strong>".MoneyFormat($project_invoiced_total)."</strong></td></tr>";
+	print "<tr><td><strong>TOTAL</strong></td><td style=\"text-align: right;\"><strong>".MoneyFormat($project_fee_total)."</strong></td><td style=\"text-align: right;\"><strong>".MoneyFormat($profit_total)."</strong></td><td style=\"text-align: right;\"><strong>".MoneyFormat($cost_total)."</strong></td><td style=\"text-align: right;\"><strong>".MoneyFormat($project_total)."</strong></td><td style=\"text-align: right; $redtext\">";
+	
+	if (($project_invoiced_total < $project_fee_total) OR ($project_invoiced_total < $project_total)) { 
+		echo "<span style=\"color: red;\"><strong>".MoneyFormat($project_invoiced_total)."</strong></span></td></tr>";
+	} else {
+		echo "<strong>".MoneyFormat($project_invoiced_total)."</strong></td></tr>";
+	}
 
 	print "</table>";
 
-?>
+}
+
+ProjectTimesheetView($proj_id);

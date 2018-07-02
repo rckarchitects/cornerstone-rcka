@@ -105,10 +105,10 @@ if (mysql_num_rows($result_checklist) > 0) {
 	$checklist_project = $_GET[proj_id];
 
 	
-	if ($checklist_required == 2 && ( $checklist_date == "0000-00-00" OR $checklist_date == NULL ) ) { $bg =  "style=\"background: rgba(255,0,0, 0.4); \""; }
-		elseif ($checklist_required == 2 && ( $checklist_date != "0000-00-00" OR $checklist_date != NULL ) ) { $bg =  "style=\"background: rgba(0,255,0,0.4); \""; }
-		elseif ($checklist_required == 1) { $bg =  "style=\"background: rgba(200,200,200, 0.4); \""; }
-		else { $bg =  "style=\"background: rgba(255,220,0, 0.4); \""; }
+	if ($checklist_required == 2 && ( $checklist_date == "0000-00-00" OR $checklist_date == NULL ) ) { $bg =  "class=\" alert_warning \""; }
+		elseif ($checklist_required == 2 && ( $checklist_date != "0000-00-00" OR $checklist_date != NULL ) ) { $bg =  "class=\" alert_ok \""; }
+		elseif ($checklist_required == 1) { $bg =  "class=\" alert_neutral \""; }
+		else { $bg =  "class=\" class_neutral \""; }
 	
 	if ($item_group != $group) { echo "<tr><td colspan=\"8\"><strong>$item_group</strong></td></tr>"; }
 	

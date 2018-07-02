@@ -29,6 +29,20 @@ echo "</div>";
 
 StageTabs($group_id, $proj_id, "index2.php?page=project_checklist&amp;proj_id=$proj_id&amp;");
 
+	echo "
 
+		<script type=\"text/javascript\">
+
+			function hideRow(row, hideVal) {
+			if (document.getElementById(row)) {
+			  var displayStyle = (hideVal!=true)? '' : 'none' ;
+			  document.getElementById(row).style.display = displayStyle;
+			}
+		  }
+
+			
+		</script>
+			
+	";
 
 CheckListRows($proj_id,$group_id,$showhidden);

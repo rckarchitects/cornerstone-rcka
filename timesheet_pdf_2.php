@@ -53,6 +53,8 @@ ProjectHeading($proj_submit,"Timesheet Analysis");
 
 // Printed by, and on...
 
+$pdf->MultiCell(0,5,'Use this form with care - the figures are not yet updating properly and the profit targets are not showing correctly.');
+
 $pdf->SetFont($format_font,'',12);
 $pdf->SetTextColor(0,0,0);
 
@@ -60,6 +62,8 @@ $pdf->SetTextColor(0,0,0);
 $pdf->SetFont($format_font,'',6);
 $pdf->Cell(0,4,$printed_on,0, 1, L, 0);
 $pdf->Ln();
+
+
 
 $legend = "Cost (Fa) = Factored cost\nCost (Ho) = Hourly cost (not factored)\nCost (Fa Acc) = Factored accumulative cost\nCost (Ho Acc) = Hourly accumulative cost (not factored)\n";
 
@@ -72,6 +76,7 @@ $pdf->SetFillColor(220, 220, 220);
 
 $sql = "SELECT * FROM intranet_user_details, intranet_timesheet LEFT JOIN intranet_timesheet_fees ON ts_project = ts_fee_stage WHERE ts_user = user_id AND ts_project = '$proj_submit' AND ts_entry BETWEEN '$time_submit_begin' AND '$time_submit_end' ORDER BY ts_fee_commence, ts_stage_fee, ts_fee_time_begin, ts_entry, ts_id";
 $result = mysql_query($sql, $conn) or die(mysql_error());
+
 
 $current_fee_stage = NULL;
 $running_cost = 0;
@@ -110,20 +115,25 @@ $hours_total = 0;
 	$ts_fee_id = $array['ts_fee_id'];
 	$ts_stage_fee = $array['ts_stage_fee'];
 
-	$ts_cost_factored = $array['ts_cost_factored'] * (1 - $user_prop_target);
+	//$ts_cost_factored = $array['ts_cost_factored'] * (1 - $user_prop_target);
+	//$ts_cost_factored = $ts_cost_factored * ((1 - $user_prop) / (1 - $user_prop_target));
 	
-	$ts_cost_factored = $ts_cost_factored * ((1 - $user_prop) / (1 - $user_prop_target));
+	$ts_cost_factored = $array['ts_cost_factored'];
 	
 	$ts_cost_nf = $ts_rate * $ts_hours ;
 	
 	$sql_fee_text = "SELECT ts_fee_id, ts_fee_text, ts_fee_target FROM intranet_timesheet_fees WHERE ts_fee_id = '$ts_stage_fee' LIMIT 1";
+
+	
 	$result_fee_text = mysql_query($sql_fee_text, $conn) or die(mysql_error());
 	$array_fee_text = mysql_fetch_array($result_fee_text);
-	$ts_fee_text = $array_fee_text['ts_fee_text'];
+	
 	$ts_fee_target = $array_fee_text['ts_fee_target'];
+	if ( $ts_fee_target == NULL) { $ts_fee_target = 1; }
+	$ts_fee_text = $array_fee_text['ts_fee_text'] . " (" . $ts_fee_target . ")";
 	//$ts_stage_fee = $array_fee_text['ts_stage_fee'];
 	
-	if ( $ts_fee_target == NULL) { $ts_fee_target = 1; }
+	
 	
 	if ($ts_stage_fee == 0) { $ts_fee_text = "Unassigned"; }
 	
@@ -137,7 +147,7 @@ $hours_total = 0;
 		// Add the stage total if necessary
 		
 			if ($current_fee_stage != NULL AND $_POST[separate_pages] != 1) {
-				StageTotal($stage_total);
+				StageTotal($stage_total, $hours_total, $running_cost_nf, $ts_fee_target );
 				StageFee($ts_stage_fee);
 			} elseif ($current_fee_stage != NULL) {
 				$pdf->SetFont($format_font,'',8);
@@ -148,7 +158,7 @@ $hours_total = 0;
 				$hours_total = 0;
 			}
 			
-		if ($_POST[separate_pages] == 1 && $current_fee_stage != NULL) { $pdf->AddPage(); }
+		if ($current_fee_stage != NULL) { $pdf->AddPage(); }
 		
 		$current_y = $pdf->GetY();
 		if ($current_y > 240) { $pdf->addPage(); }
@@ -229,7 +239,7 @@ $hours_total = 0;
 }
 
 			if ($_POST[separate_pages] != 1) {
-				StageTotal($stage_total);
+				StageTotal($stage_total, $hours_total, $running_cost_nf, $ts_fee_target );
 				StageFee($ts_stage_fee);
 			} else {
 				$pdf->SetFont($format_font,'',8);

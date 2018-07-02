@@ -65,7 +65,7 @@ function UpdateUser($user_id) {
 				AlertBoxInsert($_COOKIE[user],"User Updated",$actionmessage,$user_id,1,0);
 				
 				
-			} elseif ($user_id == NULL && $user_usertype_current > 3) {
+			} else {
 				
 				$user_password = md5($_POST[user_password]);
 				
@@ -157,6 +157,7 @@ function BlogUpdateAction() {
 					$blog_link = CleanUp($_POST[blog_link]);
 					$blog_task = CleanUp($_POST[blog_task]);
 					$blog_pinned = intval($_POST[blog_pinned]);
+					$blog_access = intval($_POST[blog_access]);
 
 						$blog_date_minute = CleanNumber($_POST[blog_date_minute]);
 						$blog_date_hour = CleanNumber($_POST[blog_date_hour]);
@@ -179,7 +180,8 @@ function BlogUpdateAction() {
 					blog_contact = '$blog_contact',
 					blog_link = '$blog_link',
 					blog_task = '$blog_task',
-					blog_pinned = '$blog_pinned'
+					blog_pinned = '$blog_pinned',
+					blog_access = '$blog_access'
 					WHERE blog_id = '$blog_id' LIMIT 1
 					";
 

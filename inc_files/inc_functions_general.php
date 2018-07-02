@@ -9,6 +9,8 @@ $currency_junk = array("£","€");
 
 $text_remove = array("Ã","Â");
 
+ini_set("upload_max_filesize","10M");
+
 function Logo($settings_style,$settings_name) {
 
 	$logo = "skins/" . $settings_style . "/images/logo.png";
@@ -18,7 +20,7 @@ function Logo($settings_style,$settings_name) {
 			echo "<a href=\"index2.php\" class=\"image\">";
 
 			if (file_exists($logo)) {
-					echo "<img src=\"$logo\" alt=\"$settings_name\" style=\"text-align: center;\" />";
+					echo "<img src=\"$logo\" alt=\"$settings_name\" style=\"text-align: center; width: 150px;\" />";
 			} else {
 					echo $settings_name;
 			}
@@ -27,6 +29,25 @@ function Logo($settings_style,$settings_name) {
 
 	echo "</div>";
 
+}
+
+function ProjectListLPA() {
+	
+	GLOBAL $conn;
+	$sql = "SELECT proj_lpa FROM intranet_projects WHERE proj_lpa IS NOT NULL GROUP BY proj_lpa";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	if (mysql_num_rows($result) > 0) {
+		echo "<datalist id=\"proj_lpa\">";
+		
+		while ($array = mysql_fetch_array($result)) {
+			echo "<option value=\"" . $array['proj_lpa'] . "\"></option>";
+		}
+		
+		echo "</datalist>";
+		
+		
+	}
+	
 }
 
 function ProjectProcurement($proj_procure) {
@@ -127,22 +148,27 @@ function GetProjectInfo($proj_id) {
 					}
 }
 
-function SearchPanel($user_usertype_current) {
-	
-	echo "<span class=\"heading_side_right\">Search</span>";
-	echo "<div id=\"searchform\">";
+function SearchPanel($user_usertype_current,$search_id) {
+
 	
 	echo "<form action=\"index2.php?page=search\" method=\"post\">";
 	
-	if ($_POST[tender_search] == "yes") { $checked = " checked = \"checked\" "; } else { unset($checked) ; }
+	if ($_POST[tender_search] == "yes") { $checked1 = " checked = \"checked\" "; } else { unset($checked1) ; }
+	if ($_POST[search_phrase] == "yes") { $checked2 = " checked = \"checked\" "; } else { unset($checked2) ; }
 
-	echo "<p><input type=\"search\" name=\"keywords\" value=\"$_POST[keywords]\" id=\"txtfld\" onClick=\"SelectAll('txtfld');\" />&nbsp;<input type=\"submit\" value=\"Go\" /></p>";
+	echo "<p><input type=\"search\" name=\"keywords\" value=\"$_POST[keywords]\" id=\"$search_id\" onClick=\"SelectAll('$search_id');\" /></p>";
 	
 	if ($user_usertype_current > 1) {
-		echo "<p><input type=\"checkbox\" name=\"tender_search\" value=\"yes\" $checked />&nbsp;<span class=\"minitext\">Search tenders?</span>";
+		echo "<p><input type=\"checkbox\" name=\"tender_search\" value=\"yes\" $checked1 />&nbsp;<span class=\"minitext\">Search tenders?</span><br />";
+	} else {
+		echo "<p>";
 	}
 	
-	echo "</form></div>";
+	echo "<input type=\"checkbox\" name=\"search_phrase\" value=\"yes\" $checked2 />&nbsp;<span class=\"minitext\">Search Complete Phrase?</span></p>";
+	
+	echo "<p><input type=\"submit\" value=\"Go\" /></p>";
+	
+	echo "</form>";
 	
 	
 }
@@ -196,7 +222,7 @@ function ProjectSubMenu($proj_id,$user_usertype_current,$page) {
 				$array_menu_image[] = "button_edit.png";
 				$array_menu_usertype = 3;
 			
-				$array_menu_page[] = "index2.php?page=project_blog_edit&amp;status=add&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=project_edit&amp;status=add";
 				$array_menu_text[] = "Add Project";
 				$array_menu_image[] = "button_new.png";
 				$array_menu_usertype = 0;
@@ -348,8 +374,11 @@ $proj_planning_ref = $array['proj_planning_ref'];
 $proj_buildingcontrol_ref = $array['proj_buildingcontrol_ref'];
 $proj_fee_percentage = $array['proj_fee_percentage'];
 
+$proj_lpa = $array['proj_lpa'];
+
 $proj_ambition_internal = $array['proj_ambition_internal'];
 $proj_ambition_client = $array['proj_ambition_client'];
+$proj_ambition_marketing = $array['proj_ambition_marketing'];
 $proj_tenant_1 = $array['proj_tenant_1'];
 $proj_location = $array['proj_location'];
 
@@ -380,15 +409,17 @@ $country_printable_name = $array['country_printable_name'];
 
 					echo "</td></tr>";
 					
-					if ($proj_type) { echo "<tr><td>Project Type</td><td>$proj_type</td></tr>"; }
+					if ($proj_type) { echo "<tr><td><a href=\"index2.php?page=project_ambition_schedule&amp;type=project_type\">Project Type</a></td><td>$proj_type</td></tr>"; }
 
 					if ($proj_date_start > 0) { echo "<tr><td  >Project Start Date</td><td  >$proj_date_start</td></tr>"; }
 					if ($proj_date_complete > 0) { echo "<tr><td  >Project Completion Date</td><td>" . TimeFormat($proj_date_complete) . "</td></tr>"; }
-
+					if ($proj_lpa) { echo "<tr><td><a href=\"index2.php?page=project_ambition_schedule&amp;type=proj_lpa\">Local Planning Authority (LPA)</a></td><td>" . $proj_lpa . "</td></tr>"; }
 					if ($proj_desc) { echo "<tr><td>Project Description</td><td>" . nl2br ($proj_desc) . "</td></tr>"; }
-					if ($proj_ambition_internal) { echo "<tr><td>Project Ambition</td><td>" . nl2br ($proj_ambition_internal) . "</td></tr>"; }
-					if ($proj_ambition_client) { echo "<tr><td>Client Ambition</td><td>" . nl2br ($proj_ambition_client) . "</td></tr>"; }
-					if ($proj_info) { echo "<tr><td>Project Information</td><td>" . nl2br ($proj_info) . "</td></tr>"; }
+					if ($proj_ambition_internal) { echo "<tr><td><a href=\"index2.php?page=project_ambition_schedule&amp;type=project_ambition\">Project Ambition</a></td><td>" . nl2br ($proj_ambition_internal) . "</td></tr>"; }
+					if ($proj_ambition_client) { echo "<tr><td><a href=\"index2.php?page=project_ambition_schedule&amp;type=client_ambition\">Client Ambition</a></td><td>" . nl2br ($proj_ambition_client) . "</td></tr>"; }
+					if ($proj_info) { echo "<tr><td><a href=\"index2.php?page=project_ambition_schedule&amp;type=project_information\">Project Information</a></td><td>" . nl2br ($proj_info) . "</td></tr>"; }
+					if ($proj_ambition_marketing) { echo "<tr><td><a href=\"index2.php?page=project_ambition_schedule&amp;type=project_marketing\">Marketing Ambition</a></td><td>" . nl2br ($proj_ambition_marketing) . "</td></tr>"; }
+				
 
 					if ($proj_procure > 0) {
 					echo "<tr><td>Procurement Method</td><td>$proj_procure</td></tr>";
@@ -406,7 +437,7 @@ $country_printable_name = $array['country_printable_name'];
 					
 					
 					if ($proj_location) {
-						echo "<tr><td>Project Location</td><td>$proj_location</td></tr>";
+						echo "<tr><td><a href=\"index2.php?page=project_ambition_schedule&amp;type=project_location\">Project File Location</a></td><td>$proj_location</td></tr>";
 					}
 
 					echo "</table>";
@@ -759,8 +790,20 @@ function TextPresent($input) {
 	return($input);
 }
 
-function UserDetails($input) {
-	return($input);
+function UserDetails($user) {
+	
+	global $conn;
+	
+	$user = intval($user);
+	
+	$sql = "SELECT user_name_first, user_name_second FROM intranet_user_details WHERE user_id = $user LIMIT 1";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	if (mysql_num_rows($result) > 0) {
+		$array = mysql_fetch_array($result);
+		$name = "<a href=\"index2.php?page=user_view&amp;user_id=" . $user . "\">" . $array['user_name_first'] . " " . $array['user_name_second'] . "</a>";
+	}
+	
+	return $name;
 }
 
 function DateDropdown($input, $timecode) {
@@ -1016,6 +1059,25 @@ GLOBAL $conn;
 	
 }
 
+function ListAvailableImages($directory) {
+	
+	global $conn;
+	
+	$sql = "SELECT * FROM intranet_media WHERE media_type = 'png' OR media_type = 'jpg' OR media_type = 'gif' ORDER BY media_title, media_timestamp DESC";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	while ($array = mysql_fetch_array($result)) {
+		
+		$list = $list . "{title: '" . $array['media_title'] . "', value: '" . $array['media_path'] . $array['media_file'] . "'},";
+		
+	}
+	
+	$list = rtrim($list,",");
+	
+	echo $list;
+
+	
+}
+
 function TextAreaEdit() {
 
 				echo "
@@ -1023,10 +1085,14 @@ function TextAreaEdit() {
 					tinymce.init({
 					selector: \"textarea\",
 					plugins: [
-						\"advlist autolink lists link charmap preview anchor textcolor\"
+						\"advlist autolink lists link charmap preview anchor textcolor table image code\"
 					],
 					menubar: false,
-					toolbar: \"undo redo | bold italic underline strikethrough | bullist numlist outdent indent | link unlink | forecolor \",
+					toolbar: \"undo redo | bold italic underline strikethrough | bullist numlist outdent indent | link unlink | forecolor | table | alignleft aligncenter alignright | image | code \",
+					table_toolbar: \"tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol\",
+					image_list: [";
+						ListAvailableImages("uploads");
+				echo "],
 					autosave_ask_before_unload: false,
 					height : 300,
 					max_height: 1000,
@@ -1932,10 +1998,11 @@ function DeadlineTime($time) {
 function ListProjectJournalEntries($proj_id) {
 	
 		global $conn;
+		global $user_usertype_current;
 
 					echo "<h2>Journal Entries</h2>";
 
-					$sql = "SELECT * FROM intranet_projects_blog, intranet_projects, intranet_user_details WHERE blog_proj = proj_id AND proj_id = '$proj_id' AND blog_user = user_id order by blog_date DESC";
+					$sql = "SELECT * FROM intranet_projects_blog, intranet_projects, intranet_user_details WHERE blog_proj = proj_id AND proj_id = '$proj_id' AND blog_user = user_id AND (blog_access = $user_usertype_current OR blog_access IS NULL) order by blog_date DESC";
 					$result = mysql_query($sql, $conn) or die(mysql_error());
 					$result_project = mysql_query($sql, $conn) or die(mysql_error());
 					$array_project = mysql_fetch_array($result_project);
@@ -2025,7 +2092,7 @@ function SearchTerms($search_text,$search_field) {
 		}
 		$searching_blog = "$search_field LIKE ".$searching_blog;
 		return($searching_blog);
-}		
+}
 
 function AlertBoxShow($user_id) {
 	
@@ -2262,7 +2329,7 @@ function AlertsList($user_id,$user_usertype_current) {
 	
 		if ($_GET[view] == "all" && $user_usertype_current > 4) { unset($filter); } else { $filter = "WHERE alert_user = " . $user_id; }
 
-		$sql = "SELECT * FROM intranet_alerts LEFT JOIN intranet_user_details ON user_id = alert_user $filter ORDER BY alert_timestamp DESC";
+		$sql = "SELECT * FROM intranet_alerts LEFT JOIN intranet_user_details ON user_id = alert_user $filter ORDER BY alert_timestamp DESC LIMIT 100";
 		
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		
@@ -2384,7 +2451,7 @@ function UsersList($active) {
 					
 					if ($cost_per_hour > 0) { $total_people++ ; $total_hourly_cost = $total_hourly_cost + $cost_per_hour; }
 					
-					$cost_per_week = $cost_per_hour * $fee_earning_hours_per_week;
+					$cost_per_week = $cost_per_hour * $user_timesheet_hours;
 					
 					$cost_per_hour_total = $cost_per_hour_total + $cost_per_hour;
 					$cost_per_week_total = $cost_per_week_total + $cost_per_week;
@@ -2429,21 +2496,22 @@ function CheckListRows($proj_id,$group_id,$showhidden) {
 	$result_checklist = mysql_query($sql_checklist, $conn) or die(mysql_error());
 
 	echo "
-
-		<script type=\"text/javascript\">
-
-			function hideRow(row, hideVal) {
-			if (document.getElementById(row)) {
-			  var displayStyle = (hideVal!=true)? '' : 'none' ;
-			  document.getElementById(row).style.display = displayStyle;
-			}
-		  }
-
-			
-		</script>
-			
-	";
-
+	<script>
+	$(document).ready(function(){
+		$(\".Row1\").dblclick(function(){
+			var ThisRow = document.getElementsByClassName(\"Row1\");
+			$(\".Row1\").hide();
+			$(\".Row2\").show();
+			$(\"#testslot\").html(\"Row Name:\" + ThisRow );
+		});
+		$(\".Row2\").change(function(){
+			$(ThisRow).hide();
+			$(\".Row1\").show();
+		});
+	});
+	</script>";
+	
+	echo "<div id=\"testslot\"></div>";
 
 
 	echo "<table>";
@@ -2479,10 +2547,10 @@ function CheckListRows($proj_id,$group_id,$showhidden) {
 	if ($item_group != $group) { echo "<tr><td colspan=\"8\"><strong>$item_group</strong></td></tr>"; }
 	
 		// Change the background color depending on status
-		if ($checklist_required == 2 && ( $checklist_date == "0000-00-00" OR $checklist_date == NULL ) ) { $bg =  "style=\"background: rgba(255,0,0, 0.4); \""; } // red
-		elseif ($checklist_required == 2 && ( $checklist_date != "0000-00-00" OR $checklist_date != NULL ) ) { $bg =  "style=\"background: rgba(0,255,0,0.4); \""; } // green
-		elseif ($checklist_required == 1) { $bg =  "style=\"background: rgba(200,200,200, 0.4); \""; } // grey
-		else { $bg =  "style=\"background: rgba(255,220,0, 0.4); \""; } // grey
+		if ($checklist_required == 2 && ( $checklist_date == "0000-00-00" OR $checklist_date == NULL ) ) { $bg =  "class=\"alert_warning \""; } // red
+		elseif ($checklist_required == 2 && ( $checklist_date != "0000-00-00" OR $checklist_date != NULL ) ) { $bg =  "class=\"alert_ok \""; } // green
+		elseif ($checklist_required == 1) { $bg =  "class=\"alert_neutral \""; } // grey
+		else { $bg =  "class=\" alert_neutral \""; } // grey
 		
 		
 		
@@ -2492,7 +2560,7 @@ function CheckListRows($proj_id,$group_id,$showhidden) {
 		}
 	
 	
-	echo "<tr><td $bg>";
+	echo "<tr id=\"checklist_row_" . $item_id . "\" class=\"Row1\"><td $bg>";
 	//if ($item_name_current != $item_name) { 
 	
 	echo $item_name;
@@ -2548,6 +2616,17 @@ function CheckListRows($proj_id,$group_id,$showhidden) {
 	$group = $item_group;
 	
 	$current_item = $item_id;
+	
+	echo "	<tr class=\"Row2\" style=\"display: none;\">
+			<td $bg><input type=\"text\" name=\"item_name\" value=\"$item_name\" $bg /></td>
+			<td $bg></td>
+			<td $bg></td>
+			<td $bg></td>
+			<td $bg></td>
+			<td $bg></td>
+			<td $bg></td>
+			<td $bg></td>
+			</tr>";
 
 	}
 
@@ -3343,23 +3422,23 @@ function TimeRemaining($proj_id, $ts_fee_id, $ts_fee_target, $ts_fee_value) {
 
 			if ($hours_remaining_user > 0 && $user_percent > 0.1 && $cost_percentage > 0.2 && $cost_percentage < 1) {
 			$row_text = "<span class=\"minitext\"><i>You have <strong>" . round($hours_remaining_user) . "</strong> hour(s) remaining on this stage</i></span>";
-			$row_color = "rgba(0,255,0,0.4)";
+			$row_color = "alert_warning";
 			} elseif ( $cost_percentage > 1 && $cost_percentage_cost < 1 ) {
 			$percent_over = round(100 * ($cost_percentage - 1) );
 			$row_text = "<span class=\"minitext\"><i>This fee stage has overspent target profitability by <strong>" . $percent_over . "%</strong>.</i></span>";
-			$row_color = "rgba(255,220,0, 0.4)";
+			$row_color = "alert_careful";
 			} elseif ( $cost_percentage_cost > 1) {
 			$percent_over = round(100 * ($cost_percentage_cost - 1) );
 			$row_text = "<span class=\"minitext\"><i>This fee stage has overspent by <strong>" . $percent_over . "%</strong> and is now losing money.</i></span>";
-			$row_color = "rgba(255,0,0, 0.4)";
+			$row_color = "alert_warning";
 			} elseif ( $ts_fee_value == 0 && $ts_fee_id > 0) {
 			$row_text = "<span class=\"minitext\"><i>There is no fee currently associated with this stage.<br />Your project hours to date: <strong>" . number_format ( $ts_hours_total,1) . "</strong></i></span>";
-			$row_color = "rgba(200,200,200, 0.4)";
+			$row_color = "alert_neutral";
 			} elseif ( $ts_fee_value == 0) {
 			$row_text = "<span class=\"minitext\"><i>There is no fee stage currently associated with this project.<br />Your project hours to date: <strong>" . number_format ( $ts_hours_total,1) . "</strong></i></span>";
-			$row_color = "rgba(200,200,200, 0.4)";
+			$row_color = "alert_neutral";
 			} else {
-			$row_color = "rgba(0,255,0,0.4)";
+			$row_color = "alert_ok";
 			}
 			
 			if ($user_usertype_current > 4 && $_GET[maintenance] == "yes") {
@@ -3380,3 +3459,237 @@ function TimeRemaining($proj_id, $ts_fee_id, $ts_fee_target, $ts_fee_value) {
 	return array ($row_text, $row_color);
 
 }
+
+function CreatePDFThumbnail ($file) {
+
+	
+	if (!extension_loaded('imagick')) { echo "<p>imagick not installed</p>"; }
+	
+		//$im = new imagick('$file[0]');
+		//$im->setImageFormat('jpg');
+		//header('Content-Type: image/jpeg');
+		//echo $im;
+	
+}
+
+function SelectProjectStage($option_name, $current_id) {
+
+		global $conn;
+			
+	$sql_group = "SELECT * FROM intranet_timesheet_group WHERE group_active = 1 ORDER BY group_code, group_order";
+	$result_group = mysql_query($sql_group, $conn) or die(mysql_error());
+	$array_group = mysql_fetch_array($result_group);
+	
+	echo "<select name=\"" . $option_name . "\">";
+	
+	echo "<option value=\"\">-- None --</option>"; 
+	
+	while ($array_group = mysql_fetch_array($result_group)) {
+	
+		$group_id = $array_group['group_id'];
+		$group_order = $array_group['group_order'];
+		$group_code = $array_group['group_code'];
+		$group_description = $array_group['group_description'];
+		$group_active = $array_group['group_active'];
+		
+		if ($group_code != NULL) { $group_code = $group_code . ": "; }
+		
+		if ($group_id == $current_id ) { $select_group = " selected=\"selected\""; } else { unset($select_group); }
+		
+		echo "<option value=\"$group_id\" $select_group>" . $group_code . $group_description . "</option>";
+		
+	}
+	
+	echo "</select>";
+	
+}
+
+
+function ProjectListFrontPage($user_id_current) {
+	
+	
+global $conn;
+global $user_usertype_current;
+
+$user_id_current = intval($user_id_current);
+
+if ($_GET[listorder] != NULL) { $listorder = $_GET[listorder];}
+
+$active = CleanUp($_GET[active]);
+if ($active == "0") { $project_active = " AND proj_active = 0";
+} elseif ($active == "all") { unset($project_active);
+} else { $project_active = " AND proj_active = 1 "; }
+
+
+
+// Create an array which shows the recent projects worked on by the user
+
+$timesheet_period = 16; // weeks
+$timesheet_period = $timesheet_period * 604800;
+$timesheet_period = time() - $timesheet_period;
+
+$sql_timesheet_projects = "SELECT ts_project FROM intranet_timesheet WHERE ts_user = " . intval($_COOKIE[user]) . " AND ts_datestamp > " . intval ($timesheet_period) . " GROUP BY ts_project";
+$result_timesheet_projects = mysql_query($sql_timesheet_projects, $conn) or die(mysql_error());
+
+if (mysql_num_rows($result_timesheet_projects) == 0) {
+
+	$sql_timesheet_projects = "SELECT ts_project FROM intranet_timesheet WHERE ts_datestamp > " . intval($timesheet_period) . " GROUP BY ts_project";
+	$result_timesheet_projects = mysql_query($sql_timesheet_projects, $conn) or die(mysql_error());	
+
+}
+
+
+$array_projects_recent = array();
+while ($array_timesheet_projects = mysql_fetch_array($result_timesheet_projects)) {
+array_push($array_projects_recent,$array_timesheet_projects['ts_project']);
+}
+
+// Get the list of projects from the database
+
+	$sql = "SELECT *, UNIX_TIMESTAMP(ts_fee_commence) FROM intranet_user_details, intranet_projects LEFT JOIN intranet_timesheet_fees ON `proj_riba` = `ts_fee_id` WHERE proj_rep_black = user_id $project_active AND proj_fee_track = 1 order by proj_num";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+
+
+
+		echo "<div class=\"menu_bar\">";
+		
+		if ($_GET[active] != NULL) {
+			echo "<a href=\"index2.php\" class=\"submenu_bar\">My Projects</a>";
+		} else {
+			echo "<a href=\"index2.php?active=current&listorder=\" class=\"submenu_bar\">All Active Projects</a>";
+		}
+				
+		echo "<a href=\"index2.php?active=all&amp;listorder=$listorder\" class=\"submenu_bar\">All Projects</a>";
+		echo "<a href=\"index2.php?active=0&amp;listorder=$listorder\" class=\"submenu_bar\">Inactive Projects</a>";
+		
+		if ($user_usertype_current > 3) {
+			echo "<a href=\"index2.php?page=project_edit&amp;status=add\" class=\"submenu_bar\">Add Project (+)</a>";
+		}
+		
+		if ($user_usertype_current > 3) {
+			// echo "<a href=\"index2.php?page=project_analysis\" class=\"submenu_bar\">Project Analysis</a>";
+			}
+		echo "<a href=\"index2.php?page=project_blog_edit&amp;status=add\" class=\"submenu_bar\">Add Journal Entry (+)</a>";
+		echo "</div>";
+		
+		
+		
+		if ($_GET[active] == "current") { 
+			echo "<h2>All Active Projects</h2>";
+		} else {
+			echo "<h2>My Projects</h2>";
+		}
+
+
+		if (mysql_num_rows($result) > 0) {
+
+		echo "<table summary=\"Lists of projects\">";
+	
+
+		while ($array = mysql_fetch_array($result)) {
+		
+		$proj_num = $array['proj_num'];
+		$proj_name = $array['proj_name'];
+		$proj_rep_black = $array['proj_rep_black'];
+		$proj_client_contact_name = $array['proj_client_contact_name'];
+		$proj_contact_namefirst = $array['proj_contact_namefirst'];
+		$proj_contact_namesecond = $array['proj_contact_namesecond'];
+		$proj_company_name = $array['proj_company_name'];
+		$proj_fee_type = $array['proj_fee_type'];
+		$proj_desc = nl2br($array['proj_desc']);
+		$riba_id = $array['riba_id'];
+		$riba_desc = $array['riba_desc'];
+		$riba_letter = $array['riba_letter'];
+		$proj_id = $array['proj_id'];
+		$user_initials = $array['user_initials'];
+		$user_id = $array['user_id'];
+		$riba_stage_include = $array['riba_stage_include'];
+		$proj_active = $array['proj_active'];
+		$ts_fee_id = $array['ts_fee_id'];
+		$ts_fee_target = $array['ts_fee_target'];
+		$ts_fee_value = $array['ts_fee_value'];
+		$ts_fee_time_begin = $array['UNIX_TIMESTAMP(ts_fee_commence)'];
+		$ts_fee_time_end = $array['ts_fee_time_end'];
+		$proj_riba = $array['proj_riba'];
+		
+		// This has been added since the last update
+		
+		$ts_fee_text = $array['ts_fee_text'];
+		
+		//
+		
+		$sql_task = "SELECT tasklist_id FROM intranet_tasklist WHERE tasklist_project = " . intval( $proj_id ) . " AND tasklist_person = " . intval( $user_id_current ) . " AND tasklist_percentage < 100 ORDER BY tasklist_due DESC";
+		$result_task = mysql_query($sql_task, $conn) or die(mysql_error());
+		$project_tasks_due = mysql_num_rows($result_task);
+		if ( $project_tasks_due > 0) { $add_task = "<br /><span class=\"minitext\"><a href=\"index2.php?page=tasklist_project&amp;proj_id=$proj_id&amp;show=user\">You have $project_tasks_due pending task(s) for this project</a></span>"; } else { $add_task = NULL; }
+		
+		if ($ts_fee_text != NULL) { $current_stage = $ts_fee_text; } elseif ($proj_fee_type == NULL) { $current_stage = "--"; } elseif ($riba_id == NULL) { $current_stage = "Prospect"; } else { $current_stage = $riba_letter." - ".$riba_desc; }
+		
+		if (array_search($proj_id,$array_projects_recent) > 0 OR $_GET[active] != NULL) {
+			
+								if ($_GET[active] == NULL) {
+								$array_projectcheck = TimeRemaining($proj_id, $proj_riba, $ts_fee_target, $ts_fee_value);
+								}
+								if ($array_projectcheck[1]!= NULL) { $row_color = $array_projectcheck[1]; } else { unset($row_color); } 
+								if ($array_projectcheck[0]!= NULL) { $row_text = "<br />" . $array_projectcheck[0]; } else { unset($row_text); } 
+
+											echo "<tr><td class=\"" . $row_color  . "\">";
+											
+											if ($user_usertype_current > 3 OR $user_id_current == $proj_rep_black) {
+												echo "<a href=\"index2.php?page=project_edit&amp;proj_id=$proj_id&amp;status=edit\" style=\"float: right;\" class=\"HideThis $row_color \"><img src=\"images/button_edit.png\" alt=\"Edit\" />";
+											}
+											
+											echo ProjActive($proj_active,$proj_num,$proj_id) . "&nbsp";
+
+											echo ProjActive($proj_active,$proj_name,$proj_id).$add_task;
+											
+											
+											
+											echo "</td>";
+											
+											if ($_GET[active] == "current") { echo "<td class=\"HideThis $row_color \"><span class=\"minitext\">" . $proj_desc . "</span></td>"; }
+											
+											// Project Stage
+											
+											echo "<td style=\"width: 18px; text-align: center; \" class=\"HideThis $row_color \">";
+												
+												$deadline = $ts_fee_time_begin + $ts_fee_time_end;
+												$remaining = $deadline - time();
+												$remaining = round ($remaining / 604800);
+												
+											if ($deadline > time() && $remaining != 0) {
+												echo $remaining . "<br /><span class=\"minitext\">wks</span>";
+											} elseif ($deadline < time() && $deadline > 0 && $remaining != 0) {
+												echo $remaining . "<br /><span class=\"minitext\">wks</span>";									
+											} elseif ($deadline > 0 && $remaining == 0) {
+												echo "0<br /><span class=\"minitext\">wks</span>";	
+											}
+												
+											echo "</td><td class=\"" . $row_color . "\">$current_stage $row_text</td>";
+											
+											echo "<td style=\"text-align: center; \" class=\"HideThis $row_color\">";
+													echo "<a href=\"index2.php?page=project_checklist&amp;proj_id=$proj_id\"><img src=\"images/button_list.png\" alt=\"Checklist\" /></a>";
+											echo "</td>";
+											
+											echo "<td class=\"" . $row_color . "\"><a href=\"index2.php?page=user_view&amp;user_id=$user_id\">$user_initials</a></td>
+														<td style=\"text-align: center; \" class=\"HideThis $row_color\"><a href=\"pdf_project_sheet.php?proj_id=$proj_id\"><img src=\"images/button_pdf.png\" alt=\"Project Detailed (PDF)\" /></a></td>";
+
+
+											echo "</tr>";
+											
+											
+	
+				}
+
+		}
+
+		echo "</table>";
+
+		} else {
+
+		echo "There are no live projects on the system";
+
+		}
+		
+}
+

@@ -4,8 +4,11 @@
 // Menu - Search
 
 
-
-SearchPanel($user_usertype_current);
+	
+	echo "<span class=\"heading_side_right\">Search</span>";
+	echo "<div id=\"searchform\">";
+	SearchPanel($user_usertype_current,"search_01");
+	echo "</div>";
 
 
 // Menu - Web Feeds
@@ -91,7 +94,7 @@ SearchPanel($user_usertype_current);
 	
 	//Menu - Pinned Blog Entries
 	
-	$sql = "SELECT blog_id, blog_title FROM intranet_projects_blog WHERE blog_pinned = 1 ORDER BY blog_date DESC";
+	$sql = "SELECT blog_id, blog_title FROM intranet_projects_blog WHERE blog_pinned = 1 AND (blog_access <= " . intval($user_usertype_current) . " OR blog_access IS NULL) ORDER BY blog_date DESC";
 	$result = mysql_query($sql, $conn) or die(mysql_error());
 	if (mysql_num_rows($result) > 0) {
 		$array_pages = array();

@@ -2,29 +2,36 @@
 
 echo "<h1>Search Results</h1>";
 
+
+
 // Construct search terms
 
-if ($_GET[keywords] != NULL) {$keywords = $_GET[keywords]; }
-elseif ($_POST[keywords] != NULL) {$keywords = CleanUp($_POST[keywords]); }
+if ($_GET[keywords]) { $keywords = $_GET[keywords]; } elseif ($_POST[keywords]) { $keywords = $_POST[keywords]; }
 
-if (strlen($keywords) > 2) {
+if ($keywords != NULL && $_POST[search_phrase] != "yes") {$keywords = $keywords; $keywords_array = explode(" ", $keywords); }
+elseif ($keywords != NULL && $_POST[search_phrase] != "yes") { $keywords = CleanUp($keywords); $keywords_array = explode(" ", $keywords); }
+else { $keywords_array = array(); $keywords_array[] = $keywords;  }
 
-$keywords_array = explode(" ", $keywords);
-
-
+if (strlen($keywords) > 2 ) {	
 
 // Begin printing the results tables
 
-echo "<h2>You searched for: $keywords</h2>";
+echo "<h2>Search for : $keywords</h2>";
 
-echo "<h3>Journal Entries</h2>";
+SearchPanel($user_usertype_current,"search_02");
 
-echo "<table>";
+echo "<div class=\"manual_page\">";
+
+
 // Journal Entries
 
 if ($_POST[tender_search] != "yes") {
+	
+	echo "<h3>Journal Entries</h2>";
+	
+	echo "<table>";
 
-$sql = "SELECT blog_id, blog_title, blog_date FROM intranet_projects_blog WHERE ".SearchTerms($keywords_array, "blog_text")." OR ".SearchTerms($keywords_array, "blog_title")." AND blog_view != 1 ORDER BY blog_date DESC";
+$sql = "SELECT blog_id, blog_title, blog_date FROM intranet_projects_blog WHERE ".SearchTerms($keywords_array, "blog_text")." OR ".SearchTerms($keywords_array, "blog_title")." AND blog_view != 1 AND (blog_access <= $user_usertype_current OR blog_access IS NULL) ORDER BY blog_date DESC";
 $result = mysql_query($sql, $conn) or die(mysql_error());
 	if (mysql_num_rows($result) == 0) {
 		echo "<tr><td colspan=\"2\">- No results found for Journal Entries -</td></tr>";
@@ -123,6 +130,29 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 
 echo "</table>";
 
+// Manual
+
+function SearchManual($keywords_array) {
+	
+	global $conn;
+
+		echo "<h3>Office Manual</h3>";
+		
+			$sql = "SELECT manual_id, manual_title FROM intranet_stage_manual WHERE " . SearchTerms($keywords_array, "manual_title") . " OR ". SearchTerms($keywords_array, "manual_text") . " ORDER BY manual_title";
+			$result = mysql_query($sql, $conn) or die(mysql_error());
+			if (mysql_num_rows($result) == 0) {
+				echo "<p>- No results found for Office Manual -</p>";
+			} else {
+				echo "<table>";
+				while ($array = mysql_fetch_array($result)) { echo "<tr><td><a href=\"index2.php?page=manual_page&amp;manual_id=" . $array['manual_id'] . "\">" . $array['manual_title'] . "</a></td></tr>"; }
+				echo "</table>";
+			}
+
+		
+
+}
+
+SearchManual(keywords_array);
 
 // Checklist
 
@@ -304,42 +334,49 @@ echo "</table>";
 
 
 
-}
+} else {
 
 // Tender submissions
 
-else {
+function SearchResultsTenders($keywords_array) {
+	
+			global $conn;
 
-$sql = "SELECT answer_id, answer_question, answer_response, answer_tender_id, answer_ref, tender_name, tender_date FROM intranet_tender_answers, intranet_tender WHERE ( ".SearchTerms($keywords_array, "answer_response" ) . " AND tender_id = answer_tender_id ) OR ( " . SearchTerms($keywords_array, "answer_question" ) . " AND tender_id = answer_tender_id ) AND answer_complete = 1 ORDER BY tender_date DESC, tender_name ";
-$result = mysql_query($sql, $conn) or die(mysql_error());
-	 	if (mysql_num_rows($result) > 0) {
-echo "<table>";
-echo "<h2>Tender submissions (only answers marked as complete are shown below)</h2>";
-			while ($array = mysql_fetch_array($result)) {
-			$answer_id = $array['answer_id'];
-			$answer_response = strip_tags($array['answer_response']);
-			$answer_tender_id = $array['answer_tender_id'];
-			$answer_question = strip_tags($array['answer_question'],"<p><br><ul><li>");
-			$answer_question = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $answer_question);
-			$answer_question = preg_replace('/(<[^>]+) class=".*?"/i', '$1', $answer_question);
-			$answer_question = preg_replace('/(<[^>]+) align=".*?"/i', '$1', $answer_question);
-			$answer_ref = $array['answer_ref'];
-			$tender_name = $array['tender_name'];
-			$tender_date = $array['tender_date'];
-			echo "<tr><td style=\"width: 50%;\">$answer_question</td><td>";
-			echo "<a href=\"index2.php?page=tender_view&amp;tender_id=$answer_tender_id&amp;answer_id=$answer_id\">" . substr ( $answer_response ,0 , 200 ) . "...</a><br /><span class=\"minitext\">From $tender_name, " . TimeFormat($tender_date) . ", question $answer_ref</span>";
-			echo "</td></tr>";
-			}
-	}
+					$sql = "SELECT answer_id, answer_question, answer_response, answer_tender_id, answer_ref, tender_name, tender_date FROM intranet_tender_answers, intranet_tender WHERE ( ".SearchTerms($keywords_array, "answer_response" ) . " AND tender_id = answer_tender_id ) OR ( " . SearchTerms($keywords_array, "answer_question" ) . " AND tender_id = answer_tender_id ) AND answer_complete = 1 ORDER BY tender_date DESC, tender_name LIMIT 20 ";
+					$result = mysql_query($sql, $conn) or die(mysql_error());
+							if (mysql_num_rows($result) > 0) {
+					echo "<table>";
+					echo "<h2>Tender submissions (only answers marked as complete are shown below)</h2>";
+								while ($array = mysql_fetch_array($result)) {
+								$answer_id = $array['answer_id'];
+								$answer_response = strip_tags($array['answer_response'],"<p>,<br>");
+								foreach ($keywords_array AS $keywords_replace) { $keywords_replace_highlight = "<span style=\"background-color: yellow;\">" . $keywords_replace . "</span>"; $answer_response = str_replace($keywords_replace,$keywords_replace_highlight,$answer_response); }
+								$answer_tender_id = $array['answer_tender_id'];
+								$answer_question = strip_tags($array['answer_question'],"<p><br><ul><li>");
+								$answer_question = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $answer_question);
+								$answer_question = preg_replace('/(<[^>]+) class=".*?"/i', '$1', $answer_question);
+								$answer_question = preg_replace('/(<[^>]+) align=".*?"/i', '$1', $answer_question);
+								$answer_ref = $array['answer_ref'];
+								$tender_name = $array['tender_name'];
+								$tender_date = $array['tender_date'];
+								echo "<tr><td style=\"width: 50%;\">$answer_question</td><td>";
+								echo $answer_response . "...</a><br /><a href=\"index2.php?page=tender_view&amp;tender_id=$answer_tender_id&amp;answer_id=$answer_id\"><span class=\"minitext\">From $tender_name, " . TimeFormat($tender_date) . ", question $answer_ref</span></a>";
+								echo "</td></tr>";
+								}
+						}
 
-echo "</table>";
+					echo "</table>";
 
+					}
+					
 }
 
-} else {
+SearchResultsTenders($keywords_array);
+
+} elseif ($keywords != NULL) {
 
 echo "<p>Invalid Search Term</p>";
 
 }
-		
-?>
+
+echo "</div>";

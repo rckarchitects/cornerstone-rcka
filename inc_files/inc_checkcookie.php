@@ -99,7 +99,7 @@ include_once("inc_functions_general.php");
 if ($module_timesheets == 1) {  include_once("inc_functions_timesheet.php"); }
 if ($module_contacts == 1) { include_once("inc_functions_contacts.php"); }
 if ($module_tasks == 1) { include_once("inc_functions_tasks.php"); }
-
+if ($module_manual == 1) { include_once("inc_functions_manual.php"); }
 
 // Set the page-wide definitions from the $_GET submissions if they exist
 
