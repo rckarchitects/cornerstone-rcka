@@ -2,6 +2,10 @@
 
 echo "<div class=\"submenu_bar\"><a href=\"index2.php?page=tasklist_edit\" class=\"submenu_bar\">Add New Task</a>";
 
+function TasklistSummary() {
+	
+	global $conn;
+
 // Determine the date a week ago
 
 $date_lastweek = time() - 604800;
@@ -154,4 +158,6 @@ echo "<h2>Tasks</h2>";
 
 }
 
-?>
+}
+
+TasklistSummary();

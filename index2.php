@@ -17,13 +17,7 @@ elseif ($_GET[action] != "") { include_once("inc_files/inc_functions_actions.php
 // Check for details of any projects
 
 		
-		$proj_details = ProjectTitle();
-		$proj_id = $proj_details[0];
-		if ($proj_id) {
-			$proj_title = "<h1><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_details[1] $proj_details[2]</a></h1>";
-		} else {
-			unset($proj_title);
-		}
+
 
 // Include the standard header file
 
@@ -59,7 +53,6 @@ Logo($settings_style,$settings_name);
     }
 	echo "</div>";
 	
-
     
 //Column Centre
 
@@ -103,15 +96,21 @@ Logo($settings_style,$settings_name);
 // Check for any upcoming holidays
 
 
-if ($_GET[page] == NULL) { 
+if ($_GET[page] == NULL) {
 	
 	$today = TimeFormatDay(time());
 
 	echo "<h1>$today</h1>";
 
-	echo "<div style=\"float: left;\">";
+	echo "<div style=\"float: left; max-width: 720px; margin-right: 12px;\">";
 	ListHolidays();
 	echo "</div>";
+	
+	if ($module_media == 1) {
+		echo "<div style=\"float: left; max-width: 720px; margin-right: 12px;\">";
+		MediaLatestList();
+		echo "</div>";
+	}
 	
 	echo "<div style=\"float: left;\">";
 	echo "</div>";
@@ -120,10 +119,35 @@ if ($_GET[page] == NULL) {
 
 
 
+
     if ($useraction != "defineuser") {
 	
 	
 		// Add the project title, if there is one either through POST or GET
+		
+		$proj_details = ProjectTitle();
+		$proj_id = $proj_details[0];
+		if ($proj_id) {
+			echo 
+						"<script>
+							function ShowProjectSwitcher() {
+							var x = document.getElementById(\"project_switcher\");
+							var y = document.getElementById(\"project_title\");
+							if (x.style.display === \"none\") {
+								x.style.display = \"block\";
+								y.style.display = \"none\";
+							} else {
+								x.style.display = \"none\";
+								
+							}
+						}
+						</script>
+			
+			";
+			$proj_title = "<h1 id=\"project_title\"><a href=\"#\" onclick=\"ShowProjectSwitcher()\">$proj_details[1] $proj_details[2]</a></h1>";
+		} else {
+			unset($proj_title);
+		}
 		
 		if ($proj_title) { echo $proj_title; }
 	

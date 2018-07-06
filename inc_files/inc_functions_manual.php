@@ -20,6 +20,33 @@ function PersistentStorage($name,$content) {
 	";
 }
 
+function ManualChecklist($media_checklist) {
+	
+	global $conn;
+	$sql = "SELECT * FROM `intranet_project_checklist_items`, `intranet_timesheet_group` WHERE item_stage = group_id ORDER BY group_order, item_order ";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	if (mysql_num_rows($result) > 0) {
+		
+		echo "<select name=\"manual_checklist\">";
+		
+		echo "<option value=\"\">-- None --</option>";
+		
+		while ($array = mysql_fetch_array($result)) {
+			
+			if ($current_group != $array['group_code']) { echo "<option value=\"\" disabled=\"disabled\" style=\"font-size: 75%;\">" . $array['group_code'] . ": " .  $array['group_description'] . "</option>"; $current_group = $array['group_code']; }
+			
+			if ($array['item_id'] == $media_checklist) { $selected = "selected=\"selected\""; } else { unset($selected) ; }
+			
+			echo "<option value=\"" . $array['item_id']  . "\"" . $selected . ">" . $array['item_name'] . "</option>";
+			
+		}
+		
+		echo "</select>";
+		
+	}
+		
+}
+
 function ManualPageEdit($user, $manual_id, $user_usertype_current) {#
 
 	global $conn;
@@ -36,6 +63,7 @@ function ManualPageEdit($user, $manual_id, $user_usertype_current) {#
 	$manual_section = $array['manual_section'];
 	$manual_stage = $array['manual_stage'];
 	$manual_attachment = $array['manual_attachment'];
+	$manual_checklist = $array['manual_checklist'];
 
 	echo "<h2>Edit Page</h2>";
 	
@@ -50,12 +78,16 @@ function ManualPageEdit($user, $manual_id, $user_usertype_current) {#
 	
 	echo "</p>";
 	
-	echo "<p>Section<br />";
+	echo "<p>Section<br /><span class=\"minitext\">Entries will be grouped under this heading in the index.</span><br />";
 	ManualSectionList($manual_section);
 	echo "</p>";
 	
-	echo "<p>Attachement<br />";
+	echo "<p>Attachment<br />";
 	ManualAttachMedia($manual_attachment);
+	echo "</p>";
+	
+	echo "<p>Checklist<br />";
+	ManualChecklist($manual_checklist);
 	echo "</p>";
 	
 	echo "<input type=\"hidden\" name=\"action\" value=\"manual_edit\" />";
@@ -105,8 +137,12 @@ function ManualPageAdd($user, $user_usertype_current, $manual_stage) {
 	
 	echo "</p>";
 	
-	echo "<p>Section<br />";
+	echo "<p>Section<br /><span class=\"minitext\">Entries will be grouped under this heading in the index.</span><br />";
 	ManualSectionList();
+	echo "</p>";
+	
+	echo "<p>Checklist<br />";
+	ManualChecklist($manual_checklist);
 	echo "</p>";
 	
 	echo "<input type=\"hidden\" name=\"action\" value=\"manual_edit\" />";
@@ -149,12 +185,11 @@ function ManualIndexView() {
 	$current_section = NULL;
 	
 	while ($array = mysql_fetch_array($result)) {
-		if ($current_stage != $array['group_id']) { echo "<h3>" . $array['group_code'] . "&nbsp;" . $array['group_description'] . "</h3><ul>"; $current_stage = $array['group_id']; }
-		if ($current_section != $array['manual_section']) { echo "<li>" . $array['manual_section'] . "</li>"; $current_stage = $array['manual_section']; }
-		echo "<ul><li><a href=\"index2.php?page=manual_page&amp;manual_id=" . $array['manual_id'] . "\">" . $array['manual_title'] . "</a></li>";
+		if ($current_stage != $array['group_id']) { echo "<tr><td><h3>" . $array['group_code'] . "&nbsp;" . $array['group_description'] . "</h3></td></tr>"; $current_stage = $array['group_id']; }
+		echo "<tr><td><p><a href=\"index2.php?page=manual_page&amp;manual_id=" . $array['manual_id'] . "\">" . $array['manual_title'] . "</a></p></td></tr>";
 	}
 	
-	echo "</ul></ul>";
+	echo "</table>";
 	
 	
 }

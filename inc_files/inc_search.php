@@ -27,15 +27,16 @@ echo "<div class=\"manual_page\">";
 
 if ($_POST[tender_search] != "yes") {
 	
-	echo "<h3>Journal Entries</h2>";
-	
-	echo "<table>";
+
 
 $sql = "SELECT blog_id, blog_title, blog_date FROM intranet_projects_blog WHERE ".SearchTerms($keywords_array, "blog_text")." OR ".SearchTerms($keywords_array, "blog_title")." AND blog_view != 1 AND (blog_access <= $user_usertype_current OR blog_access IS NULL) ORDER BY blog_date DESC";
 $result = mysql_query($sql, $conn) or die(mysql_error());
-	if (mysql_num_rows($result) == 0) {
-		echo "<tr><td colspan=\"2\">- No results found for Journal Entries -</td></tr>";
-	} else {
+	if (mysql_num_rows($result) > 0) {
+		
+			echo "<h3>Journal Entries</h2>";
+	
+			echo "<table>";
+
 			while ($array = mysql_fetch_array($result)) {
 			$blog_id = $array['blog_id'];
 			$blog_title = $array['blog_title'];	
@@ -48,18 +49,16 @@ echo "</table>";
 
 // Contacts
 
-echo "<h3>Contacts</h3>";
-echo "<table>";
 
 $sql = "SELECT contact_id, contact_namefirst, contact_namesecond, contact_company FROM contacts_contactlist WHERE ".SearchTerms($keywords_array, "contact_namefirst")." OR ".SearchTerms($keywords_array, "contact_namesecond")." OR ".SearchTerms($keywords_array, "contact_reference")." ORDER BY contact_namesecond";
 $result = mysql_query($sql, $conn) or die(mysql_error());
-	if (mysql_num_rows($result) == 0) {
-		echo "<tr><td colspan=\"2\">- No results found for Contacts -</td></tr>";
-	} else {
+	if (mysql_num_rows($result) > 0) {
 		
 		//echo "<tr><td colspan=\"2\">$sql</td></tr>";
 		//echo "<tr><td colspan=\"2\">" . SearchTerms($keywords_array, "contact_namesecond") . "</td></tr>";
 		
+			echo "<h3>Contacts</h3>";
+			echo "<table>";
 		
 			while ($array = mysql_fetch_array($result)) {
 			$contact_id = $array['contact_id'];
@@ -79,14 +78,15 @@ echo "</table>";
 
 // Company Entries
 
-echo "<h3>Companies</h3>";
-echo "<table>";
+
 
 $sql = "SELECT company_id, company_name, company_postcode FROM contacts_companylist WHERE ".SearchTerms($keywords_array, "company_name")." OR ".SearchTerms($keywords_array, "company_address")." OR ".SearchTerms($keywords_array, "company_web")." OR ".SearchTerms($keywords_array, "company_notes")." OR ".SearchTerms($keywords_array, "company_web")." OR ".SearchTerms($keywords_array, "company_notes")." ORDER BY company_name";
 $result = mysql_query($sql, $conn) or die(mysql_error());
-	if (mysql_num_rows($result) == 0) {
-		echo "<tr><td colspan=\"2\">- No results found for Companies -</td></tr>";
-	} else {
+	if (mysql_num_rows($result) > 0) {
+		
+		echo "<h3>Companies</h3>";
+		echo "<table>";
+
 			while ($array = mysql_fetch_array($result)) {
 			$company_id = $array['company_id'];
 			$company_name = $array['company_name'];
@@ -107,15 +107,16 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 }
 
 echo "</table>";
-echo "<h3>Quality Management System</h3>";
-echo "<table>";
+
 
 $sql = "SELECT * FROM intranet_qms WHERE " . SearchTerms($keywords_array, "qms_text") . "ORDER BY qms_toc1, qms_toc2, qms_toc3, qms_toc4";
 $result = mysql_query($sql, $conn) or die(mysql_error());
 
-	if (mysql_num_rows($result) == 0) {
-		echo "<tr><td colspan=\"2\">- No results found for QMS -</td></tr>";
-	} else {
+	if (mysql_num_rows($result) > 0) {
+
+		echo "<h3>Quality Management System</h3>";
+		echo "<table>";
+
 			while ($array = mysql_fetch_array($result)) {
 			$qms_id = $array['qms_id'];
 			$qms_text = $array['qms_text'];
@@ -136,13 +137,13 @@ function SearchManual($keywords_array) {
 	
 	global $conn;
 
-		echo "<h3>Office Manual</h3>";
+		
 		
 			$sql = "SELECT manual_id, manual_title FROM intranet_stage_manual WHERE " . SearchTerms($keywords_array, "manual_title") . " OR ". SearchTerms($keywords_array, "manual_text") . " ORDER BY manual_title";
 			$result = mysql_query($sql, $conn) or die(mysql_error());
-			if (mysql_num_rows($result) == 0) {
+			if (mysql_num_rows($result) > 0) {
 				echo "<p>- No results found for Office Manual -</p>";
-			} else {
+				echo "<h3>Office Manual</h3>";
 				echo "<table>";
 				while ($array = mysql_fetch_array($result)) { echo "<tr><td><a href=\"index2.php?page=manual_page&amp;manual_id=" . $array['manual_id'] . "\">" . $array['manual_title'] . "</a></td></tr>"; }
 				echo "</table>";
@@ -152,39 +153,57 @@ function SearchManual($keywords_array) {
 
 }
 
-SearchManual(keywords_array);
+SearchManual($keywords_array);
+
+// Media Library
+
+function SearchMedia($keywords_array) {
+	
+	global $conn;
+
+
+			$sql = "SELECT * FROM intranet_media WHERE " . SearchTerms($keywords_array, "media_title") . " OR ". SearchTerms($keywords_array, "media_description") . " ORDER BY media_timestamp DESC";
+			$result = mysql_query($sql, $conn) or die(mysql_error());
+			if (mysql_num_rows($result) > 0) {
+				echo "<h3>Media Library</h3>";
+				echo "<table>";
+				while ($array = mysql_fetch_array($result)) { echo "<tr><td style=\"width: 40%;\"><a href=\"" . $array['media_path'] . $array['media_file'] . "\">" . $array['media_title'] . "</a></td><td>" . $array['media_description'] . "</td><td style=\"text-align: right;\">" . MediaSize($array['media_size']) . "</td></tr>"; }
+				echo "</table>";
+			}
+
+		
+
+}
+
+SearchMedia($keywords_array);
 
 // Checklist
 
-echo "<h3>Project Checklists</h3>";
 
-echo "<table>";
 
 $sql = "SELECT checklist_comment, checklist_project, proj_id, proj_num, proj_name, item_name FROM intranet_project_checklist, intranet_projects, intranet_project_checklist_items WHERE checklist_project = proj_id AND checklist_item = item_id AND " . SearchTerms($keywords_array, "checklist_comment") . " GROUP BY checklist_comment ORDER BY proj_num";
 $result = mysql_query($sql, $conn) or die(mysql_error());
 
-	if (mysql_num_rows($result) == 0) {
-		echo "<tr><td colspan=\"2\">- No results found for checklists -</td></tr>";
-	} else {
+	if (mysql_num_rows($result) > 0) {
+			echo "<h3>Project Checklists</h3>";
+			echo "<table>";
+			echo "<tr><td colspan=\"2\">- No results found for checklists -</td></tr>";
 			while ($array = mysql_fetch_array($result)) {
-			$checklist_comment = $array['checklist_comment'];
-			$checklist_project = $array['checklist_project'];
-			$proj_id = $array['proj_id'];
-			$proj_num = $array['proj_num'];
-			$proj_name = $array['proj_name'];
-			$item_name = $array['item_name'];
-
-			echo "<tr><td style=\"width: 30%;\"><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></td><td>$item_name</td><td><a href=\"index2.php?page=project_checklist&amp;proj_id=$checklist_project\">$checklist_comment</a></td></tr>";
-	}
+				$checklist_comment = $array['checklist_comment'];
+				$checklist_project = $array['checklist_project'];
+				$proj_id = $array['proj_id'];
+				$proj_num = $array['proj_num'];
+				$proj_name = $array['proj_name'];
+				$item_name = $array['item_name'];
+				echo "<tr><td style=\"width: 30%;\"><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></td><td>$item_name</td><td><a href=\"index2.php?page=project_checklist&amp;proj_id=$checklist_project\">$checklist_comment</a></td></tr>";
+			}
 }
 
 echo "</table>";
 
 // Tasks
 
-echo "<h3>Tasks</h3>";
 
-echo "<table>";
 
 if ($user_usertype_current > 3) {
 
@@ -197,9 +216,12 @@ $sql = "SELECT tasklist_id, tasklist_notes, tasklist_person, tasklist_percentage
 }
 
 $result = mysql_query($sql, $conn) or die(mysql_error());
-	if (mysql_num_rows($result) == 0) {
-		echo "<tr><td colspan=\"2\">- No results found for Tasks -</td></tr>";
-	} else {
+	if (mysql_num_rows($result) > 0) {
+		
+		echo "<h3>Tasks</h3>";
+
+		echo "<table>";
+
 			while ($array = mysql_fetch_array($result)) {
 			$tasklist_id = $array['tasklist_id'];
 			$tasklist_notes = $array['tasklist_notes'];
@@ -224,18 +246,17 @@ echo "</table>";
 
 // Tender (Details only)
 
-echo "<h3>Tenders</h3>";
-
-echo "<table>";
 
 
 $sql = "SELECT * FROM intranet_tender WHERE ".SearchTerms($keywords_array, "tender_name")." OR ".SearchTerms($keywords_array, "tender_description")." ORDER BY tender_date DESC";
 
 
 $result = mysql_query($sql, $conn) or die(mysql_error());
-	if (mysql_num_rows($result) == 0) {
-		echo "<tr><td colspan=\"2\">- No results found for Tenders -</td></tr>";
-	} else {
+	if (mysql_num_rows($result) > 0) {
+
+			echo "<h3>Tenders</h3>";
+
+			echo "<table>";
 			while ($array = mysql_fetch_array($result)) {
 			$tender_id = $array['tender_id'];
 			$tender_name = $array['tender_name'];
@@ -249,9 +270,7 @@ echo "</table>";
 
 // Expenses
 
-echo "<h3>Expenses</h3>";
 
-echo "<table>";
 
 if ($user_usertype_current > 3) {
 
@@ -264,9 +283,12 @@ $sql = "SELECT * FROM intranet_timesheet_expense LEFT JOIN intranet_timesheet_ex
 }
 
 $result = mysql_query($sql, $conn) or die(mysql_error());
-	if (mysql_num_rows($result) == 0) {
-		echo "<tr><td colspan=\"2\">- No results found for Expenses -</td></tr>";
-	} else {
+	if (mysql_num_rows($result) > 0) {
+		
+		echo "<h3>Expenses</h3>";
+
+		echo "<table>";
+
 			while ($array = mysql_fetch_array($result)) {
 			$ts_expense_id = $array['ts_expense_id'];
 			$ts_expense_desc = $array['ts_expense_desc'];
@@ -304,7 +326,7 @@ echo "</table>";
 
 							$result = mysql_query($sql, $conn) or die(mysql_error());
 								if (mysql_num_rows($result) > 0) {
-										echo "<h2>Expenses with this value</h2>";
+										echo "<h3>Expenses with this value</h3>";
 										echo "<table>";
 										echo "<tr><th>Date</th><th>Verified</th><th>Description</th><th>Value</th><th>User</th></tr>";
 										while ($array = mysql_fetch_array($result)) {
@@ -346,7 +368,7 @@ function SearchResultsTenders($keywords_array) {
 					$result = mysql_query($sql, $conn) or die(mysql_error());
 							if (mysql_num_rows($result) > 0) {
 					echo "<table>";
-					echo "<h2>Tender submissions (only answers marked as complete are shown below)</h2>";
+					echo "<h3>Tender submissions (only answers marked as complete are shown below)</h3>";
 								while ($array = mysql_fetch_array($result)) {
 								$answer_id = $array['answer_id'];
 								$answer_response = strip_tags($array['answer_response'],"<p>,<br>");

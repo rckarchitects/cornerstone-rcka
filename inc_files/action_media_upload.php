@@ -48,6 +48,7 @@ function MediaUpload() {
 					$media_size = $fileSize;
 					$media_category = addslashes($_POST[media_category]);
 					$media_description = addslashes($_POST[media_description]);
+					$media_checklist = intval($_POST[media_checklist]);
 					
 					$sql_add = "INSERT INTO intranet_media (
 								media_id,
@@ -59,7 +60,8 @@ function MediaUpload() {
 								media_file,
 								media_category,
 								media_size,
-								media_description
+								media_description,
+								media_checklist
 								) values (
 								'NULL',
 								'$media_path',
@@ -70,7 +72,8 @@ function MediaUpload() {
 								'$media_file',
 								'$media_category',
 								'$media_size',
-								'$media_description'
+								'$media_description',
+								'$media_checklist'
 								)";
 								
 								$result = mysql_query($sql_add, $conn) or die(mysql_error());

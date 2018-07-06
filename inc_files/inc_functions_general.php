@@ -192,7 +192,7 @@ function ProjectTitle($show,$proj_id) {
 		
 		if ($show == 1) {
 			
-		echo "<h1><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></h1>";
+		echo "<h2><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></h2>";
 			
 		} else {
 		
@@ -334,6 +334,10 @@ function ProjectSubMenu($proj_id,$user_usertype_current,$page) {
 }
 
 function ProjectList($proj_id) {
+	
+	echo "<h2>Project Information</h2>";
+	TopMenu ("project_view1",1,$proj_id);
+	ProjectSubMenu($proj_id,$user_usertype_current,"project_edit");
 
 	global $conn;
 	
@@ -390,7 +394,7 @@ $result = mysql_query($sql, $conn);
 $array = mysql_fetch_array($result);
 $country_printable_name = $array['country_printable_name'];
 
-					echo "<h2>Project Information</h2>";
+					
 
 					echo "<table summary=\"Project Information\">";
 
@@ -539,7 +543,7 @@ function ProjectSwitcher ($page, $proj_id, $proj_active, $proj_fee) {
 					
 					$start = NULL;
 
-					echo "<form action=\"index2.php\" method=\"get\">";
+					echo "<div id=\"project_switcher\" style=\"display: none;\"><form action=\"index2.php\" method=\"get\">";
 					echo "<input type=\"hidden\" name=\"page\" value=\"$page\" />";
 					
 					//if ($proj_active == 1) { $project_filter = $project_filter . "AND proj_active > 0 "; }
@@ -565,7 +569,7 @@ function ProjectSwitcher ($page, $proj_id, $proj_active, $proj_fee) {
 					echo "</select>";
 
 
-					echo "</form>";
+					echo "</form></div>";
 	}
 }
 
@@ -3170,17 +3174,14 @@ function ProjectInvoices($proj_id) {
 
 }
 
-function ProjectDrawingList($proj_id) {
 
-
-}
 
 
 function ProjectContacts($proj_id,$user_usertype_current) {
 
 global $conn;
 
-			echo "<h2>Project Contacts</h2>";
+			
 			$sql_contact = "SELECT * FROM contacts_disciplinelist, contacts_contactlist, intranet_contacts_project LEFT JOIN contacts_companylist ON contact_proj_company = contacts_companylist.company_id WHERE contact_proj_contact = contact_id  AND discipline_id = contact_proj_role AND contact_proj_project = $proj_id ORDER BY discipline_name, contact_namesecond";
 			$result_contact = mysql_query($sql_contact, $conn) or die(mysql_error());
 
@@ -3551,6 +3552,13 @@ array_push($array_projects_recent,$array_timesheet_projects['ts_project']);
 
 
 
+
+		
+		
+		
+
+		
+	
 		echo "<div class=\"menu_bar\">";
 		
 		if ($_GET[active] != NULL) {
@@ -3572,14 +3580,12 @@ array_push($array_projects_recent,$array_timesheet_projects['ts_project']);
 		echo "<a href=\"index2.php?page=project_blog_edit&amp;status=add\" class=\"submenu_bar\">Add Journal Entry (+)</a>";
 		echo "</div>";
 		
-		
-		
 		if ($_GET[active] == "current") { 
-			echo "<h2>All Active Projects</h2>";
+			echo "<h3>All Active Projects</h3>";
 		} else {
-			echo "<h2>My Projects</h2>";
+			echo "<h3>My Projects</h3>";
 		}
-
+	
 
 		if (mysql_num_rows($result) > 0) {
 
@@ -3693,3 +3699,155 @@ array_push($array_projects_recent,$array_timesheet_projects['ts_project']);
 		
 }
 
+function TopMenu ($page_type,$level,$proj_id) {
+	
+	global $user_usertype_current;
+	
+	if (intval($proj_id) > 0) { $proj_id = intval($proj_id); } else { unset($proj_id); }
+	
+	if ($page_type == "media") {
+		$links = array("index2.php?page=media","index2.php?page=media&amp;action=upload");
+		$buttons = array("Browse Library","Upload Files");
+		$access = array(0,3);
+		unset($js);
+	} elseif ($page_type == "default1") {
+		$links = array("#","#","#");
+		$buttons = array("Projects","Tasks","Messages");
+		$access = array(0,0,0);
+		$js = array("onclick=\"itemSwitch(1); return false;\"","onclick=\"itemSwitch(2); return false;\"","onclick=\"itemSwitch(3); return false;\"");
+	} elseif ($page_type == "project_view1") {
+		$links = array("index2.php?page=project_view&amp;proj_id=$proj_id","index2.php?page=project_contacts&amp;proj_id=$proj_id","index2.php?page=tasklist_project&amp;proj_id=$proj_id","index2.php?page=drawings_list&amp;proj_id=$proj_id","index2.php?page=project_checklist&amp;proj_id=$proj_id","index2.php?page=project_planningcondition_list&amp;proj_id=$proj_id","#","#","index2.php?page=project_blog_list&amp;proj_id=$proj_id","#");
+		$buttons = array("Project Home","Contacts","Tasks","Drawings","Checklist","Planning Tracker","Fees","Invoices","Journal","Particulars");
+		$access = array(1,1,1,1,1,1,3,4,1,1);
+		$js = array(NULL,NULL,NULL,NULL,NULL,NULL,"onclick=\"itemSwitch(5); return false;\"","onclick=\"itemSwitch(6); return false;\"",NULL,"onclick=\"itemSwitch(3); return false;\"");
+	} elseif ($page_type == "project_view2") {
+		$links = array("#","#","#");
+		$buttons = array("Projects","Tasks","Messages");
+		$access = array(0,0,0);
+		$js = array("onclick=\"itemSwitch(1); return false;\"","onclick=\"itemSwitch(2); return false;\"","onclick=\"itemSwitch(3); return false;\"");		
+	} elseif ($page_type == "project_ambition_schedule") {
+		$links = array("index2.php?page=project_ambition_schedule&amp;type=project_marketing&amp;filter=active","index2.php?page=project_ambition_schedule&amp;type=project_marketing&amp;filter=all");
+		$buttons = array("Active Projects","All Projects");
+		$access = array(0,0);
+		unset($js);	
+	}
+	
+	$counter = 0;
+	
+	if ($level == 1) { $class1 = "menu_bar"; $class2 = "menu_tab"; } else { $class1 = "submenu_bar"; $class2 = "submenu_bar"; }
+		
+		
+		echo "<div class=\"" . $class1 . "\">";
+		
+		foreach ($links AS $link) {
+			if ($user_usertype_current >= $access[$counter]) {
+				echo "<a href=\"" . $link . "\" class=\"" . $class2 . "\" " . $js[$counter] . ">" . $buttons[$counter] . "</a>";
+			}
+			$counter++;
+		}
+		
+		echo "</div>";	
+	
+	
+}
+
+function ClassList($array_class_1,$array_class_2,$type) {
+					GLOBAL $proj_id;
+					GLOBAL $drawing_class;
+					GLOBAL $drawing_type;
+					
+					echo "<select name=\"$type\" onchange=\"this.form.submit()\">";
+					$array_class_count = 0;
+					foreach ($array_class_1 AS $class) {
+						echo "<option value=\"$class\"";
+						
+						if ($_POST[drawing_class] == $class && $type == "drawing_class" ) { echo " selected=\"selected\" "; }
+						elseif ($_POST[drawing_type] == $class && $type == "drawing_type" ) { echo " selected=\"selected\" "; }
+						
+						echo ">";		
+						echo $array_class_2[$array_class_count];
+						echo "</option>";
+						$array_class_count++;
+						}
+						echo "</select>";
+						
+					}
+	
+	function ProjectDrawingList($proj_id) {
+		
+		global $conn;
+					
+					echo "<h2>Drawing List</h2>";
+
+					TopMenu ("project_view1",1,$proj_id);
+					
+					echo "<div class=\"submenu_bar\"><a href=\"pdf_drawing_list.php?proj_id=$proj_id\" class=\"submenu_bar\">Drawing Schedule&nbsp;<img src=\"images/button_pdf.png\" alt=\"Download drawing list as PDF\" /></a><a href=\"pdf_drawing_matrix.php?proj_id=$proj_id\" class=\"submenu_bar\">Drawing Matrix&nbsp;<img src=\"images/button_pdf.png\" alt=\"Download drawing matrix as PDF\" /></a></div>";
+					
+					$drawing_class = $_POST[drawing_class];
+					$drawing_type = $_POST[drawing_type];
+					echo "<div style=\"float: left;\"><h3>Filter:</h3>";
+					echo "<form method=\"post\" action=\"index2.php?page=drawings_list&amp;proj_id=$proj_id&amp;drawing_class=$drawing_class&amp;drawing_type=$drawing_type\" >";
+					$array_class_1 = array("","SK","PL","TD","CN","CT","FD");
+					$array_class_2 = array("- All -","Sketch","Planning","Tender","Contract","Construction","Final Design");
+					ClassList($array_class_1,$array_class_2,"drawing_class");
+					echo "&nbsp;";
+					$array_class_1 = array("","SV","ST","GA","AS","DE","DOC");
+					$array_class_2 = array("- All -","Survey","Site Location","General Arrangement","Assembly","Detail","Document");
+					ClassList($array_class_1,$array_class_2,"drawing_type");
+					echo "</form></div>";
+					
+					if ($drawing_class != NULL) { $drawing_class = " AND drawing_number LIKE '%-$drawing_class-%' "; } else { unset($drawing_class); }
+					if ($drawing_type != NULL) { $drawing_type = " AND drawing_number LIKE '%-$drawing_type-%' "; } else { unset($drawing_type); }
+
+				$sql = "SELECT * FROM intranet_drawings, intranet_drawings_scale, intranet_drawings_paper WHERE drawing_project = $proj_id AND drawing_scale = scale_id AND drawing_paper = paper_id $drawing_class $drawing_type order by drawing_number";
+				$result = mysql_query($sql, $conn) or die(mysql_error());
+
+
+						if (mysql_num_rows($result) > 0) {
+
+						echo "<table summary=\"Lists all of the drawings for the project\">";
+						echo "<tr><td><strong>Drawing Number</strong></td><td><strong>Title</strong></td><td><strong>Rev.</strong></td><td><strong>Status</strong></td><td><strong>Scale</strong></td><td><strong>Paper</strong></td></tr>";
+
+						while ($array = mysql_fetch_array($result)) {
+						$drawing_id = $array['drawing_id'];
+						$drawing_number = $array['drawing_number'];
+						$scale_desc = $array['scale_desc'];
+						$paper_size = $array['paper_size'];
+						$drawing_title = $array['drawing_title'];
+						$drawing_author = $array['drawing_author'];
+						$drawing_status = $array['drawing_status'];
+						
+						if (!$drawing_status) { $drawing_status = "-"; }
+						
+						$sql_rev = "SELECT * FROM intranet_drawings_revision WHERE revision_drawing = '$drawing_id' ORDER BY revision_letter DESC LIMIT 1";
+						$result_rev = mysql_query($sql_rev, $conn) or die(mysql_error());
+						$array_rev = mysql_fetch_array($result_rev);
+						if ($array_rev['revision_letter'] != NULL) { $revision_letter = strtoupper($array_rev['revision_letter']); } else { $revision_letter = " - "; }
+						
+						if ($revision_letter == "*") { $strikethrough = "; text-decoration: strikethrough"; } else { unset($strikethrough); }
+						
+						if ($drawing_id == $drawing_affected) { $background = " style=\"bgcolor: red; $strikethrough\""; } else { unset($background); }		
+
+						echo "<tr><td $background><a href=\"index2.php?page=drawings_detailed&amp;drawing_id=$drawing_id&proj_id=$proj_id\">$drawing_number</a>";
+						
+						if ($drawing_author == $_COOKIE[user] OR $user_usertype_current > 2) {
+							echo "&nbsp;<a href=\"index2.php?page=drawings_edit&amp;drawing_id=$drawing_id&amp;proj_id=$proj_id&amp;drawing_edit=yes\"><img src=\"images/button_edit.png\" alt=\"Edit this drawing\" /></a>";
+						}
+
+						echo "</td><td $background>".nl2br($drawing_title)."</td><td $background>$revision_letter</td><td $background>$drawing_status</td><td $background>$scale_desc</td><td $background>$paper_size</td>";
+
+
+						echo "</tr>";
+
+						}
+
+						echo "</table>";
+						
+						
+
+						} else {
+
+						echo "<table><tr><td>No drawings found.</td></tr></table>";
+
+						}
+	}

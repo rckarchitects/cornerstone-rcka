@@ -2,18 +2,15 @@
 
 echo "<div style=\"width: 100%; float: left;\">";
 
-echo "<div class=\"menu_bar\">";
+echo "<h2>Home</h2>";
 
-echo "<a href=\"#\" onclick=\"itemSwitch(1); return false;\" class=\"menu_tab\">Projects</a>";
-echo "<a href=\"#\" onclick=\"itemSwitch(2); return false;\" class=\"menu_tab\">Tasks</a>";
-echo "<a href=\"#\" onclick=\"itemSwitch(3); return false;\" class=\"menu_tab\">Messages</a>";
-
-echo "</div>";
+TopMenu("default1",1);
 
 
 // Menu
 
 echo "<div id=\"item_switch_1\">";
+
 
 	ProjectListFrontPage($user_id_current);
 
@@ -28,8 +25,8 @@ echo "</div>";
 echo "<div id=\"item_switch_3\">";
 
 	// include("inc_files/inc_messages_list.php");
-	echo "<p class=\"submenu_bar\"><a href=\"index2.php?page=phonemessage_edit&amp;status=new\" class=\"submenu_bar\">Add New Message</a></p>";
-	echo "<h2>Messages</h2>";
+	echo "<div class=\"submenu_bar\"><a href=\"index2.php?page=phonemessage_edit&amp;status=new\" class=\"submenu_bar\">Add New Message</a></div>";
+	echo "<h3>Messages</h3>";
 	echo "<p>You currently have no outstanding messages.</p>";
 	
 echo "</div>";

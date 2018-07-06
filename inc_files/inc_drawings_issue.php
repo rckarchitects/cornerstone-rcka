@@ -16,7 +16,7 @@ if ($_GET[drawing_packages] != NULL) {
 	}
 	
 	
-		function ClassList($array_class_1,$array_class_2,$type) {
+	function ClassList2($array_class_1,$array_class_2,$type) {
 	GLOBAL $proj_id;
 	GLOBAL $drawing_class;
 	GLOBAL $drawing_type;
@@ -39,17 +39,17 @@ if ($_GET[drawing_packages] != NULL) {
 	}
 	
 	
-		$drawing_class = $_POST[drawing_class];
+	$drawing_class = $_POST[drawing_class];
 	$drawing_type = $_POST[drawing_type];
 	echo "<form method=\"post\" action=\"index2.php?page=drawings_issue&amp;proj_id=$proj_id&amp;drawing_class=$drawing_class&amp;drawing_type=$drawing_type\" >";
 	$array_class_1 = array("","SK","PL","TD","CN","CT","FD");
 	$array_class_2 = array("- All -","Sketch","Planning","Tender","Contract","Construction","Final Design");
 	echo "<p>Filter: ";
-	ClassList($array_class_1,$array_class_2,"drawing_class");
+	ClassList2($array_class_1,$array_class_2,"drawing_class");
 	echo "&nbsp;";
 	$array_class_1 = array("","SV","ST","GA","AS","DE","DOC");
 	$array_class_2 = array("- All -","Survey","Site Location","General Arrangement","Assembly","Detail","Document");
-	ClassList($array_class_1,$array_class_2,"drawing_type");
+	ClassList2($array_class_1,$array_class_2,"drawing_type");
 	echo "<br /><span class=\"minitext\">(Note that changing these filters will clear anything you have selected below.)</span></p></form>";
 	
 	if ($drawing_class != NULL) { $drawing_class = " AND drawing_number LIKE '%-$drawing_class-%' "; } else { unset($drawing_class); }

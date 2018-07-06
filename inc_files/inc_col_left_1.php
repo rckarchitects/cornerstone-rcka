@@ -131,6 +131,7 @@ if ($module_invoices == "1") {
 
 // Menu - Media
 
+if ($module_media == 1) {
 
 	$array_pages = array("index2.php?page=media","index2.php?page=media&amp;action=upload");
 	$array_title = array("Browse Library","Upload");
@@ -139,6 +140,7 @@ if ($module_invoices == "1") {
 
 	SideMenu ("Media Library", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 	
+}
 
 // Menu - Expenses
 
@@ -196,10 +198,10 @@ if ($module_phonemessages == 1) {
 
 if ($module_manual == 1) {
 
-	$array_pages = array("index2.php?page=manual_page");
-	$array_title = array("Contents");
-	$array_images = array("button_list.png");
-	$array_access = array(0,0);
+	$array_pages = array("index2.php?page=manual_page","index2.php?page=manual_page&amp;action=add");
+	$array_title = array("Contents","Add New");
+	$array_images = array("button_list.png","button_new.png");
+	$array_access = array(0,4);
 
 	SideMenu ("Office Manual", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 	

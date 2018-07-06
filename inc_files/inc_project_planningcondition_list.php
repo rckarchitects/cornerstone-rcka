@@ -1,8 +1,17 @@
 <?php
 
+	ProjectSwitcher ("project_planningcondition_list",$proj_id);
+	
+
 
 	echo "<h2>Planning Conditions</h2>";
-	ProjectSwitcher ("project_planningcondition_list",$proj_id);
+	
+	TopMenu ("project_view1",1,$proj_id);
+	
+function PlanningConditionList($proj_id) {
+	
+	global $conn;
+	$proj_id = intval($proj_id);
 
 	$sql_proj = "SELECT proj_id, proj_num, proj_name FROM intranet_projects WHERE proj_id = $proj_id LIMIT 1";
 	$result_proj = mysql_query($sql_proj, $conn) or die(mysql_error());
@@ -15,11 +24,7 @@
 		
 		$showdetail = intval ( $_GET[showdetail] );
 		
-	}
-	
-	
-	
-	
+	}	
 	
 	
 
@@ -77,4 +82,7 @@
 		
 	}
 	
-?>
+	
+}
+
+PlanningConditionList($proj_id);

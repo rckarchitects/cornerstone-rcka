@@ -6,6 +6,8 @@
 	else {
 	header("Location:index2.php");
 	}
+	
+	echo "<h1>Contacts</h1>";
 
 	$sql_contact = "SELECT * FROM contacts_contactlist LEFT JOIN intranet_user_details ON user_id = contact_added_by WHERE contact_id = '$select_contact_id' LIMIT 1";
 	$result_contact = mysql_query($sql_contact, $conn);
@@ -62,7 +64,7 @@
 			
 			if ($contact_prefix > 0) { $prefix_name = "(".$prefix_name.")"; }
 	
-	echo "<h1>$contact_namefirst $contact_namesecond</h1>";
+	echo "<h2>$contact_namefirst $contact_namesecond</h2>";
 	
 			echo "<div class=\"menu_bar\">";
 			if ($user_usertype_current > 1) {

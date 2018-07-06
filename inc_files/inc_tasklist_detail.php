@@ -26,7 +26,7 @@ if (mysql_num_rows($result) > 0) {
 	$tasklist_access = $array['tasklist_access'];
 	$tasklist_project = $array['tasklist_project'];
 
-
+print "<h1>Tasks</h1>";
 ProjectTitle(1,$proj_id);
 
 // Menu bar
@@ -47,7 +47,7 @@ print "</p>";
 					
 					
 
-					print "<h2>Task Details</h2>";
+					
 							
 					print "<p><strong>Project</strong><br /><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></p>";
 					

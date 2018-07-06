@@ -22,6 +22,8 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		$proj_name = $array['proj_name'];
 		$drawing_author = $array['user_name_first']."&nbsp;".$array['user_name_second'];
 		
+		echo "<h2>$drawing_number</h2>";
+		
 		if (!$drawing_status) { $drawing_status = "-"; }
 		
 				// Drawing issue menu
@@ -47,7 +49,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		
 		
 		
-		echo "<h2>$drawing_number</h2>";
+		
 
 		echo "<table summary=\"Lists the details for drawing $drawing_number\">";
 		

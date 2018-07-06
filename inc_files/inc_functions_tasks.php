@@ -7,12 +7,6 @@ global $conn;
 if ($proj_id == NULL AND intval($_GET[proj_id]) > 0) { $proj_id = intval($_GET[proj_id]); } else { $proj_id = intval($proj_id); }
 
 
-if ($_GET[view] == "complete") {
-echo "<h2>Completed Tasks</h2>";
-} else {
-echo "<h2>Outstanding Tasks</h2>";	
-}
-
 
 // Determine the date a week ago
 

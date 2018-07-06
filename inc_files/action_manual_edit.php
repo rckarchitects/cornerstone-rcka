@@ -15,6 +15,7 @@ if (intval($_POST[manual_id]) == 0 && $_POST[manual_text] != NULL) {
 		$manual_stage = intval($_POST[manual_stage]);
 		$manual_section = addslashes($_POST[manual_section]);
 		$manual_attachment = intval($_POST[manual_attachment]);
+		$manual_checklist = intval($_POST[manual_checklist]);
 
 		// Construct the MySQL instruction to add these entries to the database
 
@@ -26,7 +27,8 @@ if (intval($_POST[manual_id]) == 0 && $_POST[manual_text] != NULL) {
 		manual_text,
 		manual_stage,
 		manual_section,
-		manual_attachment
+		manual_attachment,
+		manual_checklist
 		) values (
 		'NULL',
 		'$manual_title',
@@ -35,7 +37,8 @@ if (intval($_POST[manual_id]) == 0 && $_POST[manual_text] != NULL) {
 		'$manual_text',
 		'$manual_stage',
 		'$manual_section',
-		'$manual_attachment'
+		'$manual_attachment',
+		'$manual_checklist'
 		)";
 
 		$result = mysql_query($sql_add, $conn) or die(mysql_error());
@@ -58,6 +61,7 @@ if (intval($_POST[manual_id]) == 0 && $_POST[manual_text] != NULL) {
 		$manual_stage = intval($_POST[manual_stage]);
 		$manual_section = addslashes($_POST[manual_section]);
 		$manual_attachment = intval($_POST[manual_attachment]);
+		$manual_checklist = intval($_POST[manual_checklist]);
 
 		// Construct the MySQL instruction to add these entries to the database
 
@@ -68,7 +72,8 @@ if (intval($_POST[manual_id]) == 0 && $_POST[manual_text] != NULL) {
 		manual_text = '$manual_text',
 		manual_stage = $manual_stage,
 		manual_section = '$manual_section',
-		manual_attachment = '$manual_attachment'
+		manual_attachment = '$manual_attachment',
+		manual_checklist = '$manual_checklist'
 		WHERE manual_id = $manual_id
 		LIMIT 1		
 		";
