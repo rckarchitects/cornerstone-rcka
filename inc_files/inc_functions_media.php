@@ -3,10 +3,9 @@
 function MediaLatestList() {
 	
 	global $conn;
+
 	
-	$latest_docs = time() - 1209600;
-	
-	$sql = "SELECT * FROM intranet_media WHERE media_type = 'pdf' AND media_timestamp > $latest_docs ORDER BY media_timestamp DESC LIMIT 5";
+	$sql = "SELECT * FROM intranet_media WHERE media_type = 'pdf' ORDER BY media_timestamp DESC LIMIT 5";
 	$result = mysql_query($sql, $conn);
 	if (mysql_num_rows($result) > 0) {
 		echo "<h2>Latest Uploads</h2><table>";
@@ -15,11 +14,20 @@ function MediaLatestList() {
 			if ($array['media_description']) { $description = trim($array['media_description'],". ") . ", uploaded " . TimeFormat($array['media_timestamp']); } else {
 				$description = "Uploaded " . TimeFormat($array['media_timestamp']);
 			}
+			
+			if ((time() - intval($array['media_timestamp'])) < 86400) { $class = "alert_warning"; }
+			elseif ((time() - intval($array['media_timestamp'])) < 604800) { $class = "alert_careful"; }
+			else { unset($class); }
 				
-			echo "<tr><td style=\"width:35%;\"><a href=\"" . $array['media_path'] . $array['media_file'] . "\">" . $array['media_title'] . "</a></td><td><span class=\"minitext\">" . $description . "</span></td><td style=\"text-align: right;\"><span class=\"minitext\">" . $array['media_category'] . "</span></td></tr>";
+			echo "<tr><td class=\"$class\"><a href=\"" . $array['media_path'] . $array['media_file'] . "\">" . $array['media_title'] . "</a></td><td class=\"$class HideThis\"><span class=\"minitext\">" . $description . "</span></td><td style=\"text-align: right;\" class=\"$class\"><span class=\"minitext\">" . $array['media_category'] . "</span></td></tr>";
+		
 		}
-		echo "<tr><td colspan=\"3\" style=\"text-align: right;\"><a href=\"index2.php?page=media&amp;filter=pdf\">[More]</a></td></tr>";
+		
+		
+		
 		echo "</table>";
+		
+		echo "<p><a href=\"index2.php?page=media&amp;filter=pdf\">[More]</a></p>";
 		
 	}
 	
@@ -32,13 +40,14 @@ function MediaUploadForm() {
 	
 	echo "<h2>Upload Media</h2>";
 	
-	TopMenu ("media","2");
+	ProjectSubMenu(NULL,$user_usertype_current,"media",1);
+	
 	
 	echo "<h3>Enter File Details</h3>";
 	
 	echo "<form method=\"post\" action=\"index2.php?page=media\" enctype=\"multipart/form-data\">";
 	
-	echo "<p>Title (if required)<br /><input type=\"text\" maxlength=\"200\" name=\"media_title\" style=\"width: 95%;\" /></p>";
+	echo "<p>Title (if required)<br /><input type=\"text\" maxlength=\"200\" name=\"media_title\" style=\"width: 95%;\" required=\"required\" /></p>";
 	
 	echo "<p>File<br /><input type=\"file\" name=\"media_file\" required=\"required\" /></p>";
 	
@@ -58,7 +67,7 @@ function MediaCategory() {
 	
 	global $conn;
 	
-	echo "<input type=\"text\" name=\"media_category\" list=\"media_category\" value=\"" . $media_category . "\" maxlength=\"200\" />";
+	echo "<input type=\"text\" name=\"media_category\" list=\"media_category\" value=\"" . $media_category . "\" maxlength=\"200\" required=\"required\" />";
 	echo "<datalist id=\"media_category\">";
 	
 	$sql = "SELECT DISTINCT media_category FROM intranet_media GROUP BY media_category ORDER BY media_category";
@@ -89,6 +98,40 @@ function MediaDelete($media_id, $media_user) {
 	
 }
 
+function MediaTopMenu () {
+	
+	global $conn;
+	
+	$sql = "SELECT DISTINCT media_category FROM intranet_media GROUP BY media_category ORDER BY media_category";
+	$result = mysql_query($sql, $conn);
+	
+	echo "<div class=\"submenu_bar\">";
+	
+	if ($_GET[category] == NULL) { $style = "style=\"background-color: white;\""; } else { unset($style); }
+	
+	echo "<a href=\"index2.php?page=media\" class=\"submenu_bar\" $style>All</a>";
+	
+	if (mysql_num_rows($result) > 0) {
+		
+
+		
+			while ($array = mysql_fetch_array($result)) {
+				if (trim($array['media_category']) != "") {
+				$media_filter = htmlentities($array['media_category']);
+					if ($media_filter == $_GET[category]) { $style = "style=\"background-color: white;\""; }
+					else { unset($style); }
+					echo "<a href=\"index2.php?page=media&amp;category=" . $media_filter . "\" class=\"submenu_bar\" $style>" . $array['media_category'] . "</a>";
+				}
+			}
+			
+		
+			
+	}
+	
+	echo "</div>";
+	
+}
+
 
 function MediaBrowse($filter) {
 	
@@ -98,10 +141,16 @@ function MediaBrowse($filter) {
 	if ($filter == "pdf") { $filter = " WHERE media_type = 'pdf' "; }
 	else { unset($filter);}
 	
+	if ($_GET[category] && $filter) { $filter = $filter . " AND media_category = '" . html_entity_decode($_GET[category]) . "'"; }
+	elseif ($_GET[category]) { $filter = " WHERE media_category = '" . html_entity_decode($_GET[category]) . "'"; }
 	
-	echo "<h2>Uploaded Media</h2>";
 	
-	TopMenu ("media","2");
+	
+	echo "<h2>Browse</h2>";
+	
+	ProjectSubMenu(NULL,$user_usertype_current,"media",1);
+	
+	MediaTopMenu ();
 
 	$sql = "SELECT * FROM `intranet_media` $filter ORDER BY media_category, media_timestamp DESC";
 	$result = mysql_query($sql, $conn) or die(mysql_error());
@@ -114,7 +163,11 @@ function MediaBrowse($filter) {
 				if (!$current_category) { echo "<div><h3>" . $array['media_category'] . "</h3>"; $current_category = $array['media_category']; }
 				elseif ($current_category != $array['media_category']) { echo "</div><div><h3>" . $array['media_category'] . "</h3>"; $current_category = $array['media_category']; }
 				
-				echo "<div class=\"bodybox imagecontainer\">";
+				if ((time() - intval($array['media_timestamp'])) < 86400) { $class = "alert_warning"; }
+				elseif ((time() - intval($array['media_timestamp'])) < 604800) { $class = "alert_careful"; }
+				else { unset($class); }
+				
+				echo "<div class=\"bodybox imagecontainer $class\">";
 				
 				$image_files = array("png","gif","jpg");
 				
@@ -122,7 +175,7 @@ function MediaBrowse($filter) {
 				
 				if (in_array($array['media_type'],$image_files)) {
 				
-					echo "<p><img src=\"" . $array['media_path'] . $array['media_file'] .  "\" alt=\"" . $array['media_title'] . "\" style=\"width: 100%;\" /><br /><span class=\"minitext\">" . $array['media_title'] . MediaDelete($array['media_id'], $array['media_user']) . "</span></p>";
+					echo "<p><a href=\"" . $array['media_path'] . $array['media_file'] . "\"><img src=\"" . $array['media_path'] . $array['media_file'] .  "\" alt=\"" . $array['media_title'] . "\" style=\"width: 100%;\" /></a><br /><span class=\"minitext\">" . $array['media_title'] . MediaDelete($array['media_id'], $array['media_user']) . "</span></p>";
 				
 				} elseif ($array['media_type'] == "pdf" && $array['media_description'] != "") { 
 				

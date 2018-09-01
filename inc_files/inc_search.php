@@ -33,6 +33,8 @@ $sql = "SELECT blog_id, blog_title, blog_date FROM intranet_projects_blog WHERE 
 $result = mysql_query($sql, $conn) or die(mysql_error());
 	if (mysql_num_rows($result) > 0) {
 		
+		$search_results = $search_results + mysql_num_rows($result);
+		
 			echo "<h3>Journal Entries</h2>";
 	
 			echo "<table>";
@@ -61,6 +63,9 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 			echo "<table>";
 		
 			while ($array = mysql_fetch_array($result)) {
+				
+			$search_results = $search_results + mysql_num_rows($result);
+				
 			$contact_id = $array['contact_id'];
 			$contact_namefirst = $array['contact_namefirst'];
 			$contact_namesecond = $array['contact_namesecond'];
@@ -83,6 +88,8 @@ echo "</table>";
 $sql = "SELECT company_id, company_name, company_postcode FROM contacts_companylist WHERE ".SearchTerms($keywords_array, "company_name")." OR ".SearchTerms($keywords_array, "company_address")." OR ".SearchTerms($keywords_array, "company_web")." OR ".SearchTerms($keywords_array, "company_notes")." OR ".SearchTerms($keywords_array, "company_web")." OR ".SearchTerms($keywords_array, "company_notes")." ORDER BY company_name";
 $result = mysql_query($sql, $conn) or die(mysql_error());
 	if (mysql_num_rows($result) > 0) {
+		
+		$search_results = $search_results + mysql_num_rows($result);
 		
 		echo "<h3>Companies</h3>";
 		echo "<table>";
@@ -113,6 +120,8 @@ $sql = "SELECT * FROM intranet_qms WHERE " . SearchTerms($keywords_array, "qms_t
 $result = mysql_query($sql, $conn) or die(mysql_error());
 
 	if (mysql_num_rows($result) > 0) {
+		
+		$search_results = $search_results + mysql_num_rows($result);
 
 		echo "<h3>Quality Management System</h3>";
 		echo "<table>";
@@ -149,11 +158,11 @@ function SearchManual($keywords_array) {
 				echo "</table>";
 			}
 
-		
+		return mysql_num_rows($result);
 
 }
 
-SearchManual($keywords_array);
+$search_results = $search_results + SearchManual($keywords_array);
 
 // Media Library
 
@@ -171,11 +180,12 @@ function SearchMedia($keywords_array) {
 				echo "</table>";
 			}
 
-		
+		return mysql_num_rows($result);
 
 }
 
-SearchMedia($keywords_array);
+$search_results = $search_results + SearchMedia($keywords_array);
+
 
 // Checklist
 
@@ -185,6 +195,8 @@ $sql = "SELECT checklist_comment, checklist_project, proj_id, proj_num, proj_nam
 $result = mysql_query($sql, $conn) or die(mysql_error());
 
 	if (mysql_num_rows($result) > 0) {
+		
+		$search_results = $search_results + mysql_num_rows($result);
 			echo "<h3>Project Checklists</h3>";
 			echo "<table>";
 			echo "<tr><td colspan=\"2\">- No results found for checklists -</td></tr>";
@@ -217,6 +229,8 @@ $sql = "SELECT tasklist_id, tasklist_notes, tasklist_person, tasklist_percentage
 
 $result = mysql_query($sql, $conn) or die(mysql_error());
 	if (mysql_num_rows($result) > 0) {
+		
+		$search_results = $search_results + mysql_num_rows($result);
 		
 		echo "<h3>Tasks</h3>";
 
@@ -253,6 +267,8 @@ $sql = "SELECT * FROM intranet_tender WHERE ".SearchTerms($keywords_array, "tend
 
 $result = mysql_query($sql, $conn) or die(mysql_error());
 	if (mysql_num_rows($result) > 0) {
+		
+		$search_results = $search_results + mysql_num_rows($result);
 
 			echo "<h3>Tenders</h3>";
 
@@ -284,6 +300,8 @@ $sql = "SELECT * FROM intranet_timesheet_expense LEFT JOIN intranet_timesheet_ex
 
 $result = mysql_query($sql, $conn) or die(mysql_error());
 	if (mysql_num_rows($result) > 0) {
+		
+		$search_results = $search_results + mysql_num_rows($result);
 		
 		echo "<h3>Expenses</h3>";
 
@@ -326,6 +344,9 @@ echo "</table>";
 
 							$result = mysql_query($sql, $conn) or die(mysql_error());
 								if (mysql_num_rows($result) > 0) {
+									
+									$search_results = $search_results + mysql_num_rows($result);
+									
 										echo "<h3>Expenses with this value</h3>";
 										echo "<table>";
 										echo "<tr><th>Date</th><th>Verified</th><th>Description</th><th>Value</th><th>User</th></tr>";
@@ -366,39 +387,52 @@ function SearchResultsTenders($keywords_array) {
 
 					$sql = "SELECT answer_id, answer_question, answer_response, answer_tender_id, answer_ref, tender_name, tender_date FROM intranet_tender_answers, intranet_tender WHERE ( ".SearchTerms($keywords_array, "answer_response" ) . " AND tender_id = answer_tender_id ) OR ( " . SearchTerms($keywords_array, "answer_question" ) . " AND tender_id = answer_tender_id ) AND answer_complete = 1 ORDER BY tender_date DESC, tender_name LIMIT 20 ";
 					$result = mysql_query($sql, $conn) or die(mysql_error());
-							if (mysql_num_rows($result) > 0) {
-					echo "<table>";
-					echo "<h3>Tender submissions (only answers marked as complete are shown below)</h3>";
-								while ($array = mysql_fetch_array($result)) {
-								$answer_id = $array['answer_id'];
-								$answer_response = strip_tags($array['answer_response'],"<p>,<br>");
-								foreach ($keywords_array AS $keywords_replace) { $keywords_replace_highlight = "<span style=\"background-color: yellow;\">" . $keywords_replace . "</span>"; $answer_response = str_replace($keywords_replace,$keywords_replace_highlight,$answer_response); }
-								$answer_tender_id = $array['answer_tender_id'];
-								$answer_question = strip_tags($array['answer_question'],"<p><br><ul><li>");
-								$answer_question = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $answer_question);
-								$answer_question = preg_replace('/(<[^>]+) class=".*?"/i', '$1', $answer_question);
-								$answer_question = preg_replace('/(<[^>]+) align=".*?"/i', '$1', $answer_question);
-								$answer_ref = $array['answer_ref'];
-								$tender_name = $array['tender_name'];
-								$tender_date = $array['tender_date'];
-								echo "<tr><td style=\"width: 50%;\">$answer_question</td><td>";
-								echo $answer_response . "...</a><br /><a href=\"index2.php?page=tender_view&amp;tender_id=$answer_tender_id&amp;answer_id=$answer_id\"><span class=\"minitext\">From $tender_name, " . TimeFormat($tender_date) . ", question $answer_ref</span></a>";
-								echo "</td></tr>";
-								}
+					$results = mysql_num_rows($result);
+							if ($results > 0) {
+								
+								echo "<table>";
+								echo "<h3>Tender submissions (only answers marked as complete are shown below)</h3>";
+											while ($array = mysql_fetch_array($result)) {
+											$answer_id = $array['answer_id'];
+											$answer_response = strip_tags($array['answer_response'],"<p>,<br>");
+											foreach ($keywords_array AS $keywords_replace) { $keywords_replace_highlight = "<span style=\"background-color: yellow;\">" . $keywords_replace . "</span>"; $answer_response = str_replace($keywords_replace,$keywords_replace_highlight,$answer_response); }
+											$answer_tender_id = $array['answer_tender_id'];
+											$answer_question = strip_tags($array['answer_question'],"<p><br><ul><li>");
+											$answer_question = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $answer_question);
+											$answer_question = preg_replace('/(<[^>]+) class=".*?"/i', '$1', $answer_question);
+											$answer_question = preg_replace('/(<[^>]+) align=".*?"/i', '$1', $answer_question);
+											$answer_ref = $array['answer_ref'];
+											$tender_name = $array['tender_name'];
+											$tender_date = $array['tender_date'];
+											echo "<tr><td style=\"width: 50%;\">$answer_question</td><td>";
+											echo $answer_response . "...</a><br /><a href=\"index2.php?page=tender_view&amp;tender_id=$answer_tender_id&amp;answer_id=$answer_id\"><span class=\"minitext\">From $tender_name, " . TimeFormat($tender_date) . ", question $answer_ref</span></a>";
+											echo "</td></tr>";
+											}
+
+								
 						}
 
 					echo "</table>";
 
-					}
+					return $results;
+
+	}
+
+	$search_results = SearchResultsTenders($keywords_array);
+
+	
 					
 }
 
-SearchResultsTenders($keywords_array);
+
 
 } elseif ($keywords != NULL) {
 
-echo "<p>Invalid Search Term</p>";
+	echo "<p>Invalid Search Term</p>";
 
 }
+
+//if (intval($search_results) > 0 ) { echo "<p>" . intval($search_results) . " results found.</p>";} else { echo "<p>No results found.</p>"; }
+if (intval($search_results) == 0 ) { echo "<p>No results found.</p>"; }
 
 echo "</div>";

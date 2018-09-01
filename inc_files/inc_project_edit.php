@@ -18,17 +18,24 @@ function ProjectTypeList($list_name,$current_value) {
 
 // First, determine the title of the page
 
+
+ProjectSwitcher("project_blog_list",$proj_id,0,0);
+
 if($_GET[proj_id] != NULL) {
-echo "<h1>Edit Project</h1>";
+echo "<h2>Edit Project</h2>";
 } else {
-echo "<h1>Add New Project</h1>";
+echo "<h2>Add New Project</h2>";
 }
 
-echo "<p class=\"menu_bar\">";
-echo "<a href=\"#\" onclick=\"itemSwitch(1); return false;\" class=\"menu_tab\">Main</a>";
-echo "<a href=\"#\" onclick=\"itemSwitch(2); return false;\" class=\"menu_tab\">Client</a>";
-echo "<a href=\"#\" onclick=\"itemSwitch(3); return false;\" class=\"menu_tab\">Particulars</a>";
-echo "</p>";
+
+
+ProjectSubMenu($proj_id,$user_usertype_current,"project_view",1);
+
+echo "<div class=\"submenu_bar\">";
+echo "<a href=\"#\" onclick=\"itemSwitch(1); return false;\" class=\"submenu_bar\">Main</a>";
+echo "<a href=\"#\" onclick=\"itemSwitch(2); return false;\" class=\"submenu_bar\">Client</a>";
+echo "<a href=\"#\" onclick=\"itemSwitch(3); return false;\" class=\"submenu_bar\">Particulars</a>";
+echo "</div>";
 
 // Now populate the variables with either the failed results from the $_POST submission or from the database if we're editing an existing project
 
@@ -198,11 +205,11 @@ echo "<form method=\"post\" action=\"index2.php\">";
 echo "<div id=\"item_switch_1\">";
 
 echo "
-<h2>Project Details</h2>
+<h3>Project Details</h3>
 <p class=\"minitext\">Fields marked * are required.</p>
 <p>Project Number*<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_num\" maxlength=\"8\" value=\"$proj_num\" />$newnum</p>
 <p>Project Name*<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_name\" maxlength=\"50\" value=\"$proj_name\" /></p>
-<h2>Project Address</h2>
+<h3>Project Address</h3>
 <p>Address Line 1<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_address_1\" maxlength=\"50\" value=\"$proj_address_1\" /></p>
 <p>Address Line 2<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_address_2\" maxlength=\"50\" value=\"$proj_address_2\" /></p>
 <p>Address Line 3<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_address_3\" maxlength=\"50\" value=\"$proj_address_3\" /></p>
@@ -234,7 +241,7 @@ echo "<p>General Project Information<br /><textarea name=\"proj_info\" class=\"i
 
 if ($user_usertype_current > 2) {
 
-echo "<h2>Project Status</h2>";
+echo "<h3>Project Status</h3>";
 
 echo "<p>Should this project be included in cost summaries?<br />";
 echo "<input type=\"radio\" name=\"proj_account_track\" value=\"1\"";
@@ -272,7 +279,7 @@ echo "</div>";
 
 echo "<div id=\"item_switch_2\">";
 
-echo "<h2>Client Details</h2>
+echo "<h3>Client Details</h3>
 <p>Client Name (1.0)<br />";
 include("inc_files/inc_data_project_contacts.php");
 echo "</p>
@@ -286,7 +293,7 @@ echo "</p>
 
 echo "</div><div id=\"item_switch_3\">";
 
-echo "<h2>Project Particulars</h2>";
+echo "<h3>Project Particulars</h3>";
 
 //<p>Planning Reference Number<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_planning_ref\" maxlength=\"50\" value=\"$proj_planning_ref\" /></p>
 

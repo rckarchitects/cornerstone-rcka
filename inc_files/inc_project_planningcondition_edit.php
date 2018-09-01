@@ -1,5 +1,11 @@
 <?php
 
+ProjectSwitcher("project_blog_list",$proj_id,0,0);
+
+echo "<h2>Planning Conditions</h2>";
+
+ProjectSubMenu($proj_id,$user_usertype_current,"project_view",1);
+ProjectSubMenu($proj_id,$user_usertype_current,"planning_conditions",2);
 
 if ($_GET[proj_id] != NULL OR $_POST[proj_id] != NULL) {
 	
@@ -9,11 +15,9 @@ if ($_GET[proj_id] != NULL OR $_POST[proj_id] != NULL) {
 		
 
 	
-	include_once("inc_project_planningcondition_list.php");
-	
 	if ($_GET[condition_id] > 0) {
 		
-		echo "<h2>Edit Planning Condition</h2>";
+		
 
 		$condition_id = intval ( $_GET[condition_id] );
 		
@@ -38,16 +42,21 @@ if ($_GET[proj_id] != NULL OR $_POST[proj_id] != NULL) {
 				$condition_link = $array_condition[condition_link];
 				$condition_submitted_ref = $array_condition[condition_submitted_ref];
 				
+				echo "<h3>Edit Condition " . $condition_number . "</h3>";
+				
 			}
 	
 		
 	} else {
 		
-		echo "<h2>Add New Planning Condition</h2>";
+		echo "<h3>Add New</h3>";
 		
 	}
 	
 	
+
+
+
 
 	
 	

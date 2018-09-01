@@ -111,7 +111,7 @@ function TimeSheetEdit($ts_weekbegin, $ts_user, $ts_id) {
 				}
 				
 			} else {
-				echo "<h2>Add Timesheet Entry</h2>";
+				echo "<h3>Add Timesheet Entry</h3>";
 			}
 
 			echo "<form action=\"index2.php?page=timesheet&amp;week=$ts_weekbegin"."&amp;user_view=$ts_user"."\" method=\"post\">";
@@ -328,29 +328,33 @@ function TimeSheetHeader($ts_weekbegin,$user_id) {
 
 					// Header
 
-					echo "<h1>Timesheet - Week Beginning " . TimeFormat($ts_weekbegin) . "</h1>";
+					echo "<h1>Timesheets</h1>";
+					echo "<h2>Week Beginning " . TimeFormat($ts_weekbegin) . "</h2>";
+					
+					ProjectSubMenu($proj_id,$user_usertype_current,"timesheet_admin",1);
+					ProjectSubMenu($proj_id,$user_usertype_current,"timesheet_settings",2);
 
 					echo "<div class=\"menu_bar\">";
 
 								if ($user_view != NULL) { $user_filter = "&amp;user_view=" . $user_view; } else { $user_filter = NULL; }
 
 								if ($link_lastmonth > $user_user_added) {
-									echo "<a href=\"index2.php?page=timesheet&amp;user_view=$user_id&amp;week=$link_lastmonth".$user_filter."\" class=\"menu_tab\"><< w/b ".date("j M Y",$link_lastmonth)."</a>";
+									echo "<a href=\"index2.php?page=timesheet&amp;user_view=$user_id&amp;week=$link_lastmonth".$user_filter."\" class=\"submenu_bar\"><< w/b ".date("j M Y",$link_lastmonth)."</a>";
 								}
 
 								if (($user_user_added - $link_lastweek) < 604800) {
 
-								echo "<a href=\"index2.php?page=timesheet&amp;user_view=$user_id&amp;week=$link_lastweek".$user_filter."\" class=\"menu_tab\">< w/b ".date("j M Y",$link_lastweek)."</a>";
+								echo "<a href=\"index2.php?page=timesheet&amp;user_view=$user_id&amp;week=$link_lastweek".$user_filter."\" class=\"submenu_bar\">< w/b ".date("j M Y",$link_lastweek)."</a>";
 								}
 
-								echo "<a href=\"index2.php?page=timesheet&amp;user_view=$user_id&amp;week=".BeginWeek(time()) . $user_filter."\" class=\"menu_tab\">This Week</a>";
+								echo "<a href=\"index2.php?page=timesheet&amp;user_view=$user_id&amp;week=".BeginWeek(time()) . $user_filter."\" class=\"submenu_bar\">This Week</a>";
 
 
 								if ($link_nextweek < time() AND $link_nextweek < $user_user_ended) {
-								echo "<a href=\"index2.php?page=timesheet&amp;user_view=$user_id&amp;week=$link_nextweek".$user_filter."\" class=\"menu_tab\">w/b ".date("j M Y",$link_nextweek)." ></a>"; }
+								echo "<a href=\"index2.php?page=timesheet&amp;user_view=$user_id&amp;week=$link_nextweek".$user_filter."\" class=\"submenu_bar\">w/b ".date("j M Y",$link_nextweek)." ></a>"; }
 
 								if ($link_nextmonth < time() AND $link_nextmonth < $user_user_ended) {
-								echo "<a href=\"index2.php?page=timesheet&amp;user_view=$user_id&amp;week=$link_nextmonth".$user_filter."\" class=\"menu_tab\">w/b ".date("j M Y",$link_nextmonth)." >></a>"; }
+								echo "<a href=\"index2.php?page=timesheet&amp;user_view=$user_id&amp;week=$link_nextmonth".$user_filter."\" class=\"submenu_bar\">w/b ".date("j M Y",$link_nextmonth)." >></a>"; }
 
 
 					echo "</div>";
@@ -801,7 +805,7 @@ function TimeSheetUserUpdates($user_id, $week_begin, $weeks_to_analyse) {
 			$result_update_factor = mysql_query($sql_update_factor, $conn) or die(mysql_error());
 		} elseif ($user_usertype_current > 3) {
 			
-			echo "<blockquote><p>- No timesheet entries for this week. -</p></blockquote>";
+			echo "<blockquote><p>- Timesheets for this week incomplete -</p></blockquote>";
 		}
 
 }
@@ -936,7 +940,7 @@ function TimesheetListFactored ($week) {
 	$result = mysql_query($sql, $conn) or die(mysql_error());
 	while ($array = mysql_fetch_array($result)) {
 		
-		echo "<h2><a href=\"index2.php?page=timesheet&week=" . $week . "&amp;user_view=" . $array['user_id'] . "\">" . $array['user_name_first'] . "&nbsp;" . $array['user_name_second'] . "</a></h2>";
+		echo "<h3><a href=\"index2.php?page=timesheet&week=" . $week . "&amp;user_view=" . $array['user_id'] . "\">" . $array['user_name_first'] . "&nbsp;" . $array['user_name_second'] . "</a></h3>";
 		
 		TimeSheetUserUpdates($array['user_id'], $week_begin, $weeks_to_analyse);
 		

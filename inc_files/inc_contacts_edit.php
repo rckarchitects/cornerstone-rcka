@@ -2,11 +2,15 @@
 
 // First, determine the title of the page
 
+echo "<h1>Contacts</h1>";
+
 if($_GET[status] == "edit") {
-echo "<h1>Edit Contact</h1>";
+echo "<h2>Edit Contact</h2>";
 } else {
-echo "<h1>Add Contact</h1>";
+echo "<h2>Add Contact</h2>";
 }
+
+ProjectSubMenu(NULL,$user_usertype_current,"contacts_admin",1);
 
 // Now populate the variables with either the failed results from the $_POST submission or from the database if we're editing an existing project
 

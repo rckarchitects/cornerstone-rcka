@@ -2,6 +2,9 @@
 
 if ($_GET[drawing_id] != NULL && $_GET[drawing_edit] == "yes") {
 echo "<h2>Edit Existing Drawing</h2>";
+
+ProjectSubMenu($proj_id,$user_usertype_current,"project_drawings",1);
+
 $sql = "SELECT * FROM intranet_drawings, intranet_projects WHERE drawing_id = '$_GET[drawing_id]' AND drawing_project = proj_id LIMIT 1";
 $result = mysql_query($sql, $conn) or die(mysql_error());
 $array = mysql_fetch_array($result);
@@ -23,6 +26,8 @@ $proj_id = $drawing_project;
 $proj_num = $array['proj_num'];
 } else {
 echo "<h2>Add New Drawing</h2>";
+
+ProjectSubMenu($proj_id,$user_usertype_current,"project_drawings",1);
 
 $sql = "SELECT * FROM intranet_projects WHERE proj_id = '$_GET[proj_id]' LIMIT 1";
 $result = mysql_query($sql, $conn) or die(mysql_error());
@@ -361,5 +366,3 @@ if ($drawing_id != NULL) {
 echo "</form>";
 
 }
-
-?>

@@ -49,6 +49,7 @@ $result_page = mysql_query($sql, $conn) or die(mysql_error());
 		print "</p>";
 
 		print "<h2>$type_title for ".DateTitle($month,$year)."</h2>";
+		ProjectSubMenu($proj_id,$user_usertype_current,"invoice_admin",1);
 
 $nowtime = time();
 

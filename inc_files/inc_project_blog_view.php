@@ -25,6 +25,8 @@ if (!$_GET[proj_id]) { echo "<h1><a href=\"index2.php?page=project_view&amp;proj
 if ($blog_user != $user_id_current AND $blog_view == 1 AND $user_usertype_current < 4) { echo "<h1 class=\"alert\">Error</h1>"; echo "<p>You do not have sufficient privileges to view this entry.</p>"; }
 
 else {
+	
+	echo "<h2>".$blog_title.", ".TimeFormat($blog_date)."</h2>";
 
 // Project Page Menu
 echo "<div class=\"submenu_bar\">";
@@ -40,7 +42,7 @@ echo "<div class=\"submenu_bar\">";
 	}
 echo "</div>";
 
-echo "<h2>".$blog_title.", ".TimeFormat($blog_date)."</h2>";
+
 if ($blog_contact) {
 	$data_contact = $blog_contact; echo "<h3>Contact</h3><p>"; include("dropdowns/inc_data_contacts_name.php"); echo "</p>"; 
 }

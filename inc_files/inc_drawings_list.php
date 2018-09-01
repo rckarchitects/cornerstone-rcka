@@ -1,22 +1,13 @@
 <?php
 
-if ($_GET[proj_id] != NULL) { $proj_id = intval($_GET[proj_id]); } elseif ($_POST[proj_id] != NULL) { $proj_id = intval($_POST[proj_id]); }
+if (intval($_GET[proj_id]) > 0) { $proj_id = $_GET[proj_id]; } elseif (intval($_POST[proj_id]) > 0) { $proj_id = $_POST[proj_id]; }
+
+ProjectSwitcher("drawings_list",$proj_id,1,1);
 
 
-
-if ($proj_id == NULL) {
-
-	echo"<h1>Error</h1><p>No project selected.</p>";
-
-} else {
+echo "<h2>Drawings</h2>";
 	
-
+	ProjectSubMenu($proj_id,$user_usertype_current,"project_drawings",1);
+	ProjectSubMenu($proj_id,$user_usertype_current,"drawings_list",2);
 	ProjectDrawingList($proj_id);
-	
-}
 
-//include_once("inc_drawings_edit.php");
-
-
-		
-?>

@@ -1,5 +1,30 @@
 <?php
 
+echo "<div id=\"menu_mobile_button\">";
+
+echo "
+
+<script>
+
+function ShowMobileMenu() {
+    var x = document.getElementById(\"column_left\");
+    if (x.style.display === \"block\") {
+        x.style.display = \"none\";
+    } else {
+        x.style.display = \"block\";
+    }
+}
+
+</script>
+
+";
+
+echo "<a href=\"#\" onclick=\"ShowMobileMenu()\"><img src=\"images/button_menu.png\" alt=\"Menu\" style=\"width: 100%; height: 100%;\" /></a></div>";
+
+echo "</div>";
+
+echo "<div id=\"column_left\">";
+
 
 
 
@@ -11,6 +36,8 @@
 	$array_access = array(0,4,4,1,4,0);
 
 	SideMenu ("System", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
+	
+
 	
 // Menu - Weekly Summary
 
@@ -50,12 +77,13 @@ if ($module_contacts == "1") {
 
 // Menu - Datebook
 
-	$array_pages = array("index2.php?page=datebook_view_day");
-	$array_title = array("Today");
-	$array_images = array("button_date.png");
-	$array_access = array(1);
+	$array_pages = array("index2.php?page=datebook_view_day","index2.php?page=date_list","index2.php?page=date_edit");
+	$array_title = array("Today","List Important Dates","Add Important Date");
+	$array_images = array("button_date.png","button_list.png","button_new.png");
+	$array_access = array(1,1,2);
 
 	SideMenu ("Datebook", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
+
 
 // Menu - Tasks
 
@@ -207,6 +235,36 @@ if ($module_manual == 1) {
 	
 }
 
+// Menu - Web Feeds
+
+if ($module_webfeeds == 1) {
+
+	$array_pages = array("index2.php?page=feeds&type=news","index2.php?page=feeds&type=competitions");
+	$array_title = array("BD News","BD Competitions");
+	$array_images = array("button_news.png","button_news.png");
+	$array_access = array(0,0);
+				
+	SideMenu ("News Feeds", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
+	
+}
+
+// Menu - Journal
+
+	$array_pages = array("index2.php?page=project_blog_edit&amp;status=add");
+	$array_title = array("Add Journal Entry");
+	$array_images = array("button_new.png");
+	$array_access = array(1);
+				
+	SideMenu ("Journal", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
+	
+// Menu - Team
+
+	TeamMenu($user_usertype_current);
+	
+//Menu - Pinned Blog Entries
+	
+	PinnedJournalEntries($user_usertype_current);
+
 // Menu - System Information
 
 	$array_pages = array("index2.php?page=info_usertypes");
@@ -215,3 +273,8 @@ if ($module_manual == 1) {
 	$array_access = array(5);
 
 	SideMenu ("System Information", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
+
+	
+	SearchPanel($user_usertype_current);
+	
+   echo "</div>";

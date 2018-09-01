@@ -1,6 +1,6 @@
 <?php
 
-echo "<h1>Merge Companies</h1>";
+echo "<h1>Contacts</h1>";
 
 if ($user_usertype_current > 3) {
 
@@ -8,8 +8,6 @@ if (intval ($_POST[company_old]) > 0 && intval ($_POST[company_new]) > 0) {
 	
 	$company_old = intval ($_POST[company_old]);
 	$company_new = intval ($_POST[company_new]);
-	
-	echo "<h2>Merge Results</h2>";
 	
 	echo "<ol>";
 	
@@ -52,28 +50,17 @@ if (intval ($_POST[company_old]) > 0 && intval ($_POST[company_new]) > 0) {
 	
 }
 
-function SelectCompany () {
-	GLOBAL $conn;
-	$sql = "SELECT DISTINCT company_name, company_id, company_postcode FROM contacts_companylist ORDER BY company_name, company_postcode";
-	$result = mysql_query($sql, $conn) or die(mysql_error());
-	while ($array = mysql_fetch_array($result)) {
-		echo "<option value=\"" . $array[company_id] . "\">" . $array[company_name];
-		if ($array[company_postcode] != NULL) { echo " (" . $array[company_postcode] . ")"; }
-		echo " - id: " . $array[company_id] . "</option>";
-	}
-}
 
-echo "<h2>Select Companies to Merge</h2>";
+
+echo "<h2>Merge Companies</h2>";
+
+ProjectSubMenu(NULL,$user_usertype_current,"contacts_admin",1);
 
 echo "<p>You can use the following form to merge two separate companies. All entries from the left-hand column will be copied to the right-hand column, and the entry from the left-hand column will be deleted if you wish.</p><p>Use this with caution.</p>";
 
 echo "<form method=\"post\" action=\"index2.php?page=contacts_company_merge\">";
 
-echo "<table><tr>";
-
-echo "<tr><th>From...</th><th>To...</th></tr>";
-
-echo "<tr><td>";
+echo "<h3>From...</h3>";
 
 echo "<select name=\"company_old\">";
 
@@ -81,7 +68,7 @@ SelectCompany();
 
 echo "</select>";
 
-echo "</td><td>";
+echo "<h3>To...</h3>";
 
 echo "<select name=\"company_new\">";
 
@@ -90,9 +77,6 @@ SelectCompany();
 echo "</select>";
 
 
-echo "</td>";
-
-echo "</tr></table>";
 
 echo "<p><input type=\"checkbox\" name=\"delete_old\" value=\"yes\" />&nbsp;Delete old company?</p>";
 

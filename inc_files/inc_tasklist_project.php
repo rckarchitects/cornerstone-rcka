@@ -9,8 +9,6 @@ echo "<h2>Outstanding Tasks</h2>";
 }
 
 
-TopMenu ("project_view1",1,$proj_id);
-
-ProjectSubMenu($proj_id,$user_usertype_current,"project_tasks");
-
+ProjectSubMenu($proj_id,$user_usertype_current,"project_view",1);
+ProjectSubMenu($proj_id,$user_usertype_current,"project_tasks",2);
 ProjectTasks($proj_id);

@@ -2,7 +2,8 @@
 
 if ($_GET[company_id] > 0) { $company_id = CleanNumber($_GET[company_id]); } elseif ($company_id_added > 0) {$company_id = $company_id_added; } else { $company_id = 0; }
 
-echo "<h1>Contact Database</h1>";
+echo "<h1>Contacts</h1>";
+
 
 if ($company_id > 0) {
 
@@ -22,6 +23,7 @@ $array_company = mysql_fetch_array($result_company);
 			$company_web = $array_company['company_web'];
 			$company_notes = $array_company['company_notes'];
 			
+	
 			// Determine the country
 			$sql_country = "SELECT country_printable_name FROM intranet_contacts_countrylist where country_id = '$company_country' LIMIT 1";
 			$result_country = mysql_query($sql_country, $conn);
@@ -32,6 +34,8 @@ $array_company = mysql_fetch_array($result_company);
 			if ($user_usertype_current > 1) { echo "<a href=\"index2.php?page=contacts_company_edit&amp;company_id=$company_id&amp;status=edit\"><img src=\"images/button_edit.png\" alt=\"Edit Entry\" /></a>"; }
 			
 			echo "</h2>";
+			
+			ProjectSubMenu(NULL,$user_usertype_current,"contacts_admin",1);
 			
 			print "<fieldset><legend>Company Details</legend>";
 			

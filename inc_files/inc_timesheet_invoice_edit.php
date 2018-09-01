@@ -4,6 +4,9 @@ $invoice_days_default = 28;
 
 print "<h1>Invoices</h1>";
 
+
+
+
 // Determine whether we are adding a new invoice or editing an existing one
 
 if ($_GET[status] == "edit") {
@@ -35,7 +38,8 @@ if ($_GET[status] == "edit") {
 		if ($invoice_paid > 0) { $invoice_paid_month = date("m",$invoice_paid ); } else { $invoice_paid_month = ""; }
 		if ($invoice_paid > 0) { $invoice_paid_year = date("Y",$invoice_paid ); } else { $invoice_paid_year = ""; }
 
-	print "<h2>Edit Invoice $invoice_ref</h2>";
+	print "<h2>Edit $invoice_ref</h2>";
+	ProjectSubMenu($proj_id,$user_usertype_current,"invoice_admin",1);
 	print "<form action=\"index2.php?page=timesheet_invoice_list\" method=\"post\">";
 	print "<input type=\"hidden\" name=\"action\" value=\"invoice_edit\" />";
 	print "<input type=\"hidden\" name=\"invoice_id\" value=\"$invoice_id\" />";
@@ -73,7 +77,8 @@ if ($_GET[status] == "edit") {
 		
 		if ($_GET[proj_id] != NULL) { $proj_id_page = $_GET[proj_id]; }
 	
-	print "<h2>Add Invoice</h2>";
+	print "<h2>Add New</h2>";
+	ProjectSubMenu($proj_id,$user_usertype_current,"invoice_admin",1);
 	print "<form action=\"index2.php?page=timesheet_invoice_list\" method=\"post\">";
 	print "<input type=\"hidden\" name=\"action\" value=\"invoice_edit\" />";
 

@@ -2,10 +2,9 @@
 
 echo "<div style=\"width: 100%; float: left;\">";
 
-echo "<h2>Home</h2>";
+DateList(1);
 
-TopMenu("default1",1);
-
+echo "<h2>Projects</h2>";
 
 // Menu
 

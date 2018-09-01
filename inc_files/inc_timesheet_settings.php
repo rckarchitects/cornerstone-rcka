@@ -1,15 +1,16 @@
 <?php
 
-print "<h1>Timesheet Settings</h1>";
+echo "<h1>Timesheets</h1>";
+echo "<h2>Settings</h2>";
 
-print "<fieldset><legend>Timesheet Datum</legend>";
+ProjectSubMenu($proj_id,$user_usertype_current,"timesheet_admin",1);
+
+echo "<fieldset><legend>Timesheet Datum</legend>";
 
 // Button to add timesheet datums	
 	
-	print "<table width=\"100%\">";
-	print "<tr><td class=\"color\"><a href=\"timesheet_datum.php\">Add Timesheet Datums</a></td></tr>";
-	print "</table>";
+	echo "<table width=\"100%\">";
+	echo "<tr><td class=\"color\"><a href=\"timesheet_datum.php\">Add Timesheet Datums</a></td></tr>";
+	echo "</table>";
 	
-print "</fieldset>";
-
-?>
+echo "</fieldset>";

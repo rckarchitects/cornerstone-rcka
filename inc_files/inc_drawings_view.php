@@ -1,6 +1,8 @@
 <?php
 
-print "<h1>Drawing Schedule</h1>";
+echo "<h2>Drawing Schedule</h2>";
+
+ProjectSubMenu($proj_id,$user_usertype_current,"project_drawings",1);
 
 if ($_GET[listorder] != NULL) { $listorder = $_GET[listorder]; } else { $listorder = "proj_num"; }
 
@@ -9,14 +11,14 @@ if ($_GET[desc] == "desc") { $desc = "desc"; $showdesc = ""; } else { $desc = ""
 //Determine what we're showing, and set the SQL query accordingly
 
 		if ($_GET[projects] != "all") {
-		print "<p class=\"submenu_bar\">";
-		print "<a href=\"index2.php?page=drawings_view&amp;listorder=$listorder&amp;projects=all\" class=\"submenu_bar\">All Projects</a></p>";
-		print "<h2>Current Projects</h2>";
+		echo "<p class=\"submenu_bar\">";
+		echo "<a href=\"index2.php?page=drawings_view&amp;listorder=$listorder&amp;projects=all\" class=\"submenu_bar\">All Projects</a></p>";
+		echo "<h2>Current Projects</h2>";
 		$sql_projects = "AND proj_active = 1"; 
 		} else {
-		print "<p class=\"submenu_bar\">";
-		print "<a href=\"index2.php?page=drawings_view&amp;listorder=$listorder&amp;projects=active\" class=\"submenu_bar\">Current Projects</a></p>";
-		print "<h2>All Projects</h2>";
+		echo "<p class=\"submenu_bar\">";
+		echo "<a href=\"index2.php?page=drawings_view&amp;listorder=$listorder&amp;projects=active\" class=\"submenu_bar\">Current Projects</a></p>";
+		echo "<h2>All Projects</h2>";
 		$sql_projects = "";
 		}
 
@@ -27,10 +29,10 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 
 		if (mysql_num_rows($result) > 0) {
 
-		print "<table summary=\"Lists all of the current, active projects\">";
-		print "<tr><td>Ref.</td>";
-		print "<td colspan=\"4\">Project</td>";
-		print "</tr>";
+		echo "<table summary=\"Lists all of the current, active projects\">";
+		echo "<tr><td>Ref.</td>";
+		echo "<td colspan=\"4\">Project</td>";
+		echo "</tr>";
 		
 		$current_proj = "";
 		$count = 0;
@@ -42,11 +44,11 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		
 		if ($current_proj != $proj_id) {
 
-					print "<tr><td><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num</a></td><td>$proj_name</td>";
-					print "<td><a href=\"index2.php?page=drawings_list&amp;proj_id=$proj_id\">Click to view</a></td></td>";
-					print "<td><a href=\"index2.php?page=drawings_issue&amp;proj_id=$proj_id\">Drawing Issue</a></td></td>";
-					print "<td><a href=\"pdf_drawing_list.php?proj_id=$proj_id\">Drawing Schedule&nbsp;<img src=\"images/button_pdf.png\" alt=\"Drawing Schedule\" /></a></td></td>";
-					print "</tr>";
+					echo "<tr><td><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num</a></td><td>$proj_name</td>";
+					echo "<td><a href=\"index2.php?page=drawings_list&amp;proj_id=$proj_id\">Click to view</a></td></td>";
+					echo "<td><a href=\"index2.php?page=drawings_issue&amp;proj_id=$proj_id\">Drawing Issue</a></td></td>";
+					echo "<td><a href=\"pdf_drawing_list.php?proj_id=$proj_id\">Drawing Schedule&nbsp;<img src=\"images/button_pdf.png\" alt=\"Drawing Schedule\" /></a></td></td>";
+					echo "</tr>";
 					
 		}
 
@@ -55,12 +57,10 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		$count = $count++;
 		}
 
-		print "</table>";
+		echo "</table>";
 
 		} else {
 
-		print "There are no live projects on the system";
+		echo "There are no live projects on the system";
 
 		}
-		
-?>

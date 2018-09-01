@@ -38,6 +38,8 @@ if ($viewuser == $_COOKIE[user] OR $_GET[ts_id] > 0 OR $viewuser == NULL OR $use
 	TimeSheetEdit($ts_weekbegin,$viewuser,$ts_id);
 }
 
+
+
 TimeSheetUserUpdates($viewuser, $ts_weekbegin);
 
 TimeSheetList($viewuser,$ts_weekbegin,$user_usertype_current);

@@ -1,5 +1,7 @@
 <?php
 
+ProjectSubMenu($proj_id,$user_usertype_current,"project_drawings",1);
+
 if ($_GET[drawing_id] != NULL) {
 
 $sql = "SELECT * FROM intranet_drawings, intranet_drawings_scale, intranet_drawings_paper, intranet_projects, intranet_user_details WHERE drawing_id = '$_GET[drawing_id]' AND drawing_scale = scale_id AND drawing_paper = paper_id AND proj_id = drawing_project AND drawing_author = user_id LIMIT 1";
@@ -202,7 +204,3 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 echo "<p>No project selected.</p>";
 
 }
-
-
-		
-?>

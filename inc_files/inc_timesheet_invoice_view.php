@@ -61,7 +61,8 @@ if (mysql_num_rows($result) > 0) {
 		}
 	
 print "</p>";
-		print "<h2>Invoice $invoice_ref</h2>";
+		print "<h2>" . $invoice_ref . "</h2>";
+		ProjectSubMenu($proj_id,$user_usertype_current,"invoice_admin",1);
 		print "<table summary=\"Invoice reference $invoice_ref\">";
 		if ($invoice_baddebt == "yes") { echo "<tr><td colspan=\"2\"><strong>Listed as a bad debt</strong></td></tr>"; }
 		print "<tr><td><strong>Project</strong></td><td><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">".$proj_num."&nbsp;".$proj_name."</a></td></tr>";

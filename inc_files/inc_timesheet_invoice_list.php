@@ -1,17 +1,10 @@
 <?php
 
-if ($_POST[proj_id]) { $proj_id = $_POST[proj_id]; } elseif ($_POST[invoice_project]) { $proj_id = $_POST[invoice_project]; }
+ProjectSwitcher("timesheet_invoice_list",$proj_id,1,1);
 
-print "<h2>Invoices</h2>";
 
-if ($proj_id != NULL) { 
+echo "<h2>Invoices</h2>";
 
-	include("inc_files/inc_project_invoices.php");
-
-} else {
-
-print "<p>The project reference is empty.</p>";
-
-}
-	
-?>
+	ProjectSubMenu($proj_id,$user_usertype_current,"project_view",1);
+	ProjectSubMenu($proj_id,$user_usertype_current,"project_invoice",2);
+	ProjectInvoices($proj_id,"project_invoice");

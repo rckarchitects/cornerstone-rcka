@@ -30,28 +30,9 @@ Logo($settings_style,$settings_name);
 
 // Column Left
 
-    echo "<div id=\"column_left\">";
+    
     include("inc_files/inc_col_left_1.php");
-    echo "</div>";
-	
-// Column Right
 
-    echo "<div id=\"column_right\">";
-	
-	// The following bit selects the appropriate right-hand column for the chosen page using the $_GET[page] variable, and defaults to the default version if  there is no page-specific menu
-	
-	if (substr($_GET[page],0,8) == "contacts") {
-		include("inc_files/inc_col_right_contacts.php");
-	} elseif (substr($_GET[page],0,7) == "drawing") {
-		include("inc_files/inc_col_right_drawings.php");
-	} elseif (substr($_GET[page],0,9) == "timesheet") {
-		include("inc_files/inc_col_right_timesheet.php");
-	} elseif (substr($_GET[page],0,7) == "project" AND $_GET[proj_id] != NULL) {
-		include("inc_files/inc_col_right_project.php");
-	} else {
-	    include("inc_files/inc_col_right_1.php");
-    }
-	echo "</div>";
 	
     
 //Column Centre
@@ -102,22 +83,18 @@ if ($_GET[page] == NULL) {
 
 	echo "<h1>$today</h1>";
 
-	echo "<div style=\"float: left; max-width: 720px; margin-right: 12px;\">";
+	echo "<div id=\"HolidayList\" class=\"FloatBoxHalf\">";
 	ListHolidays();
 	echo "</div>";
 	
 	if ($module_media == 1) {
-		echo "<div style=\"float: left; max-width: 720px; margin-right: 12px;\">";
+		echo "<div id=\"MediaList\" class=\"FloatBoxHalf\">";
 		MediaLatestList();
 		echo "</div>";
 	}
-	
-	echo "<div style=\"float: left;\">";
-	echo "</div>";
+
 	
 }
-
-
 
 
     if ($useraction != "defineuser") {

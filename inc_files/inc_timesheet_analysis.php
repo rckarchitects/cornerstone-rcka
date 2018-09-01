@@ -1,6 +1,9 @@
 <?php
 
-echo "<h1>Timesheet Analysis</h1>";
+echo "<h1>Timesheets</h1>";
+echo "<h2>Analysis</h2>";
+
+ProjectSubMenu($proj_id,$user_usertype_current,"timesheet_admin",1);
 
 echo "<fieldset><legend>Summary Sheets (PDF)</legend>";
 

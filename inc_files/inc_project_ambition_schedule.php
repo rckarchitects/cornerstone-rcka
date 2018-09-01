@@ -15,6 +15,8 @@ function ProjectListData($input,$proj_active) {
 		
 		if ($input) {
 			
+			ProjectSubMenu(NULL,$user_usertype_current,"project_ambition",1);
+			
 			$proj_active = intval($proj_active);
 	
 				GLOBAL $conn;
@@ -25,9 +27,7 @@ function ProjectListData($input,$proj_active) {
 				$sql = "SELECT proj_num, proj_name, proj_id, " . $field . " FROM intranet_projects WHERE $filter $field IS NOT NULL ORDER BY proj_num DESC";
 				$result = mysql_query($sql, $conn) or die(mysql_error());
 				
-				echo "<p>$sql</p>";
-
-				
+			
 				if (mysql_num_rows($result) > 0) {
 
 					echo "<table>";

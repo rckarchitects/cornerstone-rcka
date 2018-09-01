@@ -1,12 +1,11 @@
 <?php
 
 	ProjectSwitcher ("project_planningcondition_list",$proj_id);
-	
-
 
 	echo "<h2>Planning Conditions</h2>";
 	
-	TopMenu ("project_view1",1,$proj_id);
+	ProjectSubMenu($proj_id,$user_usertype_current,"project_view",1);
+	ProjectSubMenu($proj_id,$user_usertype_current,"planning_conditions",2);
 	
 function PlanningConditionList($proj_id) {
 	
@@ -32,15 +31,7 @@ function PlanningConditionList($proj_id) {
 	$sql_conditions = "SELECT * FROM intranet_projects_planning LEFT JOIN contacts_companylist ON company_id = condition_responsibility WHERE condition_project = $proj_id ORDER BY condition_ref, condition_number";
 	$result_conditions = mysql_query($sql_conditions, $conn) or die(mysql_error());
 	
-		echo "<p class=\"submenu_bar\">";
-		if ($_GET[showdetail] == NULL && mysql_num_rows($result_conditions) > 0) {
-			echo "<a href=\"index2.php?page=project_planningcondition_list&amp;proj_id=$proj_id&amp;showdetail=1\" class=\"submenu_bar\">Detailed List</a>";
-		}
-		echo "<a href=\"index2.php?page=project_planningcondition_edit&amp;proj_id=$proj_id\" class=\"submenu_bar\">Add Planning Condition&nbsp;<img src=\"images/button_new.png\" alt=\"Add Planning Condition\" /></a>";
-		
-		echo "<a href=\"pdf_planning_conditions.php?proj_id=$proj_id\" class=\"submenu_bar\">Printable PDF&nbsp;<img src=\"images/button_pdf.png\" alt=\"PDF version\" /></a>";
-		
-		echo "</p>";
+
 	
 	if (mysql_num_rows($result_conditions) > 0) {
 		

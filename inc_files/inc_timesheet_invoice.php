@@ -4,7 +4,11 @@ print "<h1>Invoices</h1>";
 
 // Begin the invoice entry system
 
-print "<h2>View Invoices</h2>";
+print "<h2>Administration</h2>";
+
+ProjectSubMenu($proj_id,$user_usertype_current,"invoice_admin",1);
+
+print "<h3>View Invoices for Project</h3>";
 
 print "<p>Please select a project from the following list</p>";
 
@@ -35,20 +39,20 @@ print "<form action=\"index2.php?page=timesheet_invoice_view_project\" method=\"
 
 print "</form>";
 
-print "<h2>Print Invoice Schedule <img src=\"images/button_pdf.png\" alt=\"PDF output of invoice schedule\" /></h2>";
+print "<h3>Print Invoice Schedule</h3>";
 	print "<p>This will output a complete schedule of all invoices on the system.</p>";
 	print "<form action=\"pdf_invoice_schedule.php\" method=\"post\">";
 	print "<p><input type=\"submit\" value=\"Submit\" /></p>";
 	print "</form>";
 	
 	
-print "<h2>CSV Invoice Schedule</h2>";
+print "<h3>CSV Invoice Schedule</h3>";
 	print "<p>This will output a complete schedule of all invoices on the system in CSV format.</p>";
 	print "<form action=\"csv_invoice_schedule.php\" method=\"post\">";
 	print "<p><input type=\"submit\" value=\"Submit\" /></p>";
 	print "</form>";
 	
-print "<h2>All Invoices <img src=\"images/button_pdf.png\" alt=\"PDF output of all invoices\" /></h2>";
+print "<h3>All Invoices</h3>";
 	print "<p>This will output a single PDF file of all invoices according to the criteria below.</p>";
 	print "<form action=\"pdf_invoice.php\" method=\"post\">";
 	
@@ -65,6 +69,3 @@ print "<h2>All Invoices <img src=\"images/button_pdf.png\" alt=\"PDF output of a
 	
 	print "<p><input type=\"hidden\" value=\"yes\" name=\"viewall\" /><input type=\"submit\" value=\"Submit\" /></p>";
 	print "</form>";
-
-
-?>

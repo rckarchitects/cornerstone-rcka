@@ -110,7 +110,3 @@ if ($revision_id > 0) {
 print "<input type=\"hidden\" name=\"revision_drawing\" value=\"$drawing_id\"  />";
 
 print "</form>";
-
-
-
-?>

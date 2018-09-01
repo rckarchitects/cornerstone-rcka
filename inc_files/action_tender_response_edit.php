@@ -51,9 +51,9 @@ unset($alertmessage);
 		// $answer_response = preg_replace('/\s\s+/', ' ',$answer_response);
 		$answer_response = addslashes ( preg_replace('/(<p.+?)+(<\/>)/i', '<p>', $answer_response) );
 		
-		$answer_feedback = str_replace("<p></p>","",$answer_feedback);
+		$answer_feedback = addslashes(str_replace("<p></p>","",$answer_feedback));
 				
-		if ($_POST[clear_format] == "yes") { $answer_response = strip_tags($answer_response,"<p>"); }
+		if ($_POST[clear_format] == "yes") { $answer_response = addslashes (strip_tags($answer_response,"<p>") ); }
 		
 		if ($word_count == 0 OR $word_count == NULL) { unset($answer_time_edited); unset($answer_id_edited); } else { $answer_time_edited = time(); $answer_id_edited = $_COOKIE[user]; }
 		

@@ -41,6 +41,8 @@ $page_title = ucfirst($invoice_view);
 		print "<h2>$page_title Invoices on ".TimeFormat(time()).",&nbsp;".($limit + 1)." to ";
 		if ($page_next > $total_items) { print $total_items; } else { print $page_next; }
 		print " of ".$total_items."</h2>";
+		
+		ProjectSubMenu($proj_id,$user_usertype_current,"invoice_admin",1);
 
 $nowtime = time();
 

@@ -2,14 +2,12 @@
 
 // Retrieve and process the values passed using the $_GET submission
 
-echo "<h2>Add Journal Entry</h2>";
 
 if ($_GET[proj_id] != NULL) { $proj_id = intval($_GET[proj_id]); } else { unset ( $proj_id ); }
 if ($_GET[status] != NULL) { $status = $_GET[status]; } else { $status = "add"; }
 if ($_GET[blog_id] != NULL) { $blog_id = intval($_GET[blog_id]); } else { unset($blog_id); }
 if ($_POST[contact_id]) { $contact_id = intval($_POST[contact_id]); } elseif ($_GET[contact_id]) { $contact_id = intval($_GET[contact_id]); } else { unset($contact_id); }
 
-ProjectSubMenu($proj_id,$user_usertype_current,"project_blog_edit");
 
 if(intval($blog_id) > 0 && intval($proj_id) > 0) {
 
@@ -82,6 +80,8 @@ if ($blog_title != NULL) { echo "<h2>$blog_title</h2>"; } elseif ($proj_id > 0) 
 			$proj_num = $array2['proj_num'];
 			$proj_name = $array2['proj_name'];
 			echo "<h2>Add Blog Entry for: $proj_num&nbsp;$proj_name</h2>";
+			
+			ProjectSubMenu($proj_id,$user_usertype_current,"project_blog_edit",1);
 }
 
 echo "

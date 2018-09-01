@@ -2,7 +2,9 @@
 
 if ($_GET[year] != NULL) { $year = $_GET[year]; } else { $year = date("Y",time()); }
 
-echo "<h1>Holiday Calendar $year</h1>";
+echo "<h1>Holiday Calendar</h1>";
+
+echo "<h2>" .  $year . "</h2>";
 
 echo "<p class=\"menu_bar\">";
 
@@ -93,23 +95,23 @@ while ($counter_time < $beginnning_of_next_year) {
 				$holiday_year = $array_holiday_list['holiday_year'];
 				$holiday_assigned = $array_holiday_list['holiday_assigned'];
 				
-				if ($holiday_year != $holiday_assigned) { $assignment = "&nbsp;(Assigned to&nbsp;" . $holiday_assigned . ")"; } else { unset($assignment); }
+				if ($holiday_year != $holiday_assigned) { $assignment = "<span class=\"HideThis\">&nbsp;(Assigned to&nbsp;" . $holiday_assigned . ")</span>"; } else { unset($assignment); }
 				
 				$user_id = $array_holiday_list['user_id'];
 				
-				if ($holiday_paid == 0) { $user_initials = $user_initials . ": <i>Unpaid Leave</i>"; }
-				elseif ($holiday_paid == 2) { $user_initials = $user_initials . ": <i>Study Leave</i>"; }
-				elseif ($holiday_paid == 3) { $user_initials = $user_initials . ": <i>Jury Service</i>"; }
-				elseif ($holiday_paid == 4) { $user_initials = $user_initials . ": <i>TOIL</i>"; }
-				elseif ($holiday_paid == 5) { $user_initials = $user_initials . ": <i>Discretionary Leave</i>"; }
-				elseif ($holiday_paid == 6) { $user_initials = $user_initials . ": <i>Maternity / Paternity Leave</i>"; }
+				if ($holiday_paid == 0) { $user_initials = $user_initials . "<span class=\"HideThis\">: <i>Unpaid Leave</i></span>"; }
+				elseif ($holiday_paid == 2) { $user_initials = $user_initials . "<span class=\"HideThis\">: <i>Study Leave</i></span>"; }
+				elseif ($holiday_paid == 3) { $user_initials = $user_initials . "<span class=\"HideThis\">: <i>Jury Service</i></span>"; }
+				elseif ($holiday_paid == 4) { $user_initials = $user_initials . "<span class=\"HideThis\">: <i>TOIL</i></span>"; }
+				elseif ($holiday_paid == 5) { $user_initials = $user_initials . "<span class=\"HideThis\">: <i>Discretionary Leave</i></span>"; }
+				elseif ($holiday_paid == 6) { $user_initials = $user_initials . "<span class=\"HideThis\">: <i>Maternity / Paternity Leave</i></span>"; }
 				
-				if ($holiday_length == 0.5) { $user_initials = $user_initials . " (half day)"; }
+				if ($holiday_length == 0.5) { $user_initials = $user_initials . "<span class=\"HideThis\"> (half day)</span>"; }
 				
 				$user_initials = $user_initials . $assignment;
 				
 				if ($user_usertype_current > 3)  {
-						$action = "&nbsp;<input type=\"checkbox\" name=\"holiday_id[]\" value=\"$holiday_id\" />&nbsp;";
+						$action = "&nbsp;<input type=\"checkbox\" name=\"holiday_id[]\" value=\"$holiday_id\" class=\"HideThis\" />&nbsp;";
 				} else { unset($action); }
 				
 				if ($holiday_approved != NULL) { 

@@ -1,6 +1,8 @@
 <?php
 
 		echo "<h2>Drawing Issue</h2>";
+		ProjectSubMenu($proj_id,$user_usertype_current,"project_drawings",1);
+		
 
 if ($_GET[proj_id] != NULL) {
 
@@ -47,8 +49,8 @@ if ($_GET[drawing_packages] != NULL) {
 	echo "<p>Filter: ";
 	ClassList2($array_class_1,$array_class_2,"drawing_class");
 	echo "&nbsp;";
-	$array_class_1 = array("","SV","ST","GA","AS","DE","DOC");
-	$array_class_2 = array("- All -","Survey","Site Location","General Arrangement","Assembly","Detail","Document");
+	$array_class_1 = array("","SV","ST","GA","AS","DE","DOC","SCH");
+	$array_class_2 = array("- All -","Survey","Site Location","General Arrangement","Assembly","Detail","Document","Schedule");
 	ClassList2($array_class_1,$array_class_2,"drawing_type");
 	echo "<br /><span class=\"minitext\">(Note that changing these filters will clear anything you have selected below.)</span></p></form>";
 	
@@ -261,7 +263,3 @@ $result_issued_to = mysql_query($sql_issued_to, $conn) or die(mysql_error());
 echo "<p>No project selected.</p>";
 
 }
-
-
-		
-?>

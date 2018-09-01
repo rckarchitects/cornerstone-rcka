@@ -343,5 +343,3 @@ if ($contact_company > 0) {
 	header("Location:index2.php");
 	
 }
-
-?>

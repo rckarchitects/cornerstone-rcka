@@ -1,6 +1,8 @@
 <?php
 
 function MediaUpload() {
+
+
 	
 	global $conn;
 	
@@ -29,7 +31,7 @@ function MediaUpload() {
 				$actionmessage = $actionmessage . "This file extension is not allowed.<br />";
 			}
 
-			if ($fileSize > 10000000) {
+			if ($fileSize > 20000000) {
 				$actionmessage = $actionmessage . "This file is more than 10MB. Sorry, it has to be less than or equal to 10MB.<br />";
 			}
 
@@ -81,11 +83,13 @@ function MediaUpload() {
 					
 				} else {
 					$actionmessage = $actionmessage . "An error occurred somewhere. Try again or contact the admin.<br />";
+
 				}
 			}
 		} else {
 			
 			$actionmessage = $actionmessage . "An unknown error occurred.<br />";
+
 			
 		}
 		

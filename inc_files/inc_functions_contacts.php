@@ -1,5 +1,43 @@
 <?php
 
+function SelectCompany () {
+	GLOBAL $conn;
+	$sql = "SELECT DISTINCT company_name, company_id, company_postcode FROM contacts_companylist ORDER BY company_name, company_postcode";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	while ($array = mysql_fetch_array($result)) {
+		echo "<option value=\"" . $array[company_id] . "\">" . $array[company_name];
+		if ($array[company_postcode] != NULL) { echo " (" . $array[company_postcode] . ")"; }
+		echo " - id: " . $array[company_id] . "</option>";
+	}
+}
+
+function ContactsDisciplines() {
+	
+	global $conn;
+
+		$sql_discipline = "SELECT * FROM contacts_disciplinelist ORDER BY discipline_name";
+
+			$result_discipline = mysql_query($sql_discipline, $conn);
+			
+
+			
+			if (mysql_num_rows($result_discipline) > 0) {
+			
+			echo "<table>";
+			
+			while ($array_discipline = mysql_fetch_array($result_discipline)) {
+				$discipline_id = $array_discipline['discipline_id'];
+				$discipline_name = $array_discipline['discipline_name'];
+				echo "<tr><td><a href=\"index2.php?page=discipline_view&amp;discipline_id=$discipline_id\">$discipline_name</a></td></tr>";
+			}
+			
+				echo "</table>";
+			
+			} else { echo "<p>-- None found --</p>"; }
+
+
+}
+
 function ListContacts($listorder,$startletter,$desc_order,$listbegin,$listmax) {
 
 	global $conn;
@@ -322,7 +360,7 @@ function ContactDrawingList($contact_id) {
 		
 		$result_drawing = mysql_query($sql_drawing, $conn);
 		if (mysql_num_rows($result_drawing) > 0) {
-				echo "<fieldset><legend>Drawing Issue</legend>";
+				echo "<div><h3>Drawing Issues</h3>";
 				echo "<table>";
 				
 				echo "<tr><th>Date</th><th>Project</th><th>Company</th><th>Reason for Issue</th></tr>";
@@ -346,6 +384,9 @@ function ContactDrawingList($contact_id) {
 					$current_set = $set_id;
 				
 				}
+				
+				echo "</table></div>";
+			
 		
 			}
 	
@@ -406,8 +447,8 @@ global $conn;
 					elseif ($array['target_type'] == "2current") { $target_type = "Current Clients"; }
 					elseif ($array['target_type'] == "3future") { $target_type = "Future Clients"; }
 					
-					if ($current_target_type == NULL) { $listcomplete = $listcomplete . "<div class=\"bodybox\" style=\"width: 30%; height: auto; min-height: 500px;\"><h2>" . $target_type . "</h2>"; $current_target_type = $array['target_type']; }
-					elseif ($current_target_type != $array['target_type']) { $listcomplete = $listcomplete . "</div><div class=\"bodybox\" style=\"width: 30%; height: auto; min-height: 500px;\"><h2>" . $target_type . "</h2>"; $current_target_type = $array['target_type']; }
+					if ($current_target_type == NULL) { $listcomplete = $listcomplete . "<div class=\"bodybox\" style=\"width: 30%; height: auto; min-height: 500px;\"><h3>" . $target_type . "</h3>"; $current_target_type = $array['target_type']; }
+					elseif ($current_target_type != $array['target_type']) { $listcomplete = $listcomplete . "</div><div class=\"bodybox\" style=\"width: 30%; height: auto; min-height: 500px;\"><h3>" . $target_type . "</h3>"; $current_target_type = $array['target_type']; }
 					
 					$listcomplete = $listcomplete . "<p><strong><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=" . $array['contact_id'] .  "\">" . $array['contact_namefirst'] . " " . $array['contact_namesecond'] . "</strong></a>";
 					

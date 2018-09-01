@@ -2,6 +2,12 @@
 
 if ($_GET[item] > 0 && $user_usertype_current > 2) { $item = $_GET[item]; } else { unset($item); }
 
+
+echo "<h2>Project Checklist</h2>";
+
+	ProjectSubMenu($proj_id,$user_usertype_current,"project_view",1);
+	ProjectSubMenu($proj_id,$user_usertype_current,"project_checklist",2);
+
 if ($_POST[item_id] > 0 && $_POST[item_notes] != NULL OR $_POST[item_stage] != NULL) {
 	$item_id = $_POST[item_id];
 	$item_notes = trim ( addslashes ($_POST[item_notes]) );
@@ -32,19 +38,20 @@ if ($_GET[action] == "checklist_delete_item") {
 }
 
 
-$proj_id = $_GET[proj_id];
-echo "<h2>Project Checklist</h2>";
-echo "<p class=\"menu_bar\"><a href=\"index2.php?page=project_checklist&amp;proj_id=$proj_id\" class=\"menu_tab\">Back to list</a></p>";
+$proj_id = intval($_GET[proj_id]);
+
 
 // First include a series of tabs with the project stages
 
 
+if (intval($_GET[group_id]) > 0) { $group_id = intval($_GET[group_id]); } else { $group_id = 1; }
 
-if (!$_GET[group_id]) { $group_id = 1; } else { $group_id = intval($_GET[group_id]); }
+				
+StageTabs($group_id, $proj_id, "index2.php?page=project_checklist_edit&amp;proj_id=$proj_id","edit");
 
-StageTabs($group_id, $proj_id, "index2.php?page=project_checklist_edit&amp;proj_id=$proj_id&amp;", "edit");
+$sql_checklist = "SELECT * FROM intranet_project_checklist_items LEFT JOIN intranet_project_checklist ON checklist_item = item_id AND checklist_project = $proj_id LEFT JOIN intranet_timesheet_group ON group_id = item_stage WHERE ((group_id = $group_id) OR (item_stage IS NULL)) ORDER BY item_group, item_order, checklist_date, item_name";
 
-$sql_checklist = "SELECT * FROM intranet_project_checklist_items LEFT JOIN intranet_project_checklist ON checklist_item = item_id AND checklist_project = $proj_id LEFT JOIN intranet_timesheet_group ON group_id = item_stage WHERE ((group_id = '$group_id') OR (item_stage IS NULL)) ORDER BY item_group, item_order, checklist_date, item_name";
+//echo "<code>$sql_checklist</code>";
 
 $result_checklist = mysql_query($sql_checklist, $conn) or die(mysql_error());
 

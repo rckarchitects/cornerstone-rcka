@@ -2,7 +2,9 @@
  
 if ($_GET[timestamp] > 0) { $time = intval ( $_GET[timestamp] ); } else { $time = time(); }
  
-		echo "<h1>".TimeFormatDay($time)."</h1>";
+		echo "<h1>Datebook</h1>";
+		echo "<h2>".TimeFormatDay($time)."</h2>";
+		
  
 function DateBook($time) {
 
@@ -47,8 +49,10 @@ function DayBook_Invoice($time,$startday,$endday) {
 		$result_invoices = mysql_query($sql_invoices, $conn) or die(mysql_error());
 		
 		if (mysql_num_rows($result_invoices) > 0 AND $user_usertype_current > 2) {
+			
+			$return = $return + 1;
 		
-			echo "<h2>Invoices Issued Today</h2>";
+			echo "<h3>Invoices Issued Today</h3>";
 			echo "<table summary=\"Invoices due on ".TimeFormat($time)."\">";
 		
 		while ($array_invoices = mysql_fetch_array($result_invoices)) {
@@ -77,8 +81,10 @@ function DayBook_Invoice($time,$startday,$endday) {
 		$result_invoices = mysql_query($sql_invoices, $conn) or die(mysql_error());
 		
 		if (mysql_num_rows($result_invoices) > 0 AND $user_usertype_current > 2) {
+			
+			$return = $return + 1;
 		
-			echo "<h2>Invoices Due Today</h2>";
+			echo "<h3>Invoices Due Today</h3>";
 			echo "<table summary=\"Invoices due on ".TimeFormat($time)."\">";
 		
 		while ($array_invoices = mysql_fetch_array($result_invoices)) {
@@ -107,8 +113,10 @@ function DayBook_Invoice($time,$startday,$endday) {
 		$result_invoices = mysql_query($sql_invoices, $conn) or die(mysql_error());
 		
 		if (mysql_num_rows($result_invoices) > 0 AND $user_usertype_current > 2) {
+			
+			$return = $return + 1;
 		
-			echo "<h2>Invoices Paid Today</h2>";
+			echo "<h3>Invoices Paid Today</h3>";
 			echo "<table summary=\"Invoices paid on ".TimeFormat($time)."\">";
 		
 		while ($array_invoices = mysql_fetch_array($result_invoices)) {
@@ -129,10 +137,11 @@ function DayBook_Invoice($time,$startday,$endday) {
 			echo "</table>";
 		}
 		
+	return $return;
 		
 }
 	
-		if ($user_usertype_current > 3) {DayBook_Invoice($time,$startday,$endday); }
+		
 		
 function DayBook_Expenses($time,$startday,$endday) {
 	
@@ -144,8 +153,10 @@ function DayBook_Expenses($time,$startday,$endday) {
 		$result_expense = mysql_query($sql_expense, $conn) or die(mysql_error());
 	
 		if (mysql_num_rows($result_expense) > 0 AND $user_usertype_current > 3) {
+			
+			$return = $return + 1;
 		
-			echo "<h2>Expenses Added</h2>";
+			echo "<h3>Expenses Added</h3>";
 			echo "<table summary=\"Expenses added on ".TimeFormat($time)."\">";
 			
 			$list1 = 0;
@@ -169,8 +180,10 @@ function DayBook_Expenses($time,$startday,$endday) {
 		$result_expense = mysql_query($sql_expense, $conn) or die(mysql_error());
 	
 		if (mysql_num_rows($result_expense) > 0 AND $user_usertype_current > 3) {
+			
+			$return = $return + 1;
 		
-			echo "<h2>Expenses Verified Today</h2>";
+			echo "<h3>Expenses Verified Today</h3>";
 			echo "<table summary=\"Expenses verified on ".TimeFormat($time)."\">";
 			
 			$list1 = 0;
@@ -188,10 +201,12 @@ function DayBook_Expenses($time,$startday,$endday) {
 		}
 			echo "</table>";
 		}
+		
+	return $return;
 
 }
 
-		if ($user_usertype_current > 3) { DayBook_Expenses($time,$startday,$endday); }
+		
 		
 function DayBook_Drawings($time,$startday,$endday) {
 	
@@ -204,8 +219,10 @@ function DayBook_Drawings($time,$startday,$endday) {
 		$result_drawings = mysql_query($sql_drawings, $conn) or die(mysql_error());
 	
 		if (mysql_num_rows($result_drawings) > 0) {
+			
+			$return = $return + 1;
 		
-			echo "<h2>Drawings Issued</h2>";
+			echo "<h3>Drawings Issued</h3>";
 			echo "<table summary=\"Drawings issued on ".TimeFormat($time)."\">";
 
 		
@@ -224,13 +241,18 @@ function DayBook_Drawings($time,$startday,$endday) {
 			echo "</table>";
 		}
 		
+	return $return;
+		
 }
 
-		DayBook_Drawings($time,$startday,$endday);
+		
 
 function DayBook_Tasks($time,$startday,$endday) {
 	
 		global $conn;
+		
+			$hour_begin = 7;
+			$hour_end = 13;
 		
 // Tasks due today
 
@@ -241,8 +263,10 @@ function DayBook_Tasks($time,$startday,$endday) {
 		$result_tasks = mysql_query($sql_tasks, $conn) or die(mysql_error());
 		
 		if (mysql_num_rows($result_tasks) > 0) {
+			
+			$return = $return + 1;
 		
-			echo "<h2>Tasks Due Today</h2>";
+			echo "<h3>Tasks Due Today</h3>";
 			echo "<table summary=\"Tasks due on ".TimeFormat($time)."\">";
 		
 		while ($array_tasks = mysql_fetch_array($result_tasks)) {
@@ -273,66 +297,107 @@ function DayBook_Tasks($time,$startday,$endday) {
 		}
 			echo "</table>";
 		}
+		
+	return $return;
 
 }
 
-		DayBook_Tasks($time,$startday,$endday);
+		
 
 function DayBook_Journal($time,$startday,$endday) {
 	
 		global $conn;
 		
+			$hour_begin = 7;
+			$hour_end = 17;
+			$count = $hour_begin;
+			
+			echo "<h3>Messages and Journal Entries</h3>";
+		
 // Journal entries
 
-echo "<h2>Journal Entries</h2>";
+			echo "<table summary=\"Datebook for ".TimeFormat($time)."\">";
 
-echo "<table summary=\"Datebook for ".TimeFormat($time)."\">";
+				while ($count < ($hour_begin + $hour_end)) {
 
-while ($count < ($hour_begin + $hour_end)) {
+					$startday_next = $startday + 3599;
 
-	$startday_next = $startday + 3599;
 
-	echo "<tr><td colspan=\"3\"><strong>";
-	echo date("g.00a",$startday);
-	echo "</strong></td></tr>";
-	
-		$type_find = array("phone","filenote","meeting","email");
-		$type_replace = array("Telephone Call","File Note","Meeting Note","Email Message");
-	
-		$sql_blog = "SELECT blog_id, blog_title, blog_date, blog_type, proj_num, proj_id FROM intranet_projects_blog, intranet_projects WHERE proj_id = blog_proj AND blog_date BETWEEN '$startday' AND '$startday_next' ORDER BY blog_date DESC";
-		$result_blog = mysql_query($sql_blog, $conn) or die(mysql_error());
-		while ($array_blog = mysql_fetch_array($result_blog)) {
-			$blog_id = $array_blog['blog_id'];
-			$blog_title = $array_blog['blog_title'];
-			$blog_date = $array_blog['blog_date'];
-			$blog_type = $array_blog['blog_type'];
-			$proj_id = $array_blog['proj_id'];
-			$proj_num = $array_blog['proj_num'];
-			$blog_type = str_replace($type_find,$type_replace,$blog_type);
-			echo "<tr><td style=\"width: 50px;\"><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num</a></td><td>$blog_type</td><td><a href=\"index2.php?page=project_blog_view&amp;blog_id=$blog_id\">$blog_title</a></td></tr>";
-		}
-		
+					
+						$type_find = array("phone","filenote","meeting","email");
+						$type_replace = array("Telephone Call","File Note","Meeting Note","Email Message");
+					
+						// Journal Extries
+						$sql_blog = "SELECT blog_id, blog_title, blog_date, blog_type, proj_num, proj_name, proj_id FROM intranet_projects_blog, intranet_projects WHERE proj_id = blog_proj AND blog_date BETWEEN '$startday' AND '$startday_next' ORDER BY blog_date DESC";
+						$result_blog = mysql_query($sql_blog, $conn) or die(mysql_error());
+						
+						
+						// Telephone Messages
+						$sql_phone = "SELECT message_id, message_for_user, message_from_id, message_from_name, message_text FROM intranet_phonemessage WHERE message_date BETWEEN '$startday' AND '$startday_next' ORDER BY message_date";
+						$result_phone = mysql_query($sql_phone, $conn) or die(mysql_error());
+						
+							
+									$return = $return + 1;
+									
+								
+									
+									echo "<div style=\"border-top: 1px solid #ccc; padding: 5px;\">";
+									echo "<p style=\"float: left; padding-right: 20px; min-width: 150px; font-size: 75%;\"><strong>" . date("g.00a",$startday) . "</strong></p>";
+									
+								
+								
+								while ($array_blog = mysql_fetch_array($result_blog)) {
+									$blog_id = $array_blog['blog_id'];
+									$blog_title = $array_blog['blog_title'];
+									$blog_date = $array_blog['blog_date'];
+									$blog_type = $array_blog['blog_type'];
+									$proj_id = $array_blog['proj_id'];
+									$proj_num = $array_blog['proj_num'];
+									$proj_name = $array_blog['proj_name'];
+									$blog_type = str_replace($type_find,$type_replace,$blog_type);
+									echo "<p style=\"float: left; margin-right: 25px;\">" . $blog_type . " (<a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">" . $proj_num . "&nbsp;" . $proj_name . "</a>):&nbsp;<a href=\"index2.php?page=project_blog_view&amp;blog_id=$blog_id\">" . $blog_title . "</a></p>";
+								}
+										
+								
+
+										while ($array_phone = mysql_fetch_array($result_phone)) {
+											$message_id = $array_phone['message_id'];
+											$message_for_user = $array_phone['message_for_user'];
+											$message_from_id = $array_phone['message_from_id'];
+											$message_from_name = $array_phone['message_from_name'];
+											$message_text = $array_phone['message_text'];
+											echo "<p style=\"float: left; margin-right: 25px;\">Telephone Message for ";
+											echo UserDetails($message_for_user);
+											echo "Message from ";
+											if ($message_from_id > 0) { $data_contact = $message_from_id; include("dropdowns/inc_data_contacts_name.php"); } else { echo $message_from_name; }
+											echo "</p>";
+										}
+										
+								echo "</div>";
+
+						
+						$startday = $startday + 3600;
+						
+						$count++;
+					
+					}
+					
+					echo "</table>";
+					
+					return $return;
 }
 		
-		// Telephone Messages
-		$sql_phone = "SELECT message_id, message_for_user, message_from_id, message_from_name, message_text FROM intranet_phonemessage WHERE message_date BETWEEN '$startday' AND '$startday_next' ORDER BY message_date";
-		$result_phone = mysql_query($sql_phone, $conn) or die(mysql_error());
-		while ($array_phone = mysql_fetch_array($result_phone)) {
-			$message_id = $array_phone['message_id'];
-			$message_for_user = $array_phone['message_for_user'];
-			$message_from_id = $array_phone['message_from_id'];
-			$message_from_name = $array_phone['message_from_name'];
-			$message_text = $array_phone['message_text'];
-			echo "<tr><td colspan=\"2\">Telephone Message for ";
-			$data_user_id = $message_for_user; include("dropdowns/inc_data_user_name.php");
-			echo "</td><td>Message from ";
-			if ($message_from_id > 0) { $data_contact = $message_from_id; include("dropdowns/inc_data_contacts_name.php"); } else { echo $message_from_name; }
-			echo "<br /><span class=\"minitext\"><a href=\"index2.php?page=phonemessage_view_detailed&amp;message_id=$message_id\">$message_text</a></span></td></tr>";
-		}
-
-$startday = $startday + 3600;
-$count++;	
-	
-}
-
-		DayBook_Journal($time,$startday,$endday);
+		$count_results = 0;
+		
+		
+		if ($user_usertype_current > 3) {	$count_results = $count_results + DayBook_Invoice($time,$startday,$endday); }
+		
+		if ($user_usertype_current > 3) { $count_results = $count_results + DayBook_Expenses($time,$startday,$endday); }
+		
+		$count_results = $count_results + DayBook_Drawings($time,$startday,$endday);
+		
+		$count_results = $count_results + DayBook_Tasks($time,$startday,$endday);
+		
+		$count_results = $count_results + DayBook_Journal($time,$startday,$endday);
+		
+		if (intval($count_results) == 0) { echo "<p>No entries found for this day.</p>"; }

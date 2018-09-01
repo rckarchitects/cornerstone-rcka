@@ -27,7 +27,9 @@ $proj_id = $_GET[proj_id];
 		
 		echo "<h2>Drawing Issue: $print_date (ID: $set_id)</h2>";
 		
-		echo "<div class=\"menu_bar\"><a href=\"pdf_drawing_issue.php?issue_set=$set_id&amp;proj_id=$proj_id\" class=\"menu_tab\">Drawing Issue Sheet&nbsp;<img src=\"images/button_pdf.png\" alt=\"PDF Drawing Issue Sheet\" /></a>";
+		ProjectSubMenu($proj_id,$user_usertype_current,"project_drawings",1);
+		
+		echo "<div class=\"menu_bar\"><a href=\"pdf_drawing_issue.php?issue_set=$set_id&amp;proj_id=$proj_id\" class=\"submenu_bar\"><img src=\"images/button_pdf.png\" alt=\"PDF Drawing Issue Sheet\" />&nbsp;Drawing Issue Sheet</a>";
 		
 		if (((time() - $set_date) < 172800) OR ($user_usertype > 3)) {
 			echo "<a href=\"index2.php?page=drawings_list&amp;proj_id=$proj_id&amp;set_id=$set_id&amp;action=drawing_issue_delete\" class=\"menu_tab\" onClick=\"javascript:return confirm('Are you sure you want to delete this drawing issue? Deleted drawings issues will be permanently deleted and cannot be recovered.')\">Delete Drawing Issue&nbsp;<img src=\"images/button_delete.png\" alt=\"Delete Drawing Issue\" /></a>";

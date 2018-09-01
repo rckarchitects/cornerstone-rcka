@@ -3,13 +3,86 @@
 $removestrings_all = array("<",">","|");
 $removestrings_phone = array("+44","(",")");
 
-$currency_symbol = array("£","€");
+$currency_symbol = array("ï¿½","ï¿½");
 $currency_text = array("&pound;","&euro;");
-$currency_junk = array("£","€");
+$currency_junk = array("ï¿½","ï¿½");
 
-$text_remove = array("Ã","Â");
+$text_remove = array("ï¿½","ï¿½");
 
 ini_set("upload_max_filesize","10M");
+
+
+function PinnedJournalEntries($user_usertype_current) {
+		
+		global $conn;
+	
+		$sql = "SELECT blog_id, blog_title FROM intranet_projects_blog WHERE blog_pinned = 1 AND (blog_access <= " . intval($user_usertype_current) . " OR blog_access IS NULL) ORDER BY blog_date DESC";
+		$result = mysql_query($sql, $conn) or die(mysql_error());
+		if (mysql_num_rows($result) > 0) {
+			$array_pages = array();
+			$array_title = array();
+			$array_access = array();
+			$array_images = array();
+			while ($array = mysql_fetch_array($result)) {
+					$array_pages[] = "index2.php?page=project_blog_view&amp;blog_id=" . $array['blog_id'];
+					$array_title[] = $array['blog_title'];
+					$array_images[] = "button_list.png";
+					$array_access[] = 1;
+			}
+			SideMenu ("Pinned Journal Entries", $array_pages, $array_title, $array_access, $user_usertype_current,$array_images, "r");
+		}
+	
+}
+
+function TeamMenu($user_usertype_current) {
+	
+	global $conn;
+
+	$sql = "SELECT * FROM intranet_user_details WHERE user_active = 1 order by user_name_second";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+
+	$array_pages = array();
+	$array_title = array();
+	$array_access = array();
+	$array_images = array();
+
+	while ($array = mysql_fetch_array($result)) {
+
+		$user_name_first = $array['user_name_first'];
+		$user_name_second = $array['user_name_second'];
+		$user_num_mob = $array['user_num_mob'];
+		$user_num_home = $array['user_num_home'];
+		$user_num_extension = $array['user_num_extension'];
+		$user_email = $array['user_email'];
+		$user_id = $array['user_id'];
+		$user_usertype = $array['user_usertype'];
+		
+		$user_name = $user_name_first . " " . $user_name_second;
+		
+		if ($user_usertype_current > 4) { $user_name = $user_name . "&nbsp;[" . $user_usertype . "]"; }
+
+		$array_pages[] = "index2.php?page=user_view&amp;user_id=" . $user_id;
+		$array_title[] = $user_name;
+		$array_images[] = "button_list.png";
+		$array_access[] = 1;
+				
+	}
+
+		
+		$array_pages[] = "index2.php?page=user_list";
+		$array_title[] = "List All Users";
+		$array_images[] = "button_list.png";
+		$array_access[] = 4;
+		
+		$array_pages[] = "index2.php?page=user_edit&amp;user_add=true";
+		$array_title[] = "Add New User";
+		$array_images[] = "button_new.png";
+		$array_access[] = 4;
+		
+				
+	SideMenu ("Team", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images, "r");
+	
+}
 
 function Logo($settings_style,$settings_name) {
 
@@ -41,6 +114,25 @@ function ProjectListLPA() {
 		
 		while ($array = mysql_fetch_array($result)) {
 			echo "<option value=\"" . $array['proj_lpa'] . "\"></option>";
+		}
+		
+		echo "</datalist>";
+		
+		
+	}
+	
+}
+
+function DataList($field,$table) {
+	
+	GLOBAL $conn;
+	$sql = "SELECT " . $field . " FROM " . $table . " WHERE " . $field . " IS NOT NULL GROUP BY " . $field;
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	if (mysql_num_rows($result) > 0) {
+		echo "<datalist id=\"" . $field . "\">";
+		
+		while ($array = mysql_fetch_array($result)) {
+			echo "<option value=\"" . $array[$field] . "\"></option>";
 		}
 		
 		echo "</datalist>";
@@ -93,19 +185,23 @@ function StageTabs ($group_id_selected, $proj_id, $page, $filter) {
 	}
 	$result_group = mysql_query($sql_group, $conn) or die(mysql_error());
 	if (mysql_num_rows($result_group) > 0) {
+		
 		echo "<div class=\"submenu_bar\">";
 			while ($array_group = mysql_fetch_array($result_group)) {
 				$group_id = $array_group['group_id'];
 				$group_code = $array_group['group_code'];
 				if ($group_id_selected == $group_id) { $group_code = "<strong>$group_code</strong>";
-					echo "<a href=\"" . $page . "group_id=" . $group_id . "\" class=\"submenu_bar\">$group_code</a>";
+					echo "<a href=\"" . $page . "&amp;group_id=" . $group_id . "\" class=\"submenu_bar\">$group_code</a>";
+					$group_description = $group_code . " " . $array_group['group_description'];
 				} else {
-					echo "<a href=\"" . $page . "group_id=" . $group_id . "\" class=\"submenu_bar\">$group_code</a>";
+					echo "<a href=\"" . $page . "&amp;group_id=" . $group_id . "\" class=\"submenu_bar\">$group_code</a>";
 				}
 			}
 		echo "</div>";
 		
 		echo "<h3>" . $group_description . "</h3>";
+		
+		
 	}
 }
 
@@ -149,6 +245,8 @@ function GetProjectInfo($proj_id) {
 }
 
 function SearchPanel($user_usertype_current,$search_id) {
+	
+	echo "<span class=\"heading_side_left\">Search</span>";
 
 	
 	echo "<form action=\"index2.php?page=search\" method=\"post\">";
@@ -208,14 +306,70 @@ function ProjectTitle($show,$proj_id) {
 
 }
 
-function ProjectSubMenu($proj_id,$user_usertype_current,$page) {
+function ProjectSubMenu($proj_id,$user_usertype_current,$page,$level) {
 
 				$array_menu_page = array();
 				$array_menu_text = array();
 				$array_menu_image = array();
 				$array_menu_usertype = array();
+				
+				$proj_id = intval($proj_id);
+				$user_usertype_current = intval($user_usertype_current);
+				$level = intval($level);
 
-	if ($page == "project_edit") {
+	if ($page == "project_view" && $level == 1) {
+		
+				$array_menu_page[] = "index2.php?page=project_view&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Project Home";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 1;
+			
+				$array_menu_page[] = "index2.php?page=project_contacts&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Contacts";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 2;
+			
+				$array_menu_page[] = "index2.php?page=tasklist_project&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Tasks";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 2;
+				
+				$array_menu_page[] = "index2.php?page=drawings_list&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Drawings";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 2;
+			
+				$array_menu_page[] = "index2.php?page=project_checklist&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Checklist";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 2;
+			
+				$array_menu_page[] = "index2.php?page=project_planningcondition_list&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Planning Tracker";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 2;
+				
+				$array_menu_page[] = "index2.php?page=project_blog_list&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Journal";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 2;
+				
+				$array_menu_page[] = "index2.php?page=project_fees&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Fees";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 4;
+				
+				$array_menu_page[] = "index2.php?page=timesheet_invoice_list&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Invoices";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 4;
+				
+				$array_menu_page[] = "index2.php?page=project_particulars&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Particulars";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 4;
+				
+	} elseif ($page == "project_view" && $level == 2) {
 
 				$array_menu_page[] = "index2.php?page=project_edit&amp;status=edit&amp;proj_id=$proj_id";
 				$array_menu_text[] = "Edit Project";
@@ -230,10 +384,10 @@ function ProjectSubMenu($proj_id,$user_usertype_current,$page) {
 				$array_menu_page[] = "pdf_project_sheet.php?proj_id=$proj_id";
 				$array_menu_text[] = "Project Sheet";
 				$array_menu_image[] = "button_pdf.png";
-				$array_menu_usertype = 2;
-			
+				$array_menu_usertype = 2;		
+				
 		
-	} elseif ($page == "project_invoice") {
+	} elseif ($page == "project_invoice" && $level == 2) {
 				
 				$array_menu_page[] = "index2.php?page=timesheet_invoice_edit&amp;proj_id=$proj_id";
 				$array_menu_text[] = "Add Invoice";
@@ -244,6 +398,12 @@ function ProjectSubMenu($proj_id,$user_usertype_current,$page) {
 				$array_menu_text[] = "Add Invoice Item";
 				$array_menu_image[] = "button_new.png";
 				$array_menu_usertype = 3;
+				
+				$array_menu_page[] = "index2.php?page=timesheet_invoice_items_edit&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Add Invoice Item";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype = 3;		
+
 				
 	} elseif ($page == "project_fee") {
 	
@@ -307,20 +467,303 @@ function ProjectSubMenu($proj_id,$user_usertype_current,$page) {
 				$array_menu_text[] = "Completed Tasks";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype = 1;
+				
+	} elseif ( $page == "date_list") {
+
+				$array_menu_page[] = "index2.php?page=date_list";
+				$array_menu_text[] = "List Future Dates";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 1;
+
+				$array_menu_page[] = "index2.php?page=date_edit";
+				$array_menu_text[] = "Add New Dates";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype = 1;
+
+	} elseif ( $page == "project_expenses") {
+
+				$array_menu_page[] = "timesheet_expense_edit&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Add Expenses";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype = 2;
+
+
+	} elseif ( $page == "drawings_list" && $level == 2) {
+
+				$array_menu_page[] = "pdf_drawing_list.php?proj_id=$proj_id";
+				$array_menu_text[] = "Drawing Schedule";
+				$array_menu_image[] = "button_pdf.png";
+				$array_menu_usertype = 2;
+				
+				$array_menu_page[] = "pdf_drawing_matrix.php?proj_id=$proj_id";
+				$array_menu_text[] = "Drawing Matrix";
+				$array_menu_image[] = "button_pdf.png";
+				$array_menu_usertype = 2;
+				
+				$array_menu_page[] = "pdf_drawing_matrix.php?proj_id=$proj_id";
+				$array_menu_text[] = "Drawing Matrix";
+				$array_menu_image[] = "button_pdf.png";
+				$array_menu_usertype = 2;
+				
+
+	} elseif ( $page == "planning_conditions" && $level == 2) {
+
+				if ($_GET[showdetail] == 1) {
+					$array_menu_page[] = "index2.php?page=project_planningcondition_list&amp;proj_id=$proj_id";
+					$array_menu_text[] = "Simple List";
+					$array_menu_image[] = "button_list.png";
+					$array_menu_usertype = 2;
+
+				} else {
+					$array_menu_page[] = "index2.php?page=project_planningcondition_list&amp;proj_id=$proj_id&amp;showdetail=1";
+					$array_menu_text[] = "Detailed List";
+					$array_menu_image[] = "button_list.png";
+					$array_menu_usertype = 2;
+				}
+				
+				$array_menu_page[] = "index2.php?page=project_planningcondition_edit&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Add New";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype = 2;
+				
+				$array_menu_page[] = "pdf_planning_conditions.php?proj_id=$proj_id";
+				$array_menu_text[] = "Condition Schedule";
+				$array_menu_image[] = "button_pdf.png";
+				$array_menu_usertype = 2;
+				
+
+	} elseif ( $page == "project_checklist" && $level == 2) {
+		
+				$group_id = intval($_GET[group_id]);
+				
+				if ($_GET[page] == "project_checklist_edit") {
+					
+					$array_menu_page[] = "index2.php?page=project_checklist&amp;proj_id=$proj_id&amp;group_id=$group_id";
+					$array_menu_text[] = "Back to List";
+					$array_menu_image[] = "button_list.png";
+					$array_menu_usertype = 2;					
+				
+				}
+
+				$array_menu_page[] = "index2.php?page=project_checklist_edit&amp;proj_id=$proj_id&amp;group_id=$group_id";
+				$array_menu_text[] = "Edit Group";
+				$array_menu_image[] = "button_edit.png";
+				$array_menu_usertype = 2;		
+				
+				$array_menu_page[] = "pdf_project_checklist_stages.php?proj_id=$proj_id";
+				$array_menu_text[] = "Stages";
+				$array_menu_image[] = "button_pdf.png";
+				$array_menu_usertype = 2;
+				
+				$array_menu_page[] = "pdf_project_checklist.php?proj_id=$proj_id";
+				$array_menu_text[] = "Checklist";
+				$array_menu_image[] = "button_pdf.png";
+				$array_menu_usertype = 2;
+				
+	} elseif ( $page == "phonemessage_view") {
+		
+				if (intval($_GET[user_id]) > 0) { $user_id = intval($_GET[user_id]); } else { $user_id = intval($_COOKIE[user]); }
+		
+				$array_menu_page[] = "index2.php?page=phonemessage_view&amp;status=outstanding&amp;user_id=$user_id";
+				$array_menu_text[] = "Outstanding Messages";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 2;	
+
+				$array_menu_page[] = "index2.php?page=phonemessage_view&amp;status=all&amp;user_id=$user_id";
+				$array_menu_text[] = "All Messages";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 2;
+				
+				$array_menu_page[] = "index2.php?page=phonemessage_view&amp;status=user&amp;user_id=$user_id";
+				$array_menu_text[] = "Messages for Others";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 2;	
+				
+	
+		
+	} elseif ( $page == "project_drawings") {
+		
+				if (intval($_GET[proj_id]) > 0) { $proj_id = intval($_GET[proj_id]); }
+		
+				$array_menu_page[] = "index2.php?page=project_view&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Project Home";
+				$array_menu_image[] = "button_home.png";
+				$array_menu_usertype = 1;	
+
+				$array_menu_page[] = "index2.php?page=drawings_list&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Drawing List";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 2;
+				
+				$array_menu_page[] = "index2.php?page=drawings_edit&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Add New Drawing";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype = 2;
+				
+				$array_menu_page[] = "index2.php?page=drawings_issue&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Issue Drawings";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype = 2;
+	
+				$array_menu_page[] = "index2.php?page=drawings_issues&amp;proj_id=$proj_id";
+				$array_menu_text[] = "List Drawing Issues";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 2;
+		
+	} elseif ( $page == "contacts_admin") {
+	
+				$array_menu_page[] = "index2.php?page=contacts_view";
+				$array_menu_text[] = "All Contacts";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 2;	
+				
+				$array_menu_page[] = "index2.php?page=contacts_edit&amp;status=add";
+				$array_menu_text[] = "Add Contact";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype = 2;	
+
+				$array_menu_page[] = "index2.php?page=contacts_company_edit&amp;status=add";
+				$array_menu_text[] = "Add Company";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype = 2;
+				
+				$array_menu_page[] = "index2.php?page=contacts_add_sector";
+				$array_menu_text[] = "Add Sector";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype = 2;
+	
+				$array_menu_page[] = "index2.php?page=contacts_company_merge";
+				$array_menu_text[] = "Merge Companies";
+				$array_menu_image[] = "button_settings.png";
+				$array_menu_usertype = 4;
+		
+	} elseif ( $page == "timesheet_admin") {
+		
+			if (intval($_GET[user_id]) > 0) { $user_id = intval($_GET[user_id]); } else { $user_id = intval($_COOKIE[user]); }
+		
+				$array_menu_page[] = "index2.php?page=timesheet&user_view=$user_id";
+				$array_menu_text[] = "Timesheets Home";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 2;
+				
+				$array_menu_page[] = "index2.php?page=timesheet_analysis";
+				$array_menu_text[] = "Timesheet Analysis";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 4;
+				
+				$array_menu_page[] = "index2.php?page=timesheet_settings";
+				$array_menu_text[] = "Timesheet Settings";
+				$array_menu_image[] = "button_settings.png";
+				$array_menu_usertype = 4;
+				
+	} elseif ( $page == "timesheet_settings") {
+		
+				$array_menu_page[] = "index2.php?page=timesheet_rates_hourly";
+				$array_menu_text[] = "Hourly Rates";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 4;
+				
+				$array_menu_page[] = "index2.php?page=timesheet_rates_overhead";
+				$array_menu_text[] = "Overhead Rates";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 4;
+				
+				$array_menu_page[] = "index2.php?page=timesheet_rates_project";
+				$array_menu_text[] = "Project Rates";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 4;
+		
+	} elseif ( $page == "invoice_admin") {
+		
+				$array_menu_page[] = "index2.php?page=timesheet_invoice";
+				$array_menu_text[] = "Invoices Home";
+				$array_menu_image[] = "button_home.png";
+				$array_menu_usertype = 3;
+			
+				$array_menu_page[] = "index2.php?page=timesheet_invoice_edit";
+				$array_menu_text[] = "Add Invoice";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype = 3;
+				
+				$array_menu_page[] = "index2.php?page=timesheet_invoice_view_outstanding&amp;status=paid";
+				$array_menu_text[] = "Paid Invoices";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 3;
+				
+				$array_menu_page[] = "index2.php?page=timesheet_invoice_view_outstanding";
+				$array_menu_text[] = "Oustanding Invoices";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 3;
+				
+				$array_menu_page[] = "index2.php?page=timesheet_invoice_view_outstanding&amp;status=current";
+				$array_menu_text[] = "Current Invoices";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 3;
+				
+				$array_menu_page[] = "index2.php?page=timesheet_invoice_view_outstanding&amp;status=future";
+				$array_menu_text[] = "Future Invoices";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 3;
+				
+				$array_menu_page[] = "index2.php?page=timesheet_invoice_view_month";
+				$array_menu_text[] = "Invoices by Month";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 3;
+				
+	} elseif ( $page == "project_ambition") {
+				
+				$array_menu_page[] = "index2.php?page=project_ambition_schedule&amp;type=" . $_GET[type];
+				$array_menu_text[] = "List Active Projects";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 2;
+				
+				$array_menu_page[] = "index2.php?page=project_ambition_schedule&amp;filter=all&amp;type=" . $_GET[type];
+				$array_menu_text[] = "List All Projects";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 2;			
+
+			
+	} elseif ( $page == "media") {
+				
+				$array_menu_page[] = "index2.php?page=media";
+				$array_menu_text[] = "Media Library";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 1;
+				
+				$array_menu_page[] = "index2.php?page=media&action=upload";
+				$array_menu_text[] = "Upload Media";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype = 2;			
+		
 	}
+				
 
 
+		$current_url =  htmlspecialchars ( substr($_SERVER[REQUEST_URI],1) );
+		
 		$count = 0;
 		
-		echo "<div class=\"submenu_bar\">";
+		if ($level == 1) { $level_style = "menu_bar"; $tab_style = "menu_tab"; } else { $level_style = "submenu_bar"; $tab_style = "submenu_bar"; }
+		
+		echo "<div class=\"" . $level_style . "\">";
 
 		foreach ($array_menu_page AS $menu_link) {
+			
+			if ($current_url != $array_menu_page[$count]) {
 		 		 
-				echo "<a href=\"$array_menu_page[$count]\" class=\"submenu_bar\">";
+				echo "<a href=\"$array_menu_page[$count]\" class=\"" . $tab_style . "\">";
 				if ($array_menu_image[$count]) { echo "<img src=\"images/$array_menu_image[$count]\" />&nbsp;"; }
 				echo $array_menu_text[$count];
-				
 				echo "</a>";
+				
+			} else {
+				
+				echo "<a href=\"$array_menu_page[$count]\" class=\"" . $tab_style . "\" style=\"background-color: white;\">";
+				if ($array_menu_image[$count]) { echo "<img src=\"images/$array_menu_image[$count]\" />&nbsp;"; }
+				echo $array_menu_text[$count];
+				echo "</a>";
+				
+			}
 		 
 				$count++;
 		 
@@ -333,11 +776,11 @@ function ProjectSubMenu($proj_id,$user_usertype_current,$page) {
 		
 }
 
+
+
 function ProjectList($proj_id) {
 	
-	echo "<h2>Project Information</h2>";
-	TopMenu ("project_view1",1,$proj_id);
-	ProjectSubMenu($proj_id,$user_usertype_current,"project_edit");
+
 
 	global $conn;
 	
@@ -515,7 +958,7 @@ function ProjectSelect($proj_id_select,$field_name) {
 		if ($proj_id_select > 0) {
 			$proj_id_select_add = "(proj_active = 1 OR proj_id = $proj_id_select)";
 		} else {
-			$proj_id_select_add = "proj_active = 1";			
+			$proj_id_select_add = "proj_active = 1";
 		}
 	
 		echo "<select name=\"" . $field_name .  "\">";
@@ -745,14 +1188,14 @@ function MoneyFormat($input) {
 }
 
 function CashFormat($input) {
-		$input = "£".number_format($input,2,'.',',');
+		$input = "ï¿½".number_format($input,2,'.',',');
 		return($input);
 		}
 		
 function RemoveShit($input) {
-$remove_symbols = array("Â","Ã");
+$remove_symbols = array("ï¿½","ï¿½");
 $swap_1 = array("â‚¬", "\n");
-$replace_1 = array("€", "\n");
+$replace_1 = array("ï¿½", "\n");
 		$output = str_replace($remove_symbols, "", $input);
 		$output = str_replace($swap_1, $replace_1, $output);
 return $output;
@@ -1062,6 +1505,74 @@ GLOBAL $conn;
 	echo "</select>";
 	
 }
+
+function DisplayDate($date) {
+
+	// Date in format YYYY-MM-DD
+
+	$output = explode ("-",$date);
+	$output = mktime(12,0,0,$output[1],$output[2],$output[0]);
+	return $output;
+
+}
+
+function DateList($impending_only) {
+
+	
+		global $conn;
+		global $user_usertype_current;
+		$now = date("Y-m-d",time());
+
+		$alert = time() + 2419200;
+		$alert = date("Y-m-d",$alert);
+
+		if ($impending_only == 1) { $impending = " date_day < '$alert' AND "; } else { unset($impending_only ); }
+	
+		$sql = "SELECT * FROM intranet_datebook LEFT JOIN intranet_projects ON proj_id = date_project WHERE $impending date_day >= " . "'" . $now . "' ORDER BY date_day";
+
+		$result = mysql_query($sql, $conn) or die(mysql_error());
+	
+		if (mysql_num_rows($result) > 0 ) {
+	
+			echo "<h2>Important Dates</h2>";
+
+			if ($impending_only != 1) { ProjectSubMenu('',$user_usertype_current,"date_list"); }
+
+			echo "<table>";
+	
+			echo "<tr><th>Description</th><th>Date</th><th>Project</th><th colspan=\"2\" class=\"HideThis\">Category</th></th>";
+	
+			while ($array = mysql_fetch_array($result)) {
+				
+				if ($array['date_day'] == date("Y-m-d",time())) {
+					$style="alert_warning";
+				} elseif (((DisplayDate($array['date_day']))) < (time() + 604800)) {
+					$style="alert_careful";
+				} else {
+					unset($style);
+				}
+	
+				echo "<tr><td class=\"$style\">";
+				if ($array['date_notes']) { echo "<a href=\"index2.php?page=date_list&amp;date_id=" . $array['date_id']  . "\">" . $array['date_description'] . "&nbsp;&#8681;</a>"; } else { echo $array['date_description']; }
+				echo "</td><td class=\"$style\">" . TimeFormat ( DisplayDate($array['date_day']) ) . "</td><td class=\"$style\">" . $array['proj_num'] . " " . $array['proj_name'] . "</td>";
+				if ($array['date_day'] == $_COOKIE[user] OR $user_usertype_current > 3) {
+					echo "<td class=\"$style HideThis\">" . $array['date_category'] . "</td><td style=\"text-align: right;\" class=\"$style HideThis\"><a href=\"index2.php?page=date_edit&amp;date_id=" . $array['date_id'] . "\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a></td>";
+				} else {
+					echo "<td colspan=\"2\" class=\"$style HideThis\">" . $array['date_category'] . "</td></td>";
+				}
+
+				if ((intval($_GET[date_id]) == $array['date_id']) && $array['date_notes']) { echo "<tr><td colspan=\"5\" style=\"background: #fff;\">" . $array['date_notes'] . "</td></tr>"; }
+
+				echo "</tr>";
+	
+	
+			}
+	
+			echo "</table>";
+	
+		}	
+	
+	}
 
 function ListAvailableImages($directory) {
 	
@@ -1438,7 +1949,7 @@ function HolidaySchedule($year,$user_usertype_current,$working_days,$beginnning_
 
 GLOBAL $conn;
 
-						echo "<h2 id=\"holidaysthisyear\">Holidays in $year</h2>";
+						echo "<h3 id=\"holidaysthisyear\">Holidays in $year</h3>";
 
 						echo "<p>There were $working_days working days in $year.</p>";
 
@@ -1610,7 +2121,7 @@ function ChangeHolidays($year) {
 		$year_before = $year - 1;
 		$year_after = $year + 1;
 		
-		echo "<table><tr><td rowspan=\"4\">Change selected holidays</td>
+		echo "<table class=\"HideThis\"><tr><td rowspan=\"4\">Change selected holidays</td>
 		<td><input type=\"radio\" value=\"approve\" name=\"approve\" checked=\"checked\" />&nbsp;Approve</td>
 		<td><input type=\"radio\" value=\"unapprove\" name=\"approve\" />&nbsp;Unapprove</td>
 		<td><input type=\"radio\" value=\"delete\" name=\"approve\" />&nbsp;Delete</td>
@@ -2004,8 +2515,6 @@ function ListProjectJournalEntries($proj_id) {
 		global $conn;
 		global $user_usertype_current;
 
-					echo "<h2>Journal Entries</h2>";
-
 					$sql = "SELECT * FROM intranet_projects_blog, intranet_projects, intranet_user_details WHERE blog_proj = proj_id AND proj_id = '$proj_id' AND blog_user = user_id AND (blog_access = $user_usertype_current OR blog_access IS NULL) order by blog_date DESC";
 					$result = mysql_query($sql, $conn) or die(mysql_error());
 					$result_project = mysql_query($sql, $conn) or die(mysql_error());
@@ -2016,20 +2525,7 @@ function ListProjectJournalEntries($proj_id) {
 					$user_name_second = $array_project['user_name_second'];
 					$user_id = $array_project['user_id'];
 
-					// Include a bar to navigate through the pages
 
-							echo "<p class=\"submenu_bar\">";
-
-							$items_to_view = 10;
-
-							if ($_GET[limit] == NULL) {$limit = 0; } else { $limit = $_GET[limit]; }
-							$total_items = mysql_num_rows($result);
-							$page_prev = $limit - $items_to_view;
-							$page_next = $limit + $items_to_view;
-							
-							if ($limit > 0) { echo "<a href=\"index2.php?page=project_blog_list&amp;proj_id=$proj_id&amp;limit=$page_prev\" class=\"submenu_bar\">Previous Page</a>"; }
-							if ($page_next < $total_items) { echo "<a href=\"index2.php?page=project_blog_list&amp;proj_id=$proj_id&amp;limit=$page_next\" class=\"submenu_bar\">Next Page</a>"; }
-							echo "</p>";
 
 
 					$nowtime = time();
@@ -2115,6 +2611,21 @@ function AlertBoxShow($user_id) {
 		}
 }
 
+function GetAdmins($user_usertype) {
+	global $conn;
+	
+	if (intval($user_usertype) > 0) {
+		$sql = "SELECT user_id FROM intranet_user_details WHERE user_usertype = " . intval($user_usertype) . " ORDER BY user_id";
+		$result = mysql_query($sql, $conn) or die(mysql_error());
+		$output_array = array();
+		while ($array = mysql_fetch_array($result)) {
+			$output_array[] = $array['user_id'];
+		}
+		return $output_array;
+	}
+	
+}
+
 function AlertBoxInsert($user_id,$alert_category,$alert_message,$alert_entryref,$snoozetime,$verbose) {
 	
 		global $conn;
@@ -2133,10 +2644,13 @@ function AlertBoxInsert($user_id,$alert_category,$alert_message,$alert_entryref,
 			$result = mysql_query($sql, $conn) or die(mysql_error());
 			if (mysql_num_rows($result) == 0) {
 				$sql_add = "INSERT INTO intranet_alerts (alert_id, alert_user, alert_category, alert_message, alert_timestamp, alert_status, alert_entryref, alert_url) VALUES (NULL, " . $user_id . ",'" . $alert_category . "','" . $alert_message . "'," . time() . "," . $verbose . ", " . $alert_entryref . ", " . $alert_url . ")";
-				$result_add = mysql_query($sql_add, $conn) or die(mysql_error());
+				$result_add = mysql_query($sql_add, $conn) or die(mysql_error());  
+
 			}
 		
 		}
+		
+
 }
 
 function CheckOutstandingTasks($user_id) {
@@ -2518,126 +3032,130 @@ function CheckListRows($proj_id,$group_id,$showhidden) {
 	echo "<div id=\"testslot\"></div>";
 
 
-	echo "<table>";
-	echo "<tr><th>Item</th><th>Stage</th><th>Required</th><th style=\"width: 15%;\">Date Completed</th><th colspan=\"4\">Comment</th></tr>";
+
 
 	$current_item = 0;
 
 	if (mysql_num_rows($result_checklist) > 0) {
+						
+					echo "<table>";
+					echo "<tr><th>Item</th><th>Stage</th><th>Required</th><th style=\"width: 15%;\">Date Completed</th><th colspan=\"4\">Comment</th></tr>";
 
-	$group = NULL;
+					$group = NULL;
 
-	while ($array_checklist = mysql_fetch_array($result_checklist)) {
-	$item_id = $array_checklist['item_id'];
-	$item_name = $array_checklist['item_name'];
-	$item_date = $array_checklist['item_date'];
-	$item_group = $array_checklist['item_group'];
-	$item_required = $array_checklist['item_required'];
-	$item_notes = $array_checklist['item_notes'];
-	
-	$group_code = $array_checklist['group_code'];
-	
-	$checklist_id = $array_checklist['checklist_id'];
-	$checklist_required = $array_checklist['checklist_required'];
-	$checklist_date	= $array_checklist['checklist_date'];
-	$checklist_comment = htmlentities ( $array_checklist['checklist_comment']);
-	$checklist_user = $_COOKIE[user];
-	$checklist_link	= $array_checklist['checklist_link'];
-	$checklist_item	= $array_checklist['checklist_item'];
-	$checklist_timestamp = time();
-	$checklist_deadline = $array_checklist['checklist_deadline'];
-	//$checklist_project = $proj_id;
-	
-	if ($item_group != $group) { echo "<tr><td colspan=\"8\"><strong>$item_group</strong></td></tr>"; }
-	
-		// Change the background color depending on status
-		if ($checklist_required == 2 && ( $checklist_date == "0000-00-00" OR $checklist_date == NULL ) ) { $bg =  "class=\"alert_warning \""; } // red
-		elseif ($checklist_required == 2 && ( $checklist_date != "0000-00-00" OR $checklist_date != NULL ) ) { $bg =  "class=\"alert_ok \""; } // green
-		elseif ($checklist_required == 1) { $bg =  "class=\"alert_neutral \""; } // grey
-		else { $bg =  "class=\" alert_neutral \""; } // grey
-		
-		
-		
-		
-		if ($checklist_deadline != "0000-00-00" && $checklist_deadline != NULL) {
-			$checklist_date = $checklist_date . "<br /><span class=\"minitext\">Deadline: $checklist_deadline</span>";
-		}
-	
-	
-	echo "<tr id=\"checklist_row_" . $item_id . "\" class=\"Row1\"><td $bg>";
-	//if ($item_name_current != $item_name) { 
-	
-	echo $item_name;
+					while ($array_checklist = mysql_fetch_array($result_checklist)) {
+					$item_id = $array_checklist['item_id'];
+					$item_name = $array_checklist['item_name'];
+					$item_date = $array_checklist['item_date'];
+					$item_group = $array_checklist['item_group'];
+					$item_required = $array_checklist['item_required'];
+					$item_notes = $array_checklist['item_notes'];
+					
+					$group_code = $array_checklist['group_code'];
+					
+					$checklist_id = $array_checklist['checklist_id'];
+					$checklist_required = $array_checklist['checklist_required'];
+					$checklist_date	= $array_checklist['checklist_date'];
+					$checklist_comment = htmlentities ( $array_checklist['checklist_comment']);
+					$checklist_user = $_COOKIE[user];
+					$checklist_link	= $array_checklist['checklist_link'];
+					$checklist_item	= $array_checklist['checklist_item'];
+					$checklist_timestamp = time();
+					$checklist_deadline = $array_checklist['checklist_deadline'];
+					//$checklist_project = $proj_id;
+					
+					if ($item_group != $group) { echo "<tr><td colspan=\"8\"><strong>$item_group</strong></td></tr>"; }
+					
+						// Change the background color depending on status
+						if ($checklist_required == 2 && ( $checklist_date == "0000-00-00" OR $checklist_date == NULL ) ) { $bg =  "class=\"alert_warning \""; } // red
+						elseif ($checklist_required == 2 && ( $checklist_date != "0000-00-00" OR $checklist_date != NULL ) ) { $bg =  "class=\"alert_ok \""; } // green
+						elseif ($checklist_required == 1) { $bg =  "class=\"alert_neutral \""; } // grey
+						else { $bg =  "class=\" alert_neutral \""; } // grey
+						
+						
+						
+						
+						if ($checklist_deadline != "0000-00-00" && $checklist_deadline != NULL) {
+							$checklist_date = $checklist_date . "<br /><span class=\"minitext\">Deadline: $checklist_deadline</span>";
+						}
+					
+					
+					echo "<tr id=\"checklist_row_" . $item_id . "\" class=\"Row1\"><td $bg>";
+					//if ($item_name_current != $item_name) { 
+					
+					echo $item_name;
 
-	$item_name_current = $item_name;
-	echo "</td>";
-	
-	echo "<td $bg>$group_code</td>";
-	
-	echo "<td $bg>";
-	
-	if (!$item) {
-	
-		if ($checklist_required == 1) { echo "Not Required"; }
-		elseif ($checklist_required == 2) { echo "Required"; }
-		else { echo "?"; }
-	
-	}
-	
-	echo "</td>";
+					$item_name_current = $item_name;
+					echo "</td>";
+					
+					echo "<td $bg>$group_code</td>";
+					
+					echo "<td $bg>";
+					
+					if (!$item) {
+					
+						if ($checklist_required == 1) { echo "Not Required"; }
+						elseif ($checklist_required == 2) { echo "Required"; }
+						else { echo "?"; }
+					
+					}
+					
+					echo "</td>";
 
-	if (!$item) {	
-		if ($checklist_date == 0) { $checklist_date = "-";}
-		echo "<td $bg>$checklist_date</td>";
-		echo "<td $bg>$checklist_comment</td>";
-		if ($checklist_link) {
-			echo "<td colspan=\"2\" $bg><a href=\"$checklist_link\" target=\"_blank\"><img src=\"images/button_internet.png\" /></a></td>";
-		} elseif ($_GET[item] == $item_id) {
-			echo "<td colspan=\"3\"  $bg></td>";
-		} else {
-			echo "<td colspan=\"2\" $bg></td>";
-		}
-	}
+					if (!$item) {	
+						if ($checklist_date == 0) { $checklist_date = "-";}
+						echo "<td $bg>$checklist_date</td>";
+						echo "<td $bg>$checklist_comment</td>";
+						if ($checklist_link) {
+							echo "<td colspan=\"2\" $bg><a href=\"$checklist_link\" target=\"_blank\"><img src=\"images/button_internet.png\" /></a></td>";
+						} elseif ($_GET[item] == $item_id) {
+							echo "<td colspan=\"3\"  $bg></td>";
+						} else {
+							echo "<td colspan=\"2\" $bg></td>";
+						}
+					}
 
-	
-	if ($item_notes != NULL) {
-	
-		if ($_GET[item] != $item_id AND $_POST[item] != $item_id) { $hidden = "none"; } else { unset($hidden); }
-	
-		if (!$item) {
-			echo "<td $bg><a href=\"javascript:void(0);\" onclick=\"hideRow($item_id, false);\"><img src=\"images/button_help.png\" alt=\"Help\" /></a></td>";
-		}
-		
-		echo "</tr>";
-		
-		echo "<tr id=\"$item_id\" style=\"display: $hidden;\"><td colspan=\"7\" style=\"padding: 12px; background: rgba(255,255,255,1);\">$item_notes</td>";
-		
-	} else { echo "<td $bg></td>"; }
-	
-		echo "</tr>";
+					
+					if ($item_notes != NULL) {
+					
+						if ($_GET[item] != $item_id AND $_POST[item] != $item_id) { $hidden = "none"; } else { unset($hidden); }
+					
+						if (!$item) {
+							echo "<td $bg><a href=\"javascript:void(0);\" onclick=\"hideRow($item_id, false);\"><img src=\"images/button_help.png\" alt=\"Help\" /></a></td>";
+						}
+						
+						echo "</tr>";
+						
+						echo "<tr id=\"$item_id\" style=\"display: $hidden;\"><td colspan=\"7\" style=\"padding: 12px; background: rgba(255,255,255,1);\">$item_notes</td>";
+						
+					} else { echo "<td $bg></td>"; }
+					
+						echo "</tr>";
 
-	
-	$group = $item_group;
-	
-	$current_item = $item_id;
-	
-	echo "	<tr class=\"Row2\" style=\"display: none;\">
-			<td $bg><input type=\"text\" name=\"item_name\" value=\"$item_name\" $bg /></td>
-			<td $bg></td>
-			<td $bg></td>
-			<td $bg></td>
-			<td $bg></td>
-			<td $bg></td>
-			<td $bg></td>
-			<td $bg></td>
-			</tr>";
+					
+					$group = $item_group;
+					
+					$current_item = $item_id;
+					
+					echo "	<tr class=\"Row2\" style=\"display: none;\">
+							<td $bg><input type=\"text\" name=\"item_name\" value=\"$item_name\" $bg /></td>
+							<td $bg></td>
+							<td $bg></td>
+							<td $bg></td>
+							<td $bg></td>
+							<td $bg></td>
+							<td $bg></td>
+							<td $bg></td>
+							</tr>";
 
-	}
+					}
+					
+					echo "</table>";
 
-}
+} else { echo "<p>No checklist items found.</p>"; }
 
 
-echo "</table>";
+
 
 
 }
@@ -2745,11 +3263,6 @@ function ProjectFees($proj_id) {
 					$result_update = mysql_query($sql_update, $conn) or die(mysql_error());
 
 				}
-
-				
-				ProjectSubMenu($proj_id,$user_usertype_current,"project_fee");
-				
-				echo "<h2>Fee Stages</h2>";
 
 				$sql = "SELECT * FROM intranet_projects, intranet_timesheet_fees LEFT JOIN intranet_timesheet_group ON group_id = ts_fee_group WHERE ts_fee_project = $proj_id AND proj_id = ts_fee_project ORDER BY ts_fee_commence, ts_fee_text";
 				$result = mysql_query($sql, $conn) or die(mysql_error());
@@ -2986,20 +3499,10 @@ function ProjectParticulars($proj_id) {
 
 global $conn;
 
-echo "<div id=\"item_switch_3\">";
 
-		// Project Page Menu
-		echo "<div class=\"submenu_bar\">";
-			if ($user_usertype_current > 3 OR $user_id_current == $proj_rep_black) {
-				echo "<a href=\"index2.php?page=project_edit&amp;status=edit&amp;proj_id=$proj_id\" class=\"submenu_bar\">Edit</a>";
-			}
-			if ($user_usertype_current > 1) {
-				echo "<a href=\"index2.php?page=project_blog_edit&amp;status=add&amp;proj_id=$proj_id\" class=\"submenu_bar\">Add Project Journal Entry</a>";
-			}
-		echo "</div>";
 
 					if ($proj_date_start > 0 OR $proj_date_complete > 0 OR $proj_date_proposal > 0 OR $proj_date_appointment > 0) {
-							echo "<h2>Project Dates</h2><table summary=\"Project Dates\">";
+							echo "<h3>Project Dates</h3><table summary=\"Project Dates\">";
 							if ($proj_date_proposal > 0) { echo "<tr><td style=\"width: 40%;\">Date of Proposal</td><td>".TimeFormat($proj_date_proposal)."</td></tr>"; }
 							if ($proj_date_appointment > 0) { echo "<tr><td style=\"width: 40%;\">Date of Appointment</td><td>".TimeFormat($proj_date_appointment)."</td></tr>"; }
 							if ($proj_date_start > 0) { echo "<tr><td style=\"width: 40%;\">Start Date</td><td>".TimeFormat($proj_date_start)."</td></tr>"; }
@@ -3008,7 +3511,7 @@ echo "<div id=\"item_switch_3\">";
 					}		
 					
 
-					echo "<h2>Project Particulars</h2><table summary=\"Project Particulars\">";
+					echo "<table summary=\"Project Particulars\">";
 
 					if ($array['proj_date_start'] != NULL) { $proj_date_start = date("jS F Y", $array['proj_date_start']); } else { unset($proj_date_start); }
 					if ($array['proj_date_compelte'] != NULL) { $proj_date_complete = date("jS F Y", $array['proj_date_complete']); } else { unset($proj_date_complete); }
@@ -3051,15 +3554,10 @@ echo "<div id=\"item_switch_3\">";
 
 					echo "</table>";
 
-echo "</div>";
-
 }
 
 
 function ProjectInvoices($proj_id) {
-
-		echo "<h2>Project Invoices</h2>";
-
 
 		global $conn;
 
@@ -3227,7 +3725,7 @@ global $conn;
 			}
 			echo "</table>";
 
-			} else { echo "<p>- None - </p>"; }
+			} else { echo "<p>No Project Contacts Found.</p>"; }
 
 }
 
@@ -3547,7 +4045,7 @@ array_push($array_projects_recent,$array_timesheet_projects['ts_project']);
 
 // Get the list of projects from the database
 
-	$sql = "SELECT *, UNIX_TIMESTAMP(ts_fee_commence) FROM intranet_user_details, intranet_projects LEFT JOIN intranet_timesheet_fees ON `proj_riba` = `ts_fee_id` WHERE proj_rep_black = user_id $project_active AND proj_fee_track = 1 order by proj_num";
+	$sql = "SELECT *, UNIX_TIMESTAMP(ts_fee_commence) FROM intranet_user_details, intranet_projects LEFT JOIN intranet_timesheet_fees ON `proj_riba` = `ts_fee_id` WHERE proj_rep_black = user_id $project_active AND proj_fee_track = 1 order by proj_num DESC";
 	$result = mysql_query($sql, $conn) or die(mysql_error());
 
 
@@ -3699,57 +4197,7 @@ array_push($array_projects_recent,$array_timesheet_projects['ts_project']);
 		
 }
 
-function TopMenu ($page_type,$level,$proj_id) {
-	
-	global $user_usertype_current;
-	
-	if (intval($proj_id) > 0) { $proj_id = intval($proj_id); } else { unset($proj_id); }
-	
-	if ($page_type == "media") {
-		$links = array("index2.php?page=media","index2.php?page=media&amp;action=upload");
-		$buttons = array("Browse Library","Upload Files");
-		$access = array(0,3);
-		unset($js);
-	} elseif ($page_type == "default1") {
-		$links = array("#","#","#");
-		$buttons = array("Projects","Tasks","Messages");
-		$access = array(0,0,0);
-		$js = array("onclick=\"itemSwitch(1); return false;\"","onclick=\"itemSwitch(2); return false;\"","onclick=\"itemSwitch(3); return false;\"");
-	} elseif ($page_type == "project_view1") {
-		$links = array("index2.php?page=project_view&amp;proj_id=$proj_id","index2.php?page=project_contacts&amp;proj_id=$proj_id","index2.php?page=tasklist_project&amp;proj_id=$proj_id","index2.php?page=drawings_list&amp;proj_id=$proj_id","index2.php?page=project_checklist&amp;proj_id=$proj_id","index2.php?page=project_planningcondition_list&amp;proj_id=$proj_id","#","#","index2.php?page=project_blog_list&amp;proj_id=$proj_id","#");
-		$buttons = array("Project Home","Contacts","Tasks","Drawings","Checklist","Planning Tracker","Fees","Invoices","Journal","Particulars");
-		$access = array(1,1,1,1,1,1,3,4,1,1);
-		$js = array(NULL,NULL,NULL,NULL,NULL,NULL,"onclick=\"itemSwitch(5); return false;\"","onclick=\"itemSwitch(6); return false;\"",NULL,"onclick=\"itemSwitch(3); return false;\"");
-	} elseif ($page_type == "project_view2") {
-		$links = array("#","#","#");
-		$buttons = array("Projects","Tasks","Messages");
-		$access = array(0,0,0);
-		$js = array("onclick=\"itemSwitch(1); return false;\"","onclick=\"itemSwitch(2); return false;\"","onclick=\"itemSwitch(3); return false;\"");		
-	} elseif ($page_type == "project_ambition_schedule") {
-		$links = array("index2.php?page=project_ambition_schedule&amp;type=project_marketing&amp;filter=active","index2.php?page=project_ambition_schedule&amp;type=project_marketing&amp;filter=all");
-		$buttons = array("Active Projects","All Projects");
-		$access = array(0,0);
-		unset($js);	
-	}
-	
-	$counter = 0;
-	
-	if ($level == 1) { $class1 = "menu_bar"; $class2 = "menu_tab"; } else { $class1 = "submenu_bar"; $class2 = "submenu_bar"; }
-		
-		
-		echo "<div class=\"" . $class1 . "\">";
-		
-		foreach ($links AS $link) {
-			if ($user_usertype_current >= $access[$counter]) {
-				echo "<a href=\"" . $link . "\" class=\"" . $class2 . "\" " . $js[$counter] . ">" . $buttons[$counter] . "</a>";
-			}
-			$counter++;
-		}
-		
-		echo "</div>";	
-	
-	
-}
+
 
 function ClassList($array_class_1,$array_class_2,$type) {
 					GLOBAL $proj_id;
@@ -3772,29 +4220,33 @@ function ClassList($array_class_1,$array_class_2,$type) {
 						echo "</select>";
 						
 					}
+					
+	function DrawingFilter($page, $proj_id) {
+		
+					$drawing_class = $_POST[drawing_class];
+					$drawing_type = $_POST[drawing_type];
+					echo "<h3>Filter:</h3>";
+					echo "<form method=\"post\" action=\"index2.php?page=" . $page. "&amp;proj_id=" . $proj_id . "&amp;drawing_class=$drawing_class&amp;drawing_type=$drawing_type\" >";
+					$array_class_1 = array("","SK","PL","TD","CN","CT","FD");
+					$array_class_2 = array("- All -","Sketch","Planning","Tender","Contract","Construction","Final Design");
+					ClassList($array_class_1,$array_class_2,"drawing_class");
+					echo "&nbsp;";
+					$array_class_1 = array("","SV","ST","GA","AS","DE","DOC","SCH");
+					$array_class_2 = array("- All -","Survey","Site Location","General Arrangement","Assembly","Detail","Document","Schedule");
+					ClassList($array_class_1,$array_class_2,"drawing_type");
+					echo "</form>";
+		
+	}
 	
 	function ProjectDrawingList($proj_id) {
 		
 		global $conn;
 					
-					echo "<h2>Drawing List</h2>";
 
-					TopMenu ("project_view1",1,$proj_id);
-					
-					echo "<div class=\"submenu_bar\"><a href=\"pdf_drawing_list.php?proj_id=$proj_id\" class=\"submenu_bar\">Drawing Schedule&nbsp;<img src=\"images/button_pdf.png\" alt=\"Download drawing list as PDF\" /></a><a href=\"pdf_drawing_matrix.php?proj_id=$proj_id\" class=\"submenu_bar\">Drawing Matrix&nbsp;<img src=\"images/button_pdf.png\" alt=\"Download drawing matrix as PDF\" /></a></div>";
 					
 					$drawing_class = $_POST[drawing_class];
 					$drawing_type = $_POST[drawing_type];
-					echo "<div style=\"float: left;\"><h3>Filter:</h3>";
-					echo "<form method=\"post\" action=\"index2.php?page=drawings_list&amp;proj_id=$proj_id&amp;drawing_class=$drawing_class&amp;drawing_type=$drawing_type\" >";
-					$array_class_1 = array("","SK","PL","TD","CN","CT","FD");
-					$array_class_2 = array("- All -","Sketch","Planning","Tender","Contract","Construction","Final Design");
-					ClassList($array_class_1,$array_class_2,"drawing_class");
-					echo "&nbsp;";
-					$array_class_1 = array("","SV","ST","GA","AS","DE","DOC");
-					$array_class_2 = array("- All -","Survey","Site Location","General Arrangement","Assembly","Detail","Document");
-					ClassList($array_class_1,$array_class_2,"drawing_type");
-					echo "</form></div>";
+					
 					
 					if ($drawing_class != NULL) { $drawing_class = " AND drawing_number LIKE '%-$drawing_class-%' "; } else { unset($drawing_class); }
 					if ($drawing_type != NULL) { $drawing_type = " AND drawing_number LIKE '%-$drawing_type-%' "; } else { unset($drawing_type); }
@@ -3804,6 +4256,12 @@ function ClassList($array_class_1,$array_class_2,$type) {
 
 
 						if (mysql_num_rows($result) > 0) {
+							
+							echo "<div style=\"float: left;\">";
+					
+					DrawingFilter("drawings_list", $proj_id);
+					
+					echo "</div>";
 
 						echo "<table summary=\"Lists all of the drawings for the project\">";
 						echo "<tr><td><strong>Drawing Number</strong></td><td><strong>Title</strong></td><td><strong>Rev.</strong></td><td><strong>Status</strong></td><td><strong>Scale</strong></td><td><strong>Paper</strong></td></tr>";
@@ -3847,7 +4305,80 @@ function ClassList($array_class_1,$array_class_2,$type) {
 
 						} else {
 
-						echo "<table><tr><td>No drawings found.</td></tr></table>";
+						echo "<p>No drawings found.</p>";
 
 						}
 	}
+	
+	
+	function TelephoneMessage($user_id) {
+	
+	global $conn;
+
+		$user_id = intval($user_id);
+		
+
+		if ($_GET[status] == "all") {
+			$sql = "SELECT * FROM intranet_phonemessage LEFT JOIN intranet_user_details ON message_for_user = user_id WHERE message_for_user = '$user_id' ORDER BY message_date DESC";
+			echo "<h2>All Messages</h2>";
+		} elseif ($_GET[status] == "user") {
+			$sql = "SELECT * FROM intranet_phonemessage LEFT JOIN intranet_user_details ON message_for_user = user_id WHERE message_taken = '$user_id' ORDER BY message_date DESC";
+			echo "<h2>Messages for Others</h2>";
+		} else {
+			$sql = "SELECT * FROM intranet_phonemessage LEFT JOIN intranet_user_details ON message_for_user = user_id WHERE message_for_user = '$user_id' AND message_viewed = 0 ORDER BY message_date DESC";
+			echo "<h2>Outstanding Messages</h2>";
+		}
+		
+		$result = mysql_query($sql, $conn) or die(mysql_error());
+		
+		ProjectSubMenu($proj_id,$user_usertype_current,"phonemessage_view",1);
+
+
+
+		
+
+
+				if (mysql_num_rows($result) > 0) {
+
+					echo "<table summary=\"Lists all telephone messages\">";
+					
+					echo "<tr><th>Date / Time</th><th>Message From</th><th>Message For</th><th>Message</th></tr>";
+
+					while ($array = mysql_fetch_array($result)) {
+					$message_id = $array['message_id'];
+					$message_taken = $array['message_taken'];
+					$message_from_id = $array['message_from_id'];
+					$message_from_name = $array['message_from_name'];
+					$message_from_company = $array['message_from_company'];
+					$message_from_number = $array['message_from_number'];
+					$message_project = $array['message_project'];
+					$message_viewed = $array['message_viewed'];
+					$message_date = $array['message_date'];
+					$message_text = $array['message_text'];
+					
+					if ($message_from_number) { $message_from_name = $message_from_name . " (" . $message_from_number . ")"; }
+					
+					if ($message_viewed > 0) { $highlight = NULL;} else {  $highlight = "background-color: ".$settings_alertcolor."; font-weight: bold;";}
+					
+					echo "<tr>";
+					echo "<td style=\"width: 25%;$highlight\"><a href=\"index2.php?page=datebook_view_day&amp;time=$message_date\">".TimeFormatDetailed($message_date)."</a>";
+					if ($message_viewed > 0) { echo "<br /><span class=\"minitext\">Viewed: ".TimeFormatDetailed($message_date)."</span>"; }
+					echo "</td><td style=\"$highlight\">";
+					
+					if ($message_from_name != NULL) { echo $message_from_name."<br />".$message_from_company; }
+					else { $data_contact = $message_from_id; include("dropdowns/inc_data_contacts_name.php"); }
+					
+					echo "</td><td>" . $array['user_name_first'] . " " . $array['user_name_second'] . "</td><td style=\"width: 40%;$highlight\"><a href=\"index2.php?page=phonemessage_view_detailed&amp;message_id=$message_id\">".$message_text."</a></td></tr>";
+
+					
+					}
+
+					echo "</table>";
+
+				} else {
+
+					echo "<p>There are no live messages on the system</p>";
+
+				}
+		
+}

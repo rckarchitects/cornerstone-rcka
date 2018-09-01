@@ -4,11 +4,15 @@ $action = $_GET[status];
 
 // First, determine the title of the page
 
+echo "<h1>Contacts</h1>";
+
 if($action == "add") {
-print "<h1>Add Company</h1>";
+echo "<h2>Add Company</h2>";
 } elseif($action == "edit") {
-print "<h1>Edit Company</h1>";
+echo "<h2>Edit Company</h2>";
 }
+
+ProjectSubMenu(NULL,$user_usertype_current,"contacts_admin",1);
 
 // Now populate the variables with either the failed results from the $_POST submission or from the database if we're editing an existing project
 
@@ -43,60 +47,57 @@ $company_notes = $_POST[company_notes];
 
 }
 
-	print "<form method=\"post\" action=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">";
+	echo "<form method=\"post\" action=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">";
 
-	print "<fieldset><legend>Company Name</legend>";
+	echo "<fieldset><legend>Company Name</legend>";
 	
-	print "<p class=\"minitext\">Fields marked * are required.</p>";
+	echo "<p class=\"minitext\">Fields marked * are required.</p>";
 	
-	print "<p>Company Name*<br />";
-	print "<input type=\"text\" name=\"company_name\" class=\"inputbox\" size=\"45\" value=\"$company_name\" />";
-	print "</p>";
-	print "</fieldset>";
+	echo "<p>Company Name*<br />";
+	echo "<input type=\"text\" name=\"company_name\" class=\"inputbox\" size=\"45\" value=\"$company_name\" />";
+	echo "</p>";
+	echo "</fieldset>";
 	
-	print "<fieldset><legend>Company Address</legend>";
+	echo "<fieldset><legend>Company Address</legend>";
 
-	print "<p>Company Telephone<br />";
-	print "<input type=\"text\" name=\"company_phone\" class=\"inputbox\" size=\"24\" value=\"$company_phone\" /></p>";
-	print "<p>Company Fax<br />";
-	print "<input type=\"text\" name=\"company_fax\" class=\"inputbox\" size=\"45\" value=\"$company_fax\" /></p>";
+	echo "<p>Company Telephone<br />";
+	echo "<input type=\"text\" name=\"company_phone\" class=\"inputbox\" size=\"24\" value=\"$company_phone\" /></p>";
+	echo "<p>Company Fax<br />";
+	echo "<input type=\"text\" name=\"company_fax\" class=\"inputbox\" size=\"45\" value=\"$company_fax\" /></p>";
 	
-	print "<p>Company Address<br />";
-	print "<textarea class=\"inputbox\" name=\"company_address\" cols=\"54\" rows=\"4\">$company_address</textarea></p>";
-	print "<p>Company City<br />";
-	print "<input type=\"text\" name=\"company_city\" class=\"inputbox\" size=\"45\" value=\"$company_city\" />";
-	print "<p>Company County<br />";
-	print "<input type=\"text\" name=\"company_county\" class=\"inputbox\" size=\"45\" value=\"$company_county\" />";
+	echo "<p>Company Address<br />";
+	echo "<textarea class=\"inputbox\" name=\"company_address\" cols=\"54\" rows=\"4\">$company_address</textarea></p>";
+	echo "<p>Company City<br />";
+	echo "<input type=\"text\" name=\"company_city\" class=\"inputbox\" size=\"45\" value=\"$company_city\" />";
+	echo "<p>Company County<br />";
+	echo "<input type=\"text\" name=\"company_county\" class=\"inputbox\" size=\"45\" value=\"$company_county\" />";
 	
-	print "<p>Company Postcode<br />";
-	print "<input type=\"text\" name=\"company_postcode\" class=\"inputbox\" size=\"45\" value=\"$company_postcode\" />";
+	echo "<p>Company Postcode<br />";
+	echo "<input type=\"text\" name=\"company_postcode\" class=\"inputbox\" size=\"45\" value=\"$company_postcode\" />";
 	
-	print "<p>Company Country<br />";
+	echo "<p>Company Country<br />";
 	include("inc_data_company_countrylist.php");
-	print "</p>";
+	echo "</p>";
 	
-	print "</fieldset>";
-	print "<fieldset><legend>Additional Information</legend>";
+	echo "</fieldset>";
+	echo "<fieldset><legend>Additional Information</legend>";
 
-	print "<p>Company Web Site<br />";
-	print "http://<input type=\"text\" name=\"company_web\" class=\"inputbox\" size=\"45\" value=\"$company_web\" />";
+	echo "<p>Company Web Site<br />";
+	echo "http://<input type=\"text\" name=\"company_web\" class=\"inputbox\" size=\"45\" value=\"$company_web\" />";
 	echo "<p>Notes<br /><textarea name=\"company_notes\" rows=\"8\" cols=\"60\">$company_notes</textarea></p>";
 	
-	print "</fieldset>";
-	print "<p><input type=\"submit\" class=\"inputsubmit\" value=\"Submit\" /></p>";
+	echo "</fieldset>";
+	echo "<p><input type=\"submit\" class=\"inputsubmit\" value=\"Submit\" /></p>";
 	
 	// Hidden values
 	
 // Hidden values 
 
 if($_GET[status] == "add") {
-print "<input type=\"hidden\" value=\"company_add\" name=\"action\" />";
+echo "<input type=\"hidden\" value=\"company_add\" name=\"action\" />";
 } elseif($_GET[status] == "edit") {
-print "<input type=\"hidden\" value=\"company_edit\" name=\"action\" />";
-print "<input type=\"hidden\" value=\"$company_id\" name=\"company_id\" />";
+echo "<input type=\"hidden\" value=\"company_edit\" name=\"action\" />";
+echo "<input type=\"hidden\" value=\"$company_id\" name=\"company_id\" />";
 }
 
-print "</form>";
-
-
-?>
+echo "</form>";
