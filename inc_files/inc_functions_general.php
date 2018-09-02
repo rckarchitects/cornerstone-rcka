@@ -631,11 +631,17 @@ function ProjectSubMenu($proj_id,$user_usertype_current,$page,$level) {
 				$array_menu_text[] = "Add Sector";
 				$array_menu_image[] = "button_new.png";
 				$array_menu_usertype = 2;
+				
+				$array_menu_page[] = "index2.php?page=contacts_discipline_list";
+				$array_menu_text[] = "List Disciplines";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 2;
 	
 				$array_menu_page[] = "index2.php?page=contacts_company_merge";
 				$array_menu_text[] = "Merge Companies";
 				$array_menu_image[] = "button_settings.png";
 				$array_menu_usertype = 4;
+
 		
 	} elseif ( $page == "timesheet_admin") {
 		
