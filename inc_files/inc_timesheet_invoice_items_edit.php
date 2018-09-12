@@ -6,8 +6,6 @@ if ($_GET[proj_id] > 0 OR $_POST[proj_id] > 0) {
 		
 $invoice_selected_id = $_GET[invoice_id];
 
-echo "<h1>Invoices</h1>";
-
 // Determine whether we are adding a new invoice or editing an existing one
 
 if ($_GET[invoice_item_id] != NULL) {
@@ -21,7 +19,7 @@ if ($_GET[invoice_item_id] != NULL) {
 		$invoice_item_novat = $array['invoice_item_novat'];
 		$invoice_item_vat = $array['invoice_item_vat'];
 		
-	echo "<h2>Edit Items</h2>";
+	echo "<h2>Edit Invoice Item</h2>";
 	ProjectSubMenu($proj_id,$user_usertype_current,"invoice_admin",1);
 	echo "<form action=\"index2.php?page=timesheet_invoice_view\" method=\"post\">";
 	echo "<input type=\"hidden\" name=\"proj_id\" value=\"proj_id\" />";
@@ -40,9 +38,10 @@ if ($_GET[invoice_item_id] != NULL) {
 		$invoice_item_vat = $_POST[invoice_item_vat];
 		$invoice_item_stage = $_POST[invoice_item_stage];
 	
-	echo "<h2>Add Items</h2>";
+	echo "<h2>Add Invoice Item</h2>";
 	ProjectSubMenu($proj_id,$user_usertype_current,"invoice_admin",1);
-	echo "<p>This form allows you to add items of work or expenses to an invoice already registered on the system.</p>";
+	
+	echo "<div>";
 	echo "<form action=\"index2.php?page=timesheet_invoice_list\" method=\"post\">";
 	echo "<input type=\"hidden\" name=\"action\" value=\"invoice_item_edit\" />";
 	echo "<input type=\"hidden\" name=\"proj_id\" value=\"$proj_id\" />";
@@ -72,12 +71,12 @@ if ($_GET[invoice_item_id] != NULL) {
 	// Text field
 
 
-		echo "<tr><td>Description</td><td colspan=\"2\"><textarea name=\"invoice_item_desc\" rows=\"12\" cols=\"38\">$invoice_item_desc</textarea></td></tr>";
+		echo "<tr><td>Description</td><td colspan=\"2\"><textarea name=\"invoice_item_desc\" rows=\"12\" cols=\"38\" required=\"required\">$invoice_item_desc</textarea></td></tr>";
 		
 	echo "
 	<tr>
 	<td>Item Value<br /><font class=\"minitext\">(excluding VAT)</font></td>
-	<td colspan=\"2\"><input type=\"text\" name=\"invoice_item_novat\" class=\"inputbox\" size=\"24\" value=\"$invoice_item_novat\" /></td>
+	<td colspan=\"2\"><input type=\"text\" name=\"invoice_item_novat\" class=\"inputbox\" size=\"24\" value=\"$invoice_item_novat\" required=\"required\" /></td>
 	</tr>
 	";
 	
@@ -125,6 +124,7 @@ if ($_GET[invoice_item_id] != NULL) {
 	echo "</table>";
 	echo "<p><input type=\"submit\" value=\"Submit\" /></p>";
 	echo "</form>";
+	echo "</div>";
 	
 } else {
 

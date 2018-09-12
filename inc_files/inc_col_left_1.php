@@ -174,10 +174,10 @@ if ($module_media == 1) {
 
 if ($module_expenses == "1") {
 
-	$array_pages = array("index2.php?page=timesheet_expense_edit","index2.php?page=timesheet_expense_list","index2.php?page=timesheet_expense_list&&amp;user_id=$_COOKIE[user]","pdf_expense_claim.php?user_id=$_COOKIE[user]");
-	$array_title = array("Add Expenses","Oustanding Expenses","List My Expenses","Expenses Claim");
-	$array_images = array("button_new.png","button_list.png","button_list.png","button_pdf.png");
-	$array_access = array(1,4,1,2);
+	$array_pages = array("index2.php?page=timesheet_expense_edit","index2.php?page=timesheet_expense_list","index2.php?page=timesheet_expense_list&&amp;user_id=$_COOKIE[user]","pdf_expense_claim.php?user_id=$_COOKIE[user]","index2.php?page=timesheet_expense_validated","index2.php?page=expenses_analysis","index2.php?page=timesheet_expense_list");
+	$array_title = array("Add Expenses","Oustanding Expenses","List My Expenses","Expenses Claim","Validated Expenses","Expense Analysis","Validate Expenses");
+	$array_images = array("button_new.png","button_list.png","button_list.png","button_pdf.png","button_list.png","button_analysis.png","button_list.png");
+	$array_access = array(1,3,1,2,3,3,3);
 
 	SideMenu ("Expenses", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 

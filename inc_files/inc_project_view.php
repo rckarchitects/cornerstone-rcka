@@ -10,7 +10,7 @@ ProjectSwitcher("project_view",$proj_id,0,0);
 	echo "<h2>Project Information</h2>";
 	ProjectSubMenu($proj_id,$user_usertype_current,"project_view",1);
 	ProjectSubMenu($proj_id,$user_usertype_current,"project_view",2);
-ProjectList($proj_id);
+	ProjectList($proj_id);
 
 
 

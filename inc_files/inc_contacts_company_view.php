@@ -30,38 +30,32 @@ $array_company = mysql_fetch_array($result_company);
 			$array_country = mysql_fetch_array($result_country);
 			$country_printable_name = $array_country['country_printable_name'];
 
-			print "<h2>$company_name&nbsp;";
-			if ($user_usertype_current > 1) { echo "<a href=\"index2.php?page=contacts_company_edit&amp;company_id=$company_id&amp;status=edit\"><img src=\"images/button_edit.png\" alt=\"Edit Entry\" /></a>"; }
-			
-			echo "</h2>";
+			echo "<h2>" . $company_name . "</h2>";
 			
 			ProjectSubMenu(NULL,$user_usertype_current,"contacts_admin",1);
+			ProjectSubMenu(NULL,$user_usertype_current,"company_admin",2);
 			
-			print "<fieldset><legend>Company Details</legend>";
+			echo "<div><h3>Company Details</h3>";
 			
-			print "<table width=\"100%\">";
+			echo "<table width=\"100%\">";
 			
-			print "<tr><td class=\"color\" style=\"width: 12px; text-align: center;\">A</td><td>";
+			echo "<tr><td class=\"color\" style=\"width: 12px; text-align: center;\">A</td><td>";
 			
-				if ($company_address != NULL) { print nl2br($company_address)."<br />"; }
-				if ($company_city != NULL) { print $company_city."<br />"; }
-				if ($company_county != NULL) { print $company_county."<br />"; }
-				if ($company_postcode != NULL) { print "<a href=\"".PostcodeFinder($company_postcode)."\">".$company_postcode."</a><br />"; }			
-				if ($company_country != NULL) { print $country_printable_name."<br />"; }
+				if ($company_address != NULL) { echo nl2br($company_address)."<br />"; }
+				if ($company_city != NULL) { echo $company_city."<br />"; }
+				if ($company_county != NULL) { echo $company_county."<br />"; }
+				if ($company_postcode != NULL) { echo "<a href=\"".PostcodeFinder($company_postcode)."\">".$company_postcode."</a><br />"; }			
+				if ($company_country != NULL) { echo $country_printable_name."<br />"; }
 			
-			print "</td></tr>";
+			echo "</td></tr>";
 			
-				if ($company_phone != NULL) { print "<tr><td class=\"color\" align=\"center\">T</td><td class=\"color\">".$company_phone."</td></tr>"; }
-				if ($company_fax != NULL) { print "<tr><td class=\"color\" align=\"center\">F</td><td class=\"color\">".$company_fax."</td></tr>"; }
-				if ($company_web != NULL) { print "<tr><td class=\"color\" align=\"center\">W</td><td class=\"color\"><a href=\"http://$company_web\">".$company_web."</a></td></tr>"; }
+				if ($company_phone != NULL) { echo "<tr><td class=\"color\" align=\"center\">T</td><td class=\"color\">".$company_phone."</td></tr>"; }
+				if ($company_fax != NULL) { echo "<tr><td class=\"color\" align=\"center\">F</td><td class=\"color\">".$company_fax."</td></tr>"; }
+				if ($company_web != NULL) { echo "<tr><td class=\"color\" align=\"center\">W</td><td class=\"color\"><a href=\"http://$company_web\">".$company_web."</a></td></tr>"; }
 			
-			print "</table>";
+			echo "</table>";
 			
-			print "</fieldset>";
-
-if ($user_usertype > 3) {			
-print "<p class=\"menu_bar\"><a href=\"index2.php?page=contacts_company_edit&amp;company_id=$company_id&amp;status=edit\">Edit Company</a></p>";
-}
+			echo "</div>";
 
 // Return the contacts who work for this company
 
@@ -70,9 +64,9 @@ $result_contact = mysql_query($sql_contact, $conn) or die(mysql_error());
 
 if (mysql_num_rows($result_contact) > 0) {
 
-   print "<fieldset><legend>Company Contacts</legend>";
+   echo "<div><h3>Company Contacts</h3>";
 
-   print "<table width=\"100%\">";
+   echo "<table width=\"100%\">";
    while ($array_contact = mysql_fetch_array($result_contact)) {
    $contact_id = $array_contact['contact_id'];
    $contact_namefirst = $array_contact['contact_namefirst'];
@@ -81,18 +75,18 @@ if (mysql_num_rows($result_contact) > 0) {
    $contact_telephone = $array_contact['contact_telephone'];
    $contact_email = $array_contact['contact_email'];
    
-   print "<tr>";
-   print "<td class=\"color\"><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=$contact_id\">$contact_namefirst&nbsp;$contact_namesecond</td>";
-   if ($contact_mobile != "" ) { print "<td class=\"color\" align=\"center\">M</td><td class=\"color\">$contact_mobile</td>"; }
-   elseif ($contact_telephone != "" ) { print "<td class=\"color\" align=\"center\">T</td><td class=\"color\">$contact_telephone</td>"; }
-   elseif ($contact_email != "" ) { print "<td class=\"color\" align=\"center\">E</td><td class=\"color\"><a href=\"mailto:$contact_email\">$contact_email</a></td>"; }
+   echo "<tr>";
+   echo "<td class=\"color\"><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=$contact_id\">$contact_namefirst&nbsp;$contact_namesecond</td>";
+   if ($contact_mobile != "" ) { echo "<td class=\"color\" align=\"center\">M</td><td class=\"color\">$contact_mobile</td>"; }
+   elseif ($contact_telephone != "" ) { echo "<td class=\"color\" align=\"center\">T</td><td class=\"color\">$contact_telephone</td>"; }
+   elseif ($contact_email != "" ) { echo "<td class=\"color\" align=\"center\">E</td><td class=\"color\"><a href=\"mailto:$contact_email\">$contact_email</a></td>"; }
    else { echo "<td colspan=\"2\"></td>"; }
-   print "</tr>";   
+   echo "</tr>";   
 
    }
-   print "</table>";
+   echo "</table>";
    
-   print "</fieldset>";
+   echo "</div>";
 }
 
 if ($company_notes != NULL) { echo "<fieldset><legend>Notes</legend><blockquote>".DeCode($company_notes)."</blockquote></fieldset>"; }

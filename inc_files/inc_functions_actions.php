@@ -192,5 +192,6 @@ function BlogUpdateAction() {
 					AlertBoxInsert($_COOKIE[user],"Journal Entry Updated",$actionmessage,$blog_id,0);
 
 					$techmessage = $sql_add;
+				
 
 }

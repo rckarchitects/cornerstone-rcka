@@ -64,15 +64,9 @@ function ContactViewDetailed($select_contact_id) {
 						echo "<h2>$contact_namefirst $contact_namesecond</h2>";
 						
 						ProjectSubMenu(NULL,$user_usertype_current,"contacts_admin",1);
+						ProjectSubMenu(NULL,$user_usertype_current,"contact_admin",2);
 						
-								echo "<div class=\"submenu_bar\">";
-								if ($user_usertype_current > 1) {
-									echo "<a href=\"index2.php?page=contacts_edit&amp;contact_id=".$contact_id."&amp;status=edit\" class=\"submenu_bar\">Edit Contact</a>";
-								}
-								if ($contact_company > 0 && $user_usertype_current > 1) { echo "<a href=\"index2.php?page=contacts_company_edit&amp;company_id=".$contact_company."&amp;status=edit\" class=\"submenu_bar\">Edit Company</a>"; }
-								echo "<a href=\"index2.php?page=project_blog_edit&amp;status=add&amp;contact_id=$contact_id\" class=\"submenu_bar\">Add Journal Entry</a>";
-								echo "<a href=\"vcard.php?contact_id=$contact_id\" class=\"submenu_bar\">VCard</a>";
-								echo "</div>";
+
 								
 								$contact_name = $contact_namefirst." ".$contact_namesecond;
 								if ($contact_title) { $contact_name = $contact_name . ", $contact_title"; }
@@ -160,17 +154,19 @@ function ContactProjects($contact_id) {
 	
 	echo "<div><h3>Projects</h3>";
 	
-	echo "<table>";
-	while ($array_proj = mysql_fetch_array($result_proj)) {	
-	$proj_id = $array_proj['proj_id'];
-	$proj_num = $array_proj['proj_num'];
-	$proj_name = $array_proj['proj_name'];
-	echo "<tr><td style=\"width: 15%;\"><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num</a></td><td>$proj_name</td>";
-	}
-	echo "</table>";
-	}
+		echo "<table>";
+		while ($array_proj = mysql_fetch_array($result_proj)) {	
+			$proj_id = $array_proj['proj_id'];
+			$proj_num = $array_proj['proj_num'];
+			$proj_name = $array_proj['proj_name'];
+			echo "<tr><td style=\"width: 15%;\"><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num</a></td><td>$proj_name</td>";
+		}
+		echo "</table>";
 	
 	echo "</div>";
+	}
+	
+	
 
 }
 
@@ -281,7 +277,7 @@ function CompanyViewDetailed($company_id) {
 
 	
 			$label_address = urlencode($contact_name)."|".urlencode($company_name)."|".urlencode($company_address)."|".urlencode($company_city)."|".urlencode($company_county)."|".urlencode($company_postcode)."|".urlencode($company_country);
-	echo "<div><h3><a href=\"index2.php?page=contacts_company_view&amp;company_id=$contact_company\">$company_name</a>";
+	echo "<div><h3><a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">$company_name</a>";
 	
 	if ($company_address != NULL) { echo "&nbsp;<a href=\"http://labelstudio.redcitrus.com/?address=$label_address\"><img src=\"images/button_pdf.png\" alt=\"Address Labels\" /></a>"; }
 	echo "</h3>";
@@ -364,9 +360,10 @@ function ContactRelatedContacts($contact_company) {
 					}
 			}
 			echo "</table>";
+			echo "</div>";
 		}
 		
-		echo "</div>";
+		
 	
 }
 

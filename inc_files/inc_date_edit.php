@@ -17,6 +17,7 @@ function DateBookForm($date_id) {
         $date_id = $array['date_id'];
         $date_day = $array['date_day'];
         $date_user = $array['date_user'];
+		$date_notes = $array['date_notes'];
         $date_description = $array['date_description'];
         $date_warning = $array['date_warning'];
         $date_project = $array['date_project'];

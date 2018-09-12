@@ -2,4 +2,4 @@
 
 echo "<h1>Datebook</h1>";
 
-DateList();
+DateList(intval($_GET[filter]));

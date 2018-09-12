@@ -10,7 +10,7 @@ $invoice_due_year = CleanNumber($_POST[invoice_due_year]);
 $invoice_paid_day = CleanNumber($_POST[invoice_paid_day]);
 $invoice_paid_month = CleanNumber($_POST[invoice_paid_month]);
 $invoice_paid_year = CleanNumber($_POST[invoice_paid_year]);
-$invoice_project = $_POST[invoice_project];
+$invoice_project = intval($_POST[proj_id]);
 $invoice_ref = CleanUp($_POST[invoice_ref]);
 $invoice_notes = CleanUp($_POST[invoice_notes]);
 $invoice_text = CleanUp($_POST[invoice_text]);
@@ -18,8 +18,6 @@ $invoice_account = CleanNumber($_POST[invoice_account]);
 $invoice_baddebt = CleanUp($_POST[invoice_baddebt]);
 $invoice_client = CleanNumber($_POST[invoice_client]);
 $invoice_purchase_order = CleanNumber($_POST[invoice_purchase_order]);
-
-$proj_id = $invoice_project;
 
 // Check the date input
 
@@ -68,6 +66,7 @@ if ($_POST[invoice_id] != NULL) {
 			$result = mysql_query($sql_edit, $conn) or die(mysql_error());
 			$actionmessage = "Invoice $invoice_ref updated successfully.";
 			$techmessage = $sql_edit;
+			
 
 } else {
 
@@ -104,9 +103,9 @@ if ($_POST[invoice_id] != NULL) {
 			$result = mysql_query($sql_add, $conn) or die(mysql_error());
 			$actionmessage = "Invoice $invoice_ref added successfully.";
 			$techmessage = $sql_add;
+	
 									
 		}
 
+		$proj_id = intval($invoice_project);
 }
-
-?>

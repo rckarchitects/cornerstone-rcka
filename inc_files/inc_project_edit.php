@@ -349,8 +349,3 @@ echo "
 		document.getElementById(\"item_switch_3\").style.display = \"none\";
 		</script>
 ";
-
-
-
-
-?>

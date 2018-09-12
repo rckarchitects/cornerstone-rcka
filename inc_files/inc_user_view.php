@@ -15,7 +15,7 @@ function UserRatesList($user_id) {
 	$sql = "SELECT ts_rate, COUNT(ts_rate) FROM `intranet_timesheet` WHERE ts_user = $user_id GROUP BY ts_rate ORDER BY ts_rate";
 	$result = mysql_query($sql, $conn);
 	$counter = 0;
-	echo "<fieldset><legend>Hourly Rates from Timesheets</legend><table>";
+	echo "<div><h3>Hourly Rates from Timesheets</h3><table>";
 	echo "<th>Rate</th><th style=\"text-align: right;\">Timesheet Entries</th></tr>";
 	while ($array = mysql_fetch_array($result)) {
 			
@@ -23,11 +23,11 @@ function UserRatesList($user_id) {
 			$counter = $counter + $array['COUNT(ts_rate)'];
 	}
 	echo "<tr><td><u>Total</u></td><td style=\"text-align: right;\"><u>" . number_format ($counter)  . "</u></td></tr>";
-	echo "</table></fieldset>";
+	echo "</table></div>";
 
 }
 
-
+echo "<h1>Users</h1>";
 
 	$user_id = intval($_GET[user_id]);
 	
@@ -65,7 +65,7 @@ $array = mysql_fetch_array($result);
 	
 	if ($user_initials) { $full_name = $full_name . " (" . $user_initials . ")" ;}
 
-echo "<h1>".$full_name."</h1>";
+echo "<h2>".$full_name."</h2>";
 
 	if ($user_address_1) { $user_address_full = $user_address_full . $user_address_1; }
 	if ($user_address_2) { $user_address_full = $user_address_full . "<br />" . $user_address_2; }
@@ -85,21 +85,11 @@ echo "<h1>".$full_name."</h1>";
 
 // Project Page Menu
 
+ProjectSubMenu($proj_id,$user_usertype_current,"user_admin",1);
+ProjectSubMenu($proj_id,$user_usertype_current,"user_admin",2);
 
 
-echo "<p class=\"menu_bar\">";
-
-	echo "<a href=\"index2.php?page=phonemessage_edit&amp;status=new&amp;user_id=$user_id\" class=\"menu_tab\">New Telephone Message</a>";
-
-	if ($user_usertype_current > 3 OR $user_id_current == $user_id) {
-		echo "<a href=\"index2.php?page=user_edit&amp;status=edit&amp;user_id=$user_id\" class=\"menu_tab\">Edit&nbsp;<img src=\"images/button_edit.png\" alt=\"Edit User\" /></a>";
-	}
-	
-	
-	
-echo "</p>";
-
-echo "<fieldset><legend>Contact Details</legend>";
+echo "<div><h3>Contact Details</h3>";
 
 	echo 	"<table>";
 	
@@ -116,7 +106,7 @@ echo "<fieldset><legend>Contact Details</legend>";
 			
 	echo "</table>";
 
-echo "</fieldset>";
+echo "</div>";
 
 if ($user_usertype_current > 3) {
 
@@ -124,7 +114,7 @@ if ($user_usertype_current > 3) {
 			
 			$user_prop_target_print = (100 * $user_prop_target) . "%";
 	
-			echo "<fieldset><legend>Technical Information</legend>";
+			echo "<div><h3>Technical Information</h3>";
 
 				echo 	"<table>";
 				
@@ -143,7 +133,7 @@ if ($user_usertype_current > 3) {
 						
 				echo "</table>";
 
-			echo "</fieldset>";
+			echo "</div>";
 			
 			UserRatesList($user_id);
 			
@@ -154,9 +144,9 @@ if ($user_usertype_current > 3) {
 
 if ($user_notes) {
 
-	echo "<fieldset><legend>Notes</legend>";
+	echo "<div><h3>Notes</h3>";
 	echo 	$user_notes;
-	echo "</fieldset>";
+	echo "</div>";
 
 }
 

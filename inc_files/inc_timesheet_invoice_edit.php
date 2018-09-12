@@ -9,8 +9,8 @@ print "<h1>Invoices</h1>";
 
 // Determine whether we are adding a new invoice or editing an existing one
 
-if ($_GET[status] == "edit") {
-	$sql = "SELECT * FROM intranet_timesheet_invoice WHERE invoice_id = $_GET[invoice_id] LIMIT 1";
+if (intval($_GET[invoice_id]) > 0) {
+	$sql = "SELECT * FROM intranet_timesheet_invoice WHERE invoice_id = " . intval($_GET[invoice_id]) . " LIMIT 1";
 	$result = mysql_query($sql, $conn) or die(mysql_error());
 	$array = mysql_fetch_array($result);
 		$invoice_id = $array['invoice_id'];
@@ -127,7 +127,7 @@ if ($invoice_ref != NULL) { $smallprint = $invoice_text; }
 
 	print "<tr><td>Project</td><td colspan=\"2\">";
 
-		print "<select name=\"invoice_project\">";
+		print "<select name=\"proj_id\">";
 		$sql = "SELECT * FROM intranet_projects LEFT JOIN contacts_contactlist ON proj_client_contact_id = contact_id order by proj_num";
 		// $sql = "SELECT * FROM intranet_projects WHERE proj_fee_track = '1' order by proj_num";
 		$result = mysql_query($sql, $conn) or die(mysql_error());

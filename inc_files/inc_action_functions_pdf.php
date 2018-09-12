@@ -1348,7 +1348,7 @@ function PDFProjectArray($proj_id) {
 	if (intval($proj_id) > 0) { $proj_id_filter = "AND proj_id = " . intval($proj_id); } else { unset($proj_id_filter); } 
 	
 	//global $format_font;
-		$sql = "SELECT proj_id, proj_num, proj_name, proj_type, proj_value FROM intranet_projects WHERE proj_active = 1 AND proj_fee_track = 1 $proj_id_filter ORDER BY proj_num";
+		$sql = "SELECT proj_id, proj_num, proj_name, proj_type, proj_value, proj_procure FROM intranet_projects WHERE proj_active = 1 AND proj_fee_track = 1 $proj_id_filter ORDER BY proj_num";
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		$current_project = 0;
 		while ($array = mysql_fetch_array($result)) {
@@ -1370,7 +1370,10 @@ function PDFProjectArray($proj_id) {
 				$proj_value = "£" . number_format ($array['proj_value'], 2);
 				$proj_value = utf8_decode($proj_value);
 				$pdf->Cell(50,5,$proj_value,'B',0,'R');
-				$pdf->Cell(75,5,$array['proj_procure'],'B',0,'R');
+				
+				$proj_procure = html_entity_decode(ProjectProcurement($array['proj_procure'],$proj_id));
+				
+				$pdf->Cell(75,5,$proj_procure,'B',0,'R');
 				$pdf->Cell(0,5,"",'B',1);
 			}
 			

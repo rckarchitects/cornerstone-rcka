@@ -14,11 +14,12 @@ function ProjectTimesheetView($proj_id) {
 	$proj_value = $array_proj['proj_value'];
 	$proj_fee_percentage = $array_proj['proj_fee_percentage'];
 	
-ProjectSwitcher ("project_timesheet_view", $proj_id, 1, 1);
+	echo "<h2>Project Expenditure</h2>";
+	
+	ProjectSubMenu($proj_id,$user_usertype_current,"project_view",1);
+	ProjectSubMenu($proj_id,$user_usertype_current,"project_timesheet_view",4);
 
-echo "<h2>Project Expenditure</h2>";
 
-echo "<div class=\"submenu_bar\"><a href=\"pdf_project_performance_summary.php?proj_id=$proj_id\" class=\"submenu_bar\">Project Performance Summary <img src=\"images/button_pdf.png\"  alt=\"Project Performance Summary\" /></a></div>";
 
 echo "<p>The table below shows each project stage with confirmed fees, profit target and timesheet costs at this moment in time.<br />Stages highlighted in <span style=\"background-color: rgba(255,126,0,0.5); padding: 0 5px 0 5px;\">orange</span> have exceeded their profit target, those in <span style=\"background-color: rgba(255,0,0,0.5); padding: 0 5px 0 5px;\">red</span> are losing money.</p>";
 

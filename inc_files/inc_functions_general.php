@@ -142,30 +142,49 @@ function DataList($field,$table) {
 	
 }
 
-function ProjectProcurement($proj_procure) {
+function ProjectProcurement($proj_procure,$proj_id) {
 	
 		GLOBAL $conn;
 
-		$sql = "SELECT * FROM intranet_procure order by procure_title";
+		
+		if (intval($proj_id) > 0 && intval($proj_procure) > 0) {
+			$sql = "SELECT * FROM intranet_procure WHERE procure_id = " . $proj_procure;
+		} else {
+			$sql = "SELECT * FROM intranet_procure order by procure_title";
+		}
+		
 		$result = mysql_query($sql, $conn) or die(mysql_error());
+			
+		if (intval($proj_id) > 0 && intval($proj_procure) > 0) {
+			
+			$array = mysql_fetch_array($result);
+			$procure_title = $array['procure_title'];
+				
+			return $procure_title;
+			
+		} else {
+		
+			echo "<p>Procurement Method<br /><select name=\"proj_procure\" class=\"inputbox\">";
 
-		echo "<p>Procurement Method<br /><select name=\"proj_procure\" class=\"inputbox\">";
+			echo "<option value=\"\">-- N/A --</option>";
 
-		echo "<option value=\"\">-- N/A --</option>";
+			while ($array = mysql_fetch_array($result)) {
+			$procure_id = $array['procure_id'];
+			$procure_title = $array['procure_title'];
+			$procure_desc = $array['procure_desc'];
 
-		while ($array = mysql_fetch_array($result)) {
-		$procure_id = $array['procure_id'];
-		$procure_title = $array['procure_title'];
-		$procure_desc = $array['procure_desc'];
+			echo "<option value=\"$procure_id\" class=\"inputbox\"";
+			if ($procure_id == $proj_procure) {
+			echo " selected";
+			}
+			echo ">".$procure_title."</option>";
+			}
 
-		echo "<option value=\"$procure_id\" class=\"inputbox\"";
-		if ($procure_id == $proj_procure) {
-		echo " selected";
+			echo "</select></p>";		
+		
 		}
-		echo ">".$procure_title."</option>";
-		}
 
-		echo "</select></p>";
+
 
 }
 
@@ -388,22 +407,16 @@ function ProjectSubMenu($proj_id,$user_usertype_current,$page,$level) {
 				
 		
 	} elseif ($page == "project_invoice" && $level == 2) {
-				
-				$array_menu_page[] = "index2.php?page=timesheet_invoice_edit&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Add Invoice";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype = 3;
 
 				$array_menu_page[] = "index2.php?page=timesheet_invoice_items_edit&amp;proj_id=$proj_id";
 				$array_menu_text[] = "Add Invoice Item";
 				$array_menu_image[] = "button_new.png";
 				$array_menu_usertype = 3;
-				
-				$array_menu_page[] = "index2.php?page=timesheet_invoice_items_edit&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Add Invoice Item";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype = 3;		
 
+				$array_menu_page[] = "index2.php?page=timesheet_invoice_edit&amp;invoice_id=" . intval($_GET[invoice_id]);
+				$array_menu_text[] = "Edit Invoice";
+				$array_menu_image[] = "button_edit.png";
+				$array_menu_usertype = 3;
 				
 	} elseif ($page == "project_fee") {
 	
@@ -431,6 +444,11 @@ function ProjectSubMenu($proj_id,$user_usertype_current,$page,$level) {
 				$array_menu_text[] = "View Fee Drawdown (with invoices)";
 				$array_menu_image[] = "button_pdf.png";
 				$array_menu_usertype = 3;
+				
+				$array_menu_page[] = "http://intranet.rcka.co/pdf_project_performance_summary.php?proj_id=" . intval($proj_id);
+				$array_menu_text[] = "Project Performance Summary";
+				$array_menu_image[] = "button_pdf.png";
+				$array_menu_usertype = 4;
 				
 	} elseif ($page == "project_contacts") {
 	
@@ -472,6 +490,11 @@ function ProjectSubMenu($proj_id,$user_usertype_current,$page,$level) {
 
 				$array_menu_page[] = "index2.php?page=date_list";
 				$array_menu_text[] = "List Future Dates";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 1;
+				
+				$array_menu_page[] = "index2.php?page=date_list&amp;filter=2";
+				$array_menu_text[] = "List Past Dates";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype = 1;
 
@@ -641,8 +664,39 @@ function ProjectSubMenu($proj_id,$user_usertype_current,$page,$level) {
 				$array_menu_text[] = "Merge Companies";
 				$array_menu_image[] = "button_settings.png";
 				$array_menu_usertype = 4;
-
+				
+	} elseif ( $page == "company_admin") {
 		
+				if (intval($_GET[company_id]) > 0) { $company_id = intval($_GET[company_id]);
+	
+					$array_menu_page[] = "index2.php?page=contacts_company_edit&amp;company_id=" . $company_id . "&amp;status=edit";
+					$array_menu_text[] = "Edit Company";
+					$array_menu_image[] = "button_edit.png";
+					$array_menu_usertype = 2;
+				
+				}
+
+	} elseif ( $page == "contact_admin") {
+		
+				if (intval($_GET[contact_id]) > 0) { $contact_id = intval($_GET[contact_id]);
+	
+					$array_menu_page[] = "index2.php?page=contacts_edit&amp;contact_id=" . $contact_id."&amp;status=edit";
+					$array_menu_text[] = "Edit Contact";
+					$array_menu_image[] = "button_edit.png";
+					$array_menu_usertype = 2;
+					
+					$array_menu_page[] = "index2.php?page=project_blog_edit&amp;status=add&amp;contact_id=" . $contact_id;
+					$array_menu_text[] = "Add Journal Entry";
+					$array_menu_image[] = "button_new.png";
+					$array_menu_usertype = 2;
+					
+					$array_menu_page[] = "vcard.php?contact_id=" . $contact_id;
+					$array_menu_text[] = "VCard File";
+					$array_menu_image[] = "button_list.png";
+					$array_menu_usertype = 2;
+				
+				}
+				
 	} elseif ( $page == "timesheet_admin") {
 		
 			if (intval($_GET[user_id]) > 0) { $user_id = intval($_GET[user_id]); } else { $user_id = intval($_COOKIE[user]); }
@@ -741,7 +795,40 @@ function ProjectSubMenu($proj_id,$user_usertype_current,$page,$level) {
 				$array_menu_image[] = "button_new.png";
 				$array_menu_usertype = 2;			
 		
+	} elseif ( $page == "project_timesheet_view") {
+				
+				$array_menu_page[] = "intranet.rcka.co/pdf_project_performance_summary.php?proj_id=" . intval($proj_id);
+				$array_menu_text[] = "Project Performance Summary";
+				$array_menu_image[] = "button_pdf.png";
+				$array_menu_usertype = 4;
+		
+	} elseif ( $page == "user_admin" && $level == 1) {
+				
+				$array_menu_page[] = "index2.php?page=user_edit&amp;user_add=true";
+				$array_menu_text[] = "Add User";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype = 3;
+				
+				$array_menu_page[] = "index2.php?page=user_list";
+				$array_menu_text[] = "List Users";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype = 3;		
+				
+				$array_menu_page[] = "intranet.rcka.co/index2.php?page=phonemessage_edit&amp;status=new&amp;user_id=" . intval($_GET[user_id]);
+				$array_menu_text[] = "Add Phone Message";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype = 1;
+		
+		
+	} elseif ( $page == "user_admin" && $level == 2) {
+				
+				$array_menu_page[] = "index2.php?page=user_edit&status=edit&user_id=" . intval($_GET[user_id]);
+				$array_menu_text[] = "Edit User";
+				$array_menu_image[] = "button_edit.png";
+				$array_menu_usertype = 3;
+		
 	}
+
 				
 
 
@@ -875,7 +962,7 @@ $country_printable_name = $array['country_printable_name'];
 				
 
 					if ($proj_procure > 0) {
-					echo "<tr><td>Procurement Method</td><td>$proj_procure</td></tr>";
+					echo "<tr><td>Procurement Method</td><td>" . ProjectProcurement($proj_procure, $proj_id) . "</td></tr>";
 					}
 
 					if ($proj_value != 0) {
@@ -1523,18 +1610,30 @@ function DisplayDate($date) {
 }
 
 function DateList($impending_only) {
-
 	
+
 		global $conn;
 		global $user_usertype_current;
 		$now = date("Y-m-d",time());
+		
+		$impending_only = intval($impending_only);
 
 		$alert = time() + 2419200;
 		$alert = date("Y-m-d",$alert);
 
-		if ($impending_only == 1) { $impending = " date_day < '$alert' AND "; } else { unset($impending_only ); }
-	
-		$sql = "SELECT * FROM intranet_datebook LEFT JOIN intranet_projects ON proj_id = date_project WHERE $impending date_day >= " . "'" . $now . "' ORDER BY date_day";
+		if ($impending_only == 1) {
+		
+			$sql = "SELECT * FROM intranet_datebook LEFT JOIN intranet_projects ON proj_id = date_project WHERE $impending date_day >= " . "'" . $now . "' ORDER BY date_day";
+		
+		} elseif ($impending_only == 2) { 
+		
+			$sql = "SELECT * FROM intranet_datebook LEFT JOIN intranet_projects ON proj_id = date_project WHERE $impending date_day < " . "'" . $now . "' ORDER BY date_day DESC";
+		
+		} else {
+			
+			$sql = "SELECT * FROM intranet_datebook LEFT JOIN intranet_projects ON proj_id = date_project WHERE $impending date_day >= " . "'" . $now . "' ORDER BY date_day";
+			
+		}
 
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 	
@@ -1552,7 +1651,7 @@ function DateList($impending_only) {
 				
 				if ($array['date_day'] == date("Y-m-d",time())) {
 					$style="alert_warning";
-				} elseif (((DisplayDate($array['date_day']))) < (time() + 604800)) {
+				} elseif (((DisplayDate($array['date_day']))) < (time() + 604800) && (DisplayDate($array['date_day']) > (time()))) {
 					$style="alert_careful";
 				} else {
 					unset($style);
@@ -2167,27 +2266,27 @@ function TenderList() {
 		if ($_GET[detail] == "yes") { $detail = "yes"; }
 
 		if (intval($_GET[tender_submitted]) == 1) {
-			$sql = "SELECT * FROM intranet_tender WHERE tender_submitted = 1 ORDER BY tender_date DESC";
-			echo "<h2>List of all submitted tenders</h2>";
+			$sql = "SELECT * FROM intranet_tender ORDER BY tender_date DESC";
+			echo "<h2>List of all tenders</h2>";
 		} elseif (intval($_GET[tender_pending]) == 1) {
 			$sql = "SELECT * FROM intranet_tender WHERE tender_submitted = 1 AND (tender_result = 0 OR tender_result IS NULL) ORDER BY tender_date DESC";
 			echo "<h2>List of all pending tenders</h2>";
 		} else {
-			$sql = "SELECT * FROM intranet_tender ORDER BY tender_date DESC";
-			echo "<h2>List of all tenders</h2>";
+			$sql = "SELECT * FROM intranet_tender WHERE tender_submitted = 1 OR tender_date > " . time() . " ORDER BY tender_date DESC";
+			echo "<h2>List of all submitted tenders</h2>";
 		}
 		
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 
 				echo "<div class=\"submenu_bar\">";
 							
-					if (intval($_GET[tender_submitted]) == 1 OR intval($_GET[tender_pending]) == 1) {
-						echo "<a href=\"index2.php?page=tender_list\" class=\"submenu_bar\">List All Tenders</a>";
+					if (intval($_GET[tender_submitted]) == 0 OR intval($_GET[tender_pending]) == 1) {
+						echo "<a href=\"index2.php?page=tender_list&amp;tender_submitted=1\" class=\"submenu_bar\">List All Tenders</a>";
 					}
 				
 				
-					if (intval($_GET[tender_submitted]) != 1) {
-						echo "<a href=\"index2.php?page=tender_list&amp;tender_submitted=1\" class=\"submenu_bar\">List Only Submitted Tenders</a>";
+					if (intval($_GET[tender_submitted]) != 0) {
+						echo "<a href=\"index2.php?page=tender_list\" class=\"submenu_bar\">List Only Submitted Tenders</a>";
 					}
 					
 					if (intval($_GET[tender_pending]) != 1) {
@@ -2205,6 +2304,8 @@ function TenderList() {
 
 
 				if (mysql_num_rows($result) > 0) {
+					
+					echo "<div>";
 				
 				$time_line = NULL;
 
@@ -2261,6 +2362,8 @@ function TenderList() {
 				echo "</div>";
 
 				}
+				
+				echo "</div>";
 
 				} else {
 
@@ -2520,8 +2623,10 @@ function ListProjectJournalEntries($proj_id) {
 	
 		global $conn;
 		global $user_usertype_current;
+		
+		$proj_id = intval($proj_id);
 
-					$sql = "SELECT * FROM intranet_projects_blog, intranet_projects, intranet_user_details WHERE blog_proj = proj_id AND proj_id = '$proj_id' AND blog_user = user_id AND (blog_access = $user_usertype_current OR blog_access IS NULL) order by blog_date DESC";
+					$sql = "SELECT * FROM intranet_projects_blog, intranet_projects, intranet_user_details WHERE blog_proj = proj_id AND proj_id = $proj_id AND blog_user = user_id AND (blog_access <= $user_usertype_current OR blog_access IS NULL) order by blog_date DESC";
 					$result = mysql_query($sql, $conn) or die(mysql_error());
 					$result_project = mysql_query($sql, $conn) or die(mysql_error());
 					$array_project = mysql_fetch_array($result_project);
@@ -2532,11 +2637,11 @@ function ListProjectJournalEntries($proj_id) {
 					$user_id = $array_project['user_id'];
 
 
-
-
 					$nowtime = time();
 
 					if (mysql_num_rows($result) > 0) {
+						
+						echo "<p>" . mysql_num_rows($result) . " results found.</p>";
 
 					echo "<table summary=\"List of Journal Entries for $proj_num $proj_name\">";
 
@@ -2562,18 +2667,16 @@ function ListProjectJournalEntries($proj_id) {
 						
 						$blog_type_list = array("phone","filenote","meeting","email");
 						
-					 if ($counter >= $limit AND $counter < $page_next) {
-							$counter_title++;
+
 							echo "<tr>";
 							echo "<td>$type.</td><td><a href=\"index2.php?page=project_blog_view&amp;blog_id=$blog_id&amp;proj_id=$proj_id\">".$blog_title."</a>&nbsp;<a href=\"pdf_journal.php?blog_id=$blog_id\"><img src=\"images/button_pdf.png\" /></a></td>";
 							echo "<td style=\"width: 20%;\"><a href=\"index2.php?page=datebook_view_day&amp;time=$blog_date\">".TimeFormat($blog_date)."</a></td>";
 							echo "<td><a href=\"index2.php?page=user_view&amp;user_id=$user_id\">".$blog_user_name_first."&nbsp;".$blog_user_name_second."</a></td>";
 							echo "<td style=\"width: 20%;\"><span class=\"minitext\">$blog_type_view</span></td>";
 							echo "</tr>";
-					}
+
 
 					$title = $blog_type;
-					$counter++;
 
 					}
 

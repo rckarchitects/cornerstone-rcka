@@ -4,14 +4,14 @@ function ProjectListData($input,$proj_active) {
 	
 	echo "<h1>Project Data</h1>";
 	
-		if ($input == "proj_lpa") { $field = "proj_lpa"; echo "<h2>List of Local Planning Authorities</h2>"; TopMenu ("project_ambition_schedule",2,''); }
+		if ($input == "proj_lpa") { $field = "proj_lpa"; echo "<h2>List of Local Planning Authorities</h2>"; }
 		elseif ($input == "project_ambition") { $field = "proj_ambition_internal"; echo "<h2>List of Project Ambitions</h2>"; }
 		elseif ($input == "client_ambition") { $field = "proj_ambition_client"; echo "<h2>List of Client Ambitions</h2>"; }
 		elseif ($input == "project_information") { $field = "proj_info"; echo "<h2>List of Project Information</h2>"; }
 		elseif ($input == "project_marketing") { $field = "proj_ambition_marketing"; echo "<h2>List of Marketing Ambitions</h2>"; TopMenu ("project_ambition_schedule",2,'');}
 		elseif ($input == "project_location") { $field = "proj_location"; echo "<h2>List of Project File Locations</h2>"; }
 		elseif ($input == "project_type") { $field = "proj_type"; echo "<h2>List of Project Types</h2>"; }
-		else { $field = "proj_ambition_internal"; unset($input); TopMenu ("project_ambition_schedule",2,''); }
+		else { $field = "proj_ambition_internal"; unset($input); }
 		
 		if ($input) {
 			

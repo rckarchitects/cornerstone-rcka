@@ -11,14 +11,15 @@ elseif ($user_usertype_current <= 3 AND $_GET[user_id] == NULL) { echo "<h1 clas
 
 else {
 
-echo "<h1>View Validated Expenses by Date</h1>";
+echo "<h1>Expenses</h1>";
+echo "<h2>Validated Expenses by Date</h2>";
 
 // Determine the date a week ago
 
 if ($_GET[user_filter] > 0) { $user_filter = " AND ts_expense_user = '$user_filter' "; } else { $user_filter = NULL; }
 
 
-$sql = "SELECT DISTINCT ts_expense_verified, SUM(ts_expense_vat) FROM intranet_timesheet_expense WHERE ts_expense_verified > 0 GROUP BY ts_expense_verified ORDER BY ts_expense_verified";
+$sql = "SELECT DISTINCT ts_expense_verified, SUM(ts_expense_vat) FROM intranet_timesheet_expense WHERE ts_expense_verified > 0 GROUP BY ts_expense_verified ORDER BY ts_expense_verified DESC";
 
 
 $result = mysql_query($sql, $conn) or die(mysql_error());
