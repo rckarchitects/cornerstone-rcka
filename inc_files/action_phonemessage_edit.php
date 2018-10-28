@@ -24,65 +24,63 @@ else {
 
 // Construct the MySQL instruction to add these entries to the database
 
-if ($message_id > 0) {
+		if ($message_id > 0) {
 
-		$sql_edit = "UPDATE intranet_phonemessage SET
-		message_from_id = '$message_from_id',
-		message_from_name = '$message_from_name',
-		message_from_company = '$message_from_company',
-		message_from_number = '$message_from_number',
-		message_for_user = '$message_for_user',
-		message_text = '$message_text',
-		message_viewed = '$message_viewed',
-		message_date = '$message_date',
-		message_project = '$message_project',
-		message_taken = '$message_taken'
-		WHERE message_id = '$message_id'
-		LIMIT 1";
-		
-		$result = mysql_query($sql_edit, $conn) or die(mysql_error());
-		$actionmessage = "Telephone message updated successfully.";
-		$techmessage = $sql_edit;		
-		
-} else {
+				$sql_edit = "UPDATE intranet_phonemessage SET
+				message_from_id = '$message_from_id',
+				message_from_name = '$message_from_name',
+				message_from_company = '$message_from_company',
+				message_from_number = '$message_from_number',
+				message_for_user = '$message_for_user',
+				message_text = '$message_text',
+				message_viewed = '$message_viewed',
+				message_date = '$message_date',
+				message_project = '$message_project',
+				message_taken = '$message_taken'
+				WHERE message_id = '$message_id'
+				LIMIT 1";
+				
+				$result = mysql_query($sql_edit, $conn) or die(mysql_error());
+				$actionmessage = "Telephone message updated successfully.";
+				$techmessage = $sql_edit;		
+				
+		} else {
 
-		$sql_add = "INSERT INTO intranet_phonemessage (
-		message_id,
-		message_from_id,
-		message_from_name,
-		message_from_company,
-		message_from_number,
-		message_for_user,
-		message_text,
-		message_viewed,
-		message_date,
-		message_project,
-		message_taken
-		) values (
-		'NULL',
-		'$message_from_id',
-		'$message_from_name',
-		'$message_from_company',
-		'$message_from_number',
-		'$message_for_user',
-		'$message_text',
-		'$message_viewed',
-		'$message_date',
-		'$message_project',
-		'$message_taken'
-		)";
-		
-		
-		$result = mysql_query($sql_add, $conn) or die(mysql_error());
-		$actionmessage = "Telephone message added successfully.";
-		$techmessage = $sql_add;
+				$sql_add = "INSERT INTO intranet_phonemessage (
+				message_id,
+				message_from_id,
+				message_from_name,
+				message_from_company,
+				message_from_number,
+				message_for_user,
+				message_text,
+				message_viewed,
+				message_date,
+				message_project,
+				message_taken
+				) values (
+				'NULL',
+				'$message_from_id',
+				'$message_from_name',
+				'$message_from_company',
+				'$message_from_number',
+				'$message_for_user',
+				'$message_text',
+				'$message_viewed',
+				'$message_date',
+				'$message_project',
+				'$message_taken'
+				)";
+				
+				
+				$result = mysql_query($sql_add, $conn) or die(mysql_error());
+				$actionmessage = "Telephone message added successfully.";
+				$techmessage = $sql_add;
+		}
+
+
+
+
+
+
 }
-
-
-
-
-
-
-}
-
-?>

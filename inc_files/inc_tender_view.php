@@ -25,6 +25,8 @@ function Tender_GetInformation($tender_id) {
 	
 	global $conn;
 	$tender_id = intval($tender_id);
+	
+	echo "<h1>Tenders</h1>";
 		
 $sql = "SELECT * FROM intranet_tender WHERE tender_id = $tender_id LIMIT 1";
 $result = mysql_query($sql, $conn) or die(mysql_error());
@@ -38,11 +40,13 @@ $array = mysql_fetch_array($result);
 		$tender_date = $array['tender_date'];
 		$tender_type = $array['tender_type'];
 		$tender_source = $array['tender_source'];
+		$tender_description = $array['tender_description'];
 		$tender_instructions = $array['tender_instructions'];
+		$tender_notes = $array['tender_notes'];
 		
+		if ($tender_type) { $tender_name = $tender_name . "&nbsp;(" . $tender_type . ")"; }
 
-
-			echo "<h1>$tender_name ($tender_type)</h1>";
+			echo "<h2>" . $tender_name . "</h2>";
 		
 			
 			echo "<div class=\"submenu_bar\">";
@@ -51,21 +55,27 @@ $array = mysql_fetch_array($result);
 			//}
 			
 			if ($_GET[edit_question] == NULL) { echo "<a href=\"popup_tender.php?tender_id=$tender_id\" class=\"submenu_bar\">Printable View</a>"; }
+			
+			echo "<a href=\"index2.php?page=tender_edit&amp;tender_id=$tender_id\" class=\"submenu_bar\">Edit Tender</a>";
+			
 			echo "</div>";
 			
-			echo "<h2>Details</h2>";
 			
-			if ($tender_description) { echo "<div><h3>Description</h3><p>$tender_description</p></div>"; }
+		
+			if ($tender_description != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<div><h3>Description</h3><p>". nl2br($tender_description) . "</p></div>"; }
 			
-			if ($tender_description != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<div><h3>Description</h3><p>". $tender_description . "</p></div>"; }
-			
-			if ($tender_instructionsc!= NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<div><h3>Submission Instructions</h3><p>". $tender_instructions . "</p></div>"; }
+			if ($tender_instructions != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<div><h3>Submission Instructions</h3><p>". nl2br($tender_instructions) . "</p></div>"; }
 			
 			if ($tender_client != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<div><h3>Client</h3><p>". $tender_client . "</p></div>"; }
 			
 			if ($tender_source != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<div><h3>Source of Tender</h3><p>". TextPresent($tender_source) . "</p></div>"; }
 			
-			echo "<div><h3>Submission Deadline</h3><p>".TimeFormatDetailed($tender_date)."</p></div>";
+			if ($tender_notes && !$_GET[edit_question] && !$_GET[edit_answer]) { echo "<div><h3>Notes</h3><p>". nl2br($tender_notes) . "</p></div>"; }
+
+			if ($tender_date) { $countdown = $tender_date - time(); }
+			if ($countdown > 0) { $countdown_print = "&nbsp;(" . DeadlineTime($countdown) . ")"; } else { unset($countdown_print); }
+			
+			echo "<div><h3>Submission Deadline</h3><p>".TimeFormatDetailed($tender_date) . $countdown_print ."</p></div>";
 
 
 }
@@ -112,7 +122,7 @@ $tender_id = intval ( $_GET[tender_id] );
 		
 		if ($counter == 0) {
 			
-			echo "<h2>Responses</h2>";
+			echo "<h3>Responses</h3>";
 			
 			echo "<table summary=\"Lists of questions and responses\">";
 			if ($_GET[question] == "add") { EditForm('','','','','',$tender_id); echo "</th></tr>"; }
@@ -194,7 +204,7 @@ $tender_id = intval ( $_GET[tender_id] );
 		$tender_name = $array['tender_name'];
 		$tender_date = $array['tender_date'];
 		echo "<h2>Tender Questions</h2>";
-		echo "<p>There are currently no responses on the system.</p>";
+		echo "<p>There are currently no responses on the system. Get started by adding the first question below.</p>";
 		echo "<table summary=\"Lists of questions and responses\">";
 		EditForm($answer_id,$answer_question,$answer_ref,$answer_words,$answer_weighting,$tender_id);
 		echo "</table>";

@@ -29,7 +29,9 @@ function Tender_Form($tender_id) {
 		$tender_submitted = $array['tender_submitted'];
 		$tender_notes = $array['tender_notes'];
 		
-	}
+		echo "<h2>" . $tender_name . "</h2>";
+		
+	} else { echo "<h2>Add Tender</h2>"; }
 		
 		if (!$tender_date) { $tender_date = time(); }
 		
@@ -78,12 +80,14 @@ function Tender_Form($tender_id) {
 	
 	if ($tender_result == 0) { $select0 = "checked=\"checked\""; } else { unset($select0); }
 	if ($tender_result == 1) { $select1 = "checked=\"checked\""; } else { unset($select1); } 
-	if ($tender_result == 2) { $select2 = "checked=\"checked\""; } else { unset($select2); } 
+	if ($tender_result == 2) { $select2 = "checked=\"checked\""; } else { unset($select2); }
+	if ($tender_result == 3) { $select3 = "checked=\"checked\""; } else { unset($select3); } 
 	
 	echo "	<div><p>
 			<input type=\"radio\" name=\"tender_result\" value=\"0\" $select0 />&nbsp;Awaiting Result&nbsp;
 			<input type=\"radio\" name=\"tender_result\" value=\"2\" $select2 />&nbsp;Stage Unsuccessful&nbsp;
 			<input type=\"radio\" name=\"tender_result\" value=\"1\" $select1 />&nbsp;Stage Successful&nbsp;
+			<input type=\"radio\" name=\"tender_result\" value=\"3\" $select3 />&nbsp;Stage Declined&nbsp;
 			</p></div>";
 	
 	if ($tender_submitted == 1) { $select = "checked=\"checked\""; } else { unset($select); } 

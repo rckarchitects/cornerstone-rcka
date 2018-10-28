@@ -170,6 +170,43 @@ function ContactProjects($contact_id) {
 
 }
 
+
+function ContactOnePage($contact_id) {
+	
+	global $conn;
+	
+	$contact_id = intval($contact_id);
+	$url = "http://app.onepagecrm.com/add_new_contact?";
+	
+	$sql = "SELECT * FROM contacts_contactlist LEFT JOIN contacts_companylist ON company_id = contact_company WHERE contact_id = $contact_id LIMIT 1";
+	$result = mysql_query($sql, $conn);
+	
+	
+	//$url = "firstname=Johny&lastname=Bravo&company=Cartoon%20Network&tags[]=beefcake";
+	
+	if (mysql_num_rows($result) > 0) {
+		
+		$array = mysql_fetch_array($result);
+		
+		$url = $url . "&amp;";
+	
+		if ($array['contact_namefirst']) { $url = $url . "firstname=" . urlencode($array['contact_namefirst']) . "&amp;"; }
+		if ($array['contact_namesecond']) { $url = $url . "lastname=" . urlencode($array['contact_namesecond']) . "&amp;"; }
+		if ($array['contact_email']) { $url = $url . "email=" . urlencode($array['contact_email']) . "&amp;"; }
+		if ($array['company_name']) { $url = $url . "company=" . urlencode($array['company_name']) . "&amp;"; }
+		if ($array['company_web']) { $url = $url . "web=" . urlencode($array['company_web']) . "&amp;"; }
+		if ($array['contact_telephone']) { $url = $url . "phone=" . urlencode($array['contact_telephone']) . "&amp;"; }
+		elseif ($array['company_phone']) { $url = $url . "phone=" . urlencode($array['company_phone']) . "&amp;"; }
+		if ($array['contact_telephone']) { $url = $url . "phone=" . urlencode($array['contact_telephone']) . "&amp;"; }
+		if ($array['company_web']) { $url = $url . "web=" . urlencode($array['company_web']) . "&amp;"; }
+		if ($array['contact_title']) { $url = $url . "job_title=" . urlencode($array['contact_title']) . "&amp;"; }
+		return $url;
+	
+	}
+	
+	
+}
+
 function ContactClient($contact_id) {
 	
 	global $conn;

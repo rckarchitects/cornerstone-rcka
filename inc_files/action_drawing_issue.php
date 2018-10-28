@@ -67,8 +67,11 @@
 				// Loop through each of the contacts selected
 				
 						$count = 0;
+						$count_people_issued = 0;
 				
 						while ($count < count($array_contact_id)) {
+							
+							
 					
 							$issue_contact = $array_contact_id[$count];
 							$issue_company = $array_company_id[$count];
@@ -123,18 +126,19 @@
 						
 						$counter_drawing = 0;
 						$count++;
+						$count_people_issued++;
 								
 					}
 					
 
-			$actionmessage = "<p>Drawing issue set ref. <a href=\"index2.php?page=drawings_issue_list&amp;set_id=$issue_set&amp;proj_id=$issue_project\">$issue_set</a> was added successfully and issued to " . $counter_drawing . " people, with issue status \"" . strtoupper($issue_status) . "\".</p>";
+			$actionmessage = "<p>Drawing issue set ref. <a href=\"index2.php?page=drawings_issue_list&amp;set_id=$issue_set&amp;proj_id=$issue_project\">$issue_set</a> was added successfully and issued to " . $count_people_issued . " people, with issue status \"" . strtoupper($issue_reason) . "\".</p>";
 
-			AlertBoxInsert($_COOKIE[user],"Drawing Issue",$actionmessage,$issue_set,0,0);
+			AlertBoxInsert($_COOKIE[user],"Drawing Issue",$actionmessage,$issue_set,0,0,$issue_project);
 
 			} else {
 				
 				$actionmessage = "<p>Drawing issue set ref. <a href=\"index2.php?page=drawings_issue_list&amp;set_id=$issue_set&amp;proj_id=$issue_project\">$issue_set</a> failed for some reason.</p>";
 
-				AlertBoxInsert($_COOKIE[user],"Drawing Issue",$actionmessage,$issue_set,0,0);
+				AlertBoxInsert($_COOKIE[user],"Drawing Issue",$actionmessage,$issue_set,0,0,$issue_project);
 				
 			}

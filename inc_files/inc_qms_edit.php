@@ -1,4 +1,9 @@
-<?php 
+<?php
+
+echo "<h1>Quality Management System</h1>";
+echo "<h2>Edit</h2>";
+
+if ($user_usertype_current > 2) {
 
 if ($_POST[qms_id]) {
 
@@ -58,7 +63,7 @@ if ($_GET[now] == "insert" && $_GET[s4] != NULL) {
 
 
 
-echo "<h1>Edit QMS</h1>";
+
 
 echo "	<script type=\"text/javascript\">
 		<!--//
@@ -287,5 +292,6 @@ echo "<tr><td colspan=\"5\" style=\"text-align:right;\">-</td><td colspan=\"3\">
 
 echo "</table>";
 
-
-?>
+} else {
+	InsufficientRights();	
+}

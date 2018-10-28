@@ -30,11 +30,11 @@ if ($_GET[revision_id] > 0) {
 		$array_revision = mysql_fetch_array($result_revision);
 		$revision_letter = $array_revision['revision_letter'];
 		
-		echo "<h2>Add Drawing Revision for $drawing_number";
+		echo "<h2>Add Drawing Revision for " . $drawing_number;
 		
 		if ($revision_letter) {
 		echo " (Current Revision: " . strtoupper ( $revision_letter ) . ")</h2>";
-		}
+		} else { echo "</h2>"; }
 		
 		$add_or_edit = "add";
 }

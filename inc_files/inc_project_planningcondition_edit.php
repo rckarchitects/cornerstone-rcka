@@ -44,12 +44,16 @@ if ($_GET[proj_id] != NULL OR $_POST[proj_id] != NULL) {
 				
 				echo "<h3>Edit Condition " . $condition_number . "</h3>";
 				
+				echo "<form method=\"post\" action=\"index2.php?page=project_planningcondition_list&amp;proj_id=$proj_id\">";
+				
 			}
 	
 		
 	} else {
 		
 		echo "<h3>Add New</h3>";
+		
+		echo "<form method=\"post\" action=\"index2.php?page=project_planningcondition_edit&amp;proj_id=$proj_id\">";
 		
 	}
 	
@@ -69,7 +73,7 @@ if ($_GET[proj_id] != NULL OR $_POST[proj_id] != NULL) {
 	if ($condition_type == NULL) {  $condition_type = $_POST[condition_type]; }
 	if ($_POST[condition_number] != NULL && $condition_id == NULL) { $condition_number = $_POST[condition_number] + 1; }
 	
-	echo "<form method=\"post\" action=\"index2.php?page=project_planningcondition_edit&amp;proj_id=$proj_id\">";
+	
 	
 	echo "<fieldset><legend>Application Details</legend>";
 	

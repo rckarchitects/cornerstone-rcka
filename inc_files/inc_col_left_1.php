@@ -125,7 +125,7 @@ if ($module_qms == "1") {
 	$array_pages = array("index2.php?page=qms_view","index2.php?page=qms_edit");
 	$array_title = array("View QMS","Edit QMS");
 	$array_images = array("button_list.png","button_edit.png");
-	$array_access = array(1,2);
+	$array_access = array(1,3);
 
 	SideMenu ("Quality Management", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 	

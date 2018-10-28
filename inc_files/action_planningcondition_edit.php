@@ -40,12 +40,12 @@ if ($condition_edit_id > 0) {
 		LIMIT 1";
 		
 		$result = mysql_query($sql_edit, $conn) or die(mysql_error());
-		$actionmessage = "Drawing updated successfully.";
+		$actionmessage = "<p>Planning condition " . $condition_edit_ref . " updated successfully.</p>";
 		$techmessage = $sql_edit;
 		
 		//echo "<p>$sql_edit</p>";
 
-		$drawing_affected = mysql_affected_rows();		
+		AlertBoxInsert($_COOKIE[user],"Planning Condition Updated",$actionmessage,$condition_edit_id,0,0,$condition_edit_project);
 		
 } else {
 
@@ -85,16 +85,10 @@ if ($condition_edit_id > 0) {
 		
 		//echo "<p>" . $sql_add . "</p>";
 		$result = mysql_query($sql_add, $conn) or die(mysql_error());
-		$actionmessage = "Planning condition added successfully.";
+		$actionmessage = "<p>Planning condition " . $condition_edit_ref . " added successfully.</p>";
 		$techmessage = $sql_add;
 		
 		$condition_edit_affected = mysql_affected_rows();
+		
+		AlertBoxInsert($_COOKIE[user],"Planning Condition Added",$actionmessage,$condition_edit_affected,0,0,$condition_edit_project);
 }
-
-
-
-
-
-
-
-?>

@@ -17,9 +17,7 @@ if ($contact_proj_id > 0) {
 		
 		$result = mysql_query($sql_edit, $conn) or die(mysql_error());
 		$actionmessage = "<p>Project contact id " . $contact_proj_id . " for project ref. " . $contact_proj_contact . " updated successfully.</p>";
-		AlertBoxInsert($_COOKIE[user],"Project Contact Edited",$actionmessage,$contact_proj_id,0,1);
+		AlertBoxInsert($_COOKIE[user],"Project Contact Edited",$actionmessage,$contact_proj_id,0,1,$proj_id);
 		$techmessage = $sql_edit;
 		
 }
-		
-?>

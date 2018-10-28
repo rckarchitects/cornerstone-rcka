@@ -20,7 +20,57 @@ echo "<h2>Search for : $keywords</h2>";
 
 SearchPanel($user_usertype_current,"search_02");
 
-echo "<div class=\"manual_page\">";
+echo "<div class=\"page\">";
+
+// Projects
+
+
+$sql = "SELECT * FROM intranet_projects WHERE ".SearchTerms($keywords_array, "proj_num")." OR ".SearchTerms($keywords_array, "proj_name")." OR ".SearchTerms($keywords_array, "proj_address_1")." OR ".SearchTerms($keywords_array, "proj_address_2")." OR ".SearchTerms($keywords_array, "proj_address_3")." ORDER BY proj_num DESC";
+$result = mysql_query($sql, $conn) or die(mysql_error());
+	if (mysql_num_rows($result) > 0) {
+		
+		//echo "<tr><td colspan=\"2\">$sql</td></tr>";
+		//echo "<tr><td colspan=\"2\">" . SearchTerms($keywords_array, "contact_namesecond") . "</td></tr>";
+		
+			echo "<h3>Projects</h3>";
+			echo "<table>";
+		
+			while ($array = mysql_fetch_array($result)) {
+				
+			$search_results = $search_results + mysql_num_rows($result);
+
+			echo "
+			<tr><td style=\"width: 30%;\"><a href=\"index2.php?page=project_view&amp;proj_id=" . $array['proj_id'] . "\">" . $array['proj_num'] . " " . $array['proj_name'] . "</a></td>";
+			echo "</tr>";
+	}
+	
+	echo "</table>";
+}
+
+// Fee Stage
+
+
+$sql = "SELECT * FROM intranet_timesheet_fees LEFT JOIN intranet_projects ON proj_id = ts_fee_project WHERE ".SearchTerms($keywords_array, "ts_fee_text")." ORDER BY proj_num DESC, ts_fee_stage";
+$result = mysql_query($sql, $conn) or die(mysql_error());
+	if (mysql_num_rows($result) > 0) {
+		
+		//echo "<tr><td colspan=\"2\">$sql</td></tr>";
+		//echo "<tr><td colspan=\"2\">" . SearchTerms($keywords_array, "contact_namesecond") . "</td></tr>";
+		
+			echo "<h3>Fee Stages</h3>";
+			echo "<table>";
+		
+			while ($array = mysql_fetch_array($result)) {
+				
+			$search_results = $search_results + mysql_num_rows($result);
+
+			echo "
+			<tr><td style=\"width: 30%;\"><a href=\"index2.php?page=project_view&amp;proj_id=" . $array['proj_id'] . "\">" . $array['proj_num'] . " " . $array['proj_name'] . "</a></td><td>" . $array['ts_fee_text'] . "</td>";
+			echo "</tr>";
+	}
+	
+	echo "</table>";
+}
 
 
 // Journal Entries
@@ -45,9 +95,13 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 			$blog_date = $array['blog_date'];
 			echo "<tr><td style=\"width: 30%;\"><a href=\"index2.php?page=datebook_view_day&amp;time=$blog_date\">".TimeFormat($blog_date)."</a></td><td style=\"width: 75%;\"><a href=\"index2.php?page=project_blog_view&amp;blog_id=$blog_id\">$blog_title</a></td></tr>";
 	}
+	
+	echo "</table>";
 }
 
-echo "</table>";
+
+
+
 
 // Contacts
 
@@ -71,7 +125,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 			$contact_namesecond = $array['contact_namesecond'];
 			$contact_company = $array['contact_company'];
 			echo "
-			<tr><td style=\"width: 25%;\"";
+			<tr><td style=\"width: 30%;\"";
 			if ($contact_company == NULL OR $contact_company == 0) { echo " colspan=\"2\" "; }
 			echo "><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=$contact_id\">$contact_namefirst&nbsp;$contact_namesecond</a></td>";
 			if ($contact_company > 0) { echo "<td>";$id = $contact_company; include("dropdowns/inc_data_contact_company.php"); echo "</td>"; }
@@ -100,7 +154,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 			$company_postcode = $array['company_postcode'];
 			
 			if ($company_postcode) {
-				echo "<tr><td colspan=\"2\" style=\"width: 25%;\">";
+				echo "<tr><td colspan=\"2\" style=\"width: 30%;\">";
 				echo "<a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">$company_name</a>";
 				echo "</td>";
 				echo "<td>$company_postcode</td>";
@@ -176,7 +230,7 @@ function SearchMedia($keywords_array) {
 			if (mysql_num_rows($result) > 0) {
 				echo "<h3>Media Library</h3>";
 				echo "<table>";
-				while ($array = mysql_fetch_array($result)) { echo "<tr><td style=\"width: 40%;\"><a href=\"" . $array['media_path'] . $array['media_file'] . "\">" . $array['media_title'] . "</a></td><td>" . $array['media_description'] . "</td><td style=\"text-align: right;\">" . MediaSize($array['media_size']) . "</td></tr>"; }
+				while ($array = mysql_fetch_array($result)) { echo "<tr><td style=\"width: 30%;\"><a href=\"" . $array['media_path'] . $array['media_file'] . "\">" . $array['media_title'] . "</a></td><td>" . $array['media_description'] . "</td><td style=\"text-align: right;\">" . MediaSize($array['media_size']) . "</td></tr>"; }
 				echo "</table>";
 			}
 
@@ -199,7 +253,6 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		$search_results = $search_results + mysql_num_rows($result);
 			echo "<h3>Project Checklists</h3>";
 			echo "<table>";
-			echo "<tr><td colspan=\"2\">- No results found for checklists -</td></tr>";
 			while ($array = mysql_fetch_array($result)) {
 				$checklist_comment = $array['checklist_comment'];
 				$checklist_project = $array['checklist_project'];
@@ -278,7 +331,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 			$tender_name = $array['tender_name'];
 			$tender_client = $array['tender_client'];
 			$tender_date = $array['tender_date'];
-				echo "<tr><td style=\"width: 25%;\"><a href=\"index2.php?page=tender_view&amp;tender_id=$tender_id\">". $tender_name ."</a></td><td>$tender_client</td><td>Deadline: ". TimeFormatDetailed ( $tender_date ) . "</td></tr>";
+				echo "<tr><td style=\"width: 30%;\"><a href=\"index2.php?page=tender_view&amp;tender_id=$tender_id\">". $tender_name ."</a></td><td>$tender_client</td><td>Deadline: ". TimeFormatDetailed ( $tender_date ) . "</td></tr>";
 	}
 }
 
@@ -315,7 +368,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 			$ts_expense_vat = $array['ts_expense_vat'];
 			$expense_cat_clearance = $array['expense_cat_clearance'];
 			if ($user_usertype_current >= $expense_cat_clearance) {
-				echo "<tr><td style=\"width: 25%;\"><a href=\"index2.php?page=datebook_view_day&amp;time=$ts_expense_date\">".TimeFormat($ts_expense_date)."</a><td style=\"width: 75%;\"><a href=\"index2.php?page=timesheet_expense_view&amp;ts_expense_id=$ts_expense_id\">$ts_expense_desc</a> [ID: $ts_expense_id]";
+				echo "<tr><td style=\"width: 30%;\"><a href=\"index2.php?page=datebook_view_day&amp;time=$ts_expense_date\">".TimeFormat($ts_expense_date)."</a><td style=\"width: 75%;\"><a href=\"index2.php?page=timesheet_expense_view&amp;ts_expense_id=$ts_expense_id\">$ts_expense_desc</a> [ID: $ts_expense_id]";
 				if ($ts_expense_notes != NULL) { echo "<br />($ts_expense_notes)"; }
 				echo "</tr>";
 			}
@@ -349,7 +402,7 @@ echo "</table>";
 									
 										echo "<h3>Expenses with this value</h3>";
 										echo "<table>";
-										echo "<tr><th>Date</th><th>Verified</th><th>Description</th><th>Value</th><th>User</th></tr>";
+										echo "<tr><th style=\"width: 30%;\">Date</th><th>Verified</th><th>Description</th><th>Value</th><th>User</th></tr>";
 										while ($array = mysql_fetch_array($result)) {
 										$ts_expense_id = $array['ts_expense_id'];
 										$ts_expense_desc = $array['ts_expense_desc'];

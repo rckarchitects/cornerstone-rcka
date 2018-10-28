@@ -1,6 +1,6 @@
 <?php
 
-ProjectSubMenu($proj_id,$user_usertype_current,"project_drawings",1);
+
 
 if ($_GET[drawing_id] != NULL) {
 
@@ -26,10 +26,12 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		
 		echo "<h2>$drawing_number</h2>";
 		
+		ProjectSubMenu($proj_id,$user_usertype_current,"project_drawings",1);
+		
 		if (!$drawing_status) { $drawing_status = "-"; }
 		
 				// Drawing issue menu
-					echo "<p class=\"submenu_bar\">";
+					echo "<div class=\"submenu_bar\">";
 					echo "<a href=\"index2.php?page=drawings_list&amp;proj_id=$proj_id\" class=\"submenu_bar\"><< Drawing List</a>";
 					echo "<a href=\"index2.php?page=drawings_issue&proj_id=$proj_id\" class=\"submenu_bar\">Issue Drawings</a>";
 					echo "<a href=\"index2.php?page=drawings_revision_edit&amp;drawing_id=$drawing_id&amp;proj_id=$proj_id\" class=\"submenu_bar\">Add new revision</a>";
@@ -46,11 +48,11 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 					}
 					
 					
-			echo "</p>";
+			echo "</div>";
 		
 		
 		
-		
+		echo "<h3>Drawing Information</h3>";
 		
 
 		echo "<table summary=\"Lists the details for drawing $drawing_number\">";
@@ -80,13 +82,15 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 
 		
 		
-		echo "<h2>Revision History</h2>";
+		echo "<h3>Revision History</h3>";
 		
 		
 		$sql_rev = "SELECT * FROM intranet_drawings_revision, intranet_user_details WHERE revision_drawing = '$_GET[drawing_id]' AND revision_author = user_id ORDER BY revision_letter DESC";
 		$result_rev = mysql_query($sql_rev, $conn) or die(mysql_error());
 		
 		if (mysql_num_rows($result_rev) > 0) {
+			
+			
 
 		echo "<table desc=\"Revision list for drawing $drawing_number\">
 <tr><th>Rev.</th><th>Date</th><th>Description</th><th>Author</th></tr>";
@@ -129,7 +133,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		
 		$result_issued = mysql_query($sql_issued, $conn) or die(mysql_error());
 		
-		echo "<h2>Drawing Issues</h2>";
+		echo "<h3>Drawing Issues</h3>";
 		
 		
 		

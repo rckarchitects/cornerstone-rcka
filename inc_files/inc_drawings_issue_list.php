@@ -32,7 +32,7 @@ $proj_id = $_GET[proj_id];
 		echo "<div class=\"menu_bar\"><a href=\"pdf_drawing_issue.php?issue_set=$set_id&amp;proj_id=$proj_id\" class=\"submenu_bar\"><img src=\"images/button_pdf.png\" alt=\"PDF Drawing Issue Sheet\" />&nbsp;Drawing Issue Sheet</a>";
 		
 		if (((time() - $set_date) < 172800) OR ($user_usertype > 3)) {
-			echo "<a href=\"index2.php?page=drawings_list&amp;proj_id=$proj_id&amp;set_id=$set_id&amp;action=drawing_issue_delete\" class=\"menu_tab\" onClick=\"javascript:return confirm('Are you sure you want to delete this drawing issue? Deleted drawings issues will be permanently deleted and cannot be recovered.')\">Delete Drawing Issue&nbsp;<img src=\"images/button_delete.png\" alt=\"Delete Drawing Issue\" /></a>";
+			echo "<a href=\"index2.php?page=drawings_list&amp;proj_id=$proj_id&amp;set_id=$set_id&amp;action=drawing_issue_delete\" class=\"submenu_bar\" onClick=\"javascript:return confirm('Are you sure you want to delete this drawing issue? Deleted drawings issues will be permanently deleted and cannot be recovered.')\">Delete Drawing Issue&nbsp;<img src=\"images/button_delete.png\" alt=\"Delete Drawing Issue\" /></a>";
 		}
 		
 		
@@ -40,10 +40,10 @@ $proj_id = $_GET[proj_id];
 		
 
 			
-			echo "<fieldset><legend>Project</legend>";
+			echo "<div class=\"page\"><h3>Project</h3>";
 			echo "<a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></fieldset>";
 			
-			echo "<fieldset><legend>Details</legend>";
+			echo "<div><h3>Details</h3>";
 			
 			echo "<table>";
 			
@@ -58,7 +58,7 @@ $proj_id = $_GET[proj_id];
 			
 		echo "</table>";
 		
-		echo "</fieldset>";
+		echo "</div>";
 
 // Drawings issued as part of this set $set_id
 
@@ -66,7 +66,7 @@ $sql_drawings = "SELECT * FROM intranet_drawings, intranet_drawings_issued LEFT 
 
 $result_drawings = mysql_query($sql_drawings, $conn) or die(mysql_error());
 
-		echo "<fieldset><legend>Drawings</legend><table>";
+		echo "<div><h3>Drawings</h3><table>";
 		
 		echo "<tr><th style=\"width:25%\">Number</th><th style=\"width:20%\">Rev.</th><th>Rev. Date</th><th>Status</th><th colspan=\"2\">Title</th></tr>";
 		
@@ -114,7 +114,7 @@ $result_drawings = mysql_query($sql_drawings, $conn) or die(mysql_error());
 		
 		}
 		
-		echo "</table></fieldset>";
+		echo "</table></div>";
 		
 // Recipients of drawings
 
@@ -131,7 +131,7 @@ $result_contacts = mysql_query($sql_contacts, $conn) or die(mysql_error());
 
 unset($current_contact);
 
-echo "<fieldset><legend>Recipients</legend><table>";
+echo "<div><h3>Recipients</h3><table>";
 
 echo "<tr><th style=\"width: 25%\">Recipient</th><th>Company</th><th>Role</th></tr>";
 
@@ -153,7 +153,7 @@ while ($array_contacts = mysql_fetch_array($result_contacts)) {
 	
 	}
 	
-echo "</table></fieldset>";
+echo "</table></div>";
 		
 	
 } else {

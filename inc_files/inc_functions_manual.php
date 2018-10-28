@@ -1,25 +1,5 @@
 <?php
 
-function PersistentStorage($name,$content) {
-	
-	echo "
-	
-	<script>
-	// Check browser support
-	if (typeof(Storage) !== \"undefined\") {
-		// Store
-		localStorage.setItem(\"$name\", \"$content\");
-		// Retrieve
-		document.getElementById(\"result\").innerHTML = localStorage.getItem(\"$name\");
-	} else {
-		document.getElementById(\"result\").innerHTML = \"Sorry, your browser does not support Web Storage...\";
-	}
-	</script>
-
-	
-	";
-}
-
 function ManualChecklist($media_checklist) {
 	
 	global $conn;
@@ -66,6 +46,8 @@ function ManualPageEdit($user, $manual_id, $user_usertype_current) {#
 	$manual_checklist = $array['manual_checklist'];
 
 	echo "<h2>Edit Page</h2>";
+	
+	ProjectSubMenu(0,$user_usertype_current,"manual_page",1);
 	
 	echo "<form method=\"post\" action=\"index2.php?page=manual_page&amp;manual_id=$manual_id\">";
 	TextAreaEdit("manual_text");
@@ -126,6 +108,8 @@ function ManualPageAdd($user, $user_usertype_current, $manual_stage) {
 
 	echo "<h2>Add Page</h2>";
 	
+	ProjectSubMenu(0,$user_usertype_current,"manual_page",1);
+	
 	echo "<form method=\"post\" action=\"index2.php?page=manual_page\">";
 	TextAreaEdit("manual_text");
 	echo "<p>Title<br /><input type=\"text\" name=\"manual_title\" maxlength=\"200\" style=\"width: 95%;\" required=\"required\" /></p>";
@@ -162,11 +146,15 @@ function ManualPageView($manual_id) {
 	$sql = "SELECT * FROM intranet_stage_manual LEFT JOIN intranet_timesheet_group ON manual_stage = group_id LEFT JOIN intranet_media ON media_id = manual_attachment WHERE manual_id = $manual_id ORDER BY manual_stage, manual_section, manual_order";
 	$result = mysql_query($sql, $conn);
 	$array = mysql_fetch_array($result);
-	echo "<h2>" . $array['manual_title'] . "&nbsp;<a href=\"index2.php?page=manual_page&amp;action=edit&manual_id=" . $manual_id . "\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a></h2>";
-	echo "<h3>" . $array['group_code'] . "&nbsp;" . $array['group_description'] . "</h3>";
-	echo "<div class=\"manual_page\">";
+	echo "<h2>" . $array['manual_title'] . "</h2>";
 	
-	if ($array['manual_attachment']) { echo "<div class=\"bodybox imagecontainer\" style=\"float: right; margin: 0 0 12px 12px;\"><p><span class=\"minitext\">Attachments</span><br /><a href=\"" . $array['media_path'] . $array['media_file'] . "\"><img src=\"images/icon_pdf.png\" style=\"width: 120px; margin: 12px;\" /><br />" . $array['media_title'] . "</a></p></div>"; }
+	ProjectSubMenu(0,$user_usertype_current,"manual_page",1);
+	ProjectSubMenu(0,$user_usertype_current,"manual_page",2);
+	
+	echo "<h3>" . $array['group_code'] . "&nbsp;" . $array['group_description'] . "</h3>";
+	echo "<div class=\"page\">";
+	
+	if ($array['manual_attachment']) { echo "<div class=\"imagecontainer\"><p><span class=\"minitext\">Attachments</span><br /><a href=\"" . $array['media_path'] . $array['media_file'] . "\"><img src=\"images/icon_pdf.png\" style=\"width: 120px; margin: 12px;\" /><br />" . $array['media_title'] . "</a></p></div>"; }
 
 	echo $array['manual_text'] . "</div>";
 	echo "<p>Author: " . UserDetails($array['manual_author']) . "<br />Updated: " . TimeFormatDetailed($array['manual_updated']) . "</p>";
@@ -179,17 +167,26 @@ function ManualIndexView() {
 	
 	echo "<h2>Index</h2>";
 	
-	$sql = "SELECT manual_id,manual_section, manual_title, group_id, group_code, group_description FROM intranet_stage_manual LEFT JOIN intranet_timesheet_group ON manual_stage = group_id ORDER BY manual_stage, manual_section, manual_order";
+	ProjectSubMenu(0,$user_usertype_current,"manual_page",1);
+	
+	$sql = "SELECT manual_id, manual_section, manual_title, manual_updated, group_id, group_code, group_description FROM intranet_stage_manual LEFT JOIN intranet_timesheet_group ON manual_stage = group_id ORDER BY group_code, manual_section, manual_order";
 	$result = mysql_query($sql, $conn);
 	$current_stage = NULL;
 	$current_section = NULL;
+
 	
 	while ($array = mysql_fetch_array($result)) {
-		if ($current_stage != $array['group_id']) { echo "<tr><td><h3>" . $array['group_code'] . "&nbsp;" . $array['group_description'] . "</h3></td></tr>"; $current_stage = $array['group_id']; }
-		echo "<tr><td><p><a href=\"index2.php?page=manual_page&amp;manual_id=" . $array['manual_id'] . "\">" . $array['manual_title'] . "</a></p></td></tr>";
+		
+		if ($current_stage != $array['group_id']) {
+			if ($current_stage) { echo "</table>"; }
+			echo "<h3>" . $array['group_code'] . "&nbsp;" . $array['group_description'] . "</h3><table>"; $current_stage = $array['group_id'];
+		}
+			
+		echo "<tr><td><a href=\"index2.php?page=manual_page&amp;manual_id=" . $array['manual_id'] . "\">" . $array['manual_title'] . "</a></td><td style=\"width: 20%; text-align: right;\">" . TimeFormat($array['manual_updated']) . "</td></tr>";
 	}
 	
 	echo "</table>";
+	
 	
 	
 }

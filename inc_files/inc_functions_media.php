@@ -27,7 +27,7 @@ function MediaLatestList() {
 		
 		echo "</table>";
 		
-		echo "<p><a href=\"index2.php?page=media&amp;filter=pdf\">[More]</a></p>";
+		echo "<p><a href=\"index2.php?page=media&amp;filter=pdf\" class=\"submenu_bar\">More</a></p>";
 		
 	}
 	

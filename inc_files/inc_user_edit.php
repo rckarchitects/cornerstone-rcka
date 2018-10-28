@@ -1,16 +1,28 @@
 <?php
 
+
+if (intval($_GET[user_id]) > 0) { $user_id = intval($_GET[user_id]); }
+elseif (intval($_POST[user_id] > 0)) { $user_id = intval($_POST[user_id]); }
+else { $user_id = 0; }
+
 function GetUserName($user_id) {
 	
 	GLOBAL $conn;
+	GLOBAL $user_usertype_current;
 	$user_id = intval($user_id);
 	$sql = "SELECT * FROM intranet_user_details WHERE user_id = '$user_id' LIMIT 1";
 	$result = mysql_query($sql, $conn) or die(mysql_error());
 	$array = mysql_fetch_array($result);
 	$user_name_first = $array['user_name_first'];
 	$user_name_second = $array['user_name_second'];
-	echo "<h1>Edit details for " . $user_name_first . "&nbsp;" . $user_name_second . "</h2>";
-	
+	echo "<h1>Users</h1>";
+	if ($user_id > 0 && $user_usertype_current > 3) { 
+		echo "<h2>Edit details for " . $user_name_first . "&nbsp;" . $user_name_second . "</h2>";
+	} elseif ($user_id == 0 && $user_usertype_current > 3) { 
+		echo "<h2>Add New User</h2>";
+	} else {
+		echo "<h2>Error</h2>";
+	}
 }
 
 function UserForm ($user_id) {
@@ -48,7 +60,7 @@ function UserForm ($user_id) {
 	
 	echo "<form method=\"post\" action=\"index2.php?page=user_list\">";
 	
-	echo "<fieldset><legend>Name</legend>";
+	echo "<div><h3>Name</h3>";
 	
 		echo "<p>First Name<br /><input type=\"text\" name=\"user_name_first\" value=\"$user_name_first\" maxlength=\"50\" size=\"32\" required=\"required\" /></p>";
 		echo "<p>Surname<br /><input type=\"text\" name=\"user_name_second\" value=\"$user_name_second\" maxlength=\"50\" size=\"32\" required=\"required\" /></p>";
@@ -60,9 +72,9 @@ function UserForm ($user_id) {
 		echo "<p>Initials<br /><input type=\"text\" name=\"user_initials\" value=\"$user_initials\" maxlength=\"12\" size=\"32\" /></p>";
 		echo "<p>Email<br /><input type=\"text\" name=\"user_email\" value=\"$user_email\" maxlength=\"50\" size=\"32\" type=\"email\" /></p>";
 		
-	echo "</fieldset>";
+	echo "</div>";
 	
-	echo "<fieldset><legend>Home Address</legend>";
+	echo "<div><h3>Home Address</h3>";
 	
 		echo "<p>Address<br /><input type=\"text\" name=\"user_address_1\" value=\"$user_address_1\" maxlength=\"50\" size=\"32\" /><br />";
 		echo "<input type=\"text\" name=\"user_address_2\" value=\"$user_address_2\" maxlength=\"50\" size=\"32\" /><br />";
@@ -72,26 +84,26 @@ function UserForm ($user_id) {
 		echo "<p>County<br /><input type=\"text\" name=\"user_address_county\" value=\"$user_address_county\" maxlength=\"50\" size=\"32\" /></p>";
 		echo "<p>Postcode<br /><input type=\"text\" name=\"user_address_postcode\" value=\"$user_address_postcode\" maxlength=\"50\" size=\"32\" /></p>";
 		
-	echo "</fieldset>";
+	echo "</div>";
 	
-	echo "<fieldset><legend>Telephone</legend>";
+	echo "<div><h3>Telephone</h3>";
 	
 		echo "<p>Extension<br /><input type=\"text\" name=\"user_num_extension\" value=\"$user_num_extension\" maxlength=\"50\" size=\"32\" /></p>";
 		echo "<p>Mobile<br /><input type=\"text\" name=\"user_num_mob\" value=\"$user_num_mob\" maxlength=\"50\" size=\"32\" /></p>";
 		echo "<p>Home<br /><input type=\"text\" name=\"user_num_home\" value=\"$user_num_home\" maxlength=\"50\" size=\"32\" /></p>";
 		
-	echo "</fieldset>";
+	echo "</h3>";
 	
 	
-	echo "<fieldset><legend>Notes</legend>";
+	echo "<div><h3>Notes</h3>";
 	
 		echo "<textarea name=\"user_notes\" style=\"width: 95%; height: 150px;\">$user_notes</textarea>";
 		
-	echo "</fieldset>";
+	echo "</div>";
 	
 	if ($user_usertype_current > 3) {
 	
-		echo "<fieldset><legend>Details</legend>";
+		echo "<div><h3>Details</h3>";
 		
 		
 		echo "<p>User Type<br />";
@@ -131,11 +143,11 @@ function UserForm ($user_id) {
 		echo "<option value=\"0.95\" "; if ($user_prop_target == 0.95) { echo "selected=\"selected\""; } ; echo ">95%</option>";
 		echo "<option value=\"1\" "; if ($user_prop_target == 1) { echo "selected=\"selected\""; } ; echo ">100%</option>";
 		echo "</select></p>";
-		echo "</fieldset>";
+		echo "</div>";
 	
 
 	
-	echo "<fieldset><legend>Dates</legend>";
+	echo "<div><h3>Dates</h3>";
 		
 		if ($user_user_added > 0) {
 			$user_user_added_print = date("Y",$user_user_added) . "-" . date("m",$user_user_added) . "-" . date("d",$user_user_added);
@@ -151,9 +163,11 @@ function UserForm ($user_id) {
 		
 		echo "<p>Date Ended<br /><input type=\"date\" name=\"user_user_ended\" value=\"$user_user_ended_print\" /></p>";
 		
-	echo "</fieldset>";
+	echo "</div>";
 	
-	echo "<fieldset><legend>Password</legend>";
+	}
+	
+	echo "<div><h3>Password</h3>";
 	
 	if ($user_id > 0) {
 	
@@ -163,7 +177,7 @@ function UserForm ($user_id) {
 		
 		echo "<p>Enter New Password<br /><input type=\"password\" name=\"user_password\" value=\"\" /></p>";
 		
-	echo "</fieldset>";
+	echo "</div>";
 	
 	if ($user_id > NULL) {
 	echo "<input type=\"hidden\" name=\"action\" value=\"user_update\" />";
@@ -176,7 +190,7 @@ function UserForm ($user_id) {
 	
 	echo "</form></p>";
 	
-	}
+	
 	
 	
 }
@@ -190,17 +204,19 @@ if ($_GET[user_add] == "true" && $user_usertype_current > 3) {
 	echo "<h1>Add New User</h1>";
 	
 } else {
-
-	if ($_GET[user_id] > 0) { $user_id = $_GET[user_id]; }
-	elseif ($_POST[user_id] > 0) { $user_id = $_POST[user_id]; }
-	else { $user_id = $_COOKIE[user]; }
 	
 	GetUserName($user_id);
-		
+	
 }
 
 
 
-UserForm($user_id);
+if ($user_usertype_current > 3 OR intval($user_id) == intval($user_id_current)) {
 
-?>
+	UserForm($user_id);
+
+} else {
+	
+	InsufficientRights();	
+	
+}

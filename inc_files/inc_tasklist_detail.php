@@ -31,11 +31,11 @@ ProjectTitle(1,$proj_id);
 
 // Menu bar
 
-print "<p class=\"menu_bar\"><a href=\"index2.php?page=tasklist_edit\" class=\"menu_tab\">Add New Task</a>";
+print "<div class=\"menu_bar\"><a href=\"index2.php?page=tasklist_edit\" class=\"menu_tab\">Add New Task</a>";
 //if ($user_usertype_current > 3 ) { // OR $_COOKIE[user] == $tasklist_user ) {
 print "<a href=\"index2.php?page=tasklist_edit&amp;tasklist_id=$tasklist_id\" class=\"menu_tab\">Edit This Task</a>";
 //}
-print "</p>";
+print "</div>";
 
 // Only print if the task is not complete or was completed within the last week
 
@@ -49,7 +49,7 @@ print "</p>";
 
 					
 							
-					print "<p><strong>Project</strong><br /><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></p>";
+					print "<h3>Project</h3><p><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></p>";
 					
 					
 					$proj_id_repeat = $proj_id;
@@ -69,7 +69,7 @@ print "</p>";
 					$user_name_second = $array2['user_name_second'];
 					$user_id = $array2['user_id'];
 					
-					print "<p><strong>Description</strong></p><p>$tasklist_notes</p>";
+					print "<h3>Description</h3><p>$tasklist_notes</p>";
 				
 					print "<p>";
 					print "<span class=\"minitext\"><a href=\"index2.php?page=user_view&amp;user_id=".$user_id."\">".$user_name_first."&nbsp;".$user_name_second."</a><a href=\"index2.php?page=datebook_view_day&amp;time=$tasklist_due\">, ".$tasklist_due_date."</a>".$tasklist_percentage_desc;
@@ -80,7 +80,7 @@ print "</p>";
 					print ", completed <a href=\"index2.php?page=datebook_view_day&time=$tasklist_completed\">".TimeFormat($tasklist_completed)."</a>";
 					}
 					
-					print "</span></p><p><strong>Percentage Complete</strong></p><p>";
+					print "</span></p><h3>Percentage Complete</strong></h3><p>";
 					
 					// Insert the percentage bar	
 						
@@ -127,7 +127,7 @@ print "</p>";
 					}
 					
 					print "</p>";
-					print "<p><strong>Added</strong><br /><a href=\"index2.php?page=datebook_view_day&amp;time=$tasklist_added\">".TimeFormat($tasklist_added)."</a></p>";
+					print "<h3>Added</h3><p><a href=\"index2.php?page=datebook_view_day&amp;time=$tasklist_added\">".TimeFormat($tasklist_added)."</a></p>";
 					
 
 }

@@ -14,11 +14,6 @@ $checkform_user = $_POST[checkform_user];
 if ($_POST[action] != "") { include_once("inc_files/inc_functions_actions.php"); include("inc_files/action_$_POST[action].php"); }
 elseif ($_GET[action] != "") { include_once("inc_files/inc_functions_actions.php"); include("inc_files/action_$_GET[action].php"); }
 
-// Check for details of any projects
-
-		
-
-
 // Include the standard header file
 
 include("inc_files/inc_header.php");
@@ -96,6 +91,10 @@ if ($_GET[page] == NULL) {
 	
 }
 
+	if ($proj_id > 0) { $proj_id = intval($proj_id); }
+	elseif ($_GET[proj_id] > 0) { $proj_id = intval($_GET[proj_id]); }
+	elseif ($_POST[proj_id] > 0) { $proj_id = intval($_POST[proj_id]); }
+	else { unset($proj_id); }
 
     if ($useraction != "defineuser") {
 	

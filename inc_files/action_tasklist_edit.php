@@ -40,7 +40,7 @@
 		$result = mysql_query($sql_edit, $conn) or die(mysql_error());
 		$techmessage = $sql_edit;
 		$actionmessage = "<p>Task \'<a href=\"index2.php?page=tasklist_detail&amp;tasklist_id=$tasklist_id\">". $tasklist_notes ."</a>\' edited successfully.</p>";
-		AlertBoxInsert($_COOKIE[user],"Task Updated",$actionmessage,$tasklist_id,0,0);
+		AlertBoxInsert($_COOKIE[user],"Task Updated",$actionmessage,$tasklist_id,0,0,$tasklist_project);
 	
 	} else {
 
@@ -81,6 +81,6 @@
 		$tasklist_id = mysql_insert_id();
 		
 		$actionmessage = "<p>Task \'<a href=\"index2.php?page=tasklist_detail&amp;tasklist_id=$tasklist_id\">". $tasklist_notes ."</a>\' added successfully.</p>";
-		AlertBoxInsert($_COOKIE[user],"Task Added",$actionmessage,$tasklist_id,0,0);
+		AlertBoxInsert($_COOKIE[user],"Task Added",$actionmessage,$tasklist_id,0,0,$tasklist_project);
 		
 	}

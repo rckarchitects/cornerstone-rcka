@@ -792,6 +792,9 @@ function TimeSheetUserUpdates($user_id, $week_begin, $weeks_to_analyse) {
 				if ($user_usertype_current > 3) { echo "<p>The total adjustment figure is " . number_format( ( 100 * $ts_adjustment_factor) ,2) . "%.</p></blockquote>"; }
 
 				
+		} elseif ($user_usertype_current > 3) {
+			
+			echo "<blockquote><p>- Timesheets for this week incomplete -</p></blockquote>";
 		}
 		
 			
@@ -803,9 +806,6 @@ function TimeSheetUserUpdates($user_id, $week_begin, $weeks_to_analyse) {
 			$sql_update_factor = "UPDATE intranet_timesheet SET ts_cost_factored = ( ts_hours * ts_rate * " . round( $ts_adjustment_factor,2) . ") WHERE ts_entry >= $week_begin AND ts_entry < $week_end AND ts_user = $user_id";
 			//echo "<p>$sql_update_factor</p>";
 			$result_update_factor = mysql_query($sql_update_factor, $conn) or die(mysql_error());
-		} elseif ($user_usertype_current > 3) {
-			
-			echo "<blockquote><p>- Timesheets for this week incomplete -</p></blockquote>";
 		}
 
 }
@@ -926,9 +926,12 @@ function TimesheetListLowCost($user_id) {
 	
 }
 
-function TimesheetListFactored ($week) {
+function TimeSheetListFactored ($week) {
 	
-	echo "<h1>Factored Timesheets</h1>";
+	echo "<h1>Timesheets</h1><h2>Factored Timesheets</h2>";
+	
+					ProjectSubMenu($proj_id,$user_usertype_current,"timesheet_admin",1);
+					ProjectSubMenu($proj_id,$user_usertype_current,"timesheet_settings",2);
 
 	global $conn;
 

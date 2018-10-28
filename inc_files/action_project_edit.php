@@ -187,7 +187,7 @@ $result2 = mysql_query($sql_add2, $conn) or die(mysql_error());
 
 $actionmessage = "<p>The entry for <a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">" . $proj_num . " " . $proj_name . "</a> was updated successfully.</p>";
 
-AlertBoxInsert($_COOKIE[user],"Project Updated",$actionmessage,$proj_id,0,0);
+AlertBoxInsert($_COOKIE[user],"Project Updated",$actionmessage,$proj_id,0,0,$proj_id);
 
 $techmessage = $sql_add."<br />".$result."<br />".$sql_add2."<br/ >".$result2;
 

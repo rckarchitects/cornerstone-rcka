@@ -890,7 +890,7 @@ function PDF_ListTenders($day_begin) {
 		
 			$time_end = BeginWeek ( $day_begin + 1296000 );
 		
-			$sql = "SELECT * FROM `intranet_tender` WHERE tender_date BETWEEN $day_begin AND ($day_begin + 1209600) ORDER BY tender_date";
+			$sql = "SELECT * FROM `intranet_tender` WHERE tender_date BETWEEN $day_begin AND ($day_begin + 1209600) AND tender_result != 3 ORDER BY tender_date";
 			$result = mysql_query($sql, $conn) or die(mysql_error());
 			
 			if (mysql_num_rows($result) > 0) {
@@ -965,6 +965,52 @@ function PDF_TaskDeadlines($day_begin) {
 				StyleBody(10,'Helvetica','B');
 				$user_initial_project = $array['user_initials'];
 				$pdf->Cell(10,10,$user_initial_project,0,1,'C',1);
+				$pdf->Ln(2);
+				$current_day = $day;				
+			}
+			
+			
+		}
+				
+}
+
+function PDF_ImportantDates($week_begin) {
+	
+	GLOBAL $conn;
+	GLOBAL $pdf;
+	
+	$period_start = DisplayDay(intval($week_begin));
+	$period_end = DisplayDay(intval($week_begin) + 1209600);
+	
+		$sql = "SELECT * FROM `intranet_datebook` WHERE date_day >= '" . $period_start . "' AND date_day <= '" . $period_end . "' ORDER BY date_day ASC";
+		$result = mysql_query($sql, $conn) or die(mysql_error());
+		
+		if (mysql_num_rows($result) > 0) {
+
+			StyleBody(16,'Helvetica','B');
+			$pdf->Cell(0,10,'Important Dates',0,1);
+			SetColor2();
+			$color_switch = 2;
+			
+			while ($array = mysql_fetch_array($result)) {
+				
+				$date_time = DisplayDate($array['date_day']);
+				$day = date("d.n.y",$date_time);
+				StyleBody(8,'Helvetica','');
+				$pdf->Cell(15,10,$day); if ($color_switch == 1) { SetColor1(); $color_switch = 2; } else { SetColor2(); $color_switch = 1; }
+				StyleBody(13,'Helvetica','B');
+				$proj_name = $array['date_category'];
+				$width = $pdf->GetStringWidth($proj_name) + 5;
+				$pdf->Cell(2,10,'',0,0,'L',1);
+				$pdf->Cell($width,10,$proj_name,0,0,'L',1);
+				StyleBody(13,'Helvetica','');
+				$pdf->Cell(1,10,'',0,0,'L',0);
+				if (strlen($array['date_description']) > 70) { $tasklist_notes = substr($array['date_description'],0,65) . "..."; } else { $tasklist_notes = $array['date_description']; }
+				$width = $pdf->GetStringWidth($tasklist_notes) + 5;
+				$pdf->Cell(2,10,'',0,0,'L',1);
+				$pdf->Cell($width,10,$tasklist_notes,0,1,'L',1);
+				$pdf->SetTextColor(0,0,0);
+				$pdf->Cell(1,$row_height,'');
 				$pdf->Ln(2);
 				$current_day = $day;				
 			}
@@ -1371,7 +1417,8 @@ function PDFProjectArray($proj_id) {
 				$proj_value = utf8_decode($proj_value);
 				$pdf->Cell(50,5,$proj_value,'B',0,'R');
 				
-				$proj_procure = html_entity_decode(ProjectProcurement($array['proj_procure'],$proj_id));
+				//THIS NEEDS UPDATING TO OUTPUT PROJECT PROCUREMENT TYPE
+				//$proj_procure = html_entity_decode(ProjectProcurement($array['proj_procure'],$proj_id));
 				
 				$pdf->Cell(75,5,$proj_procure,'B',0,'R');
 				$pdf->Cell(0,5,"",'B',1);

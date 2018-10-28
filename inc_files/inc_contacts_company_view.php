@@ -89,7 +89,7 @@ if (mysql_num_rows($result_contact) > 0) {
    echo "</div>";
 }
 
-if ($company_notes != NULL) { echo "<fieldset><legend>Notes</legend><blockquote>".DeCode($company_notes)."</blockquote></fieldset>"; }
+if ($company_notes != NULL) { echo "<div><h3>Notes</h3><div class=\"page\">".DeCode($company_notes)."</div></div"; }
 
 
 

@@ -138,10 +138,13 @@ function UpdateUser($user_id) {
 	
 }
 
+
+
 function BlogUpdateAction() {
 	
 	global $conn;
 
+	
 
 					// Begin to clean up the $_POST submissions
 
@@ -158,6 +161,8 @@ function BlogUpdateAction() {
 					$blog_task = CleanUp($_POST[blog_task]);
 					$blog_pinned = intval($_POST[blog_pinned]);
 					$blog_access = intval($_POST[blog_access]);
+					
+					BackupJournal($blog_id);
 
 						$blog_date_minute = CleanNumber($_POST[blog_date_minute]);
 						$blog_date_hour = CleanNumber($_POST[blog_date_hour]);
@@ -181,7 +186,8 @@ function BlogUpdateAction() {
 					blog_link = '$blog_link',
 					blog_task = '$blog_task',
 					blog_pinned = '$blog_pinned',
-					blog_access = '$blog_access'
+					blog_access = '$blog_access',
+					blog_lock = 0
 					WHERE blog_id = '$blog_id' LIMIT 1
 					";
 
@@ -189,8 +195,8 @@ function BlogUpdateAction() {
 
 					$actionmessage = "<p>Journal Entry \"<a href=\"index2.php?page=project_blog_view&amp;blog_id=" . $blog_id . "&amp;proj_id=" . $blog_proj . "\">" . $blog_title . "\"</a> was edited successfully.</p>";
 
-					AlertBoxInsert($_COOKIE[user],"Journal Entry Updated",$actionmessage,$blog_id,0);
-
+					AlertBoxInsert($_COOKIE[user],"Journal Entry Updated",$actionmessage,$blog_id,0,1,$blog_proj);
+					
 					$techmessage = $sql_add;
 				
 

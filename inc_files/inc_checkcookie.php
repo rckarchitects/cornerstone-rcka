@@ -1,19 +1,23 @@
 <?php
 
-require_once 'secure/rollbar.php';
+function RollBar() {
 
-$config = array(
-    // required
-    'access_token' => '79f4496bab774563862a8da48e15cf19',
-    // optional - environment name. any string will do.
-    'environment' => 'production',
-    // optional - path to directory your code is in. used for linking stack traces.
-    'root' => '/Users/brian/www/myapp'
-);
-Rollbar::init($config);
+		require_once 'secure/rollbar.php';
 
-// installs global error and exception handlers
-Rollbar::init(array('access_token' => '79f4496bab774563862a8da48e15cf19'));
+		$config = array(
+			// required
+			'access_token' => '79f4496bab774563862a8da48e15cf19',
+			// optional - environment name. any string will do.
+			'environment' => 'production',
+			// optional - path to directory your code is in. used for linking stack traces.
+			'root' => '/Users/brian/www/myapp'
+		);
+		Rollbar::init($config);
+
+		// installs global error and exception handlers
+		Rollbar::init(array('access_token' => '79f4496bab774563862a8da48e15cf19'));
+
+}
 
 // Set Locale
 setlocale(LC_ALL, 'gb_EN');

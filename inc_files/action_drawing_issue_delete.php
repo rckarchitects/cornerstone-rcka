@@ -17,9 +17,6 @@ if ($set_id != NULL && $proj_id != NULL) {
 		$techmessage = $sql_delete_set . "<br />" . $sql_delete_issued;
 		
 		$actionmessage = "<p>Drawing issue set ref. $set_id deleted successfully.</p>";
-		AlertBoxInsert($_COOKIE[user],"Drawing Issue Deleted",$actionmessage,$set_id,0,0);
+		AlertBoxInsert($_COOKIE[user],"Drawing Issue Deleted",$actionmessage,$set_id,0,0,$proj_id);
 
 }	
-
-
-?>

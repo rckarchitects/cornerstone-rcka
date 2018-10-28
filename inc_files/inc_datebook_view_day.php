@@ -293,7 +293,7 @@ function DayBook_Tasks($time,$startday,$endday) {
 				$strike2 = NULL;
 			}
 			
-			echo "<tr><td style=\"width: 50px; $highlight\">$strike<a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num</a>$strike2</td><td style=\"$highlight\">$strike<a href=\"index2.php?page=tasklist_detail&amp;tasklist_id=$tasklist_id&amp;time=$tasklist_due\">$tasklist_notes</a>$strike2&nbsp;$tasklist_completed_text</td><td style=\"$highlight\">$strike<a href=\"index2.php?page=user_view&amp;user_id=$user_id\">$user_name_first&nbsp;$user_name_second</a>$strike2</td></tr>";
+			echo "<tr><td style=\"width: 50px; $highlight\">$strike<a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num</a>$strike2</td><td style=\"$highlight\">$strike<a href=\"index2.php?page=tasklist_detail&amp;tasklist_id=$tasklist_id\">$tasklist_notes</a>$strike2&nbsp;$tasklist_completed_text</td><td style=\"$highlight\">$strike<a href=\"index2.php?page=user_view&amp;user_id=$user_id\">$user_name_first&nbsp;$user_name_second</a>$strike2</td></tr>";
 		}
 			echo "</table>";
 		}

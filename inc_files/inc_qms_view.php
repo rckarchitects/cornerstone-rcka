@@ -1,5 +1,23 @@
 <?php
 
+function QMSGetHeading($s1) {
+	
+	if ($s1) { 
+		
+		global $conn;
+		$sql = "SELECT qms_toc1, qms_text FROM intranet_qms WHERE qms_toc1 = $s1 LIMIT 1";
+		$result = mysql_query($sql, $conn) or die(mysql_error());
+		$array = mysql_fetch_array($result);
+		
+		echo "<h2>" . $array['qms_toc1'] . ": " . $array['qms_text'] . "</h2>";
+		
+	} else {
+		
+		echo "<h2>Contents</h2>";
+	}
+	
+}
+
 function CreateList($input, $qms_id, $bg) {
 	
 	$ul = 1; $list = 0;
@@ -61,7 +79,9 @@ $s1 = intval ($s1);
 
 $s2 = intval ($s2);
 
-	echo "<h1>Quality Management System</h1>";
+	echo "<h1><a href=\"index2.php?page=qms_view\">Quality Management System</a></h1>";
+	
+	QMSGetHeading($s1);
 	
 	$beginweek = BeginWeek(time());
 	
@@ -100,7 +120,7 @@ $s2 = intval ($s2);
 	}
 	echo "</form></p>";
 	
-if ($_GET[s1] != NULL) { echo "<blockquote>"; }
+if ($_GET[s1] != NULL) { echo "<div class=\"page\">"; }
 
 
 if ($s1 == 0) {
@@ -109,7 +129,6 @@ if ($s1 == 0) {
 			$sql_contents = "SELECT * FROM intranet_qms WHERE qms_toc4 = 0 AND qms_toc3 = 0 AND qms_toc2 = 0 ORDER BY qms_toc1, qms_toc2, qms_toc3";
 			$result_contents = mysql_query($sql_contents, $conn) or die(mysql_error());
 			
-			echo "<h2>Contents</h2>";
 			
 			echo "<table>";
 			
@@ -135,11 +154,12 @@ if ($s1 == 0) {
 	
 } else {
 	
-
+			
 
 			$sql = "SELECT * FROM intranet_qms WHERE qms_toc1 = $s1 AND qms_toc2 = $s2 ORDER BY qms_toc1, qms_toc2, qms_toc3, qms_toc4";
 			
 			$result = mysql_query($sql, $conn) or die(mysql_error());
+			
 
 			while ($array = mysql_fetch_array($result)) {
 				
@@ -151,6 +171,7 @@ if ($s1 == 0) {
 					$qms_type = $array['qms_type'];
 					$qms_text = $array['qms_text'];
 					$qms_timestamp = $array['qms_timestamp'];
+					
 					
 					$qms_text = ClauseCrossReference($qms_text);
 					
@@ -175,8 +196,6 @@ if ($s1 == 0) {
 					elseif ($qms_toc2 > 0) { echo "<h3 id=\"$qms_id\" $bg>" . $qms_toc1. "." . $qms_toc2. " " . $qms_text . "&nbsp;$edit_clause</h3>"; }
 
 					elseif ($qms_toc1 > 0) { echo "<h2 id=\"$qms_id\" $bg>" . $qms_toc1. " " . $qms_text . "&nbsp;$edit_clause</h2>"; }	
-				
-				
 			}
 		
 			
@@ -206,10 +225,4 @@ if ($s1 == 0) {
 }
 
 
-if ($_GET[s1] != NULL) { echo "</blockquote>"; }
-
-
-
-
-
-?>
+if ($_GET[s1] != NULL) { echo "</div>"; }

@@ -73,6 +73,10 @@ function SetColor4() { GLOBAL $pdf; $pdf->SetFillColor(177,227,227); }
 	
 	PDF_ListStages($begin_week);
 	
+// Upcoming Important Dates
+
+	PDF_ImportantDates($begin_week);
+	
 // Tasks Due This Week
 
 	PDF_TaskDeadlines($begin_week);
@@ -84,5 +88,3 @@ $file_name = $date . "_Weekly_Summary.pdf";
 
 
 $pdf->Output($file_name,I);
-
-?>

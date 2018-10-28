@@ -1,3 +1,3 @@
 <?php
 
-if ($user_usertype_current > 3) { TimesheetListFactored (); }
+if ($user_usertype_current > 3) { TimeSheetListFactored (); }

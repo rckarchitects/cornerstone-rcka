@@ -17,9 +17,7 @@ if ($drawing_id != NULL && $proj_id != NULL) {
 		$actionmessage = "<p>Drawing ref. " . $drawing_id . " deleted successfully.</p>";
 		$techmessage = $sql_delete_drawing . "<br />" . $sql_delete_revision;
 		
-		AlertBoxInsert($_COOKIE[user],"Drawing Deleted",$actionmessage,$drawing_id,0,0);
+		AlertBoxInsert($_COOKIE[user],"Drawing Deleted",$actionmessage,$drawing_id,0,0,$proj_id);
+	
 
 }
-
-
-?>

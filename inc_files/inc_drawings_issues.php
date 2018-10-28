@@ -17,7 +17,7 @@ function DrawingsIssuedList($proj_id) {
 		
 			while ($array_issue_list = mysql_fetch_array($result_issue_list)) {
 				
-				echo "<tr><td>" . $array_issue_list['set_id'] . "</td><td><a href=\"index2.php?page=datebook_view_day&amp;timestamp=" . $array_issue_list['set_date'] . "\">" . TimeFormat($array_issue_list['set_date']) . "</a></td><td>" . $array_issue_list['set_reason'] . "</td><td>" . $array_issue_list['set_method'] . "</td><td>" . $array_issue_list['set_format'] . "</td><td>" . UserDetails($array_issue_list['set_user']) . "</td><td>" . UserDetails($array_issue_list['set_checked']) . "</td><td>" . $array_issue_list['set_comment'] . "</td></tr>";
+				echo "<tr><td><a href=\"index2.php?page=drawings_issue_list&amp;set_id=" . $array_issue_list['set_id'] . "&amp;proj_id=" . $proj_id . "\">" . $array_issue_list['set_id'] . "</a></td><td><a href=\"index2.php?page=datebook_view_day&amp;timestamp=" . $array_issue_list['set_date'] . "\">" . TimeFormat($array_issue_list['set_date']) . "</a></td><td>" . $array_issue_list['set_reason'] . "</td><td>" . $array_issue_list['set_method'] . "</td><td>" . $array_issue_list['set_format'] . "</td><td>" . UserDetails($array_issue_list['set_user']) . "</td><td>" . UserDetails($array_issue_list['set_checked']) . "</td><td>" . $array_issue_list['set_comment'] . "</td></tr>";
 				
 			}
 			

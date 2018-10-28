@@ -29,7 +29,7 @@ function ActionDateEdit() {
 
        $result = mysql_query($sql, $conn) or die(mysql_error());
         $actionmessage = "<p>Date for <a href=\"index2.php?page=date_show&amp;date_id=$date_id\">" . $date_description . "</a> has been updated successfully.</p>";
-        AlertBoxInsert($_COOKIE[user],"Date Updated",$actionmessage,$date_id,86400);
+        AlertBoxInsert($_COOKIE[user],"Date Updated",$actionmessage,$date_id,86400,0,$date_project);
 
 
     } else {
@@ -58,7 +58,7 @@ function ActionDateEdit() {
         $date_user = mysql_insert_id();
        $result = mysql_query($sql, $conn) or die(mysql_error());
         $actionmessage = "<p>Date for <a href=\"index2.php?page=date_show&amp;date_id=$date_id\">" . $date_description . "</a> has been added successfully.</p>";
-        AlertBoxInsert($_COOKIE[user],"Date Added",$actionmessage,$date_id,86400);
+        AlertBoxInsert($_COOKIE[user],"Date Added",$actionmessage,$date_id,86400,0,$date_project);
 
 
     }
