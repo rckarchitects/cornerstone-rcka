@@ -22,12 +22,6 @@ function UpdateUser($user_id) {
 
 			if ($user_id > 0) {
 
-				if ($_POST[update_user_password] == "yes" && $_POST[update_user_password] != NULL) {
-						$user_password = md5($_POST[user_password]);
-						$update_password = ", user_password = '$user_password' ";
-				} else {
-						unset($update_password);
-				}
 
 				$sql = "UPDATE intranet_user_details SET
 				user_address_county = '$user_address_county',
@@ -60,7 +54,7 @@ function UpdateUser($user_id) {
 				
 				$result = mysql_query($sql, $conn) or die(mysql_error());
 				
-				$actionmessage = "<p>User <a href=\"index2.php?page=user_view&amp;user_id=$user_id\">$user_name_first $user_name_second</a> updated.</p>";
+				$actionmessage = "<p>User <a href=\"index2.php?page=user_view&amp;user_id=$user_id\">$user_name_first $user_name_second</a>(" . $user_initials . "), with user id: " . $user_id . ", updated.</p>";
 				
 				AlertBoxInsert($_COOKIE[user],"User Updated",$actionmessage,$user_id,1,0);
 				
@@ -92,7 +86,6 @@ function UpdateUser($user_id) {
 				user_holidays,
 				user_initials,
 				user_prop_target,
-				user_password,
 				user_timesheet_hours,
 				user_notes
 				) VALUES (
@@ -118,7 +111,6 @@ function UpdateUser($user_id) {
 				'$_POST[user_holidays]',
 				'$user_initials',
 				'$_POST[user_prop_target]',
-				'$user_password',
 				'$user_timesheet_hours',
 				'$user_notes'
 				)
@@ -137,8 +129,6 @@ function UpdateUser($user_id) {
 			}
 	
 }
-
-
 
 function BlogUpdateAction() {
 	
@@ -200,4 +190,56 @@ function BlogUpdateAction() {
 					$techmessage = $sql_add;
 				
 
+}
+
+function ActionUserChangePassword() {
+	
+	global $conn;
+	global $user_usertype_current;
+	$user_id_current = intval( $_COOKIE[user] );
+	$user_usertype_current = intval($user_usertype_current);
+	$user_id = intval($_POST[user_id]);
+	
+	if ($user_usertype_current > 3 OR $ $user_id_current == $user_id) {
+	
+			
+
+			// Begin to clean up the $_POST submissions
+
+				$user_password1 = md5($_POST[user_password1]);
+				$user_password2 = md5($_POST[user_password2]);
+				
+			if ($user_password1 == $user_password2) {
+						
+					// Get the password details from the database
+
+					$sql = "SELECT user_password FROM intranet_user_details WHERE user_id = " . $user_id . " LIMIT 1";
+					$result = mysql_query($sql, $conn) or die(mysql_error());
+					$array = mysql_fetch_array($result);
+					$user_password_old = $array['user_password'];
+
+					// Check that the required values have been entered, and alter the page to show if these values are invalid
+
+					echo "<p>Old password: " . $user_password_old . "</p>";
+					echo "<p>New password (1): " . $user_password1 . "</p>";
+					echo "<p>New password (2): " . $user_password2 . "</p>";
+
+					// Construct the MySQL instruction to add these entries to the database
+
+							$sql_edit = "UPDATE intranet_user_details SET
+							user_password = '$password_new1'
+							WHERE user_id = '$user_id_current'
+							LIMIT 1";
+							
+							$result = mysql_query($sql_edit, $conn) or die(mysql_error());
+							$actionmessage = "<p>Password for user id <a href=\"index2.php?page=user_view&amp;user_id=" . $user_id . "\">" . $user_id . "</a> changed successfully.</p>";
+							$techmessage = $sql_edit;
+							
+							AlertBoxInsert($_COOKIE[user],"User Password Updated",$actionmessage,$user_id_current,1,0);
+
+			}
+			
+	}
+	
+	
 }

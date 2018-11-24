@@ -2,7 +2,7 @@
 
 function MediaUpload() {
 
-
+	unset($actionmessage);
 	
 	global $conn;
 	
@@ -26,16 +26,23 @@ function MediaUpload() {
 	
 
     if (isset($uploadPath)) {
+		
+		
 
 			if (! in_array($fileExtension,$fileExtensions)) {
 				$actionmessage = $actionmessage . "This file extension is not allowed.<br />";
+				//echo "<p>$actionmessage</p>";
 			}
 
 			if ($fileSize > 20000000) {
 				$actionmessage = $actionmessage . "This file is more than 10MB. Sorry, it has to be less than or equal to 10MB.<br />";
+				//echo "<p>$actionmessage</p>";
 			}
 
 			if (empty($actionmessage)) {
+				
+				
+				
 				$didUpload = move_uploaded_file($fileTmpName, $uploadPath);
 
 				if ($didUpload) {
@@ -82,8 +89,12 @@ function MediaUpload() {
 								$id_added = mysql_insert_id();
 					
 				} else {
-					$actionmessage = $actionmessage . "An error occurred somewhere. Try again or contact the admin.<br />";
-
+					
+					
+					$actionmessage = $actionmessage . "An error occurred somewhere. Try again or contact the administrator.<br />";
+					
+					//echo "<p>$actionmessage from $fileTmpName to $uploadPath </p>";
+					
 				}
 			}
 		} else {

@@ -2,7 +2,11 @@
 
 echo "<div style=\"width: 100%; float: left;\">";
 
+echo "<div>";
+
 DateList(1);
+
+echo "</div>";
 
 echo "<h2>Projects</h2>";
 

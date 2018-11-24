@@ -117,6 +117,7 @@
 										if ($issue_confirmed == "yes" && $issue_to == "yes") {
 										$result = mysql_query($sql_add, $conn) or die(mysql_error());
 										//echo "Drawing ID: " . $issue_drawing . " (" . $counter_drawing . "), " . $sql_add . "<br / >";
+										$count_people_issued++;
 										}
 
 
@@ -126,7 +127,7 @@
 						
 						$counter_drawing = 0;
 						$count++;
-						$count_people_issued++;
+						
 								
 					}
 					
