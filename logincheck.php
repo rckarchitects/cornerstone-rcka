@@ -2,52 +2,62 @@
 
 // Include the cookie check information
 
-include("inc_files/inc_checkcookie_logincheck.php");
-include("inc_files/inc_functions_general.php");
+function CheckLogin() {
 
-$checkform_username = addslashes($_POST[checkform_username]);
-$password_submitted = addslashes($_POST[password]);
+	include_once("inc_files/inc_checkcookie_logincheck.php");
+	include_once("inc_files/inc_functions_general.php");
 
-$sql = "SELECT * FROM intranet_user_details where user_username = '$checkform_username' ";
-$result = mysql_query($sql, $conn);
+	$checkform_username = addslashes($_POST[checkform_username]);
+	$password_submitted = addslashes($_POST[password]);
 
-$array = mysql_fetch_array($result);
-$password_actual = $array['user_password'];
-$user_username = $array['user_username'];
-$user_id = intval($array['user_id']);
-$user_usertype = intval($array['user_usertype']);
-$user_active = intval(intval($array['user_active']));
-$user_user_added = intval($array['user_user_added']);
+	$sql = "SELECT * FROM intranet_user_details where user_username = '" . $checkform_username . "' ";
+	$result = mysql_query($sql, $conn);
 
-if ($password_actual != md5($password_submitted) OR $user_active == 0) {
-setcookie(user, "");
-setcookie(password, "");
-setcookie(name, $checkform_username, time()+60);
 
-$ip_address = $_SERVER['REMOTE_ADDR'];
-if ($_SERVER['REMOTE_HOST']) { $ip_address = $ip_address . " (" . $_SERVER['REMOTE_HOST'] . ")"; }
-if ($checkform_username) { $ip_address = $ip_address . ", using username: '".  $checkform_username . "'.";  }
-$ip_address = $ip_address . ".";
+	$array = mysql_fetch_array($result);
+	$password_actual = $array['user_password'];
+	$user_username = $array['user_username'];
+	$user_id = intval($array['user_id']);
+	$user_usertype = intval($array['user_usertype']);
+	$user_active = intval(intval($array['user_active']));
+	$user_user_added = intval($array['user_user_added']);
+	
 
-$actionmessage = "<p>Failed Login from IP address: " . $ip_address . ".</p>";
+	if ($password_actual != md5($password_submitted) OR $user_active == 0) {
 
-$array_admin = GetAdmins(5);
-foreach ( $array_admin AS $user_ids) {
-	AlertBoxInsert($user_ids,"Login Failed",$actionmessage,1,86400,1);
+		
+		setcookie(user, "");
+		setcookie(password, "");
+		setcookie(name, $checkform_username, time()+60);
+
+		$ip_address = $_SERVER['REMOTE_ADDR'];
+		if ($_SERVER['REMOTE_HOST']) { $ip_address = $ip_address . " (" . $_SERVER['REMOTE_HOST'] . ")"; }
+		if ($checkform_username) { $ip_address = $ip_address . ", using username: '".  $checkform_username . "'.";  }
+		$ip_address = $ip_address . ".";
+
+		$actionmessage = "<p>Failed Login from IP address: " . $ip_address . ".</p>";
+
+		$array_admin = GetAdmins(5);
+		foreach ( $array_admin AS $user_ids) {
+			AlertBoxInsert($user_ids,"Login Failed",$actionmessage,1,86400,1);
+		}
+
+
+		header ("Location: login.php");
+
+	} else {
+
+					if ($_POST[publicpc] != 1) {
+					setcookie(user, $user_id, time()+36000);
+					setcookie(password, $password_actual, time()+604800);
+					} else {
+					setcookie(user, $user_id);
+					setcookie(password, $password_actual);
+					}	
+					header ("Location: index2.php");
+	}
+
 }
 
 
-
-header ("Location: login.php");
-
-} else {
-
-				if ($_POST[publicpc] != 1) {
-				setcookie(user, $user_id, time()+36000);
-				setcookie(password, $password_actual, time()+604800);
-				} else {
-				setcookie(user, $user_id);
-				setcookie(password, $password_actual);
-				}	
-				header ("Location: index2.php");
-}
+CheckLogin();

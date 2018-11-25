@@ -677,7 +677,7 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 2;
 		
-	} elseif ( $page == "contacts_admin") {
+	} elseif ( $page == "contacts_admin"  && $level == 1) {
 	
 				$array_menu_page[] = "index2.php?page=contacts_view";
 				$array_menu_text[] = "All Contacts";
@@ -720,33 +720,35 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				
 				}
 
-	} elseif ( $page == "contact_admin" OR $page == "contacts_view_detailed") {
+	} elseif ( $page == "contacts_admin" OR $page == "contacts_view_detailed"  && $level == 2) {
 		
-				if (intval($_GET[contact_id]) > 0) { $contact_id = intval($_GET[contact_id]);
-	
-					$array_menu_page[] = "index2.php?page=contacts_edit&amp;contact_id=" . $contact_id."&amp;status=edit";
-					$array_menu_text[] = "Edit Contact";
-					$array_menu_image[] = "button_edit.png";
-					$array_menu_usertype[] = 1;
-					
-					$array_menu_page[] = "index2.php?page=project_blog_edit&amp;status=add&amp;contact_id=" . $contact_id;
-					$array_menu_text[] = "Add Journal Entry";
-					$array_menu_image[] = "button_new.png";
-					$array_menu_usertype[] = 1;
-					
-					$array_menu_page[] = "vcard.php?contact_id=" . $contact_id;
-					$array_menu_text[] = "VCard File";
-					$array_menu_image[] = "button_list.png";
-					$array_menu_usertype[] = 1;
-					
-					//if ($module_onepage == 1) {
-						$array_menu_page[] = ContactOnePage($contact_id);
-						$array_menu_text[] = "Add to OnepageCRM";
+				if (intval($contact_id) > 0) { $contact_id = intval(contact_id); } elseif (intval($_POST[contact_id]) > 0) { $contact_id = intval($_POST[contact_id]); } elseif (intval($_GET[contact_id]) > 0) { $contact_id = intval($_GET[contact_id]); }
+				
+					if (intval($contact_id) > 0) {
+		
+						$array_menu_page[] = "index2.php?page=contacts_edit&amp;contact_id=" . $contact_id."&amp;status=edit";
+						$array_menu_text[] = "Edit Contact";
+						$array_menu_image[] = "button_edit.png";
+						$array_menu_usertype[] = 1;
+						
+						$array_menu_page[] = "index2.php?page=project_blog_edit&amp;status=add&amp;contact_id=" . $contact_id;
+						$array_menu_text[] = "Add Journal Entry";
 						$array_menu_image[] = "button_new.png";
 						$array_menu_usertype[] = 1;
-					//}
-				
-				}
+						
+						$array_menu_page[] = "vcard.php?contact_id=" . $contact_id;
+						$array_menu_text[] = "VCard File";
+						$array_menu_image[] = "button_list.png";
+						$array_menu_usertype[] = 1;
+						
+						//if ($module_onepage == 1) {
+							$array_menu_page[] = ContactOnePage($contact_id);
+							$array_menu_text[] = "Add to OnepageCRM";
+							$array_menu_image[] = "button_new.png";
+							$array_menu_usertype[] = 1;
+						//}
+					
+					}
 				
 	} elseif ( $page == "timesheet_admin") {
 		
@@ -832,7 +834,6 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_text[] = "List All Projects";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 2;			
-
 			
 	} elseif ( $page == "media") {
 				
@@ -861,9 +862,7 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_page[] = "index2.php?page=phonemessage_edit&amp;status=new&amp;user_id=" . intval($_GET[user_id]);
 				$array_menu_text[] = "Add Phone Message";
 				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 1;
-				
-		
+				$array_menu_usertype[] = 1;		
 		
 	} elseif ( $page == "user_admin" && $level == 2) {
 				
@@ -3087,7 +3086,7 @@ function AlertsList($user_id) {
 			
 			echo "<table>";
 			
-			echo "<tr><th>ID</th><th style=\"width: 20%;\">Subject</th><th>Content</th><th>User</th><th style=\"text-align: right; width: 10%;\">Date</th><th style=\"text-align: right; width: 20%;\">Project</th><th style=\"text-align: right; width: 10%;\">Dismissed</th></tr>";
+			echo "<tr><th>ID</th><th style=\"width: 20%;\">Subject</th><th>Content</th><th style=\"width: 10%;\">User</th><th style=\"text-align: right; width: 10%;\">Date</th><th style=\"width: 20%;\">Project</th><th style=\"text-align: right; width: 10%;\">Dismissed</th></tr>";
 		
 			while ($array = mysql_fetch_array($result)) { 
 				
@@ -4887,6 +4886,11 @@ function UserChangePasswordForm($user_id) {
 		echo "<h3>Repeat new password</h3><p><input type=\"password\" name=\"user_password2\" value=\"\" required=\"required\" /></p>";
 		echo "<input type=\"hidden\" value=\"" . $user_id . "\" name=\"user_id\" />";
 		echo "<input type=\"hidden\" value=\"user_change_password\" name=\"action\" />";
+		if ($user_id == $_COOKIE[user]) {
+			echo "<p>Please note that if you are changing your own password you will be automatically logged out and will need to login again using your new password.</p>";
+		} else {
+			echo "<p>Changing a user's password will automatically log them out of the system and they will be required to login again using their new password.</p>";
+		}
 		echo "<p><input type=\"submit\" />";
 		echo "</form>";
 		echo "</div>";

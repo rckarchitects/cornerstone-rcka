@@ -3,10 +3,11 @@
 function ContactViewDetailed($select_contact_id) {
 		
 		global $conn;
+		global $$user_usertype_current;
 		
 			$select_contact_id = intval($select_contact_id);
 
-						$sql_contact = "SELECT * FROM contacts_contactlist LEFT JOIN intranet_user_details ON user_id = contact_added_by WHERE contact_id = $select_contact_id LIMIT 1";
+						$sql_contact = "SELECT * FROM contacts_contactlist LEFT JOIN intranet_user_details ON user_id = contact_added_by WHERE contact_id = " . intval ( $select_contact_id ) . " LIMIT 1";
 						$result_contact = mysql_query($sql_contact, $conn);
 						$array_contact = mysql_fetch_array($result_contact);
 						
@@ -64,7 +65,7 @@ function ContactViewDetailed($select_contact_id) {
 						echo "<h2>$contact_namefirst $contact_namesecond</h2>";
 						
 						ProjectSubMenu(NULL,$user_usertype_current,"contacts_admin",1);
-						ProjectSubMenu(NULL,$user_usertype_current,"contact_admin",2);
+						ProjectSubMenu(NULL,$user_usertype_current,"contacts_admin",2);
 						
 
 								

@@ -32,6 +32,3 @@ $settings_mileage = $database_read_array[19];
 
 $conn = mysql_connect("$database_location", "$database_username", "$database_password");
 mysql_select_db("$database_name", $conn);
-
- 
-?>

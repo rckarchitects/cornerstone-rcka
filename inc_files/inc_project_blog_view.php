@@ -4,7 +4,7 @@ if (intval($blog_id) > 0) { $blog_id = intval($blog_id) ; }
 elseif (intval($_POST[blog_id]) > 0) { $blog_id = intval($_POST[blog_id]) ; }
 elseif (intval($_GET[blog_id]) > 0) { $blog_id = intval($_GET[blog_id]) ; }
 
-function BlogView($blog_id,$proj_id) {
+function BlogView($blog_id) {
 
 				global $conn;
 				global $user_id_current;
@@ -13,6 +13,7 @@ function BlogView($blog_id,$proj_id) {
 				
 				
 					$sql = "SELECT * FROM intranet_projects_blog, intranet_projects where blog_id = " . intval($blog_id) . " AND blog_proj = proj_id AND (blog_access <= " . intval($user_usertype_current) . " OR blog_access IS NULL) AND (blog_view = 0 OR blog_view = " . $user_id_current . ") LIMIT 1";
+					
 					$result = mysql_query($sql, $conn);
 					$array = mysql_fetch_array($result);
 				
@@ -28,12 +29,13 @@ function BlogView($blog_id,$proj_id) {
 					$blog_link = $array['blog_link'];
 					$blog_task = $array['blog_task'];
 					
+					$proj_id = intval($array['proj_id']);
 					$proj_num = $array['proj_num'];
 					$proj_name = $array['proj_name'];
 
-					if ($proj_id == 0 && intval($array['blog_proj']) == 0) { echo "<h1>Blog</h1>"; } elseif (intval($proj_id) == 0 && $array['blog_proj'] > 0) {  $proj_id = $array['blog_proj']; echo "<h1><a href=\"index2.php?page=project_view&amp;proj_id=" . $proj_id . "\">" . $proj_num . "&nbsp;" . $proj_name . "</a></h1>"; }
+					if (intval($proj_id) > 0) {  $proj_id = $array['blog_proj']; echo "<h1><a href=\"index2.php?page=project_view&amp;proj_id=" . $proj_id . "\">" . $proj_num . "&nbsp;" . $proj_name . "</a></h1>"; } else { echo "<h1>Journal $proj_id</h1>"; }
 
-				if ($user_usertype_current > 0 && $blog_id > 0) {
+					if ($user_usertype_current > 0 && $blog_id > 0) {
 
 					if ($blog_user != $user_id_current AND $blog_view == 1 AND $user_usertype_current < 4) { echo "<h1 class=\"alert\">Error</h1>"; echo "<p>You do not have sufficient privileges to view this entry.</p>"; }
 
@@ -125,7 +127,7 @@ function BlogView($blog_id,$proj_id) {
 
 }
 
-$proj_id = BlogView($blog_id,$proj_id);
+BlogView($blog_id);
 
 
 

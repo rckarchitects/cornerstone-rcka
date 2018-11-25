@@ -88,10 +88,8 @@ function ActionBlogAdd() {
 
 				}
 				
-		return array($id_added,$blog_proj);
+		return $id_added;
 
 }
 
-$output_array = ActionBlogAdd();
-$blog_id = $output_array[0];
-$proj_id = $output_array[1];
+$blog_id = ActionBlogAdd();

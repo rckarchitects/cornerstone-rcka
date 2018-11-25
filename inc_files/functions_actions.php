@@ -54,7 +54,7 @@ function UpdateUser($user_id) {
 				
 				$result = mysql_query($sql, $conn) or die(mysql_error());
 				
-				$actionmessage = "<p>User <a href=\"index2.php?page=user_view&amp;user_id=$user_id\">$user_name_first $user_name_second</a>(" . $user_initials . "), with user id: " . $user_id . ", updated.</p>";
+				$actionmessage = "<p>User <a href=\"index2.php?page=user_view&amp;user_id=$user_id\">$user_name_first $user_name_second</a> (" . $user_initials . "), with user id: " . $user_id . ", updated.</p>";
 				
 				AlertBoxInsert($_COOKIE[user],"User Updated",$actionmessage,$user_id,1,0);
 				
@@ -200,7 +200,7 @@ function ActionUserChangePassword() {
 	$user_usertype_current = intval($user_usertype_current);
 	$user_id = intval($_POST[user_id]);
 	
-	if ($user_usertype_current > 3 OR $ $user_id_current == $user_id) {
+	if (($user_usertype_current > 3) OR ($user_id_current == $user_id)) {
 	
 			
 
@@ -218,17 +218,15 @@ function ActionUserChangePassword() {
 					$array = mysql_fetch_array($result);
 					$user_password_old = $array['user_password'];
 
-					// Check that the required values have been entered, and alter the page to show if these values are invalid
-
-					echo "<p>Old password: " . $user_password_old . "</p>";
-					echo "<p>New password (1): " . $user_password1 . "</p>";
-					echo "<p>New password (2): " . $user_password2 . "</p>";
 
 					// Construct the MySQL instruction to add these entries to the database
+					
+					
+						if ($user_password1 != $user_password_old) {
 
 							$sql_edit = "UPDATE intranet_user_details SET
-							user_password = '$password_new1'
-							WHERE user_id = '$user_id_current'
+							user_password = '" . $user_password1 . "'
+							WHERE user_id = " . $user_id . "
 							LIMIT 1";
 							
 							$result = mysql_query($sql_edit, $conn) or die(mysql_error());
@@ -236,6 +234,10 @@ function ActionUserChangePassword() {
 							$techmessage = $sql_edit;
 							
 							AlertBoxInsert($_COOKIE[user],"User Password Updated",$actionmessage,$user_id_current,1,0);
+							
+							if ($user_id_current == $user_id) { setcookie("user_password",$user_password1); }
+							
+						}
 
 			}
 			
