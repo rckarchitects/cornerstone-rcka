@@ -2,11 +2,11 @@
 
 // Check the IP address of the user
 
-include("inc_files/inc_ipcheck.php");
+include_once("inc_files/inc_ipcheck.php");
 
 // Perform the top-of-page security check
 
-include "inc_files/inc_checkcookie.php";
+include_once("inc_files/inc_checkcookie.php");
 
 $usercheck = $_POST[usercheck];
 $checkform_user = $_POST[checkform_user];
@@ -16,7 +16,7 @@ elseif ($_GET[action] != "") { include_once("inc_files/inc_functions_actions.php
 
 // Include the standard header file
 
-include("inc_files/inc_header.php");
+include_once("inc_files/inc_header.php");
 
 Logo($settings_style,$settings_name);
 

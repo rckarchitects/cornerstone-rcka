@@ -880,8 +880,10 @@ function TimesheetListZeroCost($user_id) {
 
 				
 				if (mysql_num_rows($result) > 0) {
+					
+					echo "<h3>Timesheet Entries with Zero Cost</h3>";
 				
-					echo "<fieldset><legend>Timesheet Entries with Zero Cost</legend><table>";
+					echo "<div class=\"page\"><table>";
 					
 					echo "<tr><th>Date</th><th>User</th><th>ID</th><th style=\"text-align: right;\">Hours</th><th style=\"text-align: right;\">Factored Cost (&pound;)</th><th style=\"text-align: right;\">Hours</th><th style=\"text-align: right;\">Hourly Cost (&pound;)</th><th style=\"text-align: right;\">Non Fee-Earning Time (%)</th></tr>";
 					
@@ -891,7 +893,7 @@ function TimesheetListZeroCost($user_id) {
 						
 					}
 					
-					echo "</table></fieldset>";
+					echo "</table></div>";
 				
 				}
 	
@@ -910,7 +912,7 @@ function TimesheetListLowCost($user_id) {
 				
 				if (mysql_num_rows($result) > 0) {
 				
-					echo "<fieldset><legend>Timesheet Entries with Low Cost</legend><table>";
+					echo "<div><h3>Timesheet Entries with Low Cost</h3><table>";
 				
 					echo "<p class=\"minitext\">The table below shows any timesheet entries which have a factored cost less than half of expected cost (ie. hourly rate x number of hours). This is useful for identifying any entries which may not have been factored correctly.</p>";
 					echo "<tr><th>Date</th><th>User</th><th>ID</th><th style=\"text-align: right;\">Hours</th><th style=\"text-align: right;\">Factored Cost (&pound;)</th><th style=\"text-align: right;\">Hours</th><th style=\"text-align: right;\">Hourly Cost (&pound;)</th><th style=\"text-align: right;\">Non Fee-Earning Time (%)</th></tr>";
@@ -921,7 +923,7 @@ function TimesheetListLowCost($user_id) {
 						
 					}
 					
-					echo "</table></fieldset>";
+					echo "</table></div>";
 				
 				}
 	

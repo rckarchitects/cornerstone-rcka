@@ -82,9 +82,7 @@ function ActionBlogAdd() {
 
 				AlertBoxInsert($_COOKIE[user],"Journal Entry Added",$actionmessage,$id_added,0,1,$blog_proj);
 
-				$techmessage = $sql_add;
-
-				if ($id_added > 0) { $blog_id = $id_added; BackupJournal($id_added); }
+				if ($id_added > 0) { BackupJournal($id_added); }
 
 				}
 				

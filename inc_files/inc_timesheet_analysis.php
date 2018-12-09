@@ -5,26 +5,26 @@ echo "<h2>Analysis</h2>";
 
 ProjectSubMenu($proj_id,$user_usertype_current,"timesheet_admin",1);
 
-echo "<fieldset><legend>Summary Sheets (PDF)</legend>";
+echo "<div><h3>Summary Sheets (PDF)</h3>";
 
 	echo "<p>";
 	echo "<a href=\"timesheet_all_summary_pdf.php\">View Project Summary Sheet</a><br /><font class=\"minitext\">Please note that this may take a few seconds to generate</font>";
 	echo "</p>";
 	
-echo "</fieldset>";
+echo "</div>";
 
 
 
 // Select project month to view
 
-echo "<fieldset><legend>View Monthly Project Sheet (PDF)</legend>";
+echo "<div><h3>View Monthly Project Sheet (PDF)</h3>";
 
 echo "<p>The following form allows you to output a PDF file which lists the activity for a specific project for a particular month.</p>";
 
 echo "<form method=\"post\" action=\"timesheet_project_month_pdf_redirect.php\">";
 
     echo "<p>Select Project<br />";
-		ProjectSelect($proj_id,'submit_project');
+		ProjectSelect($proj_id,'submit_project',1);
 	echo "</p>";
 
 
@@ -64,19 +64,19 @@ echo "<input type=\"submit\" value=\"Go\" class=\"inputsubmit\" />";
 echo "</p>";
 echo "</form>";
 
-echo "</fieldset>";
+echo "</div>";
 
 
 // Select period month to view
 
-echo "<fieldset><legend>View Project Sheets for Period (PDF)</legend>";
+echo "<div><h3>View Project Sheets for Period (PDF)</h3>";
 
 echo "<p>The following form allows you to output a PDF file which lists the activity for a specific project for any given period.</p>";
 
 echo "<form method=\"post\" action=\"timesheet_pdf_2.php\">";
 
     echo "<p>Select Project<br />";
-		ProjectSelect($proj_id,'submit_project');
+		ProjectSelect($proj_id,'submit_project',1);
 	echo "</p>";
 
 	// Array through recent dates of week ending
@@ -155,10 +155,10 @@ echo "<p><input type=submit value=\"Go\" class=\"inputsubmit\" /></p>";
 
 echo "</form>";
 
-echo "</fieldset>";
+echo "</div>";
 
 
-echo "<fieldset><legend>List Projects by Hours</legend>";
+echo "<div><h3>List Projects by Hours</h3>";
 
 echo "<form action=\"index2.php?page=timesheet_analysis_output\" method=\"post\">";
 
@@ -176,10 +176,10 @@ echo "<form action=\"index2.php?page=timesheet_analysis_output\" method=\"post\"
 
 echo "</form>";
 
-echo "</fieldset>";
+echo "</div>";
 
 
-echo "<fieldset><legend>List Project Cost by User</legend>";
+echo "<div><h3>List Project Cost by User</h3>";
 
 echo "<form action=\"index2.php?page=timesheet_analysis_output\" method=\"post\">";
 
@@ -199,7 +199,7 @@ echo "<form action=\"index2.php?page=timesheet_analysis_output\" method=\"post\"
 
 echo "</form>";
 
-echo "</fieldset>";
+echo "</div>";
 
 TimesheetListZeroCost();
 

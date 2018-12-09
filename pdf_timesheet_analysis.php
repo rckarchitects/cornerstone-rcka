@@ -6,7 +6,7 @@ function InsertPage($input) {
 }
 
 include_once "inc_files/inc_checkcookie.php";
-include_once "inc_files/inc_actions_functions.php";
+include "inc_files/inc_action_functions_pdf.php";
 
 
 if ($user_usertype_current <= 3) { header ("Location: index2.php"); } else {
@@ -18,20 +18,6 @@ $replace_1 = array("€", ", ", "&");
 $format_bg_r = "220";
 $format_bg_g = "220";
 $format_bg_b = "220";
-
-// Define the colours for the bars
-function SetBarDBlue() { GLOBAL $pdf; $pdf->SetFillColor(120, 190, 240); }
-function SetBarOrange() { GLOBAL $pdf; $pdf->SetFillColor(255, 200, 0); }
-function SetBar2($alert) { GLOBAL $pdf; if ($alert == "red") { $pdf->SetFillColor(250, 0, 0); } elseif ($alert == "orange") { $pdf->SetFillColor(250, 190, 0); } else { $pdf->SetFillColor(200, 225,115); } }
-function SetBarLBlue() { GLOBAL $pdf; $pdf->SetFillColor(190, 220, 240); }
-function SetBar4() { GLOBAL $pdf; $pdf->SetFillColor(180, 250, 100); }
-function SetBarLGray() { GLOBAL $pdf; $pdf->SetFillColor(240, 240, 240); }
-function SetBarDGray() { GLOBAL $pdf; $pdf->SetFillColor(175, 175, 175); }
-function SetBarRed() { GLOBAL $pdf; $pdf->SetFillColor(255, 0, 0); }
-function SetBar7($alert) { GLOBAL $pdf; if ($alert == "red") { $pdf->SetFillColor(255, 180,180); } elseif ($alert == "orange") { $pdf->SetFillColor(250, 220, 130); } else { $pdf->SetFillColor(200, 250, 100); }  }
-function SetBarDGreen() { GLOBAL $pdf; $pdf->SetFillColor(200, 250, 100); }
-function SetBarPurple() { GLOBAL $pdf; $pdf->SetFillColor(175, 125, 200); }
-function SetBarYellow() { GLOBAL $pdf; $pdf->SetFillColor(255, 255, 75); }
 
 // Functions for page separations
 function PageBreak() {

@@ -93,11 +93,12 @@ function BlogEdit($blog_id,$proj_id,$status) {
 						} else {
 								echo "<h2>" . $blog_title . "</h2>";
 								ProjectSubMenu($proj_id,$user_usertype_current,"project_view",1);
+								ProjectSubMenu($proj_id,$user_usertype_current,"project_blog_edit",2);
 						}
 						
 						if ($blog_id > 0) {
 							
-							echo "<form method=\"post\" action=\"index2.php?page=project_blog_view&amp;blog_id=$blog_id&amp;proj_id=$blog_proj\">";
+							echo "<form method=\"post\" action=\"index2.php?page=project_blog_view&amp;blog_id=$blog_id\">";
 						}
 						
 					} elseif($status == "add") {
@@ -307,6 +308,7 @@ if ($check_whether_locked == NULL) {
 
 	echo "<h2>" . $check_whether_locked[2] . "</h2>";
 	ProjectSubMenu($proj_id,$user_usertype_current,"project_view",1);
+	ProjectSubMenu($proj_id,$user_usertype_current,"blog_view",2);
 	echo "<p>This entry is currently locked for editing by " . $check_whether_locked[1] . ".</p>";
 
 }	

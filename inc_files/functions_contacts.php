@@ -240,7 +240,7 @@ function ContactNotes($contact_id) {
 	
 	// Any file notes or phone records which relate to this client?
 	
-	$sql_blog = "SELECT blog_id, blog_date, blog_title FROM intranet_projects_blog WHERE blog_contact = '$contact_id' ORDER BY blog_date";
+	$sql_blog = "SELECT blog_id, blog_date, blog_title FROM intranet_projects_blog WHERE blog_contact = '$contact_id' ORDER BY blog_date DESC";
 	$result_blog = mysql_query($sql_blog, $conn);
 	if (mysql_num_rows($result_blog) > 0) {
 		echo "<div><h3>Journal Entries</h3>";
@@ -361,7 +361,7 @@ function CompanyViewDetailed($company_id) {
 	
 }
 
-function ContactRelatedContacts($contact_company) {
+function ContactRelatedContacts($contact_company, $contact_id) {
 	
 	global $conn;
 	
@@ -369,7 +369,7 @@ function ContactRelatedContacts($contact_company) {
 	
 		// List others from the same company
 		
-		$sql_company_members = "SELECT * FROM contacts_contactlist, contacts_companylist WHERE contact_company = $contact_company AND contact_company = company_id ORDER BY contact_namesecond";
+		$sql_company_members = "SELECT * FROM contacts_contactlist, contacts_companylist WHERE contact_company = $contact_company AND contact_company = company_id AND contact_id != $contact_id ORDER BY contact_namesecond";
 		$result_company_members = mysql_query($sql_company_members, $conn) or die(mysql_error());
 		
 		if (mysql_num_rows($result_company_members) > 1 AND $contact_company > 0) {

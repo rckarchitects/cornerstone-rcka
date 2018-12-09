@@ -46,18 +46,19 @@ function MediaUpload() {
 				$didUpload = move_uploaded_file($fileTmpName, $uploadPath);
 
 				if ($didUpload) {
-					$actionmessage = $actionmessage . "The file " . $fileName . " has been uploaded to " . $currentDir . $uploadDirectory . " and renamed to " . $new_file_name . ".<br />";
+					$actionmessage = $actionmessage . "The file " . $fileName . " has been uploaded to " . $currentDir . $uploadDirectory . " and renamed to " . $new_file_name . " with a size of " . MediaSize($fileSize, $precision = 2) . ".<br />";
 					
 					$media_path = addslashes ($uploadDirectory);
 					$media_name = $new_file_name;
 					$media_timestamp = time();
-					$media_user = $_COOKIE[user];
+					$media_user = intval($_COOKIE[user]);
 					$media_type = $fileExtension;
 					$media_file = addslashes($new_file_name);
 					$media_size = $fileSize;
 					$media_category = addslashes($_POST[media_category]);
 					$media_description = addslashes($_POST[media_description]);
 					$media_checklist = intval($_POST[media_checklist]);
+					$media_project = intval($_POST[media_project]);
 					
 					$sql_add = "INSERT INTO intranet_media (
 								media_id,
@@ -70,19 +71,21 @@ function MediaUpload() {
 								media_category,
 								media_size,
 								media_description,
-								media_checklist
+								media_checklist,
+								media_project
 								) values (
 								'NULL',
 								'$media_path',
 								'$media_title',
-								'$media_timestamp',
-								'$media_user',
+								$media_timestamp,
+								$media_user,
 								'$media_type',
 								'$media_file',
 								'$media_category',
 								'$media_size',
 								'$media_description',
-								'$media_checklist'
+								$media_checklist,
+								$media_project
 								)";
 								
 								$result = mysql_query($sql_add, $conn) or die(mysql_error());
@@ -105,9 +108,8 @@ function MediaUpload() {
 		}
 		
 		$actionmessage = "<p>" . rtrim($actionmessage,"<br />") .  "</p>";
-	
-		AlertBoxInsert($_COOKIE[user],"Media Upload",$actionmessage,$id_added,0);
-		
+
+		AlertBoxInsert($media_user,"Media Upload",$actionmessage,$id_added,0,1,$media_project);
 }
 
 MediaUpload();

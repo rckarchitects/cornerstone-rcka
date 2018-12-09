@@ -33,33 +33,34 @@ function MediaLatestList() {
 	
 }
 
-
 function MediaUploadForm() {
 	
 	
 	
-	echo "<h2>Upload Media</h2>";
+	echo "<div><h2>Upload Media</h2>";
 	
 	ProjectSubMenu(NULL,$user_usertype_current,"media",1);
 	
 	
-	echo "<h3>Enter File Details</h3>";
-	
 	echo "<form method=\"post\" action=\"index2.php?page=media\" enctype=\"multipart/form-data\">";
 	
-	echo "<p>Title (if required)<br /><input type=\"text\" maxlength=\"200\" name=\"media_title\" style=\"width: 95%;\" required=\"required\" /></p>";
+	echo "<div><h3>Title (if required)</h3><input type=\"text\" maxlength=\"200\" name=\"media_title\" style=\"width: 95%;\" required=\"required\" /></div>";
 	
-	echo "<p>File<br /><input type=\"file\" name=\"media_file\" required=\"required\" /></p>";
+	echo "<div><h3>File</h3><input type=\"file\" name=\"media_file\" required=\"required\" /></div>";
 	
-	echo "<p>Description<br /><textarea name=\"media_description\" style=\"width: 95%; height: 75px;\"></textarea>";
+	echo "<div><h3>Description</h3><textarea name=\"media_description\" style=\"width: 95%; height: 75px;\"></textarea></div>";
 	
-	echo "<p>Category<br/ >"; MediaCategory(); echo "</p>";
+	echo "<div><h3>Project</h3>";
+	ProjectSelect("","media_project",1,1);
+	echo "</div>";
 	
-	echo "<p><input type=\"submit\" /></p>";
+	echo "<div><h3>Category</h3>"; MediaCategory(); echo "</div>";
+	
+	echo "<div><input type=\"submit\" />";
 
-	echo "<input type=\"hidden\" name=\"action\" value=\"media_upload\" />";
+	echo "<input type=\"hidden\" name=\"action\" value=\"media_upload\" /></div>";
 	
-	echo "</form>";
+	echo "</form></div>";
 	
 }
 
@@ -93,7 +94,7 @@ function MediaDelete($media_id, $media_user) {
 	global $user_usertype_current;
 	
 	if ($user_usertype_current > 3 OR $_COOKIE[user] == $media_user) {	
-		return "&nbsp;<form action=\"index2.php?page=media\" method=\"post\" style=\"float: right;\"><input type=\"image\" src=\"images/button_delete.png\" class=\"image\" onclick=\"return confirm('Are you sure you want to delete this item?')\"><input type=\"hidden\" value=\"$media_id\" name=\"media_id\" /><input type=\"hidden\" name=\"media_deleted_by\" /><input type=\"hidden\" name=\"action\" value=\"media_delete\" /></form>";
+		return "<form action=\"index2.php?page=media\" method=\"post\" style=\"float: right;\"><input type=\"image\" src=\"images/button_delete.png\" class=\"image\" onclick=\"return confirm('Are you sure you want to delete this item?')\"><input type=\"hidden\" value=\"$media_id\" name=\"media_id\" /><input type=\"hidden\" name=\"media_deleted_by\" /><input type=\"hidden\" name=\"action\" value=\"media_delete\" /></form>";
 	}
 	
 }
@@ -131,7 +132,6 @@ function MediaTopMenu () {
 	echo "</div>";
 	
 }
-
 
 function MediaBrowse($filter) {
 	
@@ -175,19 +175,19 @@ function MediaBrowse($filter) {
 				
 				if (in_array($array['media_type'],$image_files)) {
 				
-					echo "<p><a href=\"" . $array['media_path'] . $array['media_file'] . "\"><img src=\"" . $array['media_path'] . $array['media_file'] .  "\" alt=\"" . $array['media_title'] . "\" style=\"width: 100%;\" /></a><br /><span class=\"minitext\">" . $array['media_title'] . MediaDelete($array['media_id'], $array['media_user']) . "</span></p>";
+					echo MediaDelete($array['media_id'], $array['media_user']) . "<p><strong>" . $array['media_title'] . "</strong></p><p><a href=\"" . $array['media_path'] . $array['media_file'] . "\"><img src=\"" . $array['media_path'] . $array['media_file'] .  "\" alt=\"" . $array['media_title'] . "\" style=\"width: 100%;\" /></a></p>";
 				
 				} elseif ($array['media_type'] == "pdf" && $array['media_description'] != "") { 
 				
-					echo "<p><img src=\"images/icon_pdf.png\" style=\"width: 60px; margin: 12px;\" /><br /><a href=\"" . $array['media_path'] . $array['media_file'] . "\"><strong><a href=\"" . $array['media_path'] . $array['media_file'] . "\">" . $array['media_title'] . "</a></strong><br /><span class=\"minitext\">" . $array['media_description'] . "</span></a>" . $media_size . MediaDelete($array['media_id'], $array['media_user']) . "</p>";
+					echo MediaDelete($array['media_id'], $array['media_user']) . "<p><strong>" . $array['media_title'] . "</strong></p><p><a href=\"" . $array['media_path'] . $array['media_file'] . "\"><img src=\"images/icon_pdf.png\" style=\"width: 60px; margin: 12px;\" /><br /><strong><a href=\"" . $array['media_path'] . $array['media_file'] . "\">" . "</a></strong><br /><span class=\"minitext\">" . $array['media_description'] . "</span></a>" . $media_size . "</p>";
 					
 				} elseif ($array['media_type'] == "pdf" && $array['media_description'] == "") { 
 				
-					echo "<p><img src=\"images/icon_pdf.png\" style=\"width: 120px; margin: 12px;\" /><br /><strong><a href=\"" . $array['media_path'] . $array['media_file'] . "\">" . $array['media_title'] . "</a></strong>" . $media_size . MediaDelete($array['media_id'], $array['media_user']) . "</p>";
+					echo MediaDelete($array['media_id'], $array['media_user']) . "<p><strong>" . $array['media_title'] . "</strong><a href=\"" . $array['media_path'] . $array['media_file'] . "\"><img src=\"images/icon_pdf.png\" style=\"width: 120px; margin: 12px;\" /></a>" . $media_size . "</p>";
 					
 				} else { 
 				
-					echo "<p><a href=\"" . $array['media_path'] . $array['media_file'] . "\">" . $array['media_title'] . "</a>" . $media_size . MediaDelete($array['media_id'], $array['media_user']) . "</p>";
+					echo MediaDelete($array['media_id'], $array['media_user']) . "<p><strong>" . $array['media_title'] . "</strong><a href=\"" . $array['media_path'] . $array['media_file'] . "\">" . "</a>" . $media_size  . "</p>";
 				}
 				
 				echo "</div>";

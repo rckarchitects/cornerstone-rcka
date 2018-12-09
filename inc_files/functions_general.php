@@ -341,7 +341,11 @@ function ProjectTitle($show,$proj_id) {
 		
 		if ($show == 1) {
 			
-		echo "<h2><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></h2>";
+			echo "<h2><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></h2>";
+			
+		} elseif ($show == 2) {
+			
+			echo "<h1><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></h1>";
 			
 		} else {
 		
@@ -422,6 +426,11 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 4;
 				
+				$array_menu_page[] = "index2.php?page=project_risks&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Risks";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype[] = 2;
+				
 				$array_menu_page[] = "index2.php?page=project_actionstream&amp;proj_id=$proj_id";
 				$array_menu_text[] = "Action Stream";
 				$array_menu_image[] = "button_list.png";
@@ -456,6 +465,30 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_text[] = "Edit Invoice";
 				$array_menu_image[] = "button_edit.png";
 				$array_menu_usertype[] = 3;
+				
+	} elseif ($page == "project_risks" && $level == 2) {
+
+				$array_menu_page[] = "index2.php?page=project_risks&amp;action=list&amp;view=list&amp;proj_id=$proj_id";
+				$array_menu_text[] = "List Risks";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype[] = 3;
+
+				$array_menu_page[] = "index2.php?page=project_risks&amp;action=add&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Add New Risk";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype[] = 3;
+
+				if (intval($_GET[risk_id]) > 0) {
+					$array_menu_page[] = "index2.php?page=project_risk&amp;action=edit&amp;risk_id=". intval($_GET[risk_id]);
+					$array_menu_text[] = "Edit Risk";
+					$array_menu_image[] = "button_edit.png";
+					$array_menu_usertype[] = 3;
+				}
+				
+				$array_menu_page[] = "pdf_risks.php?proj_id=" . $proj_id;
+				$array_menu_text[] = "Risk Register";
+				$array_menu_image[] = "button_pdf.png";
+				$array_menu_usertype[] = 2;
 				
 	} elseif ($page == "project_fee" OR $page == "project_timesheet_view") {
 
@@ -902,7 +935,7 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 1;
 				
-				$array_menu_page[] = "index2.php?page=project_blog_edit&amp;status=add&amp;blog_id=" . intval($_GET[blog_id]) ;
+				$array_menu_page[] = "index2.php?page=project_blog_edit&amp;status=add&amp;proj_id=" . intval($_GET[proj_id]) ;
 				$array_menu_text[] = "Add Journal Entry";
 				$array_menu_image[] = "button_new.png";
 				$array_menu_usertype[] = 1;
@@ -960,7 +993,6 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 
 		
 }
-
 
 function ProjectList($proj_id) {
 	
@@ -1135,20 +1167,32 @@ global $conn;
 					
 }
 
-function ProjectSelect($proj_id_select,$field_name) {
+function ProjectSelect($proj_id_select,$field_name,$active,$include_null) {
 	
 		GLOBAL $conn;
 		
-		if ($proj_id_select > 0) {
-			$proj_id_select_add = "(proj_active = 1 OR proj_id = $proj_id_select)";
+		if ($active == 1) {
+			$proj_id_select_add = "(proj_active = 1 OR proj_active = 0)";
 		} else {
 			$proj_id_select_add = "proj_active = 1";
 		}
+		
+		$sql = "SELECT * FROM intranet_projects WHERE $proj_id_select_add ORDER BY proj_active DESC, proj_num DESC";
 	
 		echo "<select name=\"" . $field_name .  "\">";
-		$sql = "SELECT * FROM intranet_projects WHERE $proj_id_select_add ORDER BY proj_num DESC";
+		
+		$active_test = NULL;
+		
+		if (intval($include_null) > 0) { echo "<option value=\"\" class=\"inputbox\">-- No Project --</option>"; }
+		
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		while ($array = mysql_fetch_array($result)) {
+			
+			
+			
+			if ($active_test != $array['proj_active'] && $array['proj_active'] == 1) { echo "<option disabled=\"disabled\">Active Projects</option>"; $active_test = $array['proj_active']; }
+			elseif ($active_test != $array['proj_active'] && $array['proj_active'] == 0) { echo "<option disabled=\"disabled\">Inactive Projects</option>"; $active_test = $array['proj_active']; }
+			
 				$proj_num = $array['proj_num'];
 				$proj_name = $array['proj_name'];
 				$proj_id = $array['proj_id'];
@@ -3917,6 +3961,7 @@ function InsufficientRights() {
 function ProjectContacts($proj_id,$user_usertype_current) {
 
 global $conn;
+$proj_id = intval($proj_id);
 
 			
 			$sql_contact = "SELECT * FROM contacts_disciplinelist, contacts_contactlist, intranet_contacts_project LEFT JOIN contacts_companylist ON contact_proj_company = contacts_companylist.company_id WHERE contact_proj_contact = contact_id  AND discipline_id = contact_proj_role AND contact_proj_project = $proj_id ORDER BY discipline_name, contact_namesecond";
@@ -4464,16 +4509,16 @@ function ClassList($array_class_1,$array_class_2,$type) {
 		
 					$drawing_class = $_POST[drawing_class];
 					$drawing_type = $_POST[drawing_type];
-					echo "<h3>Filter:</h3>";
+					echo "<div><h3>Filter</h3>";
 					echo "<form method=\"post\" action=\"index2.php?page=" . $page. "&amp;proj_id=" . $proj_id . "&amp;drawing_class=$drawing_class&amp;drawing_type=$drawing_type\" >";
-					$array_class_1 = array("","SK","PL","TD","CN","CT","FD");
-					$array_class_2 = array("- All -","Sketch","Planning","Tender","Contract","Construction","Final Design");
+					$array_class_1 = array("","SK","PL","TD","CN","CT","FD","DR","M3","PP","SH","SP");
+					$array_class_2 = array("- All -","Sketch","Planning","Tender","Contract","Construction","Final Design","2d Drawing", "3d Model File","Presentation","Schedule","Specification");
 					ClassList($array_class_1,$array_class_2,"drawing_class");
 					echo "&nbsp;";
 					$array_class_1 = array("","SV","ST","GA","AS","DE","DOC","SCH");
 					$array_class_2 = array("- All -","Survey","Site Location","General Arrangement","Assembly","Detail","Document","Schedule");
 					ClassList($array_class_1,$array_class_2,"drawing_type");
-					echo "</form>";
+					echo "</form><p>Please note that by using this filter you will clear any entries you may have previously entered below.</p></div>";
 		
 	}
 	
@@ -4492,15 +4537,15 @@ function ClassList($array_class_1,$array_class_2,$type) {
 
 				$sql = "SELECT * FROM intranet_drawings, intranet_drawings_scale, intranet_drawings_paper WHERE drawing_project = $proj_id AND drawing_scale = scale_id AND drawing_paper = paper_id $drawing_class $drawing_type order by drawing_number";
 				$result = mysql_query($sql, $conn) or die(mysql_error());
-
+				
+					echo "<div>";
+					DrawingFilter("drawings_list", $proj_id);
+					echo "</div>";
+					
 
 						if (mysql_num_rows($result) > 0) {
 							
-							echo "<div style=\"float: left;\">";
-					
-					DrawingFilter("drawings_list", $proj_id);
-					
-					echo "</div>";
+						echo "<div>";
 
 						echo "<table summary=\"Lists all of the drawings for the project\">";
 						echo "<tr><td><strong>Drawing Number</strong></td><td><strong>Title</strong></td><td><strong>Rev.</strong></td><td><strong>Status</strong></td><td><strong>Scale</strong></td><td><strong>Paper</strong></td></tr>";
@@ -4540,11 +4585,11 @@ function ClassList($array_class_1,$array_class_2,$type) {
 
 						echo "</table>";
 						
-						
+						echo "</div>";
 
 						} else {
 
-						echo "<p>No drawings found.</p>";
+						echo "<div><p>No drawings found.</p></div>";
 
 						}
 	}
@@ -5075,6 +5120,18 @@ function UserForm ($user_id) {
 	
 	
 	
+	
+}
+
+function ProjectID($type,$table,$identifier,$id) {
+	
+	global $conn;
+	$sql = "SELECT $type FROM $table WHERE $identifier = $id LIMIT 1";
+	$result = mysql_query($sql, $conn);
+	$array = mysql_fetch_array($result);
+	$output = $array[$type];
+	
+	return $output;
 	
 }
 

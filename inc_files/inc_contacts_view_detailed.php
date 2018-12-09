@@ -14,7 +14,7 @@ if ($company_id) {
 	
 	CompanyViewDetailed($company_id);	
 	
-	ContactRelatedContacts($company_id);
+	ContactRelatedContacts($company_id,$contact_id);
 	
 }
 

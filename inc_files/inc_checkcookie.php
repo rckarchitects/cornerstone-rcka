@@ -36,7 +36,7 @@ date_default_timezone_set ( 'Europe/London ' );
 			$ip_current = getenv("REMOTE_ADDR"); // get the ip number of the user
 
 			if ($_COOKIE[password] == NULL OR $_COOKIE[user] == NULL) {
-			header("Location: login.php");
+			header("Location: index.php");
 
 
 } else {
@@ -103,6 +103,7 @@ if ($module_contacts == 1) { include_once("functions_contacts.php"); }
 if ($module_tasks == 1) { include_once("functions_tasks.php"); }
 if ($module_manual == 1) { include_once("functions_manual.php"); }
 if ($module_media == 1) { include_once("functions_media.php"); }
+if ($module_risks == 1) { include_once("functions_risks.php"); }
 
 // Set the page-wide definitions from the $_GET submissions if they exist
 

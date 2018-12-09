@@ -204,8 +204,10 @@ function SearchManual($keywords_array) {
 		
 			$sql = "SELECT manual_id, manual_title FROM intranet_stage_manual WHERE " . SearchTerms($keywords_array, "manual_title") . " OR ". SearchTerms($keywords_array, "manual_text") . " ORDER BY manual_title";
 			$result = mysql_query($sql, $conn) or die(mysql_error());
+			
+			
 			if (mysql_num_rows($result) > 0) {
-				echo "<p>- No results found for Office Manual -</p>";
+				
 				echo "<h3>Office Manual</h3>";
 				echo "<table>";
 				while ($array = mysql_fetch_array($result)) { echo "<tr><td><a href=\"index2.php?page=manual_page&amp;manual_id=" . $array['manual_id'] . "\">" . $array['manual_title'] . "</a></td></tr>"; }

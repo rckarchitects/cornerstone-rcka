@@ -12,18 +12,20 @@ $user_name_second = $array_user['user_name_second'];
 
 if ($_POST[paid] == 1) { $paid = 1; } else { $paid = 0; }
 
-echo "<h1>Holidays - $user_name_first $user_name_second</h1>";
+echo "<h1>Holidays</h1>";
 
-echo "<h2>Bank Holidays</h2>";
+echo "<h2>". $user_name_first . " " . $user_name_second . "</h2>";
+
+echo "<h3>Bank Holidays</h3>";
 
 $sql_bankholidays = "SELECT bankholiday_timestamp FROM intranet_user_holidays_bank WHERE bankholiday_timestamp > " . time() . " ORDER BY bankholiday_timestamp LIMIT 1";
 $result_bankholidays = mysql_query($sql_bankholidays, $conn);
 $array_bankholidays = mysql_fetch_array($result_bankholidays);
 $bankholiday_timestamp  = $array_bankholidays['bankholiday_timestamp'];
 
+echo "<div>";
+
 echo "<p>The next Bank Holiday is <a href=\"index2.php?page=datebook_view_day&amp;time=$bankholiday_timestamp\">" . TimeFormat($bankholiday_timestamp) . ".</a></p>";
-
-
 
 $sql_holiday = "SELECT user_holidays, user_user_added, user_user_ended FROM intranet_user_details WHERE user_id = $user_id AND holiday_paid = 1 LIMIT 1";
 $result_holiday = mysql_query($sql_holiday, $conn);
@@ -36,12 +38,13 @@ $beginning_of_year = mktime(0,0,0,1,1,$this_year);
 
 $end_of_year = mktime(0,0,0,1,1,($this_year+1));
 
-echo "<h2>Holiday Request</h2>";
+echo "</div>";
 
 $holiday_remaining = UserHolidays($user_id,"yes");
 
 if ($_POST[assess] == 1) {
-echo "<fieldset><legend>Confirm Holiday Request</legend>";
+echo "<div>";
+echo "<h3>Holiday Request</h3>";
 
 $holiday_day_start = AssessDays ( $_POST[holiday_day_start] );
 $holiday_day_back = AssessDays ( $_POST[holiday_day_back] );
@@ -56,11 +59,11 @@ $holiday_remaining = $holiday_remaining - $holiday_count;
 		echo "<p><form action=\"index2.php?page=holiday_request\" method=\"post\"><input type=\"hidden\" name=\"action\" value=\"holiday_request\" /><input type=\"hidden\" name=\"assess\" value=\"2\" /><input type=\"hidden\" value=\"$time_begin\" name=\"holiday_begin\" /><input type=\"hidden\" value=\"$_POST[holiday_length]\" name=\"holiday_length\" /><input type=\"hidden\" value=\"$time_back\" name=\"holiday_back\" /><input type=\"hidden\" value=\"$user_id\" name=\"user_id\" /><input type=\"hidden\" value=\"$paid\" name=\"paid\" /><input type=\"submit\" value=\"Confirm\" /></p>";
 
 
-echo "</fieldset>";
+echo "</div>";
 }
 
 if ($_POST[assess] == 2) {
-echo "<fieldset><legend>Holiday Request Confirmed</legend>";
+echo "<div><h3>Holiday Request Confirmed</h3>";
 
 echo "<p>You have requested the following days holiday:</p>";
 
@@ -69,12 +72,12 @@ $holiday_remaining = $user_holidays - $holiday_count;
 
 echo "<p>Please note that your holiday request cannot be confirmed until it has been approved in writing.</p><p><a href=\"pdf_holiday_request.php?user_id=$user_id\">Please click here</a> to download the request form.</p>";
 
-echo "</fieldset>";
+echo "</div>";
 }
 
 if ($_POST[assess] < 1) {
 
-			echo "<fieldset><legend>Make Holiday Request</legend>";
+			echo "<div><h3>Make Holiday Request</h3>";
 
 			echo "<form action=\"index2.php?page=holiday_request\" method=\"post\">";
 
@@ -102,16 +105,18 @@ if ($_POST[assess] < 1) {
 			echo "</form>";
 
 
-			echo "</fieldset>";
+			echo "</div>";
 
 }
 
 $sql_holiday_list = "SELECT * FROM intranet_user_holidays WHERE holiday_user = '$user_id' AND holiday_timestamp > $beginning_of_year AND holiday_year = $this_year ORDER BY holiday_timestamp";
 $result_holiday_list = mysql_query($sql_holiday_list, $conn);
 
+echo "<div class=\"page\"><h3>Your Holidays for " . date("Y",time()) . "</h3>";
+
 if (mysql_num_rows($result_holiday_list) > 0) {
 	$holiday_total = 0;
-	echo "<h2>Your Holidays for " . date("Y",time()) . "</h2><table>";
+	echo "<table>";
 	while ($array_holiday_list = mysql_fetch_array($result_holiday_list)) {
 		$holiday_timestamp = $array_holiday_list['holiday_timestamp'];
 		$holiday_approved = $array_holiday_list['holiday_approved'];
@@ -134,20 +139,8 @@ if (mysql_num_rows($result_holiday_list) > 0) {
 	echo "<p>No holidays found</p>";
 }
 
-echo "<h2>Calendar Address</h2>";
+echo "</div>";
+
+echo "<div class=\"page\"><h3>Calendar Address</h3>";
 echo "<p>You can add the following calendar location to Outlook:</p>";
-echo "<blockquote>" . $pref_location . "/calendars/holidays.ics</bloackquote>";
-
-
-
-
-
-
-
-
-
-
-
-
-
-?>
+echo "<code>" . $pref_location . "/calendars/holidays.ics</code></div>";

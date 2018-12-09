@@ -1,6 +1,6 @@
 <?php
 
-if (intval($_GET[proj_id]) > 0) { $proj_id = $_GET[proj_id]; } elseif (intval($_POST[proj_id]) > 0) { $proj_id = $_POST[proj_id]; }
+if (intval($proj_id) > 0) { $proj_id = intval($proj_id); } elseif (intval($_GET[proj_id]) > 0) { $proj_id = $_GET[proj_id]; } elseif (intval($_POST[proj_id]) > 0) { $proj_id = $_POST[proj_id]; }
 
 ProjectSwitcher("project_contacts",$proj_id,1,1);
 

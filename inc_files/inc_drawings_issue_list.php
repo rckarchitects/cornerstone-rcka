@@ -1,9 +1,111 @@
 <?php
 
-if ($_GET[set_id] != NULL AND $_GET[proj_id] != NULL) {
+$set_id = intval($_GET[set_id]);
 
-$set_id = $_GET[set_id];
-$proj_id = $_GET[proj_id];
+function DrawingsIssuedTo($set_id) {
+	
+				global $conn;
+				$set_id = intval($set_id);
+
+			$sql_contacts = "SELECT * FROM contacts_contactlist, intranet_contacts_project, intranet_drawings_issued
+			LEFT JOIN contacts_companylist
+			ON company_id = issue_company
+			WHERE issue_set = $set_id
+			AND issue_contact = contact_id
+			ORDER BY company_name, contact_namesecond
+			";
+
+			$result_contacts = mysql_query($sql_contacts, $conn) or die(mysql_error());
+
+			unset($current_contact);
+
+			echo "<div><h3>Recipients</h3><table>";
+
+			echo "<tr><th style=\"width: 25%\">Recipient</th><th>Company</th><th>Role</th></tr>";
+
+			while ($array_contacts = mysql_fetch_array($result_contacts)) {
+
+				$contact_name = $array_contacts['contact_namefirst'] . " " . $array_contacts['contact_namesecond'];
+				$contact_id = $array_contacts['contact_id'];	
+				$company_id = $array_contacts['company_id'];
+				$company_name = $array_contacts['company_name'];
+				$discipline_name = $array_contacts['discipline_name'];
+
+					if ($current_contact != $contact_id) {
+					
+						echo "<tr><td><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=$contact_id\">$contact_name</a></td><td><a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">$company_name</td><td>$discipline_name</td></tr>";
+						
+						$current_contact = $contact_id;
+					
+					}
+				
+				}
+				
+			echo "</table></div>";
+
+}
+
+function DrawingsIssued ($set_id) {
+	
+	global $conn;
+	
+	$set_id = intval($set_id);
+
+$sql_drawings = "SELECT drawing_id,drawing_title,drawing_number,drawing_status,drawing_title,revision_letter,issue_id,issue_drawing,revision_date FROM intranet_drawings, intranet_drawings_issued LEFT JOIN intranet_drawings_revision ON revision_id = issue_revision WHERE drawing_id = issue_drawing AND drawing_project = issue_project AND issue_set = $set_id ORDER BY drawing_number";
+
+$result_drawings = mysql_query($sql_drawings, $conn) or die(mysql_error());
+
+		echo "<div><h3>Drawings</h3><table>";
+		
+		echo "<tr><th style=\"width:25%\">Number</th><th style=\"width:20%\">Rev.</th><th>Rev. Date</th><th>Status</th><th colspan=\"2\">Title</th></tr>";
+		
+		unset($current_drawing);
+		
+		unset($issue_id_prev);
+		
+		while ($array_drawings = mysql_fetch_array($result_drawings)) {
+
+			$drawing_id = $array_drawings['drawing_id'];
+			$drawing_title = $array_drawings['drawing_title'];
+			$drawing_number = $array_drawings['drawing_number'];
+			$drawing_status = $array_drawings['drawing_status'];
+			$revision_letter = $array_drawings['revision_letter'];
+			$issue_id = $array_drawings['issue_id'];
+			$issue_drawing = $array_drawings['issue_drawing'];
+			
+			if (!$revision_letter) {
+				$revision_letter = "-";
+			}
+			
+			if (!$drawing_status) {
+				$drawing_status = "-";
+			}
+			
+			if ($revision_date > 0 ) {
+			$revision_date = TimeFormat($array_drawings['revision_date']);
+			} else {
+			$revision_date = "-";
+			}
+			
+			
+			if ($current_drawing != $drawing_id) { 
+				echo "<tr id=\"$issue_id\"><td><a href=\"index2.php?page=drawings_detailed&amp;drawing_id=$drawing_id&amp;proj_id=$proj_id\">$drawing_number</a><td>" . strtoupper($revision_letter) . "</td><td>$revision_date</td><td>$drawing_status</td><td>$drawing_title</td><td>" . $delete_button . "</td></tr>";
+			}
+			
+			$current_drawing = $drawing_id;
+			
+			$issue_id_prev = $issue_id;
+		
+		}
+		
+		echo "</table></div>";
+		
+}
+
+function DrawingsIssuedDetails($set_id) {
+	
+	global $conn;
+	$set_id = intval($set_id);
 
 // Drawing set details
 		
@@ -23,6 +125,8 @@ $proj_id = $_GET[proj_id];
 		$proj_id = $array_issued['proj_id'];
 		$proj_num = $array_issued['proj_num'];
 		$proj_name = $array_issued['proj_name'];
+		
+		ProjectTitle(2,$proj_id);
 		
 		
 		echo "<h2>Drawing Issue: $print_date (ID: $set_id)</h2>";
@@ -59,109 +163,22 @@ $proj_id = $_GET[proj_id];
 		echo "</table>";
 		
 		echo "</div>";
-
-// Drawings issued as part of this set $set_id
-
-$sql_drawings = "SELECT * FROM intranet_drawings, intranet_drawings_issued LEFT JOIN intranet_drawings_revision ON revision_id = issue_revision WHERE drawing_id = issue_drawing AND drawing_project = issue_project AND issue_set = $set_id ORDER BY drawing_number";
-
-$result_drawings = mysql_query($sql_drawings, $conn) or die(mysql_error());
-
-		echo "<div><h3>Drawings</h3><table>";
 		
-		echo "<tr><th style=\"width:25%\">Number</th><th style=\"width:20%\">Rev.</th><th>Rev. Date</th><th>Status</th><th colspan=\"2\">Title</th></tr>";
+		return $proj_id;
 		
-		unset($current_drawing);
-		
-		unset($issue_id_prev);
-		
-		while ($array_drawings = mysql_fetch_array($result_drawings)) {
-
-			$drawing_id = $array_drawings['drawing_id'];
-			$drawing_title = $array_drawings['drawing_title'];
-			$drawing_number = $array_drawings['drawing_number'];
-			$drawing_status = $array_drawings['drawing_status'];
-			$drawing_description = str_replace("\n",", ",$array_drawings['drawing_description']);	
-			$revision_letter = $array_drawings['revision_letter'];
-			$issue_id = $array_drawings['issue_id'];
-			$issue_drawing = $array_drawings['issue_drawing'];
-			
-			if (!$revision_letter) {
-				$revision_letter = "-";
-			}
-			
-			if (!$drawing_status) {
-				$drawing_status = "-";
-			}
-			
-			if ($revision_date > 0 ) {
-			$revision_date = TimeFormat($array_drawings['revision_date']);
-			} else {
-			$revision_date = "-";
-			}
-			
-			//if (time() - ) {
-			//$delete_button = "<a href=\"index2.php?page=drawings_issue_list&amp;set_id=$set_id&amp;proj_id=$proj_id&amp;issue_drawing=$issue_drawing&amp;action=drawing_issue_item_delete#$issue_id_prev\"><img src=\"images\button_delete.png\" alt=\"Delete this entry\" /></a>";
-			//}
-			
-			
-			if ($current_drawing != $drawing_id) { 
-				echo "<tr id=\"$issue_id\"><td><a href=\"index2.php?page=drawings_detailed&amp;drawing_id=$drawing_id&amp;proj_id=$proj_id\">$drawing_number</a><td>" . strtoupper($revision_letter) . "</td><td>$revision_date</td><td>$drawing_status</td><td>$drawing_title</td><td>" . $delete_button . "</td></tr>";
-			}
-			
-			$current_drawing = $drawing_id;
-			
-			$issue_id_prev = $issue_id;
-		
-		}
-		
-		echo "</table></div>";
-		
-// Recipients of drawings
-
-
-$sql_contacts = "SELECT * FROM contacts_contactlist, intranet_contacts_project, intranet_drawings_issued
-LEFT JOIN contacts_companylist
-ON company_id = issue_company
-WHERE issue_set = $set_id
-AND issue_contact = contact_id
-ORDER BY company_name, contact_namesecond
-";
-
-$result_contacts = mysql_query($sql_contacts, $conn) or die(mysql_error());
-
-unset($current_contact);
-
-echo "<div><h3>Recipients</h3><table>";
-
-echo "<tr><th style=\"width: 25%\">Recipient</th><th>Company</th><th>Role</th></tr>";
-
-while ($array_contacts = mysql_fetch_array($result_contacts)) {
-
-	$contact_name = $array_contacts['contact_namefirst'] . " " . $array_contacts['contact_namesecond'];
-	$contact_id = $array_contacts['contact_id'];	
-	$company_id = $array_contacts['company_id'];
-	$company_name = $array_contacts['company_name'];
-	$discipline_name = $array_contacts['discipline_name'];
-
-		if ($current_contact != $contact_id) {
-		
-			echo "<tr><td><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=$contact_id\">$contact_name</a></td><td><a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">$company_name</td><td>$discipline_name</td></tr>";
-			
-			$current_contact = $contact_id;
-		
-		}
-	
-	}
-	
-echo "</table></div>";
-		
-	
-} else {
-
-echo "<h1 class=\"alert\">Error</h1><p>This drawing issue does not exist.</p>";
-
 }
 
 
-		
-?>
+if ($set_id > 0) {
+
+	$proj_id = intval ( DrawingsIssuedDetails($set_id) );
+
+	DrawingsIssued ($set_id);
+
+	DrawingsIssuedTo($set_id);
+
+} else {
+
+	echo "<h1 class=\"alert\">Error</h1><p>This drawing issue does not exist.</p>";
+
+}

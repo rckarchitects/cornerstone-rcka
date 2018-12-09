@@ -10,6 +10,7 @@
 function PlanningConditionList($proj_id) {
 	
 	global $conn;
+	global $settings_companyname;
 	$proj_id = intval($proj_id);
 
 	$sql_proj = "SELECT proj_id, proj_num, proj_name FROM intranet_projects WHERE proj_id = $proj_id LIMIT 1";
@@ -60,7 +61,7 @@ function PlanningConditionList($proj_id) {
 			
 			if ($array_conditions['condition_decision_date'] == "0000-00-00") { $condition_decision_date = "- None -"; } else { $condition_decision_date = date( "j M Y", AssessDays ( $array_conditions['condition_decision_date'] ) ); }
 			
-			if ($array_conditions['company_name'] != NULL) { $company_name = $array_conditions['company_name'];	} else { $company_name = $pref_practice; } 		
+			if ($array_conditions['company_name'] != NULL) { $company_name = $array_conditions['company_name'];	} else { $company_name = $settings_companyname; } 		
 			echo "<tr id=\"$showdetail\"><td $background><a href=\"" . $array_conditions['condition_link'] . "\">" . $array_conditions['condition_ref'] . "</a></td><td $background><a href=\"index2.php?page=project_planningcondition_edit&amp;proj_id=$proj_id&amp;condition_id=" . $array_conditions['condition_id'] . "\"><img src=\"images/button_edit.png\" alt=\"Edit Planning Condition\" /></a></td><td $background><a href=\"index2.php?page=project_planningcondition_list&amp;proj_id=$proj_id&amp;showdetail=" . $array_conditions['condition_id'] . "#" . $array_conditions['condition_id'] . "\">" . $array_conditions['condition_number'] . "</a></td><td $background>" . $company_name . "</td><td $background>" . $array_conditions['condition_type'] . "</td><td $background>" . $condition_decision_date . "</td><td $background>" . $condition_submitted . "</td><td $background>" . $condition_approved . "</td></tr>";
 			
 			if ($showdetail > 0 && $array_conditions['condition_text'] != NULL) { echo "<tr><td>Details:</td><td colspan=\"7\">" . nl2br ( $array_conditions['condition_text'] ) . "</td></tr>"; }

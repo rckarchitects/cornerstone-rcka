@@ -4,6 +4,11 @@ if (intval($blog_id) > 0) { $blog_id = intval($blog_id) ; }
 elseif (intval($_POST[blog_id]) > 0) { $blog_id = intval($_POST[blog_id]) ; }
 elseif (intval($_GET[blog_id]) > 0) { $blog_id = intval($_GET[blog_id]) ; }
 
+if (!$_GET[proj_id] && !$_POST[proj_id]) {
+	$proj_id = ProjectID("blog_proj","intranet_projects_blog","blog_id",$blog_id);
+	ProjectTitle(2,$proj_id);
+}
+
 function BlogView($blog_id) {
 
 				global $conn;
@@ -33,7 +38,7 @@ function BlogView($blog_id) {
 					$proj_num = $array['proj_num'];
 					$proj_name = $array['proj_name'];
 
-					if (intval($proj_id) > 0) {  $proj_id = $array['blog_proj']; echo "<h1><a href=\"index2.php?page=project_view&amp;proj_id=" . $proj_id . "\">" . $proj_num . "&nbsp;" . $proj_name . "</a></h1>"; } else { echo "<h1>Journal $proj_id</h1>"; }
+					if (intval($proj_id) == 0) { "<h1>Journal $proj_id</h1>"; }
 
 					if ($user_usertype_current > 0 && $blog_id > 0) {
 

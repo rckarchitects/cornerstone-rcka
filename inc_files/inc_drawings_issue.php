@@ -43,16 +43,20 @@ if ($_GET[drawing_packages] != NULL) {
 	
 	$drawing_class = $_POST[drawing_class];
 	$drawing_type = $_POST[drawing_type];
-	echo "<form method=\"post\" action=\"index2.php?page=drawings_issue&amp;proj_id=$proj_id&amp;drawing_class=$drawing_class&amp;drawing_type=$drawing_type\" >";
-	$array_class_1 = array("","SK","PL","TD","CN","CT","FD");
-	$array_class_2 = array("- All -","Sketch","Planning","Tender","Contract","Construction","Final Design");
-	echo "<p>Filter: ";
-	ClassList2($array_class_1,$array_class_2,"drawing_class");
-	echo "&nbsp;";
-	$array_class_1 = array("","SV","ST","GA","AS","DE","DOC","SCH");
-	$array_class_2 = array("- All -","Survey","Site Location","General Arrangement","Assembly","Detail","Document","Schedule");
-	ClassList2($array_class_1,$array_class_2,"drawing_type");
-	echo "<br /><span class=\"minitext\">(Note that changing these filters will clear anything you have selected below.)</span></p></form>";
+	
+	DrawingFilter($page, $proj_id);
+	
+	
+	// echo "<form method=\"post\" action=\"index2.php?page=drawings_issue&amp;proj_id=$proj_id&amp;drawing_class=$drawing_class&amp;drawing_type=$drawing_type\" >";
+	// $array_class_1 = array("","SK","PL","TD","CN","CT","FD");
+	// $array_class_2 = array("- All -","Sketch","Planning","Tender","Contract","Construction","Final Design");
+	// echo "<p>Filter: ";
+	// ClassList($array_class_1,$array_class_2,"drawing_class");
+	// echo "&nbsp;";
+	// $array_class_1 = array("","SV","ST","GA","AS","DE","DOC","SCH");
+	// $array_class_2 = array("- All -","Survey","Site Location","General Arrangement","Assembly","Detail","Document","Schedule");
+	// ClassList($array_class_1,$array_class_2,"drawing_type");
+	// echo "<br /><span class=\"minitext\">(Note that changing these filters will clear anything you have selected below.)</span></p></form>";
 	
 	if ($drawing_class != NULL) { $drawing_class = " AND drawing_number LIKE '%-$drawing_class-%' "; } else { unset($drawing_class); }
 	if ($drawing_type != NULL) { $drawing_type = " AND drawing_number LIKE '%-$drawing_type-%' "; } else { unset($drawing_type); }	
@@ -176,7 +180,7 @@ $result_issued_to = mysql_query($sql_issued_to, $conn) or die(mysql_error());
 		
 		echo "<fieldset><legend>Issue Method</legend>";
 		
-		$issue_method_list = array("Email","CD / USB", "Post", "Basecamp", "Woobius", "Planning Portal", "Google Drive","Dropbox","FTP","4Projects","WeTransfer","By Hand");
+		$issue_method_list = array("Email","CD / USB", "Post", "Basecamp", "Woobius", "Planning Portal", "Google Drive","Dropbox","FTP","4Projects","WeTransfer","By Hand","Sharefile");
 		sort($issue_method_list);
 		
 		$issue_format_list = array("PDF", "DGN", "DWG", "DXF", "Hard Copy","RVT","SKT");
