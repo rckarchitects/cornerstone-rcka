@@ -98,6 +98,6 @@ foreach ($array_item_counter AS $counter) {
 			
 }
 
-$actionmessage = "<p>Checklist for project id " . $checklist_project  . " updated.</p>";
+$actionmessage = "<p>Checklist for <a href=\"index2.php?page=project_checklist&proj_id=" . $checklist_project . "\">" . GetProjectName($checklist_project)  . "</a> updated.</p>";
 
-AlertBoxInsert($_COOKIE[user],"Project Checklist Updated",$actionmessage,$checklist_project,0,1);
+AlertBoxInsert($_COOKIE[user],"Project Checklist Updated",$actionmessage,0,0,0,$checklist_project);

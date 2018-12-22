@@ -139,7 +139,7 @@ function ActionUserChangePassword() {
 	$user_usertype_current = intval($user_usertype_current);
 	$user_id = intval($_POST[user_id]);
 	
-	if (($user_usertype_current > 3) OR ($user_id_current == $user_id)) {
+/* 	if (($user_usertype_current > 3) OR ($user_id_current == $user_id)) {
 	
 			
 
@@ -180,7 +180,9 @@ function ActionUserChangePassword() {
 
 			}
 			
-	}
+	} */
+	
+	echo "<p>Sorry, this isn't working yet. Speak to Russell if you want to change a password.</p>";
 	
 	
 }

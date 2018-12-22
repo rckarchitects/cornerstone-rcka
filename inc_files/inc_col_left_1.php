@@ -125,7 +125,7 @@ if ($module_qms == "1") {
 	$array_pages = array("index2.php?page=qms_view","index2.php?page=qms_edit");
 	$array_title = array("View QMS","Edit QMS");
 	$array_images = array("button_list.png","button_edit.png");
-	$array_access = array(1,3);
+	$array_access = array(1,4);
 
 	SideMenu ("Quality Management", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 	
@@ -177,7 +177,7 @@ if ($module_expenses == "1") {
 	$array_pages = array("index2.php?page=timesheet_expense_edit","index2.php?page=timesheet_expense_list","index2.php?page=timesheet_expense_list&&amp;user_id=$_COOKIE[user]","pdf_expense_claim.php?user_id=$_COOKIE[user]","index2.php?page=timesheet_expense_validated","index2.php?page=expenses_analysis","index2.php?page=timesheet_expense_list");
 	$array_title = array("Add Expenses","Oustanding Expenses","List My Expenses","Expenses Claim","Validated Expenses","Expense Analysis","Validate Expenses");
 	$array_images = array("button_new.png","button_list.png","button_list.png","button_pdf.png","button_list.png","button_analysis.png","button_list.png");
-	$array_access = array(1,3,1,2,3,3,3);
+	$array_access = array(1,3,1,2,4,4,4);
 
 	SideMenu ("Expenses", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 
@@ -203,7 +203,7 @@ if ($module_tenders == 1) {
 	$array_pages = array("index2.php?page=tender_list","index2.php?page=tender_edit");
 	$array_title = array("List Tenders","Add Tender");
 	$array_images = array("button_list.png","button_new.png");
-	$array_access = array(3,3);
+	$array_access = array(3,4);
 
 	SideMenu ("Tenders", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 	

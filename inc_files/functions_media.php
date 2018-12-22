@@ -11,7 +11,7 @@ function MediaLatestList() {
 		echo "<h2>Latest Uploads</h2><table>";
 		while ($array = mysql_fetch_array($result)) {
 			
-			if ($array['media_description']) { $description = trim($array['media_description'],". ") . ", uploaded " . TimeFormat($array['media_timestamp']); } else {
+			if ($array['media_description']) { $description = TruncateLongText(trim($array['media_description'],". "),250) . ". Uploaded " . TimeFormat($array['media_timestamp']); } else {
 				$description = "Uploaded " . TimeFormat($array['media_timestamp']);
 			}
 			
@@ -19,7 +19,7 @@ function MediaLatestList() {
 			elseif ((time() - intval($array['media_timestamp'])) < 604800) { $class = "alert_careful"; }
 			else { unset($class); }
 				
-			echo "<tr><td class=\"$class\"><a href=\"" . $array['media_path'] . $array['media_file'] . "\">" . $array['media_title'] . "</a></td><td class=\"$class HideThis\"><span class=\"minitext\">" . $description . "</span></td><td style=\"text-align: right;\" class=\"$class\"><span class=\"minitext\">" . $array['media_category'] . "</span></td></tr>";
+			echo "<tr><td class=\"$class\" style=\"width: 25%;\"><a href=\"" . $array['media_path'] . $array['media_file'] . "\">" . $array['media_title'] . "</a></td><td class=\"$class HideThis\"><span class=\"minitext\">" . $description . "</span></td><td style=\"text-align: right;\" class=\"$class\"><span class=\"minitext\">" . $array['media_category'] . "</span></td></tr>";
 		
 		}
 		
@@ -30,6 +30,18 @@ function MediaLatestList() {
 		echo "<p><a href=\"index2.php?page=media&amp;filter=pdf\" class=\"submenu_bar\">More</a></p>";
 		
 	}
+	
+}
+
+function TruncateLongText($text, $maxlength) {
+	
+	if (strlen($text) > $maxlength) {
+		
+		$text = substr($text,0,$maxlength) . "...";
+		
+	}
+	
+	return $text;
 	
 }
 

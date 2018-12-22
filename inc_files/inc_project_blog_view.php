@@ -17,8 +17,8 @@ function BlogView($blog_id) {
 				$blog_id = intval($blog_id);
 				
 				
-					$sql = "SELECT * FROM intranet_projects_blog, intranet_projects where blog_id = " . intval($blog_id) . " AND blog_proj = proj_id AND (blog_access <= " . intval($user_usertype_current) . " OR blog_access IS NULL) AND (blog_view = 0 OR blog_view = " . $user_id_current . ") LIMIT 1";
-					
+					$sql = "SELECT * FROM intranet_projects_blog WHERE blog_id = " . intval($blog_id) . " AND (blog_access <= " . intval($user_usertype_current) . " OR blog_access IS NULL) AND (blog_view = 0 OR blog_view = " . $user_id_current . ") LIMIT 1";
+
 					$result = mysql_query($sql, $conn);
 					$array = mysql_fetch_array($result);
 				
@@ -33,10 +33,7 @@ function BlogView($blog_id) {
 					$blog_contact = $array['blog_contact'];
 					$blog_link = $array['blog_link'];
 					$blog_task = $array['blog_task'];
-					
-					$proj_id = intval($array['proj_id']);
-					$proj_num = $array['proj_num'];
-					$proj_name = $array['proj_name'];
+					$blog_proj = $array['blog_proj'];
 
 					if (intval($proj_id) == 0) { "<h1>Journal $proj_id</h1>"; }
 
@@ -48,8 +45,8 @@ function BlogView($blog_id) {
 						
 						echo "<h2>".$blog_title.", ".TimeFormat($blog_date)."</h2>";
 						
-						ProjectSubMenu($proj_id,$user_usertype_current,"project_view",1);
-						ProjectSubMenu($proj_id,$user_usertype_current,"blog_view",2);
+						ProjectSubMenu($blog_proj,$user_usertype_current,"project_view",1);
+						ProjectSubMenu($blog_proj,$user_usertype_current,"blog_view",2);
 
 
 
@@ -57,8 +54,7 @@ function BlogView($blog_id) {
 						$data_contact = $blog_contact; echo "<h3>Contact</h3><p>"; include("dropdowns/inc_data_contacts_name.php"); echo "</p>"; 
 					}
 
-					echo "<div><div class=\"float\"><h3>Project</h3><p><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num&nbsp;$proj_name</a>
-					</p></div><div class=\"float\"><h3>Date</h3><p>".date("g:ia", $blog_date)." <a href=\"index2.php?page=datebook_view_day&amp;timestamp=$blog_date\">".TimeFormat($blog_date)."</a>
+					echo "<div><div class=\"float\"><h3>Date</h3><p>".date("g:ia", $blog_date)." <a href=\"index2.php?page=datebook_view_day&amp;timestamp=$blog_date\">".TimeFormat($blog_date)."</a>
 					</p></div>";
 
 								$type_find = array("phone","filenote","meeting","email","rfi");
@@ -121,7 +117,7 @@ function BlogView($blog_id) {
 
 					}
 					
-		if (intval($proj_id) > 0) { return $proj_id; }
+		if (intval($proj_id) > 0) { return $blog_proj; }
 		
 	} else {
 		
@@ -132,7 +128,7 @@ function BlogView($blog_id) {
 
 }
 
-BlogView($blog_id);
+$proj_id = BlogView($blog_id);
 
 
 

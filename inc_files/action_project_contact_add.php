@@ -39,6 +39,6 @@ $contact_proj_id = mysql_insert_id();
 
 $result = mysql_query($sql_add, $conn) or die(mysql_error());
 
-$actionmessage = "<p>Project contact id " . $contact_proj_id . " added to project ref. " . $contact_proj_project . " edited successfully.</p>";
+$actionmessage = "<p>Project contact id <a href=\"index2.php?page=project_contacts&proj_id=" . $contact_proj_project . "\">" . $contact_proj_id . "</a> added to " . GetProjectName($contact_proj_project) . ".</p>";
 
 AlertBoxInsert($_COOKIE[user],"Project Contact Added",$actionmessage,$contact_proj_id,0,1,$contact_proj_project);

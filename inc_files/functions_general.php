@@ -293,6 +293,20 @@ function GetProjectInfo($proj_id) {
 					}
 }
 
+function GetProjectName($proj_id) {
+					if ($proj_id != NULL) {
+						GLOBAL $conn;
+						$sql = "SELECT proj_num, proj_name FROM intranet_projects WHERE proj_id = $proj_id";
+						$result = mysql_query($sql, $conn) or die(mysql_error());
+						$array = mysql_fetch_array($result);
+						$proj_num = $array['proj_num'];
+						$proj_name = $array['proj_name'];
+						$proj_title = $proj_num . " " . $proj_name;
+					}
+					
+					return $proj_title;
+}
+
 function SearchPanel($user_usertype_current,$search_id) {
 	
 	
