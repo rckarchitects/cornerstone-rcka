@@ -1,6 +1,8 @@
  <?php
  
-if ($_GET[timestamp] > 0) { $time = intval ( $_GET[timestamp] ); } else { $time = time(); }
+if ($_GET[timestamp] > 0) { $time = intval ( $_GET[timestamp] ); }
+if ($_GET[time] > 0) { $time = intval ( $_GET[time] ); }
+else { $time = time(); }
  
 		echo "<h1>Datebook</h1>";
 		echo "<h2>".TimeFormatDay($time)."</h2>";
@@ -10,6 +12,8 @@ function DateBook($time) {
 
 			$hour_begin = 7;
 			$hour_end = 13;
+			
+			$time = intval($time);
 
 			echo "
 			<div class=\"menu_bar\">
@@ -31,7 +35,7 @@ function DateBook($time) {
 			$startday = mktime($hour_begin, 0, 0, $startday_month, $startday_day, $startday_year);
 			$endday = $startday + 86400;
 			
-			$time_array = array($startday,$endday);	
+			$time_array = array($startday,$endday);
 			return $time_array;
 }
 

@@ -60,23 +60,24 @@ $array = mysql_fetch_array($result);
 			
 			echo "</div>";
 			
-			
+			echo "<div class=\"page\">";
 		
-			if ($tender_description != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<div><h3>Description</h3><p>". nl2br($tender_description) . "</p></div>"; }
+			if ($tender_description != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<h3>Description</h3><p>". nl2br($tender_description) . "</p>"; }
 			
-			if ($tender_instructions != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<div><h3>Submission Instructions</h3><p>". nl2br($tender_instructions) . "</p></div>"; }
+			if ($tender_instructions != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<h3>Submission Instructions</h3><p>". nl2br($tender_instructions) . "</p>"; }
 			
-			if ($tender_client != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<div><h3>Client</h3><p>". $tender_client . "</p></div>"; }
+			if ($tender_client != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<h3>Client</h3><p>". $tender_client . "</p>"; }
 			
-			if ($tender_source != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<div><h3>Source of Tender</h3><p>". TextPresent($tender_source) . "</p></div>"; }
+			if ($tender_source != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<h3>Source of Tender</h3><p>". TextPresent($tender_source) . "</p>"; }
 			
-			if ($tender_notes && !$_GET[edit_question] && !$_GET[edit_answer]) { echo "<div><h3>Notes</h3><p>". nl2br($tender_notes) . "</p></div>"; }
+			if ($tender_notes && !$_GET[edit_question] && !$_GET[edit_answer]) { echo "<h3>Notes</h3><p>". nl2br($tender_notes) . "</p>"; }
 
 			if ($tender_date) { $countdown = $tender_date - time(); }
 			if ($countdown > 0) { $countdown_print = "&nbsp;(" . DeadlineTime($countdown) . ")"; } else { unset($countdown_print); }
 			
-			echo "<div><h3>Submission Deadline</h3><p>".TimeFormatDetailed($tender_date) . $countdown_print ."</p></div>";
+			echo "<h3>Submission Deadline</h3><p>".TimeFormatDetailed($tender_date) . $countdown_print ."</p>";
 
+			echo "</div>";
 
 }
 

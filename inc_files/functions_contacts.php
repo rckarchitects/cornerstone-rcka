@@ -171,7 +171,6 @@ function ContactProjects($contact_id) {
 
 }
 
-
 function ContactOnePage($contact_id) {
 	
 	global $conn;
@@ -462,7 +461,6 @@ function DisciplineNonProject($discipline_id) {
 
 }
 
-
 function DisciplineProject($discipline_id) {
 	
 	global $conn;
@@ -525,7 +523,6 @@ function DisciplineProject($discipline_id) {
 				echo "</div>";
 
 }
-
 
 function SelectCompany () {
 	GLOBAL $conn;

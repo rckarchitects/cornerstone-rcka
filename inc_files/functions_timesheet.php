@@ -1,4 +1,5 @@
 <?php
+
 function TimeSheetDateDropdown($ts_weekbegin,$ts_entry, $ts_user) {
 
 global $conn;
@@ -952,4 +953,198 @@ function TimeSheetListFactored ($week) {
 		
 	}
 
+}
+
+function ListFeeStages($group_id) {
+	
+		global $conn;
+		$group_id = intval($group_id);
+		global $user_usertype_current;
+		
+		$sql = "SELECT * FROM intranet_timesheet_group LEFT JOIN intranet_timesheet_group_jobbook ON group_id = book_stage LEFT JOIN intranet_user_details ON group_leader = user_id   WHERE group_active = 1 GROUP BY group_id ORDER BY group_order";
+		$result = mysql_query($sql, $conn) or die(mysql_error());
+		if (mysql_num_rows($result) > 0) {
+			
+			echo "<div class=\"page\"><table><tr><th colspan=\"2\" style=\"width: 20%;\">Project Stage</th><th>Stage Leader</th><th style=\"width: 45px;\"></th></tr>";
+			
+			unset($javascript_array);
+
+			
+			while ($array = mysql_fetch_array($result)) {
+				
+				if ($group_id == $array['group_id']) { $highlight = "style=\"background: rgba(255,0,0,0.1);\""; } else { unset($highlight); }
+				
+				if ($array['book_id'] > 0) {
+					
+					echo "<tr id=\"" . $array['group_id'] . "\" class=item_" . $group_id . "  ><td $highlight class=\"HideHeader\">" . $array['group_code'] . "</td><td $highlight class=\"HideHeader\"><a href=\"#" . $array['group_id'] ."\" onclick=\"HideItem('item_" . $array['group_id'] . "')\">" . $array['group_description'] . "</a></td><td $highlight class=\"HideHeader\"><a href=\"index2.php?page=user_view&amp;user_id="  . $array['user_id'] . "\">" . $array['user_name_first'] . " " . $array['user_name_second'] . "</a></td><td $highlight>";
+					
+					if ($user_usertype_current > 3 OR intval($_COOKIE[user]) == $array['group_leader']) { echo "<a href=\"\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a><a href=\"\">"; }
+					
+					echo "</td></tr>";
+					
+				} else {
+	
+					echo "<tr id=\"" . $array['group_id'] . "\"><td $highlight>" . $array['group_code'] . "</td><td $highlight>" . $array['group_description'] . "</td><td $highlight><a href=\"index2.php?page=user_view&amp;user_id="  . $array['user_id'] . "\">" . $array['user_name_first'] . " " . $array['user_name_second'] . "</a></td><td $highlight>";
+					
+					if ($user_usertype_current > 3 OR intval($_COOKIE[user]) == $array['group_leader']) { echo "<a href=\"\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a>"; }		
+					
+					echo "</td></tr>";
+					
+				}
+				
+				ListFeeStageItems($array['group_id'],$array['group_leader']);
+				
+				
+			}
+			
+			echo "</table></div>";
+			
+		}
+		
+		
+				echo "
+		
+					<script>
+					function HideItem(input) {
+						
+						var x = document.getElementsByClassName('HideLine');
+						var y = document.getElementsByClassName(input);
+						var z = document.getElementsByClassName('HideHeader');
+						
+						var i;
+							for (i = 0; i < x.length; i++) {
+							  x[i].style.display = \"none\";
+							  x[i].style.backgroundColor = \"transparent\";
+							}
+							
+						var j;
+							for (j = 0; j < z.length; j++) {
+							  z[j].style.backgroundColor = \"transparent\";
+							}
+						var k;
+							for (k = 0; k < y.length; k++) {
+								  if (y[k].style.display === \"none\") {
+									y[k].style.display = \"table-row\";
+									y[k].style.backgroundColor = \"rgba(255,0,0,0.1)\";
+								  } else {
+									y[k].style.display = \"none\";
+									HideLine.style.display = \"none\";
+								}
+							}
+					}
+					</script>
+		
+				";
+	
+}
+
+
+function ListFeeStageItems($group_id, $group_leader) {
+	
+		global $conn;
+		$group_id = intval($group_id);
+		global $user_usertype_current;
+
+		
+		$sql = "SELECT * FROM intranet_timesheet_group_jobbook LEFT JOIN intranet_timesheet_group ON group_id = book_stage WHERE book_stage = $group_id ORDER BY book_order";
+		$result = mysql_query($sql, $conn) or die(mysql_error());
+		$rows = mysql_num_rows($result);
+		if ($rows > 0) {
+			
+			if (intval($_GET[group_id] == $group_id)) { $display = "style=\"display: table-row;\""; } else { $display = "style=\"display: none;\""; }
+			
+			$counter = 0;
+
+			while ($array = mysql_fetch_array($result)) {
+				
+				if ($counter == 0) { echo "<tr $display class=\"item_" . $group_id . " HideLine\"><td></td><td>Core Objective</td><td $highlight>" . $array['group_notes'] . "</td><td>";
+				
+				if ($user_usertype_current > 3 OR intval($_COOKIE[user]) == $group_leader) { echo "<a href=\"index2.php?page=timesheet_fee_list&amp;item=fee_group&amp;stage_id=" . $array['book_stage'] . "\"><img src=\"images/button_new.png\" alt=\"Add\" /></a>"; }
+				
+				echo "</td></tr>"; $counter++; }
+				
+				echo "<tr $display class=\"item_" . $group_id . " HideLine\"><td></td><td>" . $array['book_order'] . ". " . $array['book_title'] . "</td><td>" . $array['book_description'] . "</a></td><td>";
+				
+				if ($user_usertype_current > 3 OR intval($_COOKIE[user]) == $group_leader) { echo "<a href=\"index2.php?page=timesheet_fee_list&amp;item=fee_group&amp;book_id=" . $array['book_id'] . "\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a>"; }
+				
+				echo "</td></tr>";
+				
+			}
+			
+			
+			
+		}
+	
+	
+}
+
+function EditFeeGroup($book_id) {
+	
+	global $conn;
+	$book_id = intval($book_id);
+	
+	$sql = "SELECT * FROM intranet_timesheet_group_jobbook WHERE book_id = $book_id";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	$array = mysql_fetch_array($result);
+	
+	echo "<form action=\"index2.php?page=timesheet_fee_list\" method=\"post\">";
+	
+	echo "<div><h3>Category</h3>";
+	
+	DataList("book_title","intranet_timesheet_group_jobbook");
+
+	echo "<input type=\"text\" maxlength=\200\" name=\"group_title\" list=\"book_title\" value=\"" . $array['book_title'] . "\" style=\"min-width: 50%;\" required=\"required\" /><br /><input type=\"checkbox\" value=\"1\" name=\"book_update_titles\" />&nbsp; Update all items with this title?</div>";
+	
+	echo "<div><h3>Order</h3><input type=\"number\" value=\"". $array['book_order'] . "\" name=\"book_order\" />&nbsp;<span class=\"minitext\">Enter a new order, or leave blank to accept default.</span></div>";
+
+	
+	TextAreaEdit("book_description");
+	
+	echo "<div><h3>Notes</h3><textarea name=\"book_description\">" . $array['book_description'] . "</textarea>";
+	
+	echo "</div>";
+	
+	echo "<div>";
+	
+	if (intval($array['book_stage']) > 0) { $book_stage_select = intval($array['book_stage']); } elseif (intval($_GET[stage_id]) > 0) { $book_stage_select = intval($_GET[stage_id]); }
+	
+		DropDownFeeStage("book_stage", $book_stage_select);
+		
+	echo "</div>";
+	
+	echo "<div>";
+		echo "<input type=\"hidden\" name=\"book_user\" value=\"" . intval($_COOKIE[user]) . "\" />";
+		echo "<input type=\"hidden\" name=\"book_timestamp\" value=\"" . intval(time()) . "\" />";
+		echo "<input type=\"hidden\" name=\"book_id\" value=\"" . $array['book_id'] . "\" />";
+		echo "<input type=\"hidden\" name=\"action\" value=\"timesheet_fee_book_update\" />";
+		echo "<input type=\"submit\" />";
+	echo "</div>";
+	
+	echo "</form>";
+	
+}
+
+function DropDownFeeStage($field, $group_id) {
+	
+	global $conn;
+	
+	$sql = "SELECT group_id, group_code, group_description FROM intranet_timesheet_group WHERE group_active = 1 ORDER BY group_order";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	
+	if (mysql_num_rows($result) > 0) {
+		
+		echo "<select name=\"$field\">";
+	
+		while ($array = mysql_fetch_array($result)) {
+			
+			if ($group_id == $array['group_id']) { $selected = "selected=\"selected\""; } else { unset($selected); }
+			
+			echo "<option value=\"" . $array['group_id'] . "\" " . $selected . ">" . $array['group_code'] . ". " . $array['group_description'] . "</option>";
+			
+		}
+		
+		echo "</select>";
+	
+	}
+	
 }

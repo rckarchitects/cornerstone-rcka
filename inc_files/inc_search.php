@@ -1,8 +1,48 @@
 <?php
 
+
+function SearchTerms($search_text,$search_field) {
+		$counter = 0;
+		$max_count = count($search_text);
+		while($counter < $max_count) {
+		if ($counter > 0) { $searching_blog = $searching_blog." AND " . $search_field . " LIKE "; }
+		$searching_blog = $searching_blog." LOWER ('%".$search_text[$counter]."%' )";
+		$counter++;
+		}
+		$searching_blog = "LOWER (" . $search_field . ") LIKE ".$searching_blog;
+		return($searching_blog);
+}
+
+function SearchFeeStage($keywords_array) {
+	
+	global $conn;
+
+		$sql = "SELECT * FROM intranet_timesheet_fees LEFT JOIN intranet_projects ON proj_id = ts_fee_project WHERE " . SearchTerms($keywords_array, "ts_fee_text") . " OR " . SearchTerms($keywords_array, "ts_fee_comment")."  ORDER BY proj_num DESC, ts_fee_stage";
+		
+		
+		$result = mysql_query($sql, $conn) or die(mysql_error());
+			if (mysql_num_rows($result) > 0) {
+				
+				
+					echo "<h3>Fee Stages</h3>";
+					echo "<table>";
+				
+					while ($array = mysql_fetch_array($result)) {
+						
+					$search_results = $search_results + mysql_num_rows($result);
+
+					echo "
+					<tr><td style=\"width: 30%;\"><a href=\"index2.php?page=project_view&amp;proj_id=" . $array['proj_id'] . "\">" . $array['proj_num'] . " " . $array['proj_name'] . "</a></td><td>" . $array['ts_fee_text'] . "</td>";
+					echo "</tr>";
+			}
+			
+			echo "</table>";
+		}
+
+}
+
+
 echo "<h1>Search Results</h1>";
-
-
 
 // Construct search terms
 
@@ -49,28 +89,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 
 // Fee Stage
 
-
-$sql = "SELECT * FROM intranet_timesheet_fees LEFT JOIN intranet_projects ON proj_id = ts_fee_project WHERE ".SearchTerms($keywords_array, "ts_fee_text")." ORDER BY proj_num DESC, ts_fee_stage";
-$result = mysql_query($sql, $conn) or die(mysql_error());
-	if (mysql_num_rows($result) > 0) {
-		
-		//echo "<tr><td colspan=\"2\">$sql</td></tr>";
-		//echo "<tr><td colspan=\"2\">" . SearchTerms($keywords_array, "contact_namesecond") . "</td></tr>";
-		
-			echo "<h3>Fee Stages</h3>";
-			echo "<table>";
-		
-			while ($array = mysql_fetch_array($result)) {
-				
-			$search_results = $search_results + mysql_num_rows($result);
-
-			echo "
-			<tr><td style=\"width: 30%;\"><a href=\"index2.php?page=project_view&amp;proj_id=" . $array['proj_id'] . "\">" . $array['proj_num'] . " " . $array['proj_name'] . "</a></td><td>" . $array['ts_fee_text'] . "</td>";
-			echo "</tr>";
-	}
-	
-	echo "</table>";
-}
+SearchFeeStage($keywords_array);
 
 
 // Journal Entries

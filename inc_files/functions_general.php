@@ -388,7 +388,7 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$proj_id = intval($proj_id);
 				$level = intval($level);
 
-	if ($page == "project_view" && $level == 1) {
+	if ($page == "project_view" && $level == 1 && intval($proj_id) > 0) {
 		
 				$array_menu_page[] = "index2.php?page=project_view&amp;proj_id=$proj_id";
 				$array_menu_text[] = "Project Home";
@@ -450,7 +450,7 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 2;
 				
-	} elseif ($page == "project_view" && $level == 2) {
+	} elseif ($page == "project_view" && $level == 2 && intval($proj_id) > 0) {
 
 				$array_menu_page[] = "index2.php?page=project_edit&amp;status=edit&amp;proj_id=$proj_id";
 				$array_menu_text[] = "Edit Project";
@@ -468,7 +468,7 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_usertype[] = 2;		
 				
 		
-	} elseif ($page == "project_invoice" && $level == 2) {
+	} elseif ($page == "project_invoice" && $level == 2 && intval($proj_id) > 0) {
 
 				$array_menu_page[] = "index2.php?page=timesheet_invoice_items_edit&amp;proj_id=$proj_id";
 				$array_menu_text[] = "Add Invoice Item";
@@ -480,7 +480,7 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_image[] = "button_edit.png";
 				$array_menu_usertype[] = 3;
 				
-	} elseif ($page == "project_risks" && $level == 2) {
+	} elseif ($page == "project_risks" && $level == 2 && intval($proj_id) > 0) {
 
 				$array_menu_page[] = "index2.php?page=project_risks&amp;action=list&amp;view=list&amp;proj_id=$proj_id";
 				$array_menu_text[] = "List Risks";
@@ -504,7 +504,7 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_image[] = "button_pdf.png";
 				$array_menu_usertype[] = 2;
 				
-	} elseif ($page == "project_fee" OR $page == "project_timesheet_view") {
+	} elseif ($page == "project_fee" OR $page == "project_timesheet_view" && intval($proj_id) > 0) {
 
 				$array_menu_page[] = "index2.php?page=project_fees&proj_id=$proj_id";
 				$array_menu_text[] = "List Fee Stages";
@@ -541,14 +541,14 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_image[] = "button_pdf.png";
 				$array_menu_usertype[] = 4;
 				
-	} elseif ($page == "project_contacts") {
+	} elseif ($page == "project_contacts" && intval($proj_id) > 0) {
 	
 				$array_menu_page[] = "index2.php?page=project_contacts&amp;contact_proj_add=add&amp;proj_id=$proj_id";
 				$array_menu_text[] = "Add Project Contact";
 				$array_menu_image[] = "button_new.png";
 				$array_menu_usertype[] = 3;
 				
-	} elseif ($page == "project_blog" OR $page == "project_blog_list" OR $page == "project_blog_edit") {
+	} elseif (($page == "project_blog" OR $page == "project_blog_list" OR $page == "project_blog_edit")  && intval($proj_id) > 0 ) {
 	
 				$array_menu_page[] = "index2.php?page=project_blog_edit&status=add&amp;proj_id=$proj_id";
 				$array_menu_text[] = "Add Journal Entry";
@@ -560,7 +560,7 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 1;
 				
-	} elseif ($page == "project_tasks") {
+	} elseif ($page == "project_tasks" && intval($proj_id) > 0) {
 	
 				$array_menu_page[] = "index2.php?page=tasklist_edit&amp;proj_id=$proj_id";
 				$array_menu_text[] = "Add New Task";
@@ -573,6 +573,23 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_usertype[] = 1;
 				
 				$array_menu_page[] = "index2.php?page=tasklist_project&amp;view=complete&amp;proj_id=$proj_id";
+				$array_menu_text[] = "Completed Tasks";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype[] = 1;
+				
+	} elseif ($page == "tasklist_view") {
+	
+				$array_menu_page[] = "index2.php?page=tasklist_edit";
+				$array_menu_text[] = "Add New Task";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype[] = 1;
+		
+				$array_menu_page[] = "index2.php?page=tasklist_view";
+				$array_menu_text[] = "Outstanding Tasks";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype[] = 1;
+				
+				$array_menu_page[] = "index2.php?page=tasklist_view&amp;view=complete";
 				$array_menu_text[] = "Completed Tasks";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 1;
@@ -594,7 +611,7 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_image[] = "button_new.png";
 				$array_menu_usertype[] = 1;
 
-	} elseif ( $page == "project_expenses") {
+	} elseif ( $page == "project_expenses" && intval($proj_id) > 0) {
 
 				$array_menu_page[] = "timesheet_expense_edit&amp;proj_id=$proj_id";
 				$array_menu_text[] = "Add Expenses";
@@ -602,7 +619,7 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_usertype[] = 2;
 
 
-	} elseif ( $page == "drawings_list" && $level == 2) {
+	} elseif ( $page == "drawings_list" && $level == 2 && intval($proj_id) > 0) {
 
 				$array_menu_page[] = "pdf_drawing_list.php?proj_id=$proj_id";
 				$array_menu_text[] = "Drawing Schedule";
@@ -620,7 +637,7 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_usertype[] = 2;
 				
 
-	} elseif ( $page == "planning_conditions" && $level == 2) {
+	} elseif ( $page == "planning_conditions" && $level == 2 && intval($proj_id) > 0) {
 
 				if ($_GET[showdetail] == 1) {
 					$array_menu_page[] = "index2.php?page=project_planningcondition_list&amp;proj_id=$proj_id";
@@ -646,7 +663,7 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_usertype[] = 2;
 				
 
-	} elseif ( $page == "project_checklist" && $level == 2) {
+	} elseif ( $page == "project_checklist" && $level == 2 && intval($proj_id) > 0) {
 		
 				$group_id = intval($_GET[group_id]);
 				
@@ -695,7 +712,7 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				
 	
 		
-	} elseif ( $page == "project_drawings") {
+	} elseif ( $page == "project_drawings" && intval($proj_id) > 0) {
 		
 				if (intval($_GET[proj_id]) > 0) { $proj_id = intval($_GET[proj_id]); }
 		
@@ -959,6 +976,28 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_image[] = "button_edit.png";
 				$array_menu_usertype[] = 2;
 				
+	} elseif ( $page == "blog_list" && intval($proj_id) > 0) {
+		
+				$array_menu_page[] = "index2.php?page=project_blog_list&amp;proj_id=" . intval($_GET[proj_id]) ;
+				$array_menu_text[] = "List All";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype[] = 1;
+				
+				$array_menu_page[] = "index2.php?page=project_blog_edit&amp;status=add&amp;proj_id=" . intval($_GET[proj_id]) ;
+				$array_menu_text[] = "Add Journal Entry";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype[] = 1;		
+		
+		
+	} elseif ( $page == "fee_stage_list") {
+		
+		
+				$array_menu_page[] = "pdf_jobbook.php" ;
+				$array_menu_text[] = "Printable Version";
+				$array_menu_image[] = "button_pdf.png";
+				$array_menu_usertype[] = 1;
+		
+		
 	}
 
 
@@ -1787,9 +1826,9 @@ function DateList($impending_only) {
 
 		if ($impending_only == 1) {
 		
-			$sql = "SELECT * FROM intranet_datebook LEFT JOIN intranet_projects ON proj_id = date_project WHERE date_day < '$alert' AND date_day >= " . "'" . $now . "' ORDER BY date_day";
-
-		
+			//$sql = "SELECT * FROM intranet_datebook LEFT JOIN intranet_projects ON proj_id = date_project WHERE date_day < '$alert' AND date_day >= " . "'" . $now . "' ORDER BY date_day";
+			$sql = "SELECT * FROM intranet_datebook LEFT JOIN intranet_projects ON proj_id = date_project WHERE date_day < DATE_ADD('" . $now . "', INTERVAL date_warning WEEK) AND date_day >= " . "'" . $now . "' ORDER BY date_day";
+			
 		} elseif ($impending_only == 2) { 
 		
 			$sql = "SELECT * FROM intranet_datebook LEFT JOIN intranet_projects ON proj_id = date_project WHERE $impending date_day < " . "'" . $now . "' ORDER BY date_day DESC";
@@ -2869,17 +2908,6 @@ function ListProjectJournalEntries($proj_id) {
 
 }
 
-function SearchTerms($search_text,$search_field) {
-		$counter = 0;
-		$max_count = count($search_text);
-		while($counter < $max_count) {
-		if ($counter > 0) { $searching_blog = $searching_blog." AND $search_field LIKE "; }
-		$searching_blog = $searching_blog."'%".$search_text[$counter]."%'";
-		$counter++;
-		}
-		$searching_blog = "$search_field LIKE ".$searching_blog;
-		return($searching_blog);
-}
 
 function AlertBoxShow($user_id) {
 	
@@ -3554,6 +3582,10 @@ function ProjectFees($proj_id) {
 					$fee_stage_current = CleanNumber($_POST[fee_stage_current]);
 					$sql_update = "UPDATE intranet_projects SET proj_riba = '$fee_stage_current' WHERE proj_id = '$proj_id' LIMIT 1";
 					$result_update = mysql_query($sql_update, $conn) or die(mysql_error());
+					
+					$alert_message = "<p>The active fee stage for  " . GetProjectName($proj_id) .  " has been updated to " . $fee_stage_current . ".</p>";
+					
+					AlertBoxInsert($_COOKIE[user],"Project Fees",$alert_message,$fee_stage_current,4,0,$proj_id);
 
 				}
 
@@ -3711,7 +3743,7 @@ function ProjectFees($proj_id) {
 					
 						unset($highlight);
 						
-						if ($user_usertype_current > 3) { 
+						if ($user_usertype_current > 3) {
 						
 								echo "<tr><td colspan=\"6\"><strong>Total Fee for All Stages</strong></td><td style=\"text-align: right;\"><strong>". MoneyFormat($fee_total) . "</strong></td><td colspan=\"2\"></td></tr>";
 								
@@ -4412,6 +4444,7 @@ array_push($array_projects_recent,$array_timesheet_projects['ts_project']);
 		$ts_fee_value = $array['ts_fee_value'];
 		$ts_fee_time_begin = $array['UNIX_TIMESTAMP(ts_fee_commence)'];
 		$ts_fee_time_end = $array['ts_fee_time_end'];
+		$ts_fee_group = $array['ts_fee_group'];
 		$proj_riba = $array['proj_riba'];
 		
 		// This has been added since the last update
@@ -4426,6 +4459,8 @@ array_push($array_projects_recent,$array_timesheet_projects['ts_project']);
 		if ( $project_tasks_due > 0) { $add_task = "<br /><span class=\"minitext\"><a href=\"index2.php?page=tasklist_project&amp;proj_id=$proj_id&amp;show=user\">You have $project_tasks_due pending task(s) for this project</a></span>"; } else { $add_task = NULL; }
 		
 		if ($ts_fee_text != NULL) { $current_stage = $ts_fee_text; } elseif ($proj_fee_type == NULL) { $current_stage = "--"; } elseif ($riba_id == NULL) { $current_stage = "Prospect"; } else { $current_stage = $riba_letter." - ".$riba_desc; }
+		
+		if ($ts_fee_group > 0) { $current_stage =  "<a href=\"index2.php?page=timesheet_fee_list&amp;group_id=" . $ts_fee_group . "#" . $ts_fee_group . "\">" . $current_stage . "</a>"; }
 		
 		if (array_search($proj_id,$array_projects_recent) > 0 OR $_GET[active] != NULL) {
 			
@@ -4975,6 +5010,23 @@ function GetUserName($user_id) {
 	} else {
 		echo "<h2>Error</h2>";
 	}
+}
+
+
+function GetUserNameOnly($user_id) {
+	
+	GLOBAL $conn;
+	GLOBAL $user_usertype_current;
+	$user_id = intval($user_id);
+	$sql = "SELECT * FROM intranet_user_details WHERE user_id = '$user_id' LIMIT 1";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	$array = mysql_fetch_array($result);
+	$user_name_first = $array['user_name_first'];
+	$user_name_second = $array['user_name_second'];
+	
+	$username = $user_name_first . " " . $user_name_second;
+	
+	return $username;
 }
 
 function UserForm ($user_id) {

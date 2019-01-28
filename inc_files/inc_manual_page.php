@@ -8,7 +8,7 @@ if ($user_usertype_current >= 2 && intval($_GET[manual_id]) > 0 && $_GET[action]
 	
 } elseif ($user_usertype_current >= 2 && $_GET[action] == "add") {
 	
-	ManualPageAdd(intval(intval($user_id_current)));
+	ManualPageAdd(intval($user_id_current));
 	
 } elseif ($user_usertype_current > 1 && intval($_GET[manual_id])) {
 	

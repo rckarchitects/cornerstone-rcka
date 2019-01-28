@@ -71,7 +71,7 @@
 				
 						while ($count < count($array_contact_id)) {
 							
-							
+							$count_people_issued++;
 					
 							$issue_contact = $array_contact_id[$count];
 							$issue_company = $array_company_id[$count];
@@ -117,7 +117,7 @@
 										if ($issue_confirmed == "yes" && $issue_to == "yes") {
 										$result = mysql_query($sql_add, $conn) or die(mysql_error());
 										//echo "Drawing ID: " . $issue_drawing . " (" . $counter_drawing . "), " . $sql_add . "<br / >";
-										$count_people_issued++;
+										
 										}
 
 

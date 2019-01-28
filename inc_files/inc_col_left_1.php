@@ -135,10 +135,10 @@ if ($module_qms == "1") {
 
 if ($module_timesheets == "1") {
 
-	$array_pages = array("index2.php?page=timesheet","index2.php?page=timesheet_analysis","index2.php?page=timesheet_factored","pdf_timesheet_analysis.php","pdf_resourcing.php","pdf_timesheet_personal.php","index2.php?page=timesheet_incomplete_list","pdf_project_performance_summary.php");
-	$array_title = array("Timesheets","Analysis","Factored Timesheets","Projects","Resourcing","My Timesheets","List incomplete","Project Performance Summary");
-	$array_images = array("button_list.png","button_analysis.png","button_list.png","button_pdf.png","button_pdf.png","button_pdf.png","button_list.png","button_pdf.png");
-	$array_access = array(1,4,4,4,4,1,1,4);
+	$array_pages = array("index2.php?page=timesheet","index2.php?page=timesheet_analysis","index2.php?page=timesheet_factored","pdf_timesheet_analysis.php","pdf_resourcing.php","pdf_timesheet_personal.php","index2.php?page=timesheet_incomplete_list","pdf_project_performance_summary.php","index2.php?page=timesheet_fee_list");
+	$array_title = array("Timesheets","Analysis","Factored Timesheets","Projects","Resourcing","My Timesheets","List incomplete","Project Performance Summary","List Fee Stages");
+	$array_images = array("button_list.png","button_analysis.png","button_list.png","button_pdf.png","button_pdf.png","button_pdf.png","button_list.png","button_pdf.png","button_list.png");
+	$array_access = array(1,4,4,4,4,1,1,4,2);
 
 	SideMenu ("Timesheets", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 	

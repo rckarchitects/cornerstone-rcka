@@ -1,24 +1,30 @@
 <?php
 
+function ActionTaskUpdateItem() {
+	
+	global $conn;
+
 // Check that the required values have been entered, and alter the page to show if these values are invalid
 
 		// Begin to clean up the $_POST submissions
 
-		$tasklist_project = $_POST[tasklist_project];
+		$tasklist_project = intval($_POST[tasklist_project]);
 		$tasklist_status = $_POST[tasklist_status];
-		$tasklist_fee = $_POST[tasklist_fee];
+		$tasklist_fee = intval($_POST[tasklist_fee]);
 		$tasklist_notes = addslashes($_POST[tasklist_notes]);
 		$tasklist_comment = addslashes($_POST[tasklist_comment]);
 		$tasklist_updated = time();
 		$tasklist_added = time();
 		if ($_POST[tasklist_percentage] == 100) { $tasklist_completed = time(); } else { $tasklist_completed = "NULL"; }
-		$tasklist_person = $_POST[tasklist_person];
-		$tasklist_due = $_POST[tasklist_due];
-		$tasklist_percentage = $_POST[tasklist_percentage];
+		$tasklist_person = intval($_POST[tasklist_person]);
+		$tasklist_due = CreateDays($_POST[tasklist_due],12);
+		$tasklist_percentage = intval($_POST[tasklist_percentage]);
 		$tasklist_access = intval ( $_POST[tasklist_access] );
 		$tasklist_id = intval ( $_POST[tasklist_id] );
+		$tasklist_category = addslashes($_POST[tasklist_category]);
+		$tasklist_contact = intval($_POST[tasklist_contact]);
+		$tasklist_feestage = intval($_POST[tasklist_feestage]);
 		
-
 		
 	if ($_POST[tasklist_id] > 0) {
 	
@@ -33,7 +39,9 @@
 		tasklist_percentage = '$tasklist_percentage',
 		tasklist_completed = $tasklist_completed,
 		tasklist_due = '$tasklist_due',
-		tasklist_access = '$tasklist_access'
+		tasklist_access = '$tasklist_access',
+		tasklist_category = '$tasklist_category',
+		tasklist_feestage = '$tasklist_feestage'
 		WHERE tasklist_id = $tasklist_id LIMIT 1
 		";
 		
@@ -59,7 +67,9 @@
 		tasklist_due,
 		tasklist_comment,
 		tasklist_percentage,
-		tasklist_access
+		tasklist_access,
+		tasklist_category,
+		tasklist_feestage
 		) values (
 		'NULL',
 		'$tasklist_project',
@@ -73,7 +83,9 @@
 		'$tasklist_due',
 		'$tasklist_comment',
 		'$tasklist_percentage',
-		'$tasklist_access'
+		'$tasklist_access',
+		'$tasklist_category',
+		'$tasklist_feestage'
 		)";
 	
 		$result = mysql_query($sql_add, $conn) or die(mysql_error());
@@ -84,3 +96,7 @@
 		AlertBoxInsert($_COOKIE[user],"Task Added",$actionmessage,$tasklist_id,0,0,$tasklist_project);
 		
 	}
+	
+}
+
+ActionTaskUpdateItem();

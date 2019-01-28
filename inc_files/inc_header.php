@@ -95,9 +95,54 @@
 					var popup = document.getElementById(\"myPopup\");
 					popup.classList.toggle(\"show\");
 				}
-				</script>
+				</script>";
+				
+		if (($_GET[page] == "tasklist_project" OR $_GET[page] == "tasklist_view") && $_GET[view] != "complete") {
+				
+				echo "<script>
+					
+						function StrikeThough(task){
+						
+							var ele = document.getElementsByClassName(task);
+							for(var i=0;i<ele.length;i++){
+								ele[i].style.textDecoration='line-through'
+							}
+							
+							document.getElementById(task).disabled = true;
+												
+							var url=\"ajax.php?action=task_complete&task_id=\" + task;
+							
+							$.get(url);
+							
+							
+						}
+					
+				</script>";
+				
+		} elseif ($_GET[page] == "tasklist_project" && $_GET[view] == "complete") {
+				
+				echo "<script>
+					
+						function UnStrikeThough(task){
+						
+							var ele = document.getElementsByClassName(task);
+							for(var i=0;i<ele.length;i++){
+								ele[i].style.textDecoration='none'
+							}
+							
+							document.getElementById(task).disabled = true;
+												
+							var url=\"ajax.php?action=task_uncomplete&task_id=\" + task;
+							
+							$.get(url);
 
-";
+							
+						}
+					
+				</script>";
+			
+		}
+
 
 echo "<script src=\"/plugins/tinymce/tinymce.min.js\"></script>";
 

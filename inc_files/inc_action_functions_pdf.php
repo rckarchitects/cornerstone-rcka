@@ -1373,23 +1373,28 @@ function PDFStageAnalysis($proj_id,$proj_value) {
 	if ($proj_value) { $fee_target_percent_total_print = number_format( ($fee_target_total / $proj_value * 100),2) . "%"; }
 	if ($proj_value) { $cost_actual_percent_print = number_format( ($target_fee_percentage_actual_total * 100),2) . "%"; }
 	
+	if ($fee_total > 0) { $fee_total_profit = number_format( (1 - ($fee_target_total / $fee_total)) * 100) . "%"; }
+	if ($cost_actual > 0) { $cost_total_profit = number_format( (1 - ($cost_actual / $fee_total)) * 100) . "%"; }
+	
 	$pdf->Ln(1);
 	$pdf->SetLineWidth(0.5);
 	$pdf->SetFont('Helvetica','B',10);
 	$pdf->Cell(100,10,"Total Fee",'B',0);
 	$pdf->Cell(25,10,$fee_total_print,'B',0,'R');
 	$pdf->SetFont('Helvetica','',9);
-	$pdf->Cell(50,5,"Target Cost",0,0,'R');
+	$pdf->Cell(25,5,"Target Cost",0,0,'R');
+	$pdf->Cell(35,5,$fee_total_profit,0,0,'R');
 	$pdf->SetFont('Helvetica','B',10);
 	if ($fee_target_total > $fee_total) { $pdf->SetTextColor(255,0,0); } else { $pdf->SetTextColor(0,0,0); }
-	$pdf->Cell(50,5,$fee_target_total_print,0,0,'R');
+	$pdf->Cell(40,5,$fee_target_total_print,0,0,'R');
 	$pdf->Cell(0,5,$fee_target_percent_total_print,0,1,'R');
 	$pdf->SetX(135);
 	$pdf->SetFont('Helvetica','',9);
-	$pdf->Cell(50,5,"Actual Cost",'B',0,'R');
+	$pdf->Cell(25,5,"Actual Cost",'B',0,'R');
+	$pdf->Cell(35,5,$cost_total_profit,'B',0,'R');
 	$pdf->SetFont('Helvetica','B',10);
 	if ($cost_actual > $fee_target_total) { $pdf->SetTextColor(255,0,0); } else { $pdf->SetTextColor(0,0,0); }
-	$pdf->Cell(50,5,$cost_actual_print,'B',0,'R');
+	$pdf->Cell(40,5,$cost_actual_print,'B',0,'R');
 	$pdf->Cell(0,5,$cost_actual_percent_print,'B',1,'R');
 	
 	$pdf->SetTextColor(0,0,0);
@@ -1402,6 +1407,7 @@ function PDFProjectArray($proj_id) {
 	global $pdf;
 	
 	$pdf->SetTextColor(0,0,0);
+	$pdf->SetLineWidth(0.25);
 	
 	if (intval($proj_id) > 0) { $proj_id_filter = "AND proj_id = " . intval($proj_id); } else { unset($proj_id_filter); } 
 	
@@ -1423,6 +1429,7 @@ function PDFProjectArray($proj_id) {
 				$pdf->Cell(50,5,"Contract Value",'T',0,'R');
 				$pdf->Cell(75,5,"Procurement Method",'T',0,'R');
 				$pdf->Cell(0,5,"",'T',1);
+				$pdf->SetLineWidth(0.5);
 				$pdf->SetFont($format_font,'B',10);
 				$pdf->Cell(75,5,$array['proj_type'],'B',0);
 				$proj_value = "£" . number_format ($array['proj_value'], 2);
