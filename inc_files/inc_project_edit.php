@@ -13,7 +13,23 @@ function ProjectTypeList($list_name,$current_value) {
 		}
 	echo "</datalist>";
 	
-	echo "<input type=\"text\" class=\"inputbox\" id=\"$list_name\" size=\"54\" name=\"proj_type\" maxlength=\"50\" value=\"$current_value\" />";
+	echo "<input type=\"text\" class=\"inputbox\" id=\"$list_name\" size=\"54\" name=\"proj_type\" maxlength=\"50\" value=\"$current_value\" list=\"\" />";
+}
+
+function DataListDropdown($list_name,$database,$current_value) {
+	
+	global $conn;
+	$sql = "SELECT DISTINCT " . $list_name . " FROM " . $database . " ORDER BY " . $list_name;
+	$result = mysql_query($sql, $conn);
+	echo "<datalist id=\"" . $list_name . "\">";
+		while ($array = mysql_fetch_array($result)) {
+			if ($array[$list_name]) {
+				echo "<option value=\"" . $array[$list_name] . "\">";
+			}
+		}
+	echo "</datalist>";
+	
+	echo "<input type=\"text\" class=\"inputbox\" id=\"" . $list_name . "\" size=\"54\" name=\"" . $list_name . "\" maxlength=\"50\" list=\"" . $list_name . "\" value=\"$current_value\" list=\"\" />";
 }
 
 // First, determine the title of the page
@@ -227,7 +243,7 @@ echo "<p>Local Planning Authority (LPA)<br /><input name=\"proj_lpa\" class=\"in
 
 echo "<p>Project Description<br /><textarea name=\"proj_desc\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_desc</textarea></p>";
 
-echo "<p>Project Type<br />"; ProjectTypeList("proj_type",$proj_type); echo "</p>";
+echo "<p>Project Type<br />"; DataListDropdown("proj_type","intranet_projects",$proj_type);  echo "</p>";
 
 echo "<p>Practice Ambition for Project<br /><textarea name=\"proj_ambition_internal\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_ambition_internal</textarea></p>";
 

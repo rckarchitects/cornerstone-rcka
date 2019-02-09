@@ -179,9 +179,9 @@ $pdf->AddFont($format_font,'',$format_font_2);
 		$x = $x + 145;
 		$y = $y;
 		$pdf-> SetXY($x,$y);
-		$pdf->Cell(15,5,$ts_expense_value,0,0,R);
-		$pdf->Cell(15,5,$ts_expense_diff_print,0,0,R);
-		$pdf->Cell(15,5,$ts_expense_vat,0,1,R);
+		$pdf->Cell(15,5,RemoveShit($ts_expense_value),0,0,R);
+		$pdf->Cell(15,5,RemoveShit($ts_expense_diff_print),0,0,R);
+		$pdf->Cell(15,5,RemoveShit($ts_expense_vat),0,1,R);
 		
 		$x = 10;
 		$y = $max_y;
@@ -244,9 +244,9 @@ $pdf->AddFont($format_font,'',$format_font_2);
 		$pdf->SetLineWidth(0.2);
 
 		$pdf->Cell(145,5,"TOTAL",T,0,L,0);
-		$pdf->Cell(15,5,$expense_total_value,T,0,R,0);
-		$pdf->Cell(15,5,$expense_total_diff,T,0,R,0);
-		$pdf->Cell(15,5,$expense_total_vat,T,1,R,0);
+		$pdf->Cell(15,5,RemoveShit($expense_total_value),T,0,R,0);
+		$pdf->Cell(15,5,RemoveShit($expense_total_diff),T,0,R,0);
+		$pdf->Cell(15,5,RemoveShit($expense_total_vat),T,1,R,0);
 
 
 	

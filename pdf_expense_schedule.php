@@ -271,17 +271,17 @@ if ($_POST[user_id_only] != NULL) { $user_id_only = " AND user_id = ".$_POST[use
 		$expense_noinvoice_gross = CashFormat($expense_noinvoice_gross);
 	
 		$pdf->Cell(145,5,"Non-Invoiced Totals",T,0,L,0);
-		$pdf->Cell(15,5,$expense_noinvoice_net,T,0,R,0);
-		$pdf->Cell(15,5,$expense_noinvoice_vat,T,0,R,0);
-		$pdf->Cell(15,5,$expense_noinvoice_gross,T,1,R,0);
+		$pdf->Cell(15,5,RemoveShit($expense_noinvoice_net),T,0,R,0);
+		$pdf->Cell(15,5,RemoveShit($expense_noinvoice_vat),T,0,R,0);
+		$pdf->Cell(15,5,RemoveShit($expense_noinvoice_gross),T,1,R,0);
 		
 		$y = $pdf->GetY();
 		$pdf->SetXY(10,$y);
 
 		$pdf->Cell(145,5,"Invoiced Totals",0,0,L,0);
-		$pdf->Cell(15,5,$expense_invoice_net,0,0,R,0);
-		$pdf->Cell(15,5,$expense_invoice_vat,0,0,R,0);
-		$pdf->Cell(15,5,$expense_invoice_gross,0,1,R,0);
+		$pdf->Cell(15,5,RemoveShit($expense_invoice_net),0,0,R,0);
+		$pdf->Cell(15,5,RemoveShit($expense_invoice_vat),0,0,R,0);
+		$pdf->Cell(15,5,RemoveShit($expense_invoice_gross),0,1,R,0);
 		
 		
 		
@@ -290,9 +290,9 @@ if ($_POST[user_id_only] != NULL) { $user_id_only = " AND user_id = ".$_POST[use
 		$pdf->SetDrawColor("0");
 
 		$pdf->Cell(145,5,"TOTAL",T,0,L,0);
-		$pdf->Cell(15,5,$expense_total_value,T,0,R,0);
-		$pdf->Cell(15,5,$expense_total_diff,T,0,R,0);
-		$pdf->Cell(15,5,$expense_total_vat,T,1,R,0);
+		$pdf->Cell(15,5,RemoveShit($expense_total_value),T,0,R,0);
+		$pdf->Cell(15,5,RemoveShit($expense_total_diff),T,0,R,0);
+		$pdf->Cell(15,5,RemoveShit($expense_total_vat),T,1,R,0);
 		
 		$y = $pdf->GetY() + 5;
 		
@@ -303,7 +303,7 @@ if ($_POST[user_id_only] != NULL) { $user_id_only = " AND user_id = ".$_POST[use
 				$expense_p11d_total_print = CashFormat($expense_p11d_total);
 		
 				$pdf->Cell(175,5,"P11d TOTAL",T,0,L,0);
-				$pdf->Cell(15,5,$expense_p11d_total_print,T,1,R,0);
+				$pdf->Cell(15,5,RemoveShit($expense_p11d_total_print),T,1,R,0);
 				
 		}
 
@@ -312,5 +312,3 @@ if ($_POST[user_id_only] != NULL) { $user_id_only = " AND user_id = ".$_POST[use
 $file_name = "Expenses_Schedule_".Date("Y",time())."-".Date("m",time())."-".Date("d",time()).".pdf";
 
 $pdf->Output($file_name,I);
-
-?>

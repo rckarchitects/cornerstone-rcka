@@ -29,5 +29,3 @@ if ($user_usertype_current > 4) {
 	exit(0);
 
 }
-
-?>

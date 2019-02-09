@@ -129,6 +129,8 @@ $sql = "SELECT contact_id, contact_namefirst, contact_namesecond, contact_compan
 $result = mysql_query($sql, $conn) or die(mysql_error());
 	if (mysql_num_rows($result) > 0) {
 		
+		$search_results = $search_results + mysql_num_rows($result);
+		
 		//echo "<tr><td colspan=\"2\">$sql</td></tr>";
 		//echo "<tr><td colspan=\"2\">" . SearchTerms($keywords_array, "contact_namesecond") . "</td></tr>";
 		
@@ -136,8 +138,6 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 			echo "<table>";
 		
 			while ($array = mysql_fetch_array($result)) {
-				
-			$search_results = $search_results + mysql_num_rows($result);
 				
 			$contact_id = $array['contact_id'];
 			$contact_namefirst = $array['contact_namefirst'];
@@ -227,17 +227,17 @@ function SearchManual($keywords_array) {
 			
 			if (mysql_num_rows($result) > 0) {
 				
+				$search_results = $search_results + mysql_num_rows($result);
+				
 				echo "<h3>Office Manual</h3>";
 				echo "<table>";
 				while ($array = mysql_fetch_array($result)) { echo "<tr><td><a href=\"index2.php?page=manual_page&amp;manual_id=" . $array['manual_id'] . "\">" . $array['manual_title'] . "</a></td></tr>"; }
 				echo "</table>";
 			}
 
-		return mysql_num_rows($result);
-
 }
 
-$search_results = $search_results + SearchManual($keywords_array);
+SearchManual($keywords_array);
 
 // Media Library
 
@@ -449,6 +449,35 @@ echo "</table>";
 					}
 
 
+					
+	function TenderSearch($keywords_array) {
+	
+			
+			global $conn;
+					$sql = "SELECT * FROM intranet_tender WHERE ".SearchTerms($keywords_array, "tender_name" ) . " OR ".SearchTerms($keywords_array, "tender_client" ) . " OR ".SearchTerms($keywords_array, "tender_description" ) . " ORDER BY tender_date DESC ";
+					$result = mysql_query($sql, $conn) or die(mysql_error());
+					if (mysql_num_rows($result) > 0) {
+								
+								echo "<h3>Tenders</h3><table>";
+											while ($array = mysql_fetch_array($result)) {
+											echo "
+											<tr>
+											<td style=\"width: 30%;\"><a href=\"index2.php?page=tender_view&amp;tender_id=" . $array['tender_id'] . "\">" . $array['tender_client'] . "</a></td>
+											<td style=\"width: 30%;\">" . $array['tender_name'] . "</td>
+											<td style=\"width: 40%;\">" . $array['tender_description'] . "</td>
+											</tr>";
+											}
+
+								
+						}
+
+					echo "</table>";	
+	
+	
+	
+	}
+	
+TenderSearch($keywords_array);
 
 
 } else {
@@ -458,11 +487,14 @@ echo "</table>";
 function SearchResultsTenders($keywords_array) {
 	
 			global $conn;
+			global $search_results;
 
 					$sql = "SELECT answer_id, answer_question, answer_response, answer_tender_id, answer_ref, tender_name, tender_date FROM intranet_tender_answers, intranet_tender WHERE ( ".SearchTerms($keywords_array, "answer_response" ) . " AND tender_id = answer_tender_id ) OR ( " . SearchTerms($keywords_array, "answer_question" ) . " AND tender_id = answer_tender_id ) AND answer_complete = 1 ORDER BY tender_date DESC, tender_name LIMIT 20 ";
 					$result = mysql_query($sql, $conn) or die(mysql_error());
 					$results = mysql_num_rows($result);
 							if ($results > 0) {
+								
+								$search_results = $search_results + $results;
 								
 								echo "<table>";
 								echo "<h3>Tender submissions (only answers marked as complete are shown below)</h3>";
@@ -488,17 +520,14 @@ function SearchResultsTenders($keywords_array) {
 
 					echo "</table>";
 
-					return $results;
 
 	}
 
-	$search_results = SearchResultsTenders($keywords_array);
-
-	
+	SearchResultsTenders($keywords_array);
 					
 }
 
-
+	
 
 } elseif ($keywords != NULL) {
 
@@ -506,7 +535,6 @@ function SearchResultsTenders($keywords_array) {
 
 }
 
-//if (intval($search_results) > 0 ) { echo "<p>" . intval($search_results) . " results found.</p>";} else { echo "<p>No results found.</p>"; }
-if (intval($search_results) == 0 ) { echo "<p>No results found.</p>"; }
+if (intval($search_results) == 0 ) { echo "<p>No results found.</p>"; } else { echo "<p>" . $search_results . " results found.</p>"; }
 
 echo "</div>";

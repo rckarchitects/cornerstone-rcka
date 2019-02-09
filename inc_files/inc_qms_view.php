@@ -18,6 +18,27 @@ function QMSGetHeading($s1) {
 	
 }
 
+function QMSAddHeadingBelow($toc1) {
+	
+	global $conn;
+	global $user_usertype_current;
+	$toc1 = intval($toc1);
+	
+	if ($user_usertype_current > 3) {
+		$sql = "UPDATE intranet_qms SET qms_toc1 = (qms_toc1 + 1) WHERE qms_toc1 >= " . $toc1;
+		//$result = mysql_query($sql, $conn) or die(mysql_error());
+		echo "<p>" . $sql . "</p>";
+	}
+	
+}
+
+if (intval($_GET[addafter]) > 0) {
+	
+	QMSAddHeadingBelow($_GET[addafter]);
+	
+}
+
+
 function CreateList($input, $qms_id, $bg) {
 	
 	$ul = 1; $list = 0;
@@ -55,8 +76,6 @@ function CreateList($input, $qms_id, $bg) {
 		elseif (substr($line,0,1) == "|" && $tr == 0 ) { echo "<tr><td>" . str_replace ("|","</td><td>", ltrim ($line,"|") ) . "</td></tr>"; $table = 1; }
 		if (substr($line,0,1) != "|" && $table == 1 ) { echo "</table>"; $tr = 1; $table = 0; }
 		
-			
-
 		
 		// And if it's just a standard paragraph...
 		
@@ -145,7 +164,11 @@ if ($s1 == 0) {
 
 					//elseif ($qms_toc2 > 0) { echo "<tr><td style=\"width: 20px;\"></td><td colspan=\"2\">" . $qms_toc1. "." . $qms_toc2 . "</td><td>$qms_text</td><td><a href=\"pdf_qms.php?s1=$qms_toc1&amp;s2=$qms_toc2\"><img src=\"images/button_pdf.png\" alt=\"PDF\" /></a></td></tr>"; }
 
-					if ($qms_toc1 > 0) { echo "<tr><td>" . $qms_toc1 . "</td><td>$qms_text</td><td><a href=\"pdf_qms.php?s1=$qms_toc1\"><img src=\"images/button_pdf.png\" alt=\"PDF\" /></a></td></tr>"; }	
+					if ($qms_toc1 > 0) { echo "<tr><td>" . $qms_toc1 . "</td><td>$qms_text</td><td style=\"text-align: right;\"><a href=\"pdf_qms.php?s1=$qms_toc1\"><img src=\"images/button_pdf.png\" alt=\"PDF\" /></a>";
+					
+						if ($user_usertype_current > 3) { echo "&nbsp;<a href=\"index2.php?page=qms_view&amp;addafter=" .$qms_toc1 . "\" onclick=\"if(!confirm('Are you sure you want to add a new heading below item " . $qms_toc1 . "?')){return false;}\">&darr;</a>"; }
+					
+					echo "</td></tr>"; }
 				
 			}
 			

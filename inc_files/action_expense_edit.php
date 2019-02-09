@@ -139,5 +139,3 @@ $page_redirect = "timesheet_expense_view";
 $proj_id = $ts_expense_project;
 
 }
-
-?>

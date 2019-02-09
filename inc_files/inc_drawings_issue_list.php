@@ -126,8 +126,7 @@ function DrawingsIssuedDetails($set_id) {
 		$proj_num = $array_issued['proj_num'];
 		$proj_name = $array_issued['proj_name'];
 		
-		ProjectTitle(2,$proj_id);
-		
+	
 		
 		echo "<h2>Drawing Issue: $print_date (ID: $set_id)</h2>";
 		

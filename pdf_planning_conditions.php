@@ -6,11 +6,15 @@ $format_bg_b = "0";
 
 if ($_GET[proj_id] != NULL) { $proj_id = $_GET[proj_id]; } else { header ("Location: ../index2.php"); }
 
+
+
 include_once "inc_files/inc_checkcookie.php";
 
 include_once "secure/prefs.php";
 
 include "inc_files/inc_action_functions_pdf.php";
+
+$proj_num = GetProjectNum($proj_id);
 
 //  Use FDPI to get the template
 
@@ -28,11 +32,6 @@ $tplidx = $pdf->ImportPage(1);
 
 $pdf->addPage();
 $pdf->useTemplate($tplidx);
-
-// Functions
-
-
-		
 
 // Begin creating the page
 
@@ -164,4 +163,3 @@ $pdf_title = $pref_practice . " Planning Tracker: " . $proj_num . " " . $proj_na
 $pdf->SetTitle($pdf_title);
 
 $pdf->Output($file_name,I);
-?>

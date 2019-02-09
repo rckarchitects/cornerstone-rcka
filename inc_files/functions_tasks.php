@@ -35,142 +35,140 @@ function TaskUncomplete($task_id) {
 
 function ProjectTasks($proj_id) {
 
-global $conn;
+			global $conn;
 
-if ($proj_id == NULL AND intval($_GET[proj_id]) > 0) { $proj_id = intval($_GET[proj_id]); } else { $proj_id = intval($proj_id); }
+			if ($proj_id == NULL AND intval($_GET[proj_id]) > 0) { $proj_id = intval($_GET[proj_id]); } else { $proj_id = intval($proj_id); }
 
+			// Determine the date a week ago
 
+			$date_lastweek = time() - 604800;
 
-// Determine the date a week ago
+			if ($_GET[show] == "user") { $user_tasks = "AND tasklist_person = ".$user_id_current; } else { $user_tasks = NULL; }
 
-$date_lastweek = time() - 604800;
+			if ($_GET[view] == "complete") {
+			$filter = " AND tasklist_percentage = 100 ";
+			} else {
+			$filter = " AND tasklist_percentage < 100 ";	
+			}
 
-if ($_GET[show] == "user") { $user_tasks = "AND tasklist_person = ".$user_id_current; } else { $user_tasks = NULL; }
+			$sql = "SELECT * FROM intranet_tasklist WHERE tasklist_project = '$proj_id' $user_tasks $filter order by tasklist_category, tasklist_due DESC";
 
-if ($_GET[view] == "complete") {
-$filter = " AND tasklist_percentage = 100 ";
-} else {
-$filter = " AND tasklist_percentage < 100 ";	
-}
+			$result = mysql_query($sql, $conn) or die(mysql_error());
 
-$sql = "SELECT * FROM intranet_tasklist WHERE tasklist_project = '$proj_id' $user_tasks $filter order by tasklist_category, tasklist_due DESC";
+			if (mysql_num_rows($result) > 0) {
 
-$result = mysql_query($sql, $conn) or die(mysql_error());
+			$counter = 1;
 
-if (mysql_num_rows($result) > 0) {
+			$current_category = NULL;
 
-$counter = 1;
+			echo "<div class=\"page\"><table summary=\"Outstanding tasks for $proj_num\">";
 
-$current_category = NULL;
+			while ($array = mysql_fetch_array($result)) {
+			  
+			$tasklist_id = $array['tasklist_id'];
+			$tasklist_notes = $array['tasklist_notes'];
+			$tasklist_percentage = $array['tasklist_percentage'];
+			$tasklist_completed = $array['tasklist_completed'];
+			$tasklist_person = $array['tasklist_person'];
+			$tasklist_due = $array['tasklist_due'];
+			$tasklist_project = $array['tasklist_project'];
+			$tasklist_category = ucwords($array['tasklist_category']);
 
-echo "<div class=\"page\"><table summary=\"Outstanding tasks for $proj_num\">";
+								if ($tasklist_due > 0) { $tasklist_due_date = "Due ".TimeFormat($tasklist_due); } else { $tasklist_due_date = ""; }
+								$tasklist_person = $array['tasklist_person'];
+								$proj_num = $array['proj_num'];
+								$proj_name = $array['proj_name'];
+								$proj_fee_track = $array['proj_fee_track'];
+								
+								
+								if ($proj_id != $proj_id_repeat AND $counter > 1) { echo "</table>"; unset($proj_id_repeat); }
+								if ($proj_id != $proj_id_repeat && $proj_id == 0) {
+										if ($proj_fee_track == "1") {
+											echo "<h2><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\" name=\"view_task_$proj_id\">" . ProjectData($proj_id, "name") . "</a></h2>";
 
-while ($array = mysql_fetch_array($result)) {
-  
-$tasklist_id = $array['tasklist_id'];
-$tasklist_notes = $array['tasklist_notes'];
-$tasklist_percentage = $array['tasklist_percentage'];
-$tasklist_completed = $array['tasklist_completed'];
-$tasklist_person = $array['tasklist_person'];
-$tasklist_due = $array['tasklist_due'];
-$tasklist_project = $array['tasklist_project'];
-$tasklist_category = ucwords($array['tasklist_category']);
-
-					if ($tasklist_due > 0) { $tasklist_due_date = "Due ".TimeFormat($tasklist_due); } else { $tasklist_due_date = ""; }
-					$tasklist_person = $array['tasklist_person'];
-					$proj_num = $array['proj_num'];
-					$proj_name = $array['proj_name'];
-					$proj_fee_track = $array['proj_fee_track'];
-					
-					
-					if ($proj_id != $proj_id_repeat AND $counter > 1) { echo "</table>"; unset($proj_id_repeat); }
-					if ($proj_id != $proj_id_repeat && $proj_id == 0) {
-							if ($proj_fee_track == "1") {
-								echo "<h2><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\" name=\"view_task_$proj_id\">" . ProjectData($proj_id, "name") . "</a></h2>";
-
-							} else {
-								echo "<h2>" . ProjectData($proj_id, "name") . "</h2>";
-							}
-							
-					}
-					
-					
-				
-					if ($tasklist_category != $current_category) {
-						echo "<tr><th colspan=\"5\">" . $tasklist_category . "</th></tr>";
-						$current_category = $tasklist_category;
-					}
-					
-					
-					
-					$proj_id_repeat = $proj_id;
-					
-					$checktime = time() - 43200;
-					
-					
-					$sql2 = "SELECT user_name_first, user_name_second, user_id FROM intranet_user_details WHERE user_id = '$tasklist_person' ";
-					$result2 = mysql_query($sql2, $conn) or die(mysql_error());
-					
-					$array2 = mysql_fetch_array($result2);
-					$user_name_first = $array2['user_name_first'];
-					$user_name_second = $array2['user_name_second'];
-					$user_id = $array2['user_id'];
-					
-					if ($tasklist_due < time() AND $tasklist_completed < 100 AND $tasklist_due > 0) { $alert = "style=\"background-color: #".$settings_alertcolor."\""; } else { $alert = ""; }
-					
-					if ($_GET[view] == "complete") { $strikethrough = "style=\"text-decoration: line-through;\""; } else { unset($strikethrough); }
-					
-					echo "<tr><td width=\"5%\" ".$alert.">";
-					echo $counter.".</td><td width=\"40%\" ".$alert."><a href=\"index2.php?page=tasklist_detail&amp;tasklist_id=".$tasklist_id."\"><span class=\"tasklist_id_" . $tasklist_id . "\" $strikethrough>".$tasklist_notes."</span></a>";
-					
+										} else {
+											echo "<h2>" . ProjectData($proj_id, "name") . "</h2>";
+										}
 										
-					echo "&nbsp;<a href=\"index2.php?page=tasklist_edit&amp;tasklist_id=" . $tasklist_id . "&proj_id=" . $tasklist_project . "\"><img src=\"images/button_edit.png\" alt=\"Edit Task\" /></a>";
-					
-					echo "</td>";
+								}
+								
+								
+							
+								if ($tasklist_category != $current_category) {
+									echo "<tr><th colspan=\"5\">" . $tasklist_category . "&nbsp;<a href=\"pdf_tasklist.php?proj_id=" . $proj_id . "&amp;filter=" . urlencode($tasklist_category) . "\"><img src=\"images/button_pdf.png\" alt=\"Print to PDF\" /></a></th></tr>";
+									$current_category = $tasklist_category;
+								}
+								
+								
+								
+								$proj_id_repeat = $proj_id;
+								
+								$checktime = time() - 43200;
+								
+								
+								$sql2 = "SELECT user_name_first, user_name_second, user_id FROM intranet_user_details WHERE user_id = '$tasklist_person' ";
+								$result2 = mysql_query($sql2, $conn) or die(mysql_error());
+								
+								$array2 = mysql_fetch_array($result2);
+								$user_name_first = $array2['user_name_first'];
+								$user_name_second = $array2['user_name_second'];
+								$user_id = $array2['user_id'];
+								
+								if ($tasklist_due < time() AND $tasklist_completed < 100 AND $tasklist_due > 0) { $alert = "style=\"background-color: #".$settings_alertcolor."\""; } else { $alert = ""; }
+								
+								if ($_GET[view] == "complete") { $strikethrough = "style=\"text-decoration: line-through;\""; } else { unset($strikethrough); }
+								
+								echo "<tr><td width=\"5%\" ".$alert.">";
+								echo $counter.".</td><td width=\"40%\" ".$alert."><a href=\"index2.php?page=tasklist_detail&amp;tasklist_id=".$tasklist_id."\"><span class=\"tasklist_id_" . $tasklist_id . "\" $strikethrough>".$tasklist_notes."</span></a>";
+								
+													
+								echo "&nbsp;<a href=\"index2.php?page=tasklist_edit&amp;tasklist_id=" . $tasklist_id . "&proj_id=" . $tasklist_project . "\"><img src=\"images/button_edit.png\" alt=\"Edit Task\" /></a>";
+								
+								echo "</td>";
+							
+								echo "<td><a href=\"index2.php?page=datebook_view_day&amp;timestamp=" . $tasklist_due . "\"><span class=\"tasklist_id_" . $tasklist_id . "\" $strikethrough>".$tasklist_due_date."</span></a></td>";
+								
+								echo "<td width=\"20%\" ".$alert."><span class=\"tasklist_id_" . $tasklist_id . "\" $strikethrough>";
+								echo $user_name_first." ".$user_name_second." ".$tasklist_percentage_desc;
+							
+						
+								echo "</span></td><td ".$alert.">";
+								
+								
+								// echo the bar chart and make it clickable if it belongs to the current user
+								
+								if ($user_id == $_COOKIE[user]) {
+								
+										if ($_GET[subcat] != NULL) { $task_subcat = CleanUp($_GET[subcat]); } else { $task_subcat = "user"; }
+								
+										echo "<input type=\"checkbox\" name=\"tasklist_percentage\" id=\"tasklist_id_" . $tasklist_id . "\" value=\"100\"";
+										
+											if (intval($tasklist_percentage) == 100) { echo "checked=\"checked\""; }
+
+										if ($_GET[view] == "complete") { echo " onclick=\"UnStrikeThough('tasklist_id_" . $tasklist_id . "')\" />"; } else { echo " onclick=\"StrikeThough('tasklist_id_" . $tasklist_id . "')\" />"; }
+										
+								} else {
+								
+										echo "<input type=\"checkbox\" disabled=\"disabled\"";
+
+											if (intval($tasklist_percentage) == 100) { echo "checked=\"checked\""; }
+										
+										echo " />";
+								
+								}
+								
+								echo "</td></tr>\n";
+								
+								if ($proj_id != $proj_id_repeat) { $counter = 1; unset($proj_id_repeat); } else { $counter++;  }
+			}
 				
-					echo "<td><a href=\"index2.php?page=datebook_view_day&amp;timestamp=" . $tasklist_due . "\"><span class=\"tasklist_id_" . $tasklist_id . "\" $strikethrough>".$tasklist_due_date."</span></a></td>";
-					
-					echo "<td width=\"20%\" ".$alert."><span class=\"tasklist_id_" . $tasklist_id . "\" $strikethrough>";
-					echo $user_name_first." ".$user_name_second." ".$tasklist_percentage_desc;
-				
-			
-					echo "</span></td><td ".$alert.">";
-					
-					
-					// echo the bar chart and make it clickable if it belongs to the current user
-					
-					if ($user_id == $_COOKIE[user]) {
-					
-							if ($_GET[subcat] != NULL) { $task_subcat = CleanUp($_GET[subcat]); } else { $task_subcat = "user"; }
-					
-							echo "<input type=\"checkbox\" name=\"tasklist_percentage\" id=\"tasklist_id_" . $tasklist_id . "\" value=\"100\"";
-							
-								if (intval($tasklist_percentage) == 100) { echo "checked=\"checked\""; }
+			echo "</table></div>";
 
-							if ($_GET[view] == "complete") { echo " onclick=\"UnStrikeThough('tasklist_id_" . $tasklist_id . "')\" />"; } else { echo " onclick=\"StrikeThough('tasklist_id_" . $tasklist_id . "')\" />"; }
-							
-					} else {
-					
-							echo "<input type=\"checkbox\" disabled=\"disabled\"";
+			} else {
 
-								if (intval($tasklist_percentage) == 100) { echo "checked=\"checked\""; }
-							
-							echo " />";
-					
-					}
-					
-					echo "</td></tr>\n";
-					
-					if ($proj_id != $proj_id_repeat) { $counter = 1; unset($proj_id_repeat); } else { $counter++;  }
-}
-	
-echo "</table></div>";
+				echo "<p>There are no active tasks on the system for this project.</p>";
 
-} else {
-
-	echo "<p>There are no active tasks on the system for this project.</p>";
-
-}
+			}
 
 }
 
@@ -227,11 +225,7 @@ $tasklist_soon = $array['tasklist_due'] - 604800;
 					if ($proj_id != $proj_id_repeat && $counter > 1 && $_GET[order] != "time") { echo "</table>"; unset($proj_id_repeat); }
 					if ($proj_id != $proj_id_repeat) {
 						if ($_GET[order] != "time") {
-							if ($proj_fee_track == "1") {
-								echo "<h3><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\" name=\"view_task_$proj_id\">$proj_num&nbsp;$proj_name</a></h3>";
-							} else {
-								echo "<h3>" . $proj_num."&nbsp;".$proj_name . "</h3>";
-							}
+								echo "<h3><a href=\"index2.php?page=tasklist_project&amp;proj_id=" . $proj_id . "\" name=\"view_task_$proj_id\">$proj_num&nbsp;$proj_name</a></h3>";
 						}
 						
 							if ($_GET[order] != "time") {
@@ -261,7 +255,7 @@ $tasklist_soon = $array['tasklist_due'] - 604800;
 					}
 					
 					echo "<tr><td width=\"5%\" ".$alert."><span class=\"tasklist_id_" . $tasklist_id . "\">";
-					echo $counter.".</span></td><td ".$alert."><span class=\"tasklist_id_" . $tasklist_id . "\">";
+					echo $counter.".</span></td><td ".$alert." style=\"width: 50%; \"><span class=\"tasklist_id_" . $tasklist_id . "\">";
 					
 					if ($_GET[order] == "time") { echo "<strong>" . $proj_num . "&nbsp;" . $proj_name . "</strong><br />"; }
 					
@@ -273,7 +267,7 @@ $tasklist_soon = $array['tasklist_due'] - 604800;
 					
 					echo "</span></td><td ".$alert." width=\"20%\"><span class=\"tasklist_id_" . $tasklist_id . "\">";
 					
-									// If completed, put the completed date down
+					// If completed, put the completed date down
 					
 					if ($tasklist_percentage == 100 AND intval($tasklist_completed) > 0) {
 						echo "Completed ". TimeFormat($tasklist_completed);
@@ -286,11 +280,11 @@ $tasklist_soon = $array['tasklist_due'] - 604800;
 					
 					if ($_GET[view] == "complete") {
 					
-						echo "<input type=\"checkbox\" disabled=\"disabled\" checked=\"checked\" />";
+						echo "<input type=\"checkbox\" disabled=\"disabled\" checked=\"checked\" style=\"float:right;\" />";
 					
 					} else {
 						
-						echo "<input type=\"checkbox\" id=\"tasklist_id_" . $tasklist_id . "\" onclick=\"StrikeThough('tasklist_id_" . $tasklist_id . "')\" />";
+						echo "<input type=\"checkbox\" id=\"tasklist_id_" . $tasklist_id . "\" onclick=\"StrikeThough('tasklist_id_" . $tasklist_id . "')\" style=\"float:right;\" />";
 						
 					}
 					
@@ -312,6 +306,45 @@ echo "<h2>Tasks</h2>";
 }
 
 }
+
+function FeeStageDropDown($proj_id, $current_fee_stage,$proj_id) {
+					
+					global $conn;
+					
+					// First establish CURRENT fee scale if this has been defined
+					
+					$sql = "SELECT proj_riba FROM intranet_projects WHERE proj_id = " . intval($proj_id) . " LIMIT 1";
+					$result = mysql_query($sql, $conn) or die(mysql_error());
+					$array = mysql_fetch_array($result);
+					
+
+					if ($current_fee_stage > 0) { $active_fee_stage = $current_fee_stage; }
+					elseif (intval($array['proj_riba']) > 0) { $active_fee_stage = intval($array['proj_riba']); }
+					
+					$sql = "SELECT * FROM intranet_timesheet_fees LEFT JOIN intranet_timesheet_group ON group_id = ts_fee_group WHERE ts_fee_project = " . intval($proj_id) . " ORDER BY ts_fee_commence";
+					$result = mysql_query($sql, $conn) or die(mysql_error());
+					
+					if (mysql_num_rows($result) > 0) {
+						
+						echo "<div><h3>Fee Stage</h3><select name=\"tasklist_feestage\">";
+						
+						while ($array = mysql_fetch_array($result)) {
+							
+							if ($active_fee_stage == $array['ts_fee_id']) { $selected = "selected=\"selected\""; }
+							else { unset($selected); }
+							
+							if ($array['group_code']) { $group_name_print = $array['group_code'] . ". " . $array['ts_fee_text']; } else { $group_name_print = $array['ts_fee_text']; }
+							
+							echo "<option value=\"" . $array['ts_fee_id'] . "\" $selected >" . $group_name_print . "</option>";
+							
+						}
+						
+						echo "</select></div>";
+						
+					}
+					
+}
+
 
 function TaskListEditForm($tasklist_id) {
 	
@@ -393,43 +426,7 @@ function TaskListEditForm($tasklist_id) {
 
 				// Category
 
-				DataList("tasklist_category","intranet_tasklist");
-
-				function FeeStageDropDown($proj_id, $current_fee_stage,$proj_id) {
-					
-					global $conn;
-					
-					// First establish CURRENT fee scale if this has been defined
-					
-					$sql = "SELECT proj_riba FROM intranet_projects WHERE proj_id = " . intval($proj_id) . " LIMIT 1";
-					$result = mysql_query($sql, $conn) or die(mysql_error());
-					$array = mysql_fetch_array($result);
-					
-
-					if ($current_fee_stage > 0) { $active_fee_stage = $current_fee_stage; }
-					elseif (intval($array['proj_riba']) > 0) { $active_fee_stage = intval($array['proj_riba']); }
-					
-					$sql = "SELECT * FROM intranet_timesheet_fees LEFT JOIN intranet_timesheet_group ON group_id = ts_fee_group WHERE ts_fee_project = " . intval($proj_id) . " ORDER BY ts_fee_commence";
-					$result = mysql_query($sql, $conn) or die(mysql_error());
-					
-					if (mysql_num_rows($result) > 0) {
-						
-						echo "<div><h3>Fee Stage</h3><select name=\"tasklist_feestage\">";
-						
-						while ($array = mysql_fetch_array($result)) {
-							
-							if ($active_fee_stage == $array['ts_fee_id']) { $selected = "selected=\"selected\""; }
-							else { unset($selected); }
-							
-							echo "<option value=\"" . $array['ts_fee_id'] . "\" $selected >" . $array['group_code'] . ". " . $array['ts_fee_text'] . "</option>";
-							
-						}
-						
-						echo "</select></div>";
-						
-					}
-					
-				}
+				DataList("tasklist_category","intranet_tasklist",$proj_id,"tasklist_project");
 
 				if ($tasklist_project > 0) {
 
@@ -439,7 +436,7 @@ function TaskListEditForm($tasklist_id) {
 
 				echo "<div><h3>Category</h3><input type=\"text\" name=\"tasklist_category\" list=\"tasklist_category\" value=\"" . $tasklist_category . "\" /></div>";
 
-				$sql = "SELECT * FROM intranet_user_details WHERE user_active = '1' order by user_name_second";
+				$sql = "SELECT * FROM intranet_user_details ORDER BY user_name_second";
 				$result = mysql_query($sql, $conn) or die(mysql_error());
 
 				
