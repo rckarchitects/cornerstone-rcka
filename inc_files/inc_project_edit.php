@@ -129,6 +129,7 @@ $proj_lpa = $array['proj_lpa'];
 $proj_ambition_internal = $array['proj_ambition_internal'];
 $proj_ambition_client = $array['proj_ambition_client'];
 $proj_ambition_marketing = $array['proj_ambition_marketing'];
+$proj_ambition_social = $array['proj_ambition_social'];
 
 if (!$array['proj_info']) { $proj_info = file_get_contents('library/template_proj_info.txt') ;} else { $proj_info = $array['proj_info']; }
 
@@ -197,7 +198,9 @@ $proj_lpa = $_POST[proj_lpa];
 
 $proj_ambition_internal = $_POST[proj_ambition_internal];
 $proj_ambition_client = $_POST[proj_ambition_client];
-$proj_ambition_client = $_POST[proj_ambition_marketing];
+$proj_ambition_marketing = $_POST[proj_ambition_marketing];
+$proj_ambition_social = $_POST[proj_ambition_social];
+
 $proj_info = $_POST[proj_info];
 $proj_location = $_POST[proj_location];
 
@@ -250,6 +253,8 @@ echo "<p>Practice Ambition for Project<br /><textarea name=\"proj_ambition_inter
 echo "<p>Client Ambition for Project<br /><textarea name=\"proj_ambition_client\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_ambition_client</textarea></p>";
 
 echo "<p>Marketing Strategy<br /><textarea name=\"proj_ambition_marketing\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_ambition_marketing</textarea></p>";
+
+echo "<p>Social Value Targets<br /><textarea name=\"proj_ambition_social\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_ambition_social</textarea></p>";
 
 echo "<p>General Project Information<br /><textarea name=\"proj_info\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">$proj_info</textarea></p>";
 

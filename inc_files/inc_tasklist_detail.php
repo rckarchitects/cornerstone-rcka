@@ -30,8 +30,9 @@ function TaskListViewIndividual($tasklist_id) {
 			$tasklist_access = $array['tasklist_access'];
 			$tasklist_project = $array['tasklist_project'];
 
-		echo "<h1>Tasks</h1>";
-		ProjectTitle(1,$proj_id);
+		ProjectTitle(2,$proj_id);
+		echo "<h2>Tasks</h2>";
+		
 
 		// Menu bar
 
@@ -47,7 +48,7 @@ function TaskListViewIndividual($tasklist_id) {
 
 		// Only echo if the task is not complete or was completed within the last week
 
-							if ($tasklist_due > 0) { $tasklist_due_date = "due ".date("jS M Y", $tasklist_due); } else { $tasklist_due_date = ""; }
+							if ($tasklist_due > 0) { $tasklist_due_date = date("jS M Y", $tasklist_due); } else { $tasklist_due_date = ""; }
 							$tasklist_person = $array['tasklist_person'];
 							$proj_num = $array['proj_num'];
 							$proj_name = $array['proj_name'];
@@ -80,7 +81,7 @@ function TaskListViewIndividual($tasklist_id) {
 							echo "<h3>Description</h3><p>$tasklist_notes</p>";
 						
 							echo "<p>";
-							echo "<span class=\"minitext\"><a href=\"index2.php?page=user_view&amp;user_id=".$user_id."\">".$user_name_first."&nbsp;".$user_name_second."</a><a href=\"index2.php?page=datebook_view_day&amp;timestamp=" . $tasklist_due . "\">, ".$tasklist_due_date."</a>".$tasklist_percentage_desc;
+							echo "<span class=\"minitext\"><a href=\"index2.php?page=user_view&amp;user_id=".$user_id."\">".$user_name_first."&nbsp;".$user_name_second."</a>, due <a href=\"index2.php?page=datebook_view_day&amp;timestamp=" . $tasklist_due . "\">".$tasklist_due_date."</a>".$tasklist_percentage_desc;
 							
 							// If completed, put the completed date down
 							
@@ -90,12 +91,14 @@ function TaskListViewIndividual($tasklist_id) {
 							
 							echo "</span></p>";
 							
+							echo "<h3>Status</h3>";
+							
 							if ($tasklist_percentage == 100 && intval($tasklist_completed) > 0) {
-								echo "<h3>Completed " . TimeFormat($tasklist_completed) . "</h3>";
+								echo "<p>Completed " . TimeFormat($tasklist_completed) . "</p>";
 							} elseif ($tasklist_percentage == 100 && intval($tasklist_completed) == 0) {
-								echo "<h3>Completed</h3>";
+								echo "<p>Completed</p>";
 							} else {
-								echo "<h3>Incomplete</h3>";
+								echo "<p>Incomplete</p>";
 							}
 							
 							echo "<h3>Added</h3><p><a href=\"index2.php?page=datebook_view_day&amp;timestamp=" . $tasklist_added . "\">".TimeFormat($tasklist_added)."</a></p>";
@@ -106,11 +109,23 @@ function TaskListViewIndividual($tasklist_id) {
 		  
 		  echo "<div>";
 		  
-		  if ($tasklist_comment) { echo "<h3>Comments</h3>" . $tasklist_comment . "</div>"; }
+		  if ($tasklist_comment) { echo "<h3>Comments</h3><p>" . $tasklist_comment . "</p></div>"; }
+		  
+		  echo "</div>";
+		  
+		  if ($tasklist_due < time() && $tasklist_percentage < 100) {
+		  
+			echo "<div><form action=\"index2.php?page=tasklist_detail&amp;tasklist_id=" . $tasklist_id  . "\" method=\"post\"><input type=\"hidden\" name=\"action\" value=\"tasklist_snooze\" /><input type=\"hidden\" name=\"snooze_value\" value=\"2\" /><input type=\"hidden\" name=\"tasklist_id\" value=\"" . $tasklist_id . "\" /><input type=\"submit\" value=\"Snooze for 2 weeks\" /></form></div>";
+		
+		  }
 		  
 		
 	echo "</div>";
 
+	echo "<div><h3>Other Tasks</h3>";
+	MiniTaskList($_COOKIE[user]);
+	echo "</div>";
+	
 
 }
 

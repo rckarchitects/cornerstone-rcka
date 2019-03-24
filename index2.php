@@ -11,8 +11,8 @@ include_once("inc_files/inc_checkcookie.php");
 $usercheck = $_POST[usercheck];
 $checkform_user = $_POST[checkform_user];
 
-if ($_POST[action] != "") { include_once("inc_files/inc_functions_actions.php"); include("inc_files/action_$_POST[action].php"); }
-elseif ($_GET[action] != "") { include_once("inc_files/inc_functions_actions.php"); include("inc_files/action_$_GET[action].php"); }
+if ($_POST[action] != "") { include_once("inc_files/functions_actions.php"); include("inc_files/action_$_POST[action].php"); }
+elseif ($_GET[action] != "") { include_once("inc_files/functions_actions.php"); include("inc_files/action_$_GET[action].php"); }
 
 // Include the standard header file
 
@@ -88,7 +88,13 @@ if ($_GET[page] == NULL) {
 		echo "</div>";
 	}
 
+	echo "<div id=\"DateList\" class=\"FloatBoxHalf\">"; DateList(1); echo "</div>";
 	
+	if ($module_tasks == 1) {
+	
+		echo "<div id=\"TaskList\" class=\"FloatBoxHalf\"><h2>My Tasks</h2>"; MiniTaskList($_COOKIE[user]); echo "</div>";
+	
+	}
 }
 
 	if ($proj_id > 0) { $proj_id = intval($proj_id); }
@@ -104,22 +110,6 @@ if ($_GET[page] == NULL) {
 		$proj_details = ProjectTitle();
 		$proj_id = $proj_details[0];
 		if ($proj_id) {
-			echo 
-						"<script>
-							function ShowProjectSwitcher() {
-							var x = document.getElementById(\"project_switcher\");
-							var y = document.getElementById(\"project_title\");
-							if (x.style.display === \"none\") {
-								x.style.display = \"block\";
-								y.style.display = \"none\";
-							} else {
-								x.style.display = \"none\";
-								
-							}
-						}
-						</script>
-			
-			";
 			$proj_title = "<h1 id=\"project_title\"><a href=\"#\" onclick=\"ShowProjectSwitcher()\">$proj_details[1] $proj_details[2]</a></h1>";
 		} else {
 			unset($proj_title);

@@ -116,45 +116,78 @@ function RiskEdit($risk_id,$proj_id) {
 	elseif ($array['risk_score'] == "high") { $risk_score_high = " checked=\"checked\""; }
 	
 	echo "<div>
-	<div><h3>Add New Risk</h3>
-	<form action=\"index2.php?page=project_risks&amp;proj_id=" . $proj_id . "\" method=\"post\">
-	<div><p>Risk Category<br /><input type=\"text\" list=\"risk_category\" name=\"risk_category\" value=\"" . $array['risk_category'] . "\" class=\"inputbox\" required=\"required\" maxlength=\"50\" /></p></div>";
+			<div>
+				<div><h3>Add New Risk</h3>
+				<form action=\"index2.php?page=project_risks&amp;proj_id=" . $proj_id . "\" method=\"post\">
+				<div class=\"float\"><h4>Risk Category</h4><p><input type=\"text\" list=\"risk_category\" name=\"risk_category\" value=\"" . $array['risk_category'] . "\" class=\"inputbox\" required=\"required\" maxlength=\"50\" /></p></div>";
 	
 	DataList("risk_category","intranet_project_risks");
 	
-	echo "<div><p>Risk Title<br /><span class=\"minitext\">Enter a brief title for this risk</span></p><p><input type=\"text\" name=\"risk_title\" maxlength=\"75\" value=\"" . $array['risk_title'] . "\" required=\"required\" /></p></div>
-	<div><p>Description of risk<br /><span class=\"minitext\">Provide a brief description of the risk</span></p><p><textarea name=\"risk_description\" class=\"inputbox\" style=\"width: 75%; height: 150px;\" required=\"required\">" . $array['risk_description'] . "</textarea></p><div>
-	<div><p>Risk Level<br /><span class=\"minitext\">Rate the potential impact of this risk should it occur</span></p>
-		<p><span style=\"padding: 6px; margin: 8px; background: green; display: block; width: 150px;\"><input type=\"radio\" value=\"green\" name=\"risk_level\" " . $risk_level_green . " class=\"inputbox\" required=\"required\" />&nbsp;Green</span></p>
-		<p><span style=\"padding: 6px; margin: 8px; background: orange;  display: block; width: 150px;\"><input type=\"radio\" value=\"amber\" name=\"risk_level\" " . $risk_level_amber . " class=\"inputbox\" required=\"required\" />&nbsp;Amber</span></p>
-		<p><span style=\"padding: 6px; margin: 8px; background: red; display: block; width: 150px;\"><input type=\"radio\" value=\"red\" name=\"risk_level\" " . $risk_level_red . " class=\"inputbox\" required=\"required\" />&nbsp;Red</span></p>
-	</div>
-	<div><p>Risk Score<br /><span class=\"minitext\">Rate the likelihood of this risk occurring</span></p>
-		<p><span style=\"padding: 6px; margin: 8px; background: rgba(0,0,0,0.1); display: block; width: 150px;\"><input type=\"radio\" value=\"low\" name=\"risk_score\" " . $risk_score_low . " class=\"inputbox\" required=\"required\" />&nbsp;Low</span></p>
-		<p><span style=\"padding: 6px; margin: 8px; background: rgba(0,0,0,0.3); display: block; width: 150px;\"><input type=\"radio\" value=\"medium\" name=\"risk_score\" " . $risk_score_medium . " class=\"inputbox\" required=\"required\" />&nbsp;Medium</span></p>
-		<p><span style=\"padding: 6px; margin: 8px; background: rgba(0,0,0,0.5); display: block; width: 150px;\"><input type=\"radio\" value=\"high\" name=\"risk_score\" " . $risk_score_high . " class=\"inputbox\" required=\"required\" />&nbsp;High</span></p>
-	</div>
-	<div><p>Risk Analysis<br /><span class=\"minitext\">Provide a brief analysis of the risk</span></p><p><textarea name=\"risk_analysis\"  class=\"inputbox\" style=\"width: 75%; height: 150px;\" required=\"required\">" . $array['risk_analysis'] . "</textarea></p></div>
+	echo "	
+				<div class=\"float\"><h4>Risk Title</h4><p><input type=\"text\" name=\"risk_title\" maxlength=\"75\" value=\"" . $array['risk_title'] . "\" required=\"required\" /><br /><span class=\"minitext\">Enter a brief title for this risk</span></p></div>
+				<div class=\"float\"><h4>Description of risk</h4><p><textarea name=\"risk_description\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">" . $array['risk_description'] . "</textarea><br /><span class=\"minitext\">Provide a brief description of the risk</span></p></div>
+			</div>
+			<div>
+				<div class=\"float\"><h4>Risk Level</h4>
+					<p><span class=\"minitext\">Rate the potential impact of this risk should it occur</span></p>
+					<p><span style=\"padding: 6px; margin: 8px; background: green; display: block;\"><input type=\"radio\" value=\"green\" name=\"risk_level\" " . $risk_level_green . " class=\"inputbox\" required=\"required\" />&nbsp;Green</span></p>
+					<p><span style=\"padding: 6px; margin: 8px; background: orange;  display: block;\"><input type=\"radio\" value=\"amber\" name=\"risk_level\" " . $risk_level_amber . " class=\"inputbox\" required=\"required\" />&nbsp;Amber</span></p>
+					<p><span style=\"padding: 6px; margin: 8px; background: red; display: block;\"><input type=\"radio\" value=\"red\" name=\"risk_level\" " . $risk_level_red . " class=\"inputbox\" required=\"required\" />&nbsp;Red</span></p>
+				</div>
+				<div class=\"float\"><h4>Risk Score</h4><p><span class=\"minitext\">Rate the likelihood of this risk occurring</span></p>
+					<p><span style=\"padding: 6px; margin: 8px; background: rgba(0,0,0,0.1); display: block;\"><input type=\"radio\" value=\"low\" name=\"risk_score\" " . $risk_score_low . " class=\"inputbox\" required=\"required\" />&nbsp;Low</span></p>
+					<p><span style=\"padding: 6px; margin: 8px; background: rgba(0,0,0,0.3); display: block;\"><input type=\"radio\" value=\"medium\" name=\"risk_score\" " . $risk_score_medium . " class=\"inputbox\" required=\"required\" />&nbsp;Medium</span></p>
+					<p><span style=\"padding: 6px; margin: 8px; background: rgba(0,0,0,0.5); display: block;\"><input type=\"radio\" value=\"high\" name=\"risk_score\" " . $risk_score_high . " class=\"inputbox\" required=\"required\" />&nbsp;High</span></p>
+				</div>
+				<div class=\"float\"><h4>Risk Analysis</h4><p><textarea name=\"risk_analysis\"  class=\"inputbox\" style=\"width: 75%; height: 150px;\">" . $array['risk_analysis'] . "</textarea><br /><span class=\"minitext\">Provide a brief analysis of the risk</span></p></div>
+			</div>
+			<div>			
+				<div class=\"float\"><h4>Risk Warning</h4><p><textarea name=\"risk_warnings\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">" . $array['risk_warnings'] . "</textarea><br /><span class=\"minitext\">Describe any warning signs which may indicate this risk is about to occur</span></p></div>
+				<div class=\"float\"><h4>Mitigation Measures</h4><p><textarea name=\"risk_mitigation\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">" . $array['risk_mitigation'] . "</textarea><br /><span class=\"minitext\">Describe any measures might be taken to mitigate the likelihood of this risk occurring</span></p></div>
+				<div class=\"float\"><h4>Management Strategy</h4><p><span class=\"minitext\">Choose how this risk should be dealt with</span></p>
+					<p><span style=\"padding: 6px; margin: 8px; background: rgba(0,0,0,0.1); display: block;\"><input type=\"radio\" value=\"transfer\" name=\"risk_management\" " . $risk_management_transfer . " class=\"inputbox\" />&nbsp;Transfer</span></p>
+					<p><span style=\"padding: 6px; margin: 8px; background: rgba(0,0,0,0.3); display: block;\"><input type=\"radio\" value=\"eliminate\" name=\"risk_management\" " . $risk_management_eliminate . " class=\"inputbox\" />&nbsp;Eliminate</span></p>
+					<p><span style=\"padding: 6px; margin: 8px; background: rgba(0,0,0,0.5); display: block;\"><input type=\"radio\" value=\"accept\" name=\"risk_management\" " . $risk_management_accept . " class=\"inputbox\" />&nbsp;Accept</span></p>
+				</div>
+			</div>";
+	
+	if ($array['risk_drawing']) { $risk_drawing = $array['risk_drawing']; } else { $risk_drawing = GetRiskDrawing($array['risk_project']); }
+	
+	
+	echo "	<div>
+				<div class=\"float\"><h4>Document Number</h4><p><input type=\"text\" name=\"risk_drawing\" list=\"risk_drawing\" maxlength=\"200\" value=\"" . $risk_drawing . "\" /><br /><span class=\"minitext\">Enter the document reference number</span></p>";
+	
+				DataList("risk_drawing","intranet_project_risks",$risk_project,$risk_project);
+	
+	echo "		</div>";
+	
+	echo "		<div class=\"float\"><h4>Responsibility</h4>";
+	
+				RiskResponsbilitySelect($proj_id,$array['risk_responsibility']);
+	
+	echo "		</div>";
+	
+	echo "		<div class=\"float\"><h4>Date Identified</h4><p><input type=\"date\" name=\"risk_date\" value=\"" . $risk_date . "\" class=\"inputbox\" /></p></div>
+			</div>
+			<div>
+				<div><input type=\"submit\" /></div>
+					<input type=\"hidden\" name=\"risk_id\" value=\"" . $risk_id . "\" />
+					<input type=\"hidden\" name=\"risk_project\" value=\"" . $proj_id . "\" />
+					<input type=\"hidden\" name=\"proj_id\" value=\"" . $proj_id . "\" />
+					<input type=\"hidden\" name=\"action\" value=\"risk_edit\" />
+					</form>
+				</div>
+			</div>";
+	
+}
 
-	<div><p>Risk Warning<br /><span class=\"minitext\">Describe any warning signs which may indicate this risk is about to occur</span></p><p><textarea name=\"risk_warnings\" class=\"inputbox\" style=\"width: 75%; height: 150px;\" required=\"required\">" . $array['risk_warnings'] . "</textarea></p></div>
-	<div><p>Mitigation Measures<br /><span class=\"minitext\">Describe any measures might be taken to mitigate the likelihood of this risk occurring</span></p><p><textarea name=\"risk_mitigation\" class=\"inputbox\" style=\"width: 75%; height: 150px;\" required=\"required\">" . $array['risk_mitigation'] . "</textarea></p></div>
-	<div><p>Management Strategy<br /><span class=\"minitext\">Choose how this risk should be dealt with</span></p>
-		<p><span style=\"padding: 6px; margin: 8px; background: rgba(0,0,0,0.1); display: block; width: 150px;\"><input type=\"radio\" value=\"transfer\" name=\"risk_management\" " . $risk_management_transfer . " class=\"inputbox\" required=\"required\" />&nbsp;Transfer</span></p>
-		<p><span style=\"padding: 6px; margin: 8px; background: rgba(0,0,0,0.3); display: block; width: 150px;\"><input type=\"radio\" value=\"eliminate\" name=\"risk_management\" " . $risk_management_eliminate . " class=\"inputbox\" required=\"required\" />&nbsp;Eliminate</span></p>
-		<p><span style=\"padding: 6px; margin: 8px; background: rgba(0,0,0,0.5); display: block; width: 150px;\"><input type=\"radio\" value=\"accept\" name=\"risk_management\" " . $risk_management_accept . " class=\"inputbox\" required=\"required\" />&nbsp;Accept</span></p>
-	</div>";
+function GetRiskDrawing($risk_project) {
 	
-	echo "<div><p>Responsibility<br />";
-	
-	RiskResponsbilitySelect($proj_id,$array['risk_responsibility']);
-	
-	echo "<div><p>Date Identified<br /><input type=\"date\" name=\"risk_date\" value=\"" . $risk_date . "\" class=\"inputbox\" /></p></div>
-	<div><input type=\"submit\" /></div>
-	<input type=\"hidden\" name=\"risk_id\" value=\"" . $risk_id . "\" />
-	<input type=\"hidden\" name=\"risk_project\" value=\"" . $proj_id . "\" />
-	<input type=\"hidden\" name=\"proj_id\" value=\"" . $proj_id . "\" />
-	<input type=\"hidden\" name=\"action\" value=\"risk_edit\" />
-	</form>
-	</div>";
+	global $conn;
+	$risk_project = intval($risk_project);
+	$sql = "SELECT risk_drawing FROM intranet_project_risks WHERE risk_project = $risk_project ORDER BY risk_drawing DESC LIMIT 1";
+	$result = mysql_query($sql, $conn);
+	$array = mysql_fetch_array($result);
+	return $array['risk_drawing'];
 	
 }

@@ -19,6 +19,7 @@ function UpdateUser($user_id) {
 				$user_email = addslashes ( $_POST[user_email] );
 				$user_initials = addslashes ( $_POST[user_initials] );
 				$user_notes = addslashes ( $_POST[user_notes] );
+				$user_timesheet_hours = intval($_POST[user_timesheet_hours]);
 
 			if ($user_id > 0) {
 
@@ -47,7 +48,7 @@ function UpdateUser($user_id) {
 				user_initials = '$user_initials',
 				user_prop_target = '$_POST[user_prop_target]',
 				user_user_timesheet = '$_POST[user_user_timesheet]',
-				user_timesheet_hours = '$_POST[user_timesheet_hours]',
+				user_timesheet_hours = $user_timesheet_hours,
 				user_notes = '$user_notes'
 				$update_password
 				WHERE user_id = '$user_id' LIMIT 1";
@@ -111,7 +112,7 @@ function UpdateUser($user_id) {
 				'$_POST[user_holidays]',
 				'$user_initials',
 				'$_POST[user_prop_target]',
-				'$user_timesheet_hours',
+				$user_timesheet_hours,
 				'$user_notes'
 				)
 				";
@@ -131,7 +132,7 @@ function UpdateUser($user_id) {
 }
 
 
-function ActionUserChangePassword() {
+function ActionUserChangePassword($user_id) {
 	
 	global $conn;
 	global $user_usertype_current;
@@ -139,7 +140,7 @@ function ActionUserChangePassword() {
 	$user_usertype_current = intval($user_usertype_current);
 	$user_id = intval($_POST[user_id]);
 	
-/* 	if (($user_usertype_current > 3) OR ($user_id_current == $user_id)) {
+	if (($user_usertype_current > 3) OR ($user_id_current == $user_id)) {
 	
 			
 
@@ -180,9 +181,6 @@ function ActionUserChangePassword() {
 
 			}
 			
-	} */
-	
-	echo "<p>Sorry, this isn't working yet. Speak to Russell if you want to change a password.</p>";
-	
-	
+	}
+		
 }

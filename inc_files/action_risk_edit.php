@@ -24,6 +24,7 @@ function ActionRiskEdit() {
 		$risk_timestamp = time();
 		$risk_date = addslashes(trim($_POST[risk_date]));
 		$risk_category = addslashes(trim($_POST[risk_category]));
+		$risk_drawing = addslashes(trim($_POST[risk_drawing]));
 		$risk_user = $_COOKIE[user];
 
 		
@@ -43,7 +44,8 @@ function ActionRiskEdit() {
 		risk_timestamp = $risk_timestamp,
 		risk_date = '$risk_date',
 		risk_category = '$risk_category',
-		risk_user = $risk_user
+		risk_user = $risk_user,
+		risk_drawing = '$risk_drawing'
 		WHERE risk_id = $risk_id LIMIT 1
 		";
 		
@@ -71,6 +73,7 @@ function ActionRiskEdit() {
 		risk_timestamp,
 		risk_date,
 		risk_category,
+		risk_drawing,
 		risk_user
 		) values (
 		NULL,
@@ -87,6 +90,7 @@ function ActionRiskEdit() {
 		$risk_timestamp,
 		'$risk_date',
 		'$risk_category',
+		'$risk_drawing',
 		$risk_user
 		)";
 		

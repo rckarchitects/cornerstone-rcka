@@ -1714,4 +1714,46 @@ function PDF_ArrayProjectStages($proj_id) {
 }
 
 
+function StyleBody($size,$font,$bold){
+			Global $pdf;
+			Global $format_font;
+			if (!$font) { $font = $format_font; }
+			$pdf->SetFont('Helvetica',$bold,$size);
+			
+}
+		
+function StyleHeading($title,$text,$notes){
+			Global $pdf;
+			Global $x_current;
+			Global $y_current;
+			Global $y_left;
+			Global $y_right;
+			if ($y_current > 230 AND $x_current > 75) { $pdf->addPage(); $x_current = 10; $y_current = 15; }
+			$pdf->SetXY($x_current,$y_current);
+			$pdf->SetFont('Helvetica','b',10);
+			$pdf->SetTextColor(0, 0, 0);
+			$pdf->SetX($x_current);
+			$pdf->SetDrawColor(0,0,0);
+			$pdf->SetLineWidth(0.3);
+			$pdf->MultiCell(90,5,$title,B, L, false);
+			$pdf->MultiCell(90,1,'',0, L, false);
+			Notes($notes);
+			$pdf->Ln(1);
+			StyleBody(10);
+			$pdf->SetX($x_current);
+			$pdf->MultiCell(90,4,$text,0, L, false);
+			
+			if ($x_current < 75) {
+				$x_current = 105;
+				$y_left = $pdf->GetY();
+			} else {
+				$x_current = 10;
+				$y_right = $pdf->GetY();
+				if ($y_left > $y_right) { $y_current = $y_left + 5; } else { $y_current = $y_right + 5; }
+				if ($y_current > 220) { $pdf->addPage(); $y_current = 20; }
+			}
+			
+			
+}
+	
 	

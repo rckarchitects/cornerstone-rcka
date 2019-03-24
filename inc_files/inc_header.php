@@ -153,4 +153,6 @@ echo "
 	
 </head>
 
+<body>
+
 ";

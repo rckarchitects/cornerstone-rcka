@@ -1,6 +1,6 @@
 <?php
 
-	echo "<h1>Practice Manual</h1>";
+	echo "<h1>Project Manual</h1>";
 
 if ($user_usertype_current >= 2 && intval($_GET[manual_id]) > 0 && $_GET[action] == "edit") {
 	

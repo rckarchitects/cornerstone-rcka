@@ -20,6 +20,7 @@ echo "<h2>Risk Register</h2>";
 ProjectSubMenu($proj_id,$user_usertype_current,"project_view",1);
 ProjectSubMenu($proj_id,$user_usertype_current,"project_risks",2);
 
+RiskEdit($risk_id,$proj_id);
+
 RiskList($proj_id);
 
-RiskEdit($risk_id,$proj_id);

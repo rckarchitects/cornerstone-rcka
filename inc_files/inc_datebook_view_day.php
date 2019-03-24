@@ -1,36 +1,36 @@
  <?php
  
-if ($_GET[timestamp] > 0) { $time = intval ( $_GET[timestamp] ); }
-if ($_GET[time] > 0) { $time = intval ( $_GET[time] ); }
-else { $time = time(); }
+if ($_GET[timestamp] > 0) { $timestamp = intval ( $_GET[timestamp] ); }
+if ($_GET[timestamp] > 0) { $timestamp = intval ( $_GET[timestamp] ); }
+else { $timestamp = time(); }
  
 		echo "<h1>Datebook</h1>";
-		echo "<h2>".TimeFormatDay($time)."</h2>";
+		echo "<h2>".TimeFormatDay($timestamp)."</h2>";
 		
  
-function DateBook($time) {
+function DateBook($timestamp) {
 
 			$hour_begin = 7;
 			$hour_end = 13;
 			
-			$time = intval($time);
+			$timestamp = intval($timestamp);
 
 			echo "
 			<div class=\"menu_bar\">
-			<a class=\"menu_tab\" href=\"index2.php?page=datebook_view_day&amp;timestamp=".($time - 31536000)."\"><< ".Date("Y",($time - 31536000))."</a>
+			<a class=\"menu_tab\" href=\"index2.php?page=datebook_view_day&amp;timestamp=".($timestamp - 31536000)."\"><< ".Date("Y",($timestamp - 31536000))."</a>
 			<a class=\"menu_tab\" href=\"index2.php?page=datebook_view_day&amp;timestamp=".time()."\">Today</a>
-			<a class=\"menu_tab\" href=\"index2.php?page=datebook_view_day&amp;time=".($time + 31536000)."\">".Date("Y",($time + 31536000))." >></a>
+			<a class=\"menu_tab\" href=\"index2.php?page=datebook_view_day&amp;time=".($timestamp + 31536000)."\">".Date("Y",($timestamp + 31536000))." >></a>
 			</div>
 			<div class=\"menu_bar\">
-			<a class=\"submenu_bar\" href=\"index2.php?page=datebook_view_day&amp;timestamp=".($time - 604800)."\"><< ".TimeFormat($time - 604800)."</a>
-			<a class=\"submenu_bar\" href=\"index2.php?page=datebook_view_day&amp;timestamp=".($time - 86400)."\">< ".TimeFormat($time - 86400)."</a>
-			<a class=\"submenu_bar\" href=\"index2.php?page=datebook_view_day&amp;timestamp=".($time + 86400)."\">".TimeFormat($time + 86400)." ></a>
-			<a class=\"submenu_bar\" href=\"index2.php?page=datebook_view_day&amp;timestamp=".($time + 604800)."\">".TimeFormat($time + 604800)." >></a>
+			<a class=\"submenu_bar\" href=\"index2.php?page=datebook_view_day&amp;timestamp=".($timestamp - 604800)."\"><< ".TimeFormat($timestamp - 604800)."</a>
+			<a class=\"submenu_bar\" href=\"index2.php?page=datebook_view_day&amp;timestamp=".($timestamp - 86400)."\">< ".TimeFormat($timestamp - 86400)."</a>
+			<a class=\"submenu_bar\" href=\"index2.php?page=datebook_view_day&amp;timestamp=".($timestamp + 86400)."\">".TimeFormat($timestamp + 86400)." ></a>
+			<a class=\"submenu_bar\" href=\"index2.php?page=datebook_view_day&amp;timestamp=".($timestamp + 604800)."\">".TimeFormat($timestamp + 604800)." >></a>
 			</div>";
 
-			$startday_day = date("j", $time);
-			$startday_month = date("n", $time);
-			$startday_year = date("Y", $time);
+			$startday_day = date("j", $timestamp);
+			$startday_month = date("n", $timestamp);
+			$startday_year = date("Y", $timestamp);
 
 			$startday = mktime($hour_begin, 0, 0, $startday_month, $startday_day, $startday_year);
 			$endday = $startday + 86400;
@@ -39,11 +39,11 @@ function DateBook($time) {
 			return $time_array;
 }
 
-$day_scope = DateBook($time);
+$day_scope = DateBook($timestamp);
 $startday = $day_scope[0];
 $endday = $day_scope[1];
 
-function DayBook_Invoice($time,$startday,$endday) {
+function DayBook_Invoice($timestamp,$startday,$endday) {
 	
 		global $conn;
 
@@ -57,7 +57,7 @@ function DayBook_Invoice($time,$startday,$endday) {
 			$return = $return + 1;
 		
 			echo "<h3>Invoices Issued Today</h3>";
-			echo "<table summary=\"Invoices due on ".TimeFormat($time)."\">";
+			echo "<table summary=\"Invoices due on ".TimeFormat($timestamp)."\">";
 		
 		while ($array_invoices = mysql_fetch_array($result_invoices)) {
 			$invoice_id = $array_invoices['invoice_id'];
@@ -89,7 +89,7 @@ function DayBook_Invoice($time,$startday,$endday) {
 			$return = $return + 1;
 		
 			echo "<h3>Invoices Due Today</h3>";
-			echo "<table summary=\"Invoices due on ".TimeFormat($time)."\">";
+			echo "<table summary=\"Invoices due on ".TimeFormat($timestamp)."\">";
 		
 		while ($array_invoices = mysql_fetch_array($result_invoices)) {
 			$invoice_id = $array_invoices['invoice_id'];
@@ -121,7 +121,7 @@ function DayBook_Invoice($time,$startday,$endday) {
 			$return = $return + 1;
 		
 			echo "<h3>Invoices Paid Today</h3>";
-			echo "<table summary=\"Invoices paid on ".TimeFormat($time)."\">";
+			echo "<table summary=\"Invoices paid on ".TimeFormat($timestamp)."\">";
 		
 		while ($array_invoices = mysql_fetch_array($result_invoices)) {
 			$invoice_id = $array_invoices['invoice_id'];
@@ -147,7 +147,7 @@ function DayBook_Invoice($time,$startday,$endday) {
 	
 		
 		
-function DayBook_Expenses($time,$startday,$endday) {
+function DayBook_Expenses($timestamp,$startday,$endday) {
 	
 		global $conn;
 	
@@ -161,7 +161,7 @@ function DayBook_Expenses($time,$startday,$endday) {
 			$return = $return + 1;
 		
 			echo "<h3>Expenses Added</h3>";
-			echo "<table summary=\"Expenses added on ".TimeFormat($time)."\">";
+			echo "<table summary=\"Expenses added on ".TimeFormat($timestamp)."\">";
 			
 			$list1 = 0;
 			$count = 1;
@@ -188,7 +188,7 @@ function DayBook_Expenses($time,$startday,$endday) {
 			$return = $return + 1;
 		
 			echo "<h3>Expenses Verified Today</h3>";
-			echo "<table summary=\"Expenses verified on ".TimeFormat($time)."\">";
+			echo "<table summary=\"Expenses verified on ".TimeFormat($timestamp)."\">";
 			
 			$list1 = 0;
 			$count = 1;
@@ -212,7 +212,7 @@ function DayBook_Expenses($time,$startday,$endday) {
 
 		
 		
-function DayBook_Drawings($time,$startday,$endday) {
+function DayBook_Drawings($timestamp,$startday,$endday) {
 	
 		global $conn;
 
@@ -227,7 +227,7 @@ function DayBook_Drawings($time,$startday,$endday) {
 			$return = $return + 1;
 		
 			echo "<h3>Drawings Issued</h3>";
-			echo "<table summary=\"Drawings issued on ".TimeFormat($time)."\">";
+			echo "<table summary=\"Drawings issued on ".TimeFormat($timestamp)."\">";
 
 		
 		while ($array_drawings = mysql_fetch_array($result_drawings)) {
@@ -251,7 +251,7 @@ function DayBook_Drawings($time,$startday,$endday) {
 
 		
 
-function DayBook_Tasks($time,$startday,$endday) {
+function DayBook_Tasks($timestamp,$startday,$endday) {
 	
 		global $conn;
 		
@@ -271,7 +271,7 @@ function DayBook_Tasks($time,$startday,$endday) {
 			$return = $return + 1;
 		
 			echo "<h3>Tasks Due Today</h3>";
-			echo "<table summary=\"Tasks due on ".TimeFormat($time)."\">";
+			echo "<table summary=\"Tasks due on ".TimeFormat($timestamp)."\">";
 		
 		while ($array_tasks = mysql_fetch_array($result_tasks)) {
 			$tasklist_id = $array_tasks['tasklist_id'];
@@ -308,7 +308,7 @@ function DayBook_Tasks($time,$startday,$endday) {
 
 		
 
-function DayBook_Journal($time,$startday,$endday) {
+function DayBook_Journal($timestamp,$startday,$endday) {
 	
 		global $conn;
 		
@@ -320,7 +320,7 @@ function DayBook_Journal($time,$startday,$endday) {
 		
 // Journal entries
 
-			echo "<table summary=\"Datebook for ".TimeFormat($time)."\">";
+			echo "<table summary=\"Datebook for ".TimeFormat($timestamp)."\">";
 
 				while ($count < ($hour_begin + $hour_end)) {
 
@@ -394,14 +394,14 @@ function DayBook_Journal($time,$startday,$endday) {
 		$count_results = 0;
 		
 		
-		if ($user_usertype_current > 3) {	$count_results = $count_results + DayBook_Invoice($time,$startday,$endday); }
+		if ($user_usertype_current > 3) {	$count_results = $count_results + DayBook_Invoice($timestamp,$startday,$endday); }
 		
-		if ($user_usertype_current > 3) { $count_results = $count_results + DayBook_Expenses($time,$startday,$endday); }
+		if ($user_usertype_current > 3) { $count_results = $count_results + DayBook_Expenses($timestamp,$startday,$endday); }
 		
-		$count_results = $count_results + DayBook_Drawings($time,$startday,$endday);
+		$count_results = $count_results + DayBook_Drawings($timestamp,$startday,$endday);
 		
-		$count_results = $count_results + DayBook_Tasks($time,$startday,$endday);
+		$count_results = $count_results + DayBook_Tasks($timestamp,$startday,$endday);
 		
-		$count_results = $count_results + DayBook_Journal($time,$startday,$endday);
+		$count_results = $count_results + DayBook_Journal($timestamp,$startday,$endday);
 		
 		if (intval($count_results) == 0) { echo "<p>No entries found for this day.</p>"; }

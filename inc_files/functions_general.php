@@ -153,10 +153,12 @@ function ProjectListLPA() {
 	
 }
 
-function DataList($field,$table) {
+function DataList($field,$table,$proj_id,$project_field) {
+	
+	if (intval($proj_id > 0)) { $project_filter = " AND " . $project_field . " = " . intval($proj_id) ; }
 	
 	GLOBAL $conn;
-	$sql = "SELECT " . $field . " FROM " . $table . " WHERE " . $field . " IS NOT NULL GROUP BY " . $field;
+	$sql = "SELECT " . $field . " FROM " . $table . " WHERE " . $field . " IS NOT NULL " . $project_filter . " GROUP BY " . $field;
 	$result = mysql_query($sql, $conn) or die(mysql_error());
 	if (mysql_num_rows($result) > 0) {
 		echo "<datalist id=\"" . $field . "\">";
@@ -305,6 +307,18 @@ function GetProjectName($proj_id) {
 					}
 					
 					return $proj_title;
+}
+
+function GetProjectNum($proj_id) {
+					if ($proj_id != NULL) {
+						GLOBAL $conn;
+						$sql = "SELECT proj_num FROM intranet_projects WHERE proj_id = $proj_id";
+						$result = mysql_query($sql, $conn) or die(mysql_error());
+						$array = mysql_fetch_array($result);
+						$proj_num = $array['proj_num'];
+					}
+					
+					return $proj_num;
 }
 
 function SearchPanel($user_usertype_current,$search_id) {
@@ -504,6 +518,11 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_image[] = "button_pdf.png";
 				$array_menu_usertype[] = 2;
 				
+				$array_menu_page[] = "pdf_risks_matrix.php?proj_id=" . $proj_id;
+				$array_menu_text[] = "Risk Matrix";
+				$array_menu_image[] = "button_pdf.png";
+				$array_menu_usertype[] = 2;
+				
 	} elseif ($page == "project_fee" OR $page == "project_timesheet_view" && intval($proj_id) > 0) {
 
 				$array_menu_page[] = "index2.php?page=project_fees&proj_id=$proj_id";
@@ -536,7 +555,7 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_image[] = "button_pdf.png";
 				$array_menu_usertype[] = 3;
 				
-				$array_menu_page[] = "http://intranet.rcka.co/pdf_project_performance_summary.php?proj_id=" . intval($proj_id);
+				$array_menu_page[] = "pdf_project_performance_summary.php?proj_id=" . intval($proj_id);
 				$array_menu_text[] = "Project Performance Summary";
 				$array_menu_image[] = "button_pdf.png";
 				$array_menu_usertype[] = 4;
@@ -577,6 +596,11 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 1;
 				
+				$array_menu_page[] = "pdf_tasklist.php?proj_id=" . $proj_id;
+				$array_menu_text[] = "Print Project Tasks";
+				$array_menu_image[] = "button_pdf.png";
+				$array_menu_usertype[] = 1;
+				
 	} elseif ($page == "tasklist_view") {
 	
 				$array_menu_page[] = "index2.php?page=tasklist_edit";
@@ -589,7 +613,7 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 1;
 				
-				$array_menu_page[] = "index2.php?page=tasklist_view&amp;view=complete";
+				$array_menu_page[] = "index2.php?page=tasklist_view&amp;view=complete&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Completed Tasks";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 1;
@@ -1095,6 +1119,7 @@ $proj_lpa = $array['proj_lpa'];
 $proj_ambition_internal = $array['proj_ambition_internal'];
 $proj_ambition_client = $array['proj_ambition_client'];
 $proj_ambition_marketing = $array['proj_ambition_marketing'];
+$proj_ambition_social = $array['proj_ambition_social'];
 $proj_tenant_1 = $array['proj_tenant_1'];
 $proj_location = $array['proj_location'];
 
@@ -1135,6 +1160,7 @@ $country_printable_name = $array['country_printable_name'];
 					if ($proj_ambition_client) { echo "<tr><td><a href=\"index2.php?page=project_ambition_schedule&amp;type=client_ambition\">Client Ambition</a></td><td>" . nl2br ($proj_ambition_client) . "</td></tr>"; }
 					if ($proj_info) { echo "<tr><td><a href=\"index2.php?page=project_ambition_schedule&amp;type=project_information\">Project Information</a></td><td>" . nl2br ($proj_info) . "</td></tr>"; }
 					if ($proj_ambition_marketing) { echo "<tr><td><a href=\"index2.php?page=project_ambition_schedule&amp;type=project_marketing\">Marketing Ambition</a></td><td>" . nl2br ($proj_ambition_marketing) . "</td></tr>"; }
+					if ($proj_ambition_social) { echo "<tr><td><a href=\"index2.php?page=project_ambition_schedule&amp;type=project_marketing\">Social Value Ambition</a></td><td>" . nl2br ($proj_ambition_social) . "</td></tr>"; }
 				
 
 					if ($proj_procure > 0) {
@@ -1651,9 +1677,15 @@ return $array_skins;
 
 function DayLink($input,$detail) {
 	
-	if (intval($detail) == 1) { $dayprint = TimeFormatDetailed($input); } else { $dayprint = TimeFormat($input); }
+	if (intval($input) > 0) {
 	
-	$output = "<a href=\"index2.php?page=datebook_view_day&amp;timestamp=" . $input . "\">" . $dayprint . "</a>";
+		if (intval($detail) == 1) { $dayprint = TimeFormatDetailed($input); } else { $dayprint = TimeFormat($input); }
+		
+		$output = "<a href=\"index2.php?page=datebook_view_day&amp;timestamp=" . $input . "\">" . $dayprint . "</a>";
+		
+	
+	} else { $output = "-"; }
+	
 	return $output;
 
 }
@@ -1758,14 +1790,19 @@ function UserHolidays($user_id,$text,$year) {
 	
 }
 
-function UserDropdown($input_user) {
+function UserDropdown($input_user,$input_name,$class) {
+	
+if (!$input_name) { $input_name = "user_id"; }
+$input_user = intval($input_user);
 
 GLOBAL $conn;
 
 	$sql = "SELECT user_id, user_active, user_name_first, user_name_second FROM intranet_user_details ORDER BY user_active DESC, user_name_second";
 	$result = mysql_query($sql, $conn) or die(mysql_error());
+	
+	if ($class) { $class = "class=\"" . $class . "\""; } else { $class = "class=\"inputbox\""; }
 
-	echo "<select class=\"inputbox\" name=\"user_id\">";
+	echo "<select $class name=\"" . $input_name . "\">";
 
 	unset($user_active_test);
 	
@@ -1868,7 +1905,7 @@ function DateList($impending_only) {
 	
 				echo "<tr><td class=\"$style\" style=\"width: 25%; $embolden\">";
 				if ($array['date_notes']) { echo "<a href=\"index2.php?page=date_list&amp;date_id=" . $array['date_id']  . "\">" . $array['date_description'] . "&nbsp;&#8681;</a>"; } else { echo $array['date_description']; }
-				echo "</td><td class=\"$style\"  style=\"width: 25%; $embolden\">" . TimeFormat ( DisplayDate($array['date_day']) ) . "</td><td class=\"$style\"  style=\"width: 25%; $embolden\">" . $array['proj_num'] . " " . $array['proj_name'] . "</td>";
+				echo "</td><td class=\"$style\"  style=\"width: 25%; $embolden\">" . TimeFormat ( DisplayDate($array['date_day']) ) . "</td><td class=\"$style\"  style=\"width: 25%; $embolden\"><a href=\"index2.php?page=project_view&amp;proj_id=" . $array['proj_id'] . "\">" . $array['proj_num'] . " " . $array['proj_name'] . "</a></td>";
 				if ($array['date_day'] == $_COOKIE[user] OR $user_usertype_current > 3) {
 					echo "<td class=\"$style HideThis\" style=\"$embolden\">" . $array['date_category'] . "</td><td style=\"text-align: right;\" class=\"$style HideThis\"><a href=\"index2.php?page=date_edit&amp;date_id=" . $array['date_id'] . "\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a></td>";
 				} else {
@@ -1924,16 +1961,16 @@ function TextAreaEdit() {
 					tinymce.init({
 					selector: \"textarea\",
 					plugins: [
-						\"advlist autolink lists link charmap preview anchor textcolor table image code\"
+						\"advlist autolink autosave fullscreen lists link charmap preview anchor textcolor table image code wordcount save\"
 					],
 					menubar: false,
-					toolbar: \"undo redo | bold italic underline strikethrough | bullist numlist outdent indent | link unlink | forecolor | table | alignleft aligncenter alignright | image | code \",
+					toolbar: \"save undo redo | formatselect | bold italic underline strikethrough | bullist numlist outdent indent | link unlink | forecolor | table | alignleft aligncenter alignright | image | fullpage | removeformat | code | fullscreen | restoredraft | wordcount \",
 					table_toolbar: \"tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol\",
 					image_list: [";
 						ListAvailableImages("uploads");
 				echo "],
-					autosave_ask_before_unload: false,
-					height : 300,
+					autosave_ask_before_unload: true,
+					height : 500,
 					max_height: 1000,
 					min_height: 160
 					});
@@ -2024,49 +2061,7 @@ function FooterBar() {
 	echo "<div id=\"mainfooter\">powered by <a href=\"https://github.com/rckarchitects/cornerstone-rcka/wiki/Welcome-to-Cornerstone\">RCKa Cornerstone</a></div>";
 	
 }
-
-function StyleBody($size,$font,$bold){
-			Global $pdf;
-			Global $format_font;
-			if (!$font) { $font = $format_font; }
-			$pdf->SetFont($font,$bold,$size);
-			
-		}
-		
-function StyleHeading($title,$text,$notes){
-			Global $pdf;
-			Global $x_current;
-			Global $y_current;
-			Global $y_left;
-			Global $y_right;
-			if ($y_current > 230 AND $x_current > 75) { $pdf->addPage(); $x_current = 10; $y_current = 15; }
-			$pdf->SetXY($x_current,$y_current);
-			$pdf->SetFont('Helvetica','b',10);
-			$pdf->SetTextColor(0, 0, 0);
-			$pdf->SetX($x_current);
-			$pdf->SetDrawColor(0,0,0);
-			$pdf->SetLineWidth(0.3);
-			$pdf->MultiCell(90,5,$title,B, L, false);
-			$pdf->MultiCell(90,1,'',0, L, false);
-			Notes($notes);
-			$pdf->Ln(1);
-			StyleBody(10);
-			$pdf->SetX($x_current);
-			$pdf->MultiCell(90,4,$text,0, L, false);
-			
-			if ($x_current < 75) {
-				$x_current = 105;
-				$y_left = $pdf->GetY();
-			} else {
-				$x_current = 10;
-				$y_right = $pdf->GetY();
-				if ($y_left > $y_right) { $y_current = $y_left + 5; } else { $y_current = $y_right + 5; }
-				if ($y_current > 220) { $pdf->addPage(); $y_current = 20; }
-			}
-			
-			
-		}
-		
+	
 function ListHoliday($day_begin, $color_switch) {
 
 		if ($color_switch == 1) { SetColor1(); } else { SetColor2(); }
@@ -3328,41 +3323,67 @@ function CheckListRows($proj_id,$group_id,$showhidden) {
 
 	global $conn;
 	
-	if ($showhidden != "yes") { $sqlhidden = " AND checklist_required != 1 "; } else { unset($sqlhidden); }
-	
-	$sql_checklist = "SELECT * FROM intranet_project_checklist_items LEFT JOIN intranet_project_checklist ON checklist_item = item_id AND checklist_project = $proj_id LEFT JOIN intranet_timesheet_group ON group_id = item_stage WHERE ((group_id = '$group_id') OR (item_stage IS NULL)) $sqlhidden ORDER BY item_group, item_order, checklist_date, item_name";
+	$sql_checklist = "SELECT * FROM intranet_project_checklist_items LEFT JOIN intranet_project_checklist ON checklist_item = item_id AND checklist_project = $proj_id LEFT JOIN intranet_timesheet_group ON group_id = item_stage WHERE ((group_id = '$group_id') OR (item_stage IS NULL)) ORDER BY item_group, item_order, checklist_date, item_name";
 
 	$result_checklist = mysql_query($sql_checklist, $conn) or die(mysql_error());
 
 	echo "
-	<script>
-	$(document).ready(function(){
-		$(\".Row1\").dblclick(function(){
-			var ThisRow = document.getElementsByClassName(\"Row1\");
-			$(\".Row1\").hide();
-			$(\".Row2\").show();
-			$(\"#testslot\").html(\"Row Name:\" + ThisRow );
-		});
-		$(\".Row2\").change(function(){
-			$(ThisRow).hide();
-			$(\".Row1\").show();
-		});
-	});
-	</script>";
+	<script type=\"text/javascript\">
 	
-	echo "<div id=\"testslot\"></div>";
-
-
+						function HideLine(GetLineID,ShowLineID){
+						
+								GetLineID.style.display='table-row';
+								ShowLineID.style.display='none';			
+						}
+						
+						function ShowLine(GetLineID,ShowLineID){
+							
+								var ToggleRequiredButton = document.getElementById(\"ToggleRequiredButton_Hide\");
+								var ToggleRequiredButton = document.getElementById(\"ToggleRequiredButton_Show\");
+						
+								GetLineID.style.display='none';
+								ShowLineID.style.display='table-row';
+								SubmitButton.style.display='block';
+								ToggleRequiredButton_Hide.style.display='None';
+								ToggleRequiredButton_Show.style.display='None';
+						}
+											
+						function ToggleRequired() {
+						
+								var x = document.getElementsByClassName(\"RowHide\");
+								if (x[0].style.display === \"none\") {
+									for (i = 0; i < x.length; i++) {
+										x[i].style.display='table-row';
+									}
+									ToggleRequiredButton_Show.style.display='None';
+									ToggleRequiredButton_Hide.style.display='Block';
+									
+								} else {
+									for (i = 0; i < x.length; i++) {
+										x[i].style.display='none';
+									}
+									ToggleRequiredButton_Hide.style.display='None';
+									ToggleRequiredButton_Show.style.display='Block';
+								}
+						}
+						
+	</script>";
 
 
 	$current_item = 0;
 
 	if (mysql_num_rows($result_checklist) > 0) {
-						
+		
+		echo "<div style=\"height: 25px;\"><a href=\"#\" id=\"ToggleRequiredButton_Show\" class=\"submenu_bar\" onclick=\"ToggleRequired('Show')\" />Show Not Required</a><a href=\"#\" id=\"ToggleRequiredButton_Hide\" class=\"submenu_bar\" onclick=\"ToggleRequired('Hide')\" style=\"display: none;\" />Hide Not Required</a></div>";
+					
+					echo "<form action=\"index2.php?page=project_checklist&amp;group_id=" . intval($group_id) . "&amp;proj_id=" . intval($proj_id). "\" method=\"post\" enctype=\"multipart/form-data\">";
+					echo "<input type=\"hidden\" name=\"action\" value=\"checklist_update\" />";
 					echo "<table>";
-					echo "<tr><th>Item</th><th>Stage</th><th>Required</th><th style=\"width: 15%;\">Date Completed</th><th colspan=\"4\">Comment</th></tr>";
+					echo "<tr><th style=\"width: 30%;\">Item</th><th style=\"width: 5%;\">Stage</th><th style=\"width: 15%;\">Required</th><th style=\"width: 20%;\">Date Completed</th><th>Comment</th><th colspan=\"3\">Link</th></tr>";
 
 					$group = NULL;
+					
+					$counter = 0;
 
 					while ($array_checklist = mysql_fetch_array($result_checklist)) {
 					$item_id = $array_checklist['item_id'];
@@ -3388,20 +3409,21 @@ function CheckListRows($proj_id,$group_id,$showhidden) {
 					if ($item_group != $group) { echo "<tr><td colspan=\"8\"><strong>$item_group</strong></td></tr>"; }
 					
 						// Change the background color depending on status
-						if ($checklist_required == 2 && ( $checklist_date == "0000-00-00" OR $checklist_date == NULL ) ) { $bg =  "class=\"alert_warning \""; } // red
-						elseif ($checklist_required == 2 && ( $checklist_date != "0000-00-00" OR $checklist_date != NULL ) ) { $bg =  "class=\"alert_ok \""; } // green
-						elseif ($checklist_required == 1) { $bg =  "class=\"alert_neutral \""; } // grey
-						else { $bg =  "class=\" alert_neutral \""; } // grey
+						if ($checklist_required == 2 && ( $checklist_date == "0000-00-00" OR $checklist_date == NULL ) ) { $bg =  "class=\"alert_warning edittable\""; } // red
+						elseif ($checklist_required == 2 && ( $checklist_date != "0000-00-00" OR $checklist_date != NULL ) ) { $bg =  "class=\"alert_ok edittable\""; } // green
+						elseif ($checklist_required == 1) { $bg =  "class=\"edittable\""; } // grey
+						else { $bg =  "class=\" alert_neutral edittable\""; } // grey
 						
 						
-						
+						if ($checklist_date == 0) { $checklist_date = "-";}
 						
 						if ($checklist_deadline != "0000-00-00" && $checklist_deadline != NULL) {
 							$checklist_date = $checklist_date . "<br /><span class=\"minitext\">Deadline: $checklist_deadline</span>";
 						}
 					
+					if ($checklist_required != 1) { $rowshow_class = "class=\"RowShow\""; } else { $rowshow_class = "class=\"RowHide\" style=\"display: none;\""; }
 					
-					echo "<tr id=\"checklist_row_" . $item_id . "\" class=\"Row1\"><td $bg>";
+					echo "<tr id=\"item_line_" . $checklist_id . "\" ondblclick=\"ShowLine(item_line_" . $checklist_id . ",item_line_" . $checklist_id . "_form)\" $rowshow_class><td $bg>";
 					//if ($item_name_current != $item_name) { 
 					
 					echo $item_name;
@@ -3424,8 +3446,8 @@ function CheckListRows($proj_id,$group_id,$showhidden) {
 					echo "</td>";
 
 					if (!$item) {	
-						if ($checklist_date == 0) { $checklist_date = "-";}
-						echo "<td $bg>$checklist_date</td>";
+						
+						echo "<td $bg>" . DayLink(DisplayDate($checklist_date)) . "</td>";
 						echo "<td $bg>$checklist_comment</td>";
 						if ($checklist_link) {
 							echo "<td colspan=\"2\" $bg><a href=\"$checklist_link\" target=\"_blank\"><img src=\"images/button_internet.png\" /></a></td>";
@@ -3442,7 +3464,7 @@ function CheckListRows($proj_id,$group_id,$showhidden) {
 						if ($_GET[item] != $item_id AND $_POST[item] != $item_id) { $hidden = "none"; } else { unset($hidden); }
 					
 						if (!$item) {
-							echo "<td $bg><a href=\"javascript:void(0);\" onclick=\"hideRow($item_id, false);\"><img src=\"images/button_help.png\" alt=\"Help\" /></a></td>";
+							echo "<td $bg><a href=\"javascript:void(0);\" id=\"item_line_" . $item_id . "><img src=\"images/button_help.png\" alt=\"Help\" /></a></td>";
 						}
 						
 						echo "</tr>";
@@ -3458,20 +3480,38 @@ function CheckListRows($proj_id,$group_id,$showhidden) {
 					
 					$current_item = $item_id;
 					
-					echo "	<tr class=\"Row2\" style=\"display: none;\">
-							<td $bg><input type=\"text\" name=\"item_name\" value=\"$item_name\" $bg /></td>
-							<td $bg></td>
-							<td $bg></td>
-							<td $bg></td>
-							<td $bg></td>
-							<td $bg></td>
-							<td $bg></td>
-							<td $bg></td>
+					
+					if ($checklist_required == 1) { $no = " selected=\"selected\" "; unset($yes); unset($maybe); }
+					elseif ($checklist_required == 2) { $yes = " selected=\"selected\" "; unset($no); unset($maybe);}
+					else { $maybe = " selected=\"selected\" "; unset($yes); unset($no); }
+					
+					echo "	<tr id=\"item_line_" . $checklist_id. "_form\" style=\"display: none;\" onblur=\"HideLine(item_line_" . $checklist_id . ",item_line_" . $checklist_id . "_form)\">
+							<td $bg>$item_name</td>
+							<td $bg>" . $group_code . "</td>
+							<td $bg><select name=\"checklist_required[]\" $bg><option value=\"0\" $maybe $bg>-</option><option value=\"1\" $no $bg>No</option><option value=\"2\" $yes $bg>Yes</option></select></td>
+							<td $bg><input type=\"date\" name=\"checklist_date[]\" value=\"$checklist_date\" $bg /></td>
+							<td $bg><input type=\"text\" name=\"checklist_comment[]\" value=\"$checklist_comment\" $bg /></td>
+							<td $bg><input type=\"link\" name=\"checklist_link[]\" value=\"$checklist_link\" $bg  /></td>
+							<td $bg>";
+							echo "<input type=\"file\" name=\"checklist_upload[]\" $bg/>";
+							echo "
+							</td><td $bg></td>
+							<input type=\"hidden\" name=\"item_title[]\" value=\"$item_name\" />
+							<input type=\"hidden\" name=\"item_counter[]\" value=\"$counter\" />
+							<input type=\"hidden\" name=\"item_id[]\" value=\"$item_id\" />
+							<input type=\"hidden\" name=\"checklist_id[]\" value=\"$checklist_id\" />
+							<input type=\"hidden\" name=\"checklist_user[]\" value=\"" . $_COOKIE[user] . "\" />
+							<input type=\"hidden\" name=\"checklist_timestamp[]\" value=\"" . time() . "\" />
+							<input type=\"hidden\" name=\"checklist_project[]\" value=\"$proj_id\" />
 							</tr>";
+							
+							$counter++;
 
 					}
 					
 					echo "</table>";
+					echo "<div id=\"SubmitButton\" style=\"display: none;\"><input type=\"Submit\" value=\"Update\" /></div>";
+					echo "</form>";
 
 } else { echo "<p>No checklist items found.</p>"; }
 
@@ -4396,7 +4436,7 @@ array_push($array_projects_recent,$array_timesheet_projects['ts_project']);
 		}
 				
 		echo "<a href=\"index2.php?active=all&amp;listorder=$listorder\" class=\"submenu_bar\">All Projects</a>";
-		echo "<a href=\"index2.php?active=0&amp;listorder=$listorder\" class=\"submenu_bar\">Inactive Projects</a>";
+		echo "<a href=\"index2.php?active=inactive&amp;listorder=$listorder\" class=\"submenu_bar\">Inactive Projects</a>";
 		
 		if ($user_usertype_current > 3) {
 			echo "<a href=\"index2.php?page=project_edit&amp;status=add\" class=\"submenu_bar\">Add Project (+)</a>";
@@ -4410,8 +4450,12 @@ array_push($array_projects_recent,$array_timesheet_projects['ts_project']);
 		
 		if ($_GET[active] == "current") { 
 			echo "<h3>All Active Projects</h3>";
+		} elseif ($_GET[active] == "all") { 
+			echo "<h3>All Projects</h3>";
+		} elseif ($_GET[active] == "inactive") { 
+			echo "<h3>All Projects</h3>";
 		} else {
-			echo "<h3>My Projects</h3>";
+			echo "<h3>Recent Projects</h3>";
 		}
 	
 
@@ -5201,5 +5245,118 @@ function ProjectID($type,$table,$identifier,$id) {
 	
 }
 
+function FileUploadChecklist($media_title,$media_project,$media_category,$fileName,$fileSize,$fileTmpName,$media_description) {
 
+	unset($actionmessage);
+	
+	global $conn;
+	
+    $currentDir = getcwd();
+    $uploadDirectory = "/uploads/";
+	
+
+    $fileExtensions = ['jpeg','jpg','png','pdf']; // Get all the file extensions
+
+   // $fileName = $_FILES[$checklist_upload]['name'];
+    //$fileSize = $_FILES[$checklist_upload]['size'];
+    //$fileTmpName  = $_FILES[$checklist_upload]['tmp_name'];
+    //$fileType = $_FILES[$checklist_upload]['type'];
+    $fileExtension = strtolower(end(explode('.',$fileName)));
+	
+	$new_file_name = "media_" . date("Y-m-d",time()) . "_" . $_COOKIE[user] . "_" . time() . "." . $fileExtension;
+	
+	$media_title = addslashes($media_title);
+
+    $uploadPath = $currentDir . $uploadDirectory . $new_file_name;
+	
+
+    if (isset($uploadPath)) {
+		
+		
+
+			if (! in_array($fileExtension,$fileExtensions)) {
+				$actionmessage = $actionmessage . "This file extension is not allowed ($checklist_upload)<br />";
+				//echo "<p>$actionmessage</p>";
+			}
+
+			if ($fileSize > 20000000) {
+				$actionmessage = $actionmessage . "This file is more than 10MB. Sorry, it has to be less than or equal to 10MB.<br />";
+				//echo "<p>$actionmessage</p>";
+			}
+
+			if (empty($actionmessage)) {
+				
+				
+				
+				$didUpload = move_uploaded_file($fileTmpName, $uploadPath);
+
+				if ($didUpload) {
+					$actionmessage = $actionmessage . "The file " . $fileName . " has been uploaded to " . $currentDir . $uploadDirectory . " and renamed to " . $new_file_name . " with a size of " . MediaSize($fileSize, $precision = 2) . ".<br />";
+					
+					$media_path = addslashes ($uploadDirectory);
+					$media_name = $new_file_name;
+					$media_timestamp = time();
+					$media_user = intval($_COOKIE[user]);
+					$media_type = $fileExtension;
+					$media_file = addslashes($new_file_name);
+					$media_size = $fileSize;
+					$media_description = addslashes($media_description);
+					$media_checklist = intval($_POST[media_checklist]);
+					$media_project = intval($media_project);
+					
+					$sql_add = "INSERT INTO intranet_media (
+								media_id,
+								media_path,
+								media_title,
+								media_timestamp,
+								media_user,
+								media_type,
+								media_file,
+								media_category,
+								media_size,
+								media_description,
+								media_checklist,
+								media_project
+								) values (
+								'NULL',
+								'$media_path',
+								'$media_title',
+								$media_timestamp,
+								$media_user,
+								'$media_type',
+								'$media_file',
+								'$media_category',
+								'$media_size',
+								'$media_description',
+								$media_checklist,
+								$media_project
+								)";
+								
+								$result = mysql_query($sql_add, $conn) or die(mysql_error());
+								$id_added = mysql_insert_id();
+								
+								$output_file_link = $media_path . $media_file;
+								return $output_file_link;
+					
+				} else {
+					
+					
+					$actionmessage = $actionmessage . "An error occurred somewhere. Try again or contact the administrator.<br />";
+					
+					//echo "<p>$actionmessage from $fileTmpName to $uploadPath </p>";
+					
+				}
+			}
+		} else {
+			
+			$actionmessage = $actionmessage . "An unknown error occurred.<br />";
+
+			
+		}
+		
+		$actionmessage = "<p>" . rtrim($actionmessage,"<br />") .  "</p>";
+
+		AlertBoxInsert($media_user,"File Upload",$actionmessage,$id_added,0,1,$media_project);
+
+}
 

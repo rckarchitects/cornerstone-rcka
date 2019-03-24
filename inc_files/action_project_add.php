@@ -99,6 +99,7 @@ $proj_buildingcontrol_ref = CleanUp($_POST[proj_buildingcontrol_ref]);
 $proj_ambition_internal = trim(addslashes($_POST[proj_ambition_internal]));
 $proj_ambition_client = trim(addslashes($_POST[proj_ambition_client]));
 $proj_ambition_marketing = trim(addslashes($_POST[proj_ambition_marketing]));
+$proj_ambition_social = trim(addslashes($_POST[proj_ambition_social]));
 $proj_location = addslashes($_POST[proj_location]);
 $proj_info = addslashes($_POST[proj_info]);
 $proj_lpa = addslashes($_POST[proj_lpa]);
@@ -163,6 +164,7 @@ proj_fee_percentage,
 proj_ambition_internal,
 proj_ambition_client,
 proj_ambition_marketing,
+proj_ambition_social,
 proj_location,
 proj_info,
 proj_lpa
@@ -224,6 +226,7 @@ proj_lpa
 '$proj_ambition_internal',
 '$proj_ambition_client',
 '$proj_ambition_marketing',
+'$proj_ambition_social',
 '$proj_location',
 '$proj_info',
 '$proj_lpa'

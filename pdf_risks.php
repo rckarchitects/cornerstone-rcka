@@ -13,7 +13,7 @@ function GetCompanyName($company_id) {
 	global $conn;
 	global $pref_practice;
 	$company_id = intval($company_id);
-	$sql = "SELECT company_name FROM contact_companylist WHERE company_id = " . $company_id;
+	$sql = "SELECT company_name FROM contacts_companylist WHERE company_id = " . $company_id;
 	$result = mysql_query($sql, $conn);
 	$array = mysql_fetch_array($result);
 	

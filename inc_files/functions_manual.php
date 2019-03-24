@@ -154,7 +154,7 @@ function ManualPageView($manual_id) {
 	echo "<h3>" . $array['group_code'] . "&nbsp;" . $array['group_description'] . "</h3>";
 	echo "<div class=\"page\">";
 	
-	if ($array['manual_attachment']) { echo "<div class=\"imagecontainer\"><p><span class=\"minitext\">Attachments</span><br /><a href=\"" . $array['media_path'] . $array['media_file'] . "\"><img src=\"images/icon_pdf.png\" style=\"width: 120px; margin: 12px;\" /><br />" . $array['media_title'] . "</a></p></div>"; }
+	if ($array['manual_attachment']) { echo "<div class=\"imagecontainer\"><p class=\"minitext\">Attachments</p><p><a href=\"" . $array['media_path'] . $array['media_file'] . "\">" . $array['media_title'] . "</a></p></div>"; }
 
 	echo $array['manual_text'] . "</div>";
 	echo "<p>Author: " . UserDetails($array['manual_author']) . "<br />Updated: " . TimeFormatDetailed($array['manual_updated']) . "</p>";
@@ -171,21 +171,25 @@ function ManualIndexView() {
 	
 	$sql = "SELECT manual_id, manual_section, manual_title, manual_updated, group_id, group_code, group_description FROM intranet_stage_manual LEFT JOIN intranet_timesheet_group ON manual_stage = group_id ORDER BY group_code, manual_section, manual_order";
 	$result = mysql_query($sql, $conn);
-	$current_stage = NULL;
+	unset($current_stage);
 	$current_section = NULL;
-
 	
+	$counter = 0;
+	
+	echo "<div class=\"page\"><table>";
+
 	while ($array = mysql_fetch_array($result)) {
 		
-		if ($current_stage != $array['group_id']) {
-			if ($current_stage) { echo "</table>"; }
-			echo "<h3>" . $array['group_code'] . "&nbsp;" . $array['group_description'] . "</h3><table>"; $current_stage = $array['group_id'];
+		if (!$array['group_id'] && $counter == 0) { echo "<tr><td colspan=\"2\"><h3>General</h3></td></tr>"; $counter++;  }
+		
+		elseif ($current_stage != $array['group_id']) {
+			echo "<tr><td colspan=\"2\"><h3>" . $array['group_code'] . "&nbsp;" . $array['group_description'] . "</h3></td></tr>"; $current_stage = $array['group_id'];
 		}
 			
 		echo "<tr><td><a href=\"index2.php?page=manual_page&amp;manual_id=" . $array['manual_id'] . "\">" . $array['manual_title'] . "</a></td><td style=\"width: 20%; text-align: right;\">" . TimeFormat($array['manual_updated']) . "</td></tr>";
 	}
 	
-	echo "</table>";
+	echo "</table></div>";
 	
 	
 	

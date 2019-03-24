@@ -79,7 +79,7 @@ function SetColor4() { GLOBAL $pdf; $pdf->SetFillColor(177,227,227); }
 	
 // Tasks Due This Week
 
-	PDF_TaskDeadlines($begin_week);
+	//PDF_TaskDeadlines($begin_week);
 
 
 // and send to output

@@ -107,6 +107,7 @@ $proj_info = addslashes($_POST[proj_info]);
 $proj_ambition_internal = trim(addslashes($_POST[proj_ambition_internal]));
 $proj_ambition_client = trim(addslashes($_POST[proj_ambition_client]));
 $proj_ambition_marketing = trim(addslashes($_POST[proj_ambition_marketing]));
+$proj_ambition_social = trim(addslashes($_POST[proj_ambition_social]));
 
 $proj_location = trim(addslashes($_POST[proj_location]));
 
@@ -178,7 +179,8 @@ proj_fee_type = '$proj_fee_type',
 proj_fee_percentage = '$proj_fee_percentage',
 proj_ambition_internal = '$proj_ambition_internal',
 proj_ambition_client = '$proj_ambition_client',
-proj_ambition_marketing = '$proj_ambition_marketing'
+proj_ambition_marketing = '$proj_ambition_marketing',
+proj_ambition_social = '$proj_ambition_social'
 WHERE proj_id = $proj_id";
 
 $result2 = mysql_query($sql_add2, $conn) or die(mysql_error());

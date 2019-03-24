@@ -2,6 +2,14 @@
 
 include "inc_files/inc_checkcookie.php";
 
+include_once "inc_files/inc_checkcookie.php";
+
+include_once "secure/prefs.php";
+
+include "inc_files/inc_action_functions_pdf.php";
+
+$proj_num = GetProjectNum($proj_id);
+
 //  Use FDPI to get the template
 
 define('FPDF_FONTPATH','fpdf/font/');
@@ -9,21 +17,26 @@ require('fpdf/fpdi.php');
 
 $pdf= new fpdi();
 
+$format_font = "century";
+$format_font_2 = "Century.php";
+$pdf->AddFont($format_font,'',$format_font_2);
+
 $pagecount = $pdf->setSourceFile("pdf/template.pdf");
 $tplidx = $pdf->ImportPage(1);
 
 $pdf->addPage();
-$pdf->useTemplate($tplidx, 0, 0, 210, 297);
+$pdf->useTemplate($tplidx);
 
-//$format_font = "Helvetica";
-//$format_font_2 = "franklingothicbook.php";
+// Begin creating the page
 
-//$pdf->AddFont($format_font,'',$format_font_2);
-$pdf->SetTextColor(0, 0, 0);
+	$project_counter = 1;
+	$page_count = 1;
 
-$pdf->SetY(30);
-StyleBody(22,'Helvetica','B');
-$pdf->Cell(0,17,'Holiday Request',0,1);
+
+	
+
+
+ProjectHeading($proj_id, "Holiday Request");
 StyleBody(18,'Helvetica','B');
 
 $time = time();

@@ -19,7 +19,7 @@ function MediaLatestList() {
 			elseif ((time() - intval($array['media_timestamp'])) < 604800) { $class = "alert_careful"; }
 			else { unset($class); }
 				
-			echo "<tr><td class=\"$class\" style=\"width: 25%;\"><a href=\"" . $array['media_path'] . $array['media_file'] . "\">" . $array['media_title'] . "</a></td><td class=\"$class HideThis\"><span class=\"minitext\">" . $description . "</span></td><td style=\"text-align: right;\" class=\"$class\"><span class=\"minitext\">" . $array['media_category'] . "</span></td></tr>";
+			echo "<tr><td class=\"$class\"><a href=\"" . $array['media_path'] . $array['media_file'] . "\">" . $array['media_title'] . "</a></td><td class=\"$class HideThis\"><span class=\"minitext\">" . $description . "</span></td><td style=\"text-align: right;\" class=\"$class\"><span class=\"minitext\">" . $array['media_category'] . "</span></td></tr>";
 		
 		}
 		

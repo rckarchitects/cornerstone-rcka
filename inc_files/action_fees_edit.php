@@ -211,14 +211,17 @@ if ($ts_fee_id > 0) {
 		WHERE ts_fee_id = '$ts_fee_id' LIMIT 1";
 		
 		$result = mysql_query($sql_edit, $conn) or die(mysql_error());
-		$actionmessage = "Fee stage updated successfully.";
 		$techmessage = $sql_edit;
 		
 		if ($_POST[datum] == 1) {
 			
 			$sql_datum = "UPDATE intranet_timesheet_fees SET ts_datum_commence = '$ts_fee_commence', ts_datum_length = '$ts_fee_duration' WHERE ts_fee_id = '$ts_fee_id' LIMIT 1";
 			$result = mysql_query($sql_datum, $conn) or die(mysql_error());
-			$actionmessage = "<p>Fee stage \"<a href=\"index2.php?page=project_view&amp;proj_id=$ts_fee_project\">$ts_fee_text</a>\" updated successfully.</p>";
+			$actionmessage = "<p>Fee stage \"<a href=\"index2.php?page=project_fees&amp;proj_id=$ts_fee_project\">$ts_fee_text</a>\" updated successfully.</p>";
+			
+		} else {
+			
+			$actionmessage = "<p>Fee stage \"<a href=\"index2.php?page=project_fees&amp;proj_id=$ts_fee_project\">$ts_fee_text</a>\" updated successfully.</p>";
 			
 		}
 		

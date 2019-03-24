@@ -1,6 +1,6 @@
 <?php
 
-function UpdateUser() {
+function ActionUpdateUser() {
 	
 	global $conn;
 	
@@ -124,10 +124,7 @@ function UpdateUser() {
 			
 			$result = mysql_query($sql, $conn) or die(mysql_error());
 			
-			
-			echo "<p>$sql</p>";
-			
-			
+
 			
 		}
 	
@@ -135,6 +132,6 @@ function UpdateUser() {
 
 if ($user_usertype_current > 4) {
 
-	UpdateUser();
+	ActionUpdateUser();
 
 }

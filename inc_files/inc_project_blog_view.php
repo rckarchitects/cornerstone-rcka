@@ -54,7 +54,7 @@ function BlogView($blog_id) {
 						$data_contact = $blog_contact; echo "<h3>Contact</h3><p>"; include("dropdowns/inc_data_contacts_name.php"); echo "</p>"; 
 					}
 
-					echo "<div><div class=\"float\"><h3>Date</h3><p>".date("g:ia", $blog_date)." <a href=\"index2.php?page=datebook_view_day&amp;timestamp=$blog_date\">".TimeFormat($blog_date)."</a>
+					echo "<div><div class=\"float\"><article><h3>Date</h3><p>".date("g:ia", $blog_date)." <a href=\"index2.php?page=datebook_view_day&amp;timestamp=$blog_date\">".TimeFormat($blog_date)."</a>
 					</p></div>";
 
 								$type_find = array("phone","filenote","meeting","email","rfi");
@@ -65,7 +65,7 @@ function BlogView($blog_id) {
 					$data_user_id = $blog_user; include("dropdowns/inc_data_user_name.php");
 					echo "</p></div></div>";
 
-					echo "<h3>$blog_type_view</h3><div class=\"page\"><p>".$blog_text."</p></div>";
+					echo "<h3>$blog_type_view</h3><div class=\"page\"><p>".$blog_text."</p></article></div>";
 
 					// Blogs that this entry links to
 

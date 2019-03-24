@@ -42,7 +42,7 @@ $pdf->addPage(L);
 
 // Functions
 
-	function Colors ($ratio,$factor) {
+function Colors ($ratio,$factor) {
 			$output = round (255 * $ratio);
 			$diff = 255 - $output;
 			$add = $factor * $diff;
@@ -50,7 +50,7 @@ $pdf->addPage(L);
 			return $output;
 		}
 
-	function DrawGrid() {
+function DrawGrid() {
 	
 		GLOBAL $current_time;
 		GLOBAL $pdf;
@@ -119,7 +119,7 @@ $pdf->addPage(L);
 		$pdf->SetDrawColor(0,0,0);
 	}
 	
-	function Weeks($input) {
+function Weeks($input) {
 		
 		GLOBAL $colwidth;
 	
@@ -130,9 +130,7 @@ $pdf->addPage(L);
 	
 	}
 	
-
-	
-		function Datum($start,$duration,$color_array) {
+function Datum($start,$duration,$color_array) {
 		
 			GLOBAL $current_time;
 			GLOBAL $pdf;
@@ -167,8 +165,98 @@ $pdf->addPage(L);
 			$pdf->SetX(10);
 		
 	}
+
+function StaffCost($time) {
+			
+			GLOBAL $conn;
+			$start = $time;
+			$end = $time + 604800;
+			//$sql_staff = "SELECT user_timesheet_hours, user_user_rate, user_prop, user_prop_target FROM intranet_user_details WHERE user_user_added < $start AND ( user_user_ended > $start OR user_user_ended IS NULL OR user_user_ended = 0 ) OR (user_user_added < $start AND user_user_ended > $start)";
+			$sql_staff = "SELECT user_id, user_name_first, user_timesheet_hours, user_user_rate, user_prop_target, (user_user_rate * (1 - user_prop_target) * user_timesheet_hours) FROM intranet_user_details WHERE (user_user_added < $end) AND (user_user_ended > $start OR user_user_ended = 0)";
+			
+			
+			
+			$result_staff = mysql_query($sql_staff, $conn) or die(mysql_error());
+			$weekly_cost = 0;
+			//$start_print = date ("d M Y", $start); $pdf->Ln(5); $pdf->Cell(0,4,$start_print,1,1); $pdf->MultiCell(0,5,$sql_staff); // remove
+			unset($array_total_cost);
+			while ($array_staff = mysql_fetch_array($result_staff)) {
+				$user_id = $array_staff['user_id'];
+				$user_timesheet_hours = $array_staff['user_timesheet_hours'];
+				$user_user_rate = $array_staff['user_user_rate'];
+				$user_prop_target = $array_staff['user_prop_target'];
+				$this_user = (($user_timesheet_hours * $user_user_rate) * ( 1 - $user_prop_target));
+				$weekly_cost = $weekly_cost + $this_user;
+				
+				//$weekly_cost = $weekly_cost + $array_staff['(user_user_rate * (1 - user_prop_target) * user_timesheet_hours)'];
+				
+				//$array_total_cost[] = $this_user; //remove
+							
+				//$print = $user_id . ": " . round ($this_user); $pdf->Cell(15,4,$print,1,0); // remove
+				
+			}
+			
+			//$pdf->MultiCell(0,5,$sql_staff);
+			
+			//$weekly_cost = array_sum($array_total_cost); //remove
+			
+			return($weekly_cost);
+			
+		}
+		
+function CheckHols($date, $user_id, $start) {
+	
+	GLOBAL $conn;
+
+				$sql_days = "SELECT holiday_datestamp FROM intranet_user_holidays WHERE holiday_user = $user_id AND holiday_timestamp > $start ORDER BY holiday_timestamp";
+				$result_days = mysql_query($sql_days, $conn) or die(mysql_error());				
+				$array_print = array();
+				
+				while ($array_days = mysql_fetch_array($result_days)) {
+					
+					$array_print[] = $array_days['holiday_datestamp'];					
+					
+				}
+				
+		if (in_array($date,$array_print)) { return "yes"; }
+
+}
+
+function CostBar($array_1,$array_2,$array_3,$name,$colwidth,$bold) {
+			
+	if ($bold == 1) { $bold = 'B'; $size = 8; } else { $bold = ''; $size = 6; }
+		
+		global $pdf;
+		
+		$x = 0;
+		$y = $pdf->GetY();
+		$pdf->SetXY($x,$y);
+		
+		$pdf->SetTextColor(0);
+		$pdf->SetFont('Helvetica','B',$size);
+		$pdf->Cell(0,5,'',0,1,L);
+		$pdf->Cell(40,5,$name,0,0,L);
+		$pdf->SetFont('Helvetica',$bold,6);
+		$counter = 0;
+		$array_output = array();
+		while ($x <= 220) {
+			$x = $x + $colwidth;
+			$total = $array_1[$counter] + ($array_2[$counter] - $array_3[$counter]);
+			$array_output[] = $total;
+			if ($total < 0) { $pdf->SetTextColor(255,0,0); } else { $pdf->SetTextColor(0,0,0); }
+			$total = "£" . number_format ( $total ) ;
+			$pdf->Cell($colwidth,5,$total,0,0,R);
+			$counter++;
+		}
+		
+		return $array_output;
+			
+}
+		
 	
 	$array_total = array();
+	$array_total_fee_secured = array();
+	$array_total_profit_secured = array();
 
 // Header
 
@@ -215,7 +303,7 @@ DrawGrid();
 // Begin listing the projects
 
 	//$sql_proj = "SELECT * FROM intranet_projects, intranet_timesheet_fees WHERE ts_fee_project = proj_id AND proj_active = 1 AND proj_fee_track = 1 AND ts_fee_value > 0 ORDER BY proj_num, ts_fee_commence";
-	$sql_proj = "SELECT * FROM intranet_projects, intranet_timesheet_fees WHERE ts_fee_project = proj_id AND proj_fee_track = 1 AND ts_fee_prospect > 0 AND ts_fee_value > 0 AND (((UNIX_TIMESTAMP(ts_fee_commence) + ts_fee_time_end) > $capture_start) OR ((UNIX_TIMESTAMP(ts_datum_commence) + ts_datum_length) > $capture_start)) AND proj_active = 1 ORDER BY proj_num, ts_fee_commence";
+	$sql_proj = "SELECT * FROM intranet_projects, intranet_timesheet_fees WHERE ts_fee_project = proj_id AND proj_fee_track = 1 AND ts_fee_prospect > 0 AND (((UNIX_TIMESTAMP(ts_fee_commence) + ts_fee_time_end) > $capture_start) OR ((UNIX_TIMESTAMP(ts_datum_commence) + ts_datum_length) > $capture_start)) AND proj_active = 1 ORDER BY proj_num, ts_fee_commence";
 	$result_proj = mysql_query($sql_proj, $conn) or die(mysql_error());
 	
 	$pdf->SetFont('Helvetica','',7);
@@ -275,14 +363,18 @@ DrawGrid();
 			$pdf->SetFont('Helvetica','',5);
 			$count = 0;
 			$arraycount = ($stage_start / $colwidth);
+
 			if ($pdf->GetX() < 280 & $stage_start < 230) {
 				while ($count < $stage_width && $x < 280) {
-					//if ($ts_fee_pre > 0 && $count == 0 && $noborder == 0) { $pdf->SetDrawColor(150); $pdf->SetLineWidth(1); $border = ""; } else { $pdf->SetLineWidth(0.2); $border = 0; }
 					$pdf->Cell($colwidth,$rowheight,$fee_weekly_print,$border,0,R,true);
 					$count = $count + $colwidth;
 					$x = $pdf->GetX();
 					$array_total[$arraycount] = $array_total[$arraycount] + $fee_weekly;
 					$array_profit[$arraycount] = $array_profit[$arraycount] + $profit_weekly;
+					if ($array_proj['ts_fee_prospect'] == 100) {
+						$array_total_fee_secured[$arraycount] = $array_total_fee_secured[$arraycount] + $fee_weekly;
+						$array_total_profit_secured[$arraycount] = $array_total_profit_secured[$arraycount] + $profit_weekly;
+					}
 					$arraycount++;
 				}
 				
@@ -308,19 +400,8 @@ DrawGrid();
 	
 	// Now add the totals at the end
 	
-		$x = 0;
-	
-		$pdf->SetFont('Helvetica','B',8);
-		$pdf->Cell(0,5,'',0,1,L);
-		$pdf->Cell(40,5,"TOTAL",0,0,L);
-		$pdf->SetFont('Helvetica','',6);
-		$arrayname = 0;
-		while ($x <= 220) {
-			$x = $x + $colwidth;
-			$total = "£" . number_format ( $array_total[$arrayname] );
-			$pdf->Cell($colwidth,3,$total,0,0,R);
-			$arrayname++;
-		}
+
+		CostBar($array_total,0,0,"TOTAL",$colwidth,0);
 		
 		$x = 0;
 		$bg = 220;
@@ -358,157 +439,49 @@ DrawGrid();
 		
 		// Add cost of staff
 		
-		function StaffCost($time) {
-			
-			GLOBAL $conn;
-			GLOBAL $pdf;
-			$start = $time;
-			$end = $time + 604800;
-			//$sql_staff = "SELECT user_timesheet_hours, user_user_rate, user_prop, user_prop_target FROM intranet_user_details WHERE user_user_added < $start AND ( user_user_ended > $start OR user_user_ended IS NULL OR user_user_ended = 0 ) OR (user_user_added < $start AND user_user_ended > $start)";
-			$sql_staff = "SELECT user_id, user_name_first, user_timesheet_hours, user_user_rate, user_prop_target, (user_user_rate * (1 - user_prop_target) * user_timesheet_hours) FROM intranet_user_details WHERE (user_user_added < $end) AND (user_user_ended > $start OR user_user_ended = 0)";
-			
-			
-			
-			$result_staff = mysql_query($sql_staff, $conn) or die(mysql_error());
-			$weekly_cost = 0;
-			//$start_print = date ("d M Y", $start); $pdf->Ln(5); $pdf->Cell(0,4,$start_print,1,1); $pdf->MultiCell(0,5,$sql_staff); // remove
-			unset($array_total_cost);
-			while ($array_staff = mysql_fetch_array($result_staff)) {
-				$user_id = $array_staff['user_id'];
-				$user_timesheet_hours = $array_staff['user_timesheet_hours'];
-				$user_user_rate = $array_staff['user_user_rate'];
-				$user_prop_target = $array_staff['user_prop_target'];
-				$this_user = (($user_timesheet_hours * $user_user_rate) * ( 1 - $user_prop_target));
-				$weekly_cost = $weekly_cost + $this_user;
-				
-				//$weekly_cost = $weekly_cost + $array_staff['(user_user_rate * (1 - user_prop_target) * user_timesheet_hours)'];
-				
-				//$array_total_cost[] = $this_user; //remove
-							
-				//$print = $user_id . ": " . round ($this_user); $pdf->Cell(15,4,$print,1,0); // remove
-				
-			}
-			
-			//$pdf->MultiCell(0,5,$sql_staff);
-			
-			//$weekly_cost = array_sum($array_total_cost); //remove
-			
-			return($weekly_cost);
-			
-		}
-		
 	//$test = StaffCost($current_time,"");
 		
 	$x = 0;
 	$y = $pdf->GetY() + 5;
 	$pdf->SetXY($x,$y);
 	
-	
-	//$pdf->MultiCell(0,5,$test);
-	
-		$pdf->SetFont('Helvetica','B',6);
-		$pdf->Cell(0,5,'',0,1,L);
-		$pdf->Cell(40,5,"Target Staff Costs",0,0,L);
-		$pdf->SetFont('Helvetica','',6);
-		$beginweek = BeginWeek($current_time);
-		while ($x <= 220) {
-			$x = $x + $colwidth;
-			$total = "£" . number_format ( StaffCost($beginweek,"target") );
-			$pdf->Cell($colwidth,3,$total,0,0,R);
-			$beginweek = $beginweek + 604800;
-		}
 		
 	if ($pdf->GetY() > 170) { $pdf->addPage(L); DrawGrid(); }
 
 		
 	$x = 0;
 
-	$pdf->SetFont('Helvetica','B',6);
-		$pdf->Cell(0,5,'',0,1,L);
-		$pdf->Cell(40,5,"Actual Staff Costs",0,0,L);
-		$pdf->SetFont('Helvetica','',6);
 		$beginweek = BeginWeek($current_time);
 		$staffcost_1 = array();
 		while ($x <= 220) {
 			$x = $x + $colwidth;
 			$staffcost = StaffCost($beginweek);
-			$total = "£" . number_format ( $staffcost );			
-			$pdf->Cell($colwidth,3,$total,0,0,R);
 			$staffcost_1[] = $staffcost;
 			$beginweek = $beginweek + 604800;
 		}	
 
-	if ($pdf->GetY() > 170) { $pdf->addPage(L); DrawGrid(); }
-		
-	$x = 0;
-	$y = $pdf->GetY() + 5;
-	$pdf->SetXY($x,$y);
-		
+	
 	// Fees minus costs
 	
-		$pdf->SetFont('Helvetica','B',6);
-		$pdf->Cell(0,5,'',0,1,L);
-		$pdf->Cell(40,5,"Actual surplus",0,0,L);
-		$pdf->SetFont('Helvetica','',6);
-		$arrayname = 0;
+		$counter = 0;
 		$weekdiff_array = array();
 		while ($x <= 220) {
 			$x = $x + $colwidth;
-			$weekdiff = $array_total[$arrayname] -  $staffcost_1[$arrayname];
+			$weekdiff = $array_total[$counter] -  $staffcost_1[$counter];
 			$weekdiff_array[] = $weekdiff;
-			if ($weekdiff < 0) { $pdf->SetTextColor(255,0,0); } else { $pdf->SetTextColor(0,0,0); }
-			$total = "£" . number_format ( $weekdiff );
-			$pdf->Cell($colwidth,5,$total,0,0,R);
-			$arrayname++;
-		}
-		
-	if ($pdf->GetY() > 170) { $pdf->addPage(L); DrawGrid(); }
-		
-		$x = 0;
-	$y = $pdf->GetY();
-	$pdf->SetXY($x,$y);
-		
-	// Profits
-		$pdf->SetTextColor(0);
-		$pdf->SetFont('Helvetica','B',6);
-		$pdf->Cell(0,5,'',0,1,L);
-		$pdf->Cell(40,5,"Target Profit",0,0,L);
-		$pdf->SetFont('Helvetica','',6);
-		$counter = 0;
-		$array_grossprofit = array();
-		while ($x <= 220) {
-			$x = $x + $colwidth;
-			$array_grossprofit[] = $array_profit[$counter] - $array_total[$counter];
-			$total = "£" . number_format ( $array_profit[$counter] - $array_total[$counter] );
-			$pdf->Cell($colwidth,5,$total,0,0,R);
-			$counter++;
-		}
-
-		if ($pdf->GetY() > 170) { $pdf->addPage(L); DrawGrid(); }
-		
-		$x = 0;
-	$y = $pdf->GetY();
-	$pdf->SetXY($x,$y);
-		
-		// Net Profit
-		$pdf->SetTextColor(0);
-		$pdf->SetFont('Helvetica','B',8);
-		$pdf->Cell(0,5,'',0,1,L);
-		$pdf->Cell(40,5,"Actual Profit",0,0,L);
-		$pdf->SetFont('Helvetica','B',6);
-		$counter = 0;
-		$array_netprofit = array();
-		while ($x <= 220) {
-			$x = $x + $colwidth;
-			$total = $weekdiff_array[$counter] + ($array_profit[$counter] - $array_total[$counter]);
-			$array_netprofit[] = $total;
-			if ($total < 0) { $pdf->SetTextColor(255,0,0); } else { $pdf->SetTextColor(0,0,0); }
-			$total = "£" . number_format ( $total ) ;
-			$pdf->Cell($colwidth,5,$total,0,0,R);
 			$counter++;
 		}
 		
+		$staffcost_1 = CostBar($staffcost_1,0,0,"Staff Costs",$colwidth,0);
 		
+		CostBar($array_total_fee_secured,0,0,"Secured Fee",$colwidth,0);
+		CostBar($array_total_profit_secured,0,$staffcost_1,"Secured Profit",$colwidth,0);
+		
+		$weekdiff_array = CostBar($array_total,0,$staffcost_1,"Surplus",$colwidth,0);
+		$array_grossprofit = CostBar($array_profit,0,$array_total,"Target Profit",$colwidth,0);
+		$array_netprofit = CostBar($weekdiff_array,$array_profit,$array_total,"Actual Profit",$colwidth,1);
+	
+				
 		// List all of the upcoming holidays for each person
 		$pdf->addPage(L); DrawGrid();
 		
@@ -517,28 +490,7 @@ DrawGrid();
 		$x = 10;
 		$y = $pdf->GetY() + 15;
 		$pdf->SetXY($x,$y);
-		
-		
-		
-function CheckHols($date, $user_id, $start) {
-	
-	GLOBAL $conn;
-
-				$sql_days = "SELECT holiday_datestamp FROM intranet_user_holidays WHERE holiday_user = $user_id AND holiday_timestamp > $start ORDER BY holiday_timestamp";
-				$result_days = mysql_query($sql_days, $conn) or die(mysql_error());				
-				$array_print = array();
 				
-				while ($array_days = mysql_fetch_array($result_days)) {
-					
-					$array_print[] = $array_days['holiday_datestamp'];					
-					
-				}
-				
-		if (in_array($date,$array_print)) { return "yes"; }
-
-}
-		
-		
 		DrawGrid();
 		
 		$pdf->SetDrawColor(100,100,100);
@@ -728,4 +680,3 @@ $pdf->Output($file_name,I);
 
 
 }
-?>

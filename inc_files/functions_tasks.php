@@ -33,6 +33,54 @@ function TaskUncomplete($task_id) {
 	
 }
 
+function MiniTaskList($user_id) {
+	
+	global $conn;
+	$user_id = intval($user_id);
+	
+	$sql = "SELECT tasklist_notes, tasklist_id, tasklist_due, proj_id, proj_num, proj_name FROM intranet_tasklist LEFT JOIN intranet_projects ON proj_id = tasklist_project WHERE  tasklist_person = " . $user_id . " AND tasklist_percentage < 100 AND tasklist_due < " . time() . " AND tasklist_completed IS NULL ORDER BY tasklist_due DESC LIMIT 5";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	
+	$sql2 = "SELECT tasklist_notes, tasklist_id, tasklist_due, proj_id, proj_num, proj_name FROM intranet_tasklist LEFT JOIN intranet_projects ON proj_id = tasklist_project WHERE  tasklist_person = " . $user_id . " AND tasklist_percentage < 100 AND tasklist_due > " . time() . " AND tasklist_completed IS NULL ORDER BY tasklist_due LIMIT 5";
+	$result2 = mysql_query($sql2, $conn) or die(mysql_error());
+	
+	if (mysql_num_rows($result) > 0 OR mysql_num_rows($result2) > 0) {
+		
+		echo "<table>";
+		
+		echo "<tr><th style=\"width: 60%;\">Task</th><th>Project</th><th style=\"text-align: right;\">Due</th></tr>";
+
+			while ($array = mysql_fetch_array($result)) {
+				
+				if ($array['tasklist_due'] < time()) { $class = "alert_warning"; } else { unset($class); }
+				
+				
+				echo "<tr><td class=\"" . $class . "\"><a href=\"index2.php?page=tasklist_detail&amp;tasklist_id=" . $array['tasklist_id'] . "\">" . $array['tasklist_notes'] . "</a></td><td class=\"" . $class . "\"><a href=\"index2.php?page=project_view&amp;proj_id=" . $array['proj_id'] . "\">" . $array['proj_num'] . "&nbsp;" . $array['proj_name']  . "</a></td><td class=\"" . $class . "\" style=\"text-align: right;\"><a href=\"index2.php?page=datebook_view_day&amp;timestamp=" . $array['tasklist_due'] . "\">" . TimeFormat($array['tasklist_due'])  . "</a></td></tr>";
+				
+				
+			}
+			
+			while ($array = mysql_fetch_array($result2)) {
+				
+				if ($array['tasklist_due'] < time()) { $class = "alert_warning"; } else { unset($class); }
+				
+				
+				echo "<tr><td class=\"" . $class . "\"><a href=\"index2.php?page=tasklist_detail&amp;tasklist_id=" . $array['tasklist_id'] . "\">" . $array['tasklist_notes'] . "</a></td><td class=\"" . $class . "\"><a href=\"index2.php?page=project_view&amp;proj_id=" . $array['proj_id'] . "\">" . $array['proj_num'] . "&nbsp;" . $array['proj_name']  . "</a></td><td class=\"" . $class . "\" style=\"text-align: right;\"><a href=\"index2.php?page=datebook_view_day&amp;timestamp=" . $array['tasklist_due'] . "\">" . TimeFormat($array['tasklist_due'])  . "</a></td></tr>";
+				
+				
+			}
+			
+		echo "</table>";
+		
+		echo "<p><a href=\"index2.php?page=tasklist_view\" class=\"submenu_bar\">More</a></p>";
+
+	} else {
+		
+		echo "<p>You have no outstanding tasks.</p>";
+		
+	}
+}
+
 function ProjectTasks($proj_id) {
 
 			global $conn;
@@ -61,7 +109,7 @@ function ProjectTasks($proj_id) {
 
 			$current_category = NULL;
 
-			echo "<div class=\"page\"><table summary=\"Outstanding tasks for $proj_num\">";
+			echo "<div class=\"page\"><div id=\"table_tasklist\"><table summary=\"Outstanding tasks for $proj_num\">";
 
 			while ($array = mysql_fetch_array($result)) {
 			  
@@ -73,6 +121,7 @@ function ProjectTasks($proj_id) {
 			$tasklist_due = $array['tasklist_due'];
 			$tasklist_project = $array['tasklist_project'];
 			$tasklist_category = ucwords($array['tasklist_category']);
+			$tasklist_feestage = $array['tasklist_feestage'];
 
 								if ($tasklist_due > 0) { $tasklist_due_date = "Due ".TimeFormat($tasklist_due); } else { $tasklist_due_date = ""; }
 								$tasklist_person = $array['tasklist_person'];
@@ -95,6 +144,8 @@ function ProjectTasks($proj_id) {
 								
 							
 								if ($tasklist_category != $current_category) {
+									
+									if ($current_category) { TaskListAddLine($proj_id,$current_category, $tasklist_feestage); }
 									echo "<tr><th colspan=\"5\">" . $tasklist_category . "&nbsp;<a href=\"pdf_tasklist.php?proj_id=" . $proj_id . "&amp;filter=" . urlencode($tasklist_category) . "\"><img src=\"images/button_pdf.png\" alt=\"Print to PDF\" /></a></th></tr>";
 									$current_category = $tasklist_category;
 								}
@@ -161,8 +212,10 @@ function ProjectTasks($proj_id) {
 								
 								if ($proj_id != $proj_id_repeat) { $counter = 1; unset($proj_id_repeat); } else { $counter++;  }
 			}
+			
+			TaskListAddLine($proj_id,$tasklist_category, $tasklist_feestage);
 				
-			echo "</table></div>";
+			echo "</table></div></div>";
 
 			} else {
 
@@ -172,7 +225,22 @@ function ProjectTasks($proj_id) {
 
 }
 
-function TasklistSummary($user_id) {
+function TaskListAddLine($proj_id,$tasklist_category, $tasklist_feestage) {
+	
+	$proj_id = intval($proj_id);
+	
+	$default_date = DisplayDay ( time() + 1209600 );
+		
+	echo "<tr><form action=\"index2.php?page=tasklist_project&amp;proj_id=" . $proj_id . "\" method=\"post\"><td>New</td><td><input class=\"edittable\" style=\"width: 90%;\" name=\"tasklist_notes\" type=\"text\" /><input name=\"tasklist_category\" type=\"hidden\" value=\"" . $tasklist_category . "\" /><input name=\"tasklist_project\" type=\"hidden\" value=\"" . $proj_id. "\" /><input type=\"hidden\" value=\"tasklist_edit\" name=\"action\" /><input type=\"hidden\" value=\"" . $tasklist_feestage . "\" name=\"tasklist_feestage\" /></td><td><input class=\"edittable\" type=\"date\" name=\"tasklist_due\" value=\"" . $default_date . "\" /></td><td colspan=\"2\">";
+	
+	UserDropdown($_COOKIE[user],"task_user","edittable");
+	
+	echo "</td></form></tr>";
+	
+	
+}
+
+function TasklistSummary($user_id,$proj_id) {
 	
 	global $conn;
 	$user_id = intval($user_id);
@@ -183,13 +251,15 @@ $date_lastweek = time() - 604800;
 
 if ($_GET[order] == "time") { $order = " tasklist_due DESC"; } else { $order = " proj_num, tasklist_due"; }
 
+if (intval($proj_id) > 0) { $proj_id_filter = " AND tasklist_project = " . $proj_id; } else { unset($proj_id_filter); }
+
 if ($_GET[view] == "complete") {
 	
-	$sql = "SELECT * FROM intranet_tasklist, intranet_projects WHERE tasklist_project = proj_id AND tasklist_person = " . $user_id . " AND tasklist_percentage = 100 order by " . $order . "";
+	$sql = "SELECT * FROM intranet_tasklist, intranet_projects WHERE tasklist_project = proj_id AND tasklist_person = " . $user_id . " AND tasklist_percentage = 100 $proj_id_filter order by " . $order . "";
 
 } else {
 	
-	$sql = "SELECT * FROM intranet_tasklist, intranet_projects WHERE tasklist_project = proj_id AND tasklist_person = " . $user_id . " AND tasklist_percentage < 100 order by " . $order . "";
+	$sql = "SELECT * FROM intranet_tasklist, intranet_projects WHERE tasklist_project = proj_id AND tasklist_person = " . $user_id . " AND tasklist_percentage < 100 $proj_id_filter order by " . $order . "";
 
 }
 
@@ -255,7 +325,7 @@ $tasklist_soon = $array['tasklist_due'] - 604800;
 					}
 					
 					echo "<tr><td width=\"5%\" ".$alert."><span class=\"tasklist_id_" . $tasklist_id . "\">";
-					echo $counter.".</span></td><td ".$alert." style=\"width: 50%; \"><span class=\"tasklist_id_" . $tasklist_id . "\">";
+					echo $counter.".</span></td><td ".$alert." width=\"75%\"><span class=\"tasklist_id_" . $tasklist_id . "\">";
 					
 					if ($_GET[order] == "time") { echo "<strong>" . $proj_num . "&nbsp;" . $proj_name . "</strong><br />"; }
 					
@@ -345,7 +415,6 @@ function FeeStageDropDown($proj_id, $current_fee_stage,$proj_id) {
 					
 }
 
-
 function TaskListEditForm($tasklist_id) {
 	
 	global $conn;
@@ -391,34 +460,47 @@ function TaskListEditForm($tasklist_id) {
 
 				}
 				
+				if (intval($tasklist_person) == 0) { $tasklist_person = intval($_COOKIE[user]); }
+				
 				ProjectSubMenu($proj_id,$user_usertype_current,"project_view",1);
 				ProjectSubMenu($proj_id,$user_usertype_current,"project_tasks",2);
 
 				echo "<div>";
 
 				if ($tasklist_project > 0) { $tasklist_select = $tasklist_project; } elseif ($proj_id != NULL) { $tasklist_select = $_GET[proj_id]; }
+				
+				echo "<div>
+							<div class=\"float\">";
 
-				if ($proj_id == 0) {
-					
-					echo "<h3>Select Project</h3>";
+					if ($proj_id == 0) {
+						
+						echo "<h3>Select Project</h3>";
 
-					ProjectSelect($proj_id,"tasklist_project",$disabled);
-					
-				} else {
-					
-					echo "<input type=\"hidden\" name=\"tasklist_project\" value=\"" . $proj_id . "\" />";
-					
-				}
+						ProjectSelect($proj_id,"tasklist_project",$disabled);
+						
+					} else {
+						
+						echo "<input type=\"hidden\" name=\"tasklist_project\" value=\"" . $proj_id . "\" />";
+						
+					}
 
-				echo "</div>";
+				echo "		</div>";
+				
+				
 
 				// Now the description
 
-				echo "<div><h3>Details</h3><textarea name=\"tasklist_notes\" class=\"inputbox\" cols=\"48\" rows=\"4\">$tasklist_notes</textarea></div>";
+				echo "		<div class=\"float\"><h3>Details</h3><textarea name=\"tasklist_notes\" class=\"inputbox\" cols=\"48\" rows=\"4\">$tasklist_notes</textarea>
+				
+							</div>";
+				
+				echo "</div>";
 				
 				//Task completed?
 				
-				echo "<div><input type=\"checkbox\" value=\"" . intval($tasklist_percentage) . "\" name=\"tasklist_percentage\"";
+				echo "<div>";
+				
+				echo "		<div class=\"float\"><h3>Status</h3><input type=\"checkbox\" value=\"" . intval($tasklist_percentage) . "\" name=\"tasklist_percentage\"";
 
 				if (intval($tasklist_percentage) == 100) { echo " checked=\"checked\" "; }
 
@@ -434,33 +516,23 @@ function TaskListEditForm($tasklist_id) {
 
 				}
 
-				echo "<div><h3>Category</h3><input type=\"text\" name=\"tasklist_category\" list=\"tasklist_category\" value=\"" . $tasklist_category . "\" /></div>";
+				echo "		<div class=\"float\"><h3>Category</h3><input type=\"text\" name=\"tasklist_category\" list=\"tasklist_category\" value=\"" . $tasklist_category . "\" /></div>";
 
 				$sql = "SELECT * FROM intranet_user_details ORDER BY user_name_second";
 				$result = mysql_query($sql, $conn) or die(mysql_error());
 
+				echo "</div>";
 				
+				echo "<div>";
 
-				echo "<div><h3>Person Responsible</h3>";
+				echo "		<div class=\"float\"><h3>Person Responsible</h3>";
 
-				echo "<select name=\"tasklist_person\" class=\"inputbox\">";
+				UserDropdown($tasklist_person,'tasklist_person');
 
-				while ($array = mysql_fetch_array($result)) {
-				$user_name_first = $array['user_name_first'];
-				$user_name_second = $array['user_name_second'];
-				$user_id = $array['user_id'];
-
-				if ($tasklist_person > 0) { $tasklist_user_select = $tasklist_person; } else { $tasklist_user_select = $_COOKIE[user]; }
-
-				echo "<option value=\"$user_id\"";
-				if ($tasklist_user_select == $user_id) { echo " selected"; }
-				echo ">".$user_name_first."&nbsp;".$user_name_second."</option>";
-				}
-
-				echo "</select></div>";
+				echo "		</div>";
 
 
-				echo "<div><h3>Due Date</h3>";
+				echo "		<div class=\"float\"><h3>Due Date</h3>";
 
 				$nowtime = time();
 				$nowtime_week_pre = $nowtime;
@@ -477,18 +549,23 @@ function TaskListEditForm($tasklist_id) {
 				echo "<input type=\"date\" name=\"tasklist_due\" value=\"" . $date_due . "\" />";
 				echo "<p class=\"minitext\">Default task deadline is 2 weeks from today.</p>";
 
+				echo "		</div>";
+				
 				echo "</div>";
+				
+				echo "<div>";
 
-				echo "<div><h3>Accessible To</h3>";
-				UserAccessType("tasklist_access",$user_usertype,$tasklist_access,$maxlevel);
+				echo "		<div class=\"float\"><h3>Accessible To</h3>";
+							UserAccessType("tasklist_access",$user_usertype,$tasklist_access,$maxlevel);
+				echo "		</div>";
+				
+				echo "		<div class=\"float\"><h3>Comment</h3><textarea name=\"tasklist_comment\" cols=\"48\" rows=\"6\">$tasklist_comment</textarea></div>";
+				echo "		<input type=\"hidden\" name=\"action\" value=\"tasklist_edit\" />";
 				echo "</div>";
-
-				echo "<div><h3>Comment</h3><textarea name=\"tasklist_comment\" cols=\"48\" rows=\"6\">$tasklist_comment</textarea></div>";
-
-
-				echo "<div><input type=\"hidden\" name=\"action\" value=\"tasklist_edit\" />";
-				echo "<input type=\"submit\" value=\"Submit\" /></div>";
-
+				
+				echo "<div>";
+				echo "		<div class=\"float\"><input type=\"submit\" value=\"Submit\" /></div>";
+				echo "</div>";
 
 				echo "</form>";
 
