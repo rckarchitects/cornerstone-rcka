@@ -72,6 +72,10 @@ function Tender_Form($tender_id) {
 	
 	echo "<div><p>Tender Description</p><p><textarea name=\"tender_description\" class=\"mainform\"/>$tender_description</textarea></p></div>";
 	
+	echo "<div><p>Linked to</p><p>";
+		TenderSelect($array['tender_linked']);
+	echo "</p></div>";
+	
 	echo "<div><p>Tender Source</p><p><input type=\"text\" value=\"$tender_source\" name=\"tender_source\" maxlength=\"500\" size=\"" . strlen($tender_source) . "\" class=\"mainform\" /></p></div>";
 	
 	echo "<div><p>Tender Instructions</p><p><textarea name=\"tender_instructions\" class=\"mainform\"/>$tender_instructions</textarea></p></div>";
@@ -131,7 +135,30 @@ if ($tender_id > 0) {
 	Tender_Form($tender_id);
 }
 
-
-
-
-?>
+function TenderSelect($tender_linked) {
+	
+	global $conn;
+	
+	$sql = "SELECT * FROM intranet_tender WHERE tender_submitted = 1 ORDER BY tender_date DESC";
+	
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	
+	if (mysql_num_rows($result) > 0) {
+		
+		echo "<select name=\"tender_linked\">";
+		
+		echo "<option value=\"\">- None -</option>";
+	
+			while ($array = mysql_fetch_array($result)) {
+				
+				if ($tender_linked == $array['tender_id']) { $selected = "selected=\"selected\""; } else { unset ($selected); }
+			
+				echo "<option value=\"". $array['tender_id'] . "\" " . $selected . ">" . $array['tender_name'] . " (" . $array['tender_client'] .")</option>";
+			
+			}
+			
+		echo "</select>";
+	
+	}
+	
+}

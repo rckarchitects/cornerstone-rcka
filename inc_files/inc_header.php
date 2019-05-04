@@ -95,7 +95,28 @@
 					var popup = document.getElementById(\"myPopup\");
 					popup.classList.toggle(\"show\");
 				}
-				</script>";
+				</script>
+				
+				
+				<script type=\"text/javascript\">
+				function ShowProjectSwitcher() {
+					var HideDIV = document.getElementById(\"project_title\");
+					var ShowDIV = document.getElementById(\"project_switcher\");
+					HideDIV.style.display = \"none\";
+					ShowDIV.style.display = \"block\";
+				}
+				</script>
+				
+				<script type=\"text/javascript\">
+				function HideProjectSwitcher() {
+					var ShowDIV = document.getElementById(\"project_title\");
+					var HideDIV = document.getElementById(\"project_switcher\");
+					HideDIV.style.display = \"none\";
+					ShowDIV.style.display = \"block\";
+				}
+				</script>
+				
+				";
 				
 		if (($_GET[page] == "tasklist_project" OR $_GET[page] == "tasklist_view") && $_GET[view] != "complete") {
 				

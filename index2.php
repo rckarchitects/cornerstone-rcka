@@ -72,7 +72,7 @@ Logo($settings_style,$settings_name);
 // Check for any upcoming holidays
 
 
-if ($_GET[page] == NULL) {
+if (!$_GET[page]) {
 	
 	$today = TimeFormatDay(time());
 

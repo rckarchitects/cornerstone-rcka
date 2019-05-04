@@ -91,7 +91,7 @@ function ProjectTasks($proj_id) {
 
 			$date_lastweek = time() - 604800;
 
-			if ($_GET[show] == "user") { $user_tasks = "AND tasklist_person = ".$user_id_current; } else { $user_tasks = NULL; }
+			if ($_GET[show] == "user") { $user_tasks = "AND tasklist_person = ".$_COOKIE[user]; } else { $user_tasks = NULL; }
 
 			if ($_GET[view] == "complete") {
 			$filter = " AND tasklist_percentage = 100 ";

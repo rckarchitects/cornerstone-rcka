@@ -1305,7 +1305,7 @@ function ProjectSwitcher ($page, $proj_id, $proj_active, $proj_fee) {
 					$sql_switcher = "SELECT proj_id, proj_name, proj_num, proj_active FROM intranet_projects $project_filter ORDER BY proj_active DESC, proj_num DESC";
 					
 					$result_switcher = mysql_query($sql_switcher, $conn) or die(mysql_error());
-					echo "<select onchange=\"this.form.submit()\" name=\"proj_id\">";
+					echo "<select onchange=\"this.form.submit()\" name=\"proj_id\" onblur=\"HideProjectSwitcher()\">";
 					while ($array_switcher = mysql_fetch_array($result_switcher)) {
 					
 						if (!$start && $array_switcher['proj_active'] == 1) { echo "<option disabled=\"disabled\">Active Projects</option>"; $start = 1; }
@@ -1847,7 +1847,8 @@ function DisplayDay($time) {
 
 }
 
-function DateList($impending_only) {
+
+function DateList_Important($impending_only) {
 	
 
 		global $conn;
@@ -1860,6 +1861,7 @@ function DateList($impending_only) {
 
 		$alert = time() + $weeks * 60 * 60 * 24 * 7;
 		$alert = date("Y-m-d",$alert);
+		
 
 		if ($impending_only == 1) {
 		
@@ -1881,40 +1883,126 @@ function DateList($impending_only) {
 	
 		if (mysql_num_rows($result) > 0 ) {
 	
+			while ($array = mysql_fetch_array($result)) {
+				
+				$item_edit = "index2.php?page=date_edit&amp;date_id=" . $array['date_id'];
+				$item_project = "<a href=\"index2.php?page=project_view&amp;proj_id=" . $array['proj_id'] . "\">" . GetProjectName($array['proj_id'])  . "</a>";
+				
+				if ($array['date_notes']) {
+					$item_description = "<a href=\"index2.php?page=date_list&amp;date_id=" . $array['date_id'] . "\">" . $array['date_description'] . "</a>";
+				} else {
+					$item_description = $array['date_description'];
+				}
+
+				$output_array[] = array($array['date_day'],$item_project,$array['date_category'],$item_description,$array['date_notes'],$array_date_edit,$item_edit);
+	
+			}
+	
+		}
+		
+		return $output_array;
+	
+	}
+	
+	
+function DateList_Tenders($impending_only) {
+	
+	global $conn; 
+	
+		if ($impending_only == 1) {
+			
+			$impending = time() + 1209600;
+		
+			$sql = "SELECT * FROM intranet_tender WHERE tender_date > " . time() . " AND tender_date < $impending AND tender_submitted != 1 AND tender_result != 3 ORDER BY tender_date DESC";
+			
+		} elseif ($impending_only == 2) { 
+		
+			$sql = "SELECT * FROM intranet_tender WHERE tender_date < " . time() . " AND tender_submitted != 1 AND tender_result != 3 ORDER BY tender_date DESC";
+
+		} else {
+			
+			$sql = "SELECT * FROM intranet_tender WHERE tender_date > " . time() . " AND tender_submitted != 1 AND tender_result != 3 ORDER BY tender_date";
+			
+		}
+		
+		$result = mysql_query($sql, $conn) or die(mysql_error());
+	
+		if (mysql_num_rows($result) > 0 ) {
+	
+			while ($array = mysql_fetch_array($result)) {
+				
+				$date_day = CreateDateFromTimestamp($array['tender_date']) ;
+				$item_edit = "index2.php?page=tender_edit&amp;tender_id=" . $array['tender_id'];
+				$tender_name = "<a href=\"index2.php?page=tender_view&amp;tender_id=" . $array['tender_id'] . "\">" . $array['tender_name'] . "</a>";
+				
+				$output_array[] = array($date_day,$array['proj_id'],"Tender Deadline",$tender_name,$array['tender_description'],$array_date_edit,$item_edit);
+	
+			}
+	
+		}
+		
+		return $output_array;
+		
+}
+	
+	
+function DateList($impending_only) {
+	
+	$weeks = 2;
+	
+		$array_important = DateList_Important($impending_only);
+		$array_tenders = DateList_Tenders($impending_only);
+		
+		$array_dates = array_merge($array_important,$array_tenders);
+		
+		if ($impending_only == 2) { array_multisort($array_dates,SORT_DESC); }
+		else { array_multisort($array_dates); }
+		
+		
+		global $user_usertype_current;
+		
+		//print_r($array_dates);
+		
+		//echo "<p>Array: " . $array_dates[2][0] . "</p>";
+		
+	
+		if (count($array_dates) > 0 ) {
+	
 			if ($impending_only == 1) { echo "<h2>Next " . $weeks . " Weeks</h2>";  }
 			elseif ($impending_only == 2) {  echo "<h2>Past Dates</h2>"; }
-			else { echo "<h2>Future Dates</h2>"; }		
+			else { echo "<h2>Future Dates</h2>"; }
 
 			if ($impending_only != 1) { ProjectSubMenu('',$user_usertype_current,"date_list"); }
 
 			echo "<table>";
 	
 			echo "<tr><th>Description</th><th>Date</th><th>Project</th><th colspan=\"2\" class=\"HideThis\">Category</th></th>";
+			
+			$counter = 1;
 	
-			while ($array = mysql_fetch_array($result)) {
-				
-				if ($array['date_day'] == date("Y-m-d",time())) {
+			foreach ($array_dates AS $date_item) {
+							
+				if ($date_item[0] == date("Y-m-d",time())) {
 					$style="alert_warning";
-				} elseif (((DisplayDate($array['date_day']))) < (time() + 604800) && (DisplayDate($array['date_day']) > (time()))) {
+				} elseif (((DisplayDate($date_item[0]))) < (time() + 604800) && (DisplayDate($date_item[0]) > (time()))) {
 					$style="alert_careful";
 				} else {
 					unset($style);
 				}
 				
-				if ((intval($_GET[date_id]) == $array['date_id']) && $array['date_notes']) { $embolden = "font-weight: bold;"; } else { unset($embolden); }
+				if ((intval($_GET[date_id]) == $date_item[0]) && $date_item[4]) { $embolden = "font-weight: bold;"; } else { unset($embolden); }
 	
-				echo "<tr><td class=\"$style\" style=\"width: 25%; $embolden\">";
-				if ($array['date_notes']) { echo "<a href=\"index2.php?page=date_list&amp;date_id=" . $array['date_id']  . "\">" . $array['date_description'] . "&nbsp;&#8681;</a>"; } else { echo $array['date_description']; }
-				echo "</td><td class=\"$style\"  style=\"width: 25%; $embolden\">" . TimeFormat ( DisplayDate($array['date_day']) ) . "</td><td class=\"$style\"  style=\"width: 25%; $embolden\"><a href=\"index2.php?page=project_view&amp;proj_id=" . $array['proj_id'] . "\">" . $array['proj_num'] . " " . $array['proj_name'] . "</a></td>";
-				if ($array['date_day'] == $_COOKIE[user] OR $user_usertype_current > 3) {
-					echo "<td class=\"$style HideThis\" style=\"$embolden\">" . $array['date_category'] . "</td><td style=\"text-align: right;\" class=\"$style HideThis\"><a href=\"index2.php?page=date_edit&amp;date_id=" . $array['date_id'] . "\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a></td>";
-				} else {
-					echo "<td colspan=\"2\" class=\"$style HideThis\" style=\"$embolden\">" . $array['date_category'] . "</td></td></tr>";
-				}
+				echo "<tr><td class=\"$style\" style=\"width: 25%; $embolden\">". $date_item[3];
 
-				if ((intval($_GET[date_id]) == $array['date_id']) && $array['date_notes']) { echo "</table><div class=\"page\">" . $array['date_notes'] . "</div><table>"; }
+				if ($date_item[4]) { echo "<a href=\"index2.php?page=date_list&amp;filter=" . intval($_GET[filter]) . "&amp;date_id=" . $counter . "\">&nbsp;&#8681;</a>"; }
 
-	
+				echo "</td><td class=\"$style\"  style=\"width: 25%; $embolden\"><a href=\"index2.php?page=datebook_view_day&amp;timestamp=" . DisplayDate($date_item[0]) . "\">" . TimeFormat ( DisplayDate($date_item[0]) ) . "</a></td><td class=\"$style\"  style=\"width: 25%; $embolden\">" . $date_item[1] . "</td>";
+					echo "<td class=\"$style HideThis\" style=\"$embolden\">" . $date_item[2] . "</td><td style=\"text-align: right;\" class=\"$style HideThis\"><a href=\"" . $date_item[6] . "\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a></td>";
+
+
+				if ((intval($_GET[date_id]) == $counter) && $date_item[4] && $_GET[date_id]) { echo "</table><div class=\"page\">" . $date_item[4] . "</div><table>"; }
+				
+				$counter++;
 	
 			}
 	
@@ -1925,6 +2013,7 @@ function DateList($impending_only) {
 		}	
 	
 	}
+
 
 function ListAvailableImages($directory) {
 	
@@ -2537,7 +2626,10 @@ function TenderList() {
 				if ($tender_submitted == 1) { $submitted_total++; }
 				if ($tender_result == 1) { $successful_total++; }
 				
-				if ((($tender_date - $nowtime) < 86400) && (($tender_date - $nowtime) > 0)  && $tender_result != 3) {
+				
+				if (($tender_date > time()) && $tender_submitted == 1) {
+					$style = "style=\"background: rgba(0,0,0,0.3); border: 1px solid rgba(0,0,0,0.8);\"";
+				} elseif ((($tender_date - $nowtime) < 86400) && (($tender_date - $nowtime) > 0)  && $tender_result != 3) {
 					$style = "style=\"background: rgba(255,130,0,0.5); border: solid 1px rgba(255,130,0,0.8);\"";
 				} elseif ((($tender_date - $nowtime) < 604800) && (($tender_date - $nowtime) > 0) && $tender_result != 3) {
 					$style = "style=\"background: rgba(255,130,0,0.5); border: solid 1px rgba(255,130,0,0.8);\"";
@@ -2551,7 +2643,6 @@ function TenderList() {
 					$style = "style=\"background: rgba(0,0,0,0.3); border: 1px solid rgba(0,0,0,0.8);\"";
 				} elseif (($tender_date < time()) OR $tender_result == 3) {
 					$style = "style=\"background: rgba(0,0,0,0.1); border: solid 1px rgba(0,0,0,0.25); color: #ccc;\"";
-
 				} else {
 					$style = "style=\"background: rgba(0,0,0,0.3); border: 1px solid rgba(0,0,0,0.8);\"";
 				}

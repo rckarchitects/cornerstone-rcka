@@ -45,6 +45,31 @@ function TruncateLongText($text, $maxlength) {
 	
 }
 
+function EstablishFirstCategory ($category) {
+	
+	if (!$category) {
+	
+			global $conn;
+			
+			$sql = "SELECT media_category, COUNT(media_category) FROM intranet_media GROUP BY media_category ORDER BY COUNT(media_category) DESC LIMIT 1";
+			$result = mysql_query($sql, $conn);
+			if (mysql_num_rows($result) > 0) {
+				
+				$array = mysql_fetch_array($result);
+				
+				$output = $array['media_category'];
+				
+			}
+			
+	} else {
+		
+		$output = addslashes($category);
+	}
+	
+	return $output;
+	
+}
+
 function MediaUploadForm() {
 	
 	
@@ -155,6 +180,7 @@ function MediaBrowse($filter) {
 	
 	if ($_GET[category] && $filter) { $filter = $filter . " AND media_category = '" . html_entity_decode($_GET[category]) . "'"; }
 	elseif ($_GET[category]) { $filter = " WHERE media_category = '" . html_entity_decode($_GET[category]) . "'"; }
+	elseif (!$_GET[category]) { $filter = "WHERE media_category = '" . EstablishFirstCategory ($_GET[category]) . "'"; }
 	
 	
 	

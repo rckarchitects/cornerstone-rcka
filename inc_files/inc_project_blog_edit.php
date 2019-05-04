@@ -155,7 +155,11 @@ function BlogEdit($blog_id,$proj_id,$status) {
 						
 						echo "<h3>Project</h3><p>";
 
-							ProjectSelect($blog_proj,"blog_proj");
+							if ($blog_proj) {
+								ProjectSelect($blog_proj,"blog_proj",1);
+							} else {
+								ProjectSelect($blog_proj,"blog_proj");
+							}
 							
 						echo "</p>";	
 							

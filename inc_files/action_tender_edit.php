@@ -17,6 +17,8 @@ $tender_result = intval($_POST['tender_result']);
 $tender_submitted = intval($_POST['tender_submitted']);
 $tender_notes = CleanUp($_POST['tender_notes']);
 
+if (intval($_POST['tender_linked']) == 0 ) { $tender_linked = "NULL"; } else { $tender_linked = intval($_POST['tender_linked']); }
+
 // Construct the MySQL instruction to add these entries to the database
 
 if ($tender_id == 0) {
@@ -34,7 +36,8 @@ if ($tender_id == 0) {
 		tender_instructions,
 		tender_result,
 		tender_submitted,
-		tender_notes
+		tender_notes,
+		tender_linked
 		) values (
 		'NULL',
 		'$tender_name',
@@ -48,7 +51,8 @@ if ($tender_id == 0) {
 		'$tender_instructions',
 		$tender_result,
 		$tender_submitted,
-		'$tender_notes'
+		'$tender_notes',
+		$tender_linked
 		)";
 		
 		$tender_id = mysql_insert_id();
@@ -72,7 +76,8 @@ if ($tender_id == 0) {
 		tender_instructions = '$tender_instructions',
 		tender_result = $tender_result,
 		tender_submitted = $tender_submitted,
-		tender_notes = '$tender_notes'
+		tender_notes = '$tender_notes',
+		tender_linked = $tender_linked
 		WHERE
 		tender_id = $tender_id
 		LIMIT 1";

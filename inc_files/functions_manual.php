@@ -185,6 +185,8 @@ function ManualIndexView() {
 		elseif ($current_stage != $array['group_id']) {
 			echo "<tr><td colspan=\"2\"><h3>" . $array['group_code'] . "&nbsp;" . $array['group_description'] . "</h3></td></tr>"; $current_stage = $array['group_id'];
 		}
+		
+		elseif ($array['manual_section'] != $current_section) { echo "<tr><td colspan=\"2\"><strong>" . $array['manual_section'] . "</strong></td></tr>"; $current_section = $array['manual_section']; }
 			
 		echo "<tr><td><a href=\"index2.php?page=manual_page&amp;manual_id=" . $array['manual_id'] . "\">" . $array['manual_title'] . "</a></td><td style=\"width: 20%; text-align: right;\">" . TimeFormat($array['manual_updated']) . "</td></tr>";
 	}
