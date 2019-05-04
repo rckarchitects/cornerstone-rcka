@@ -1819,7 +1819,7 @@ GLOBAL $conn;
 		$user_active_test = $user_active; }
 		
             echo "<option value=\"$user_id\"";
-            if ($user_id == $input_user) { echo " selected"; }
+            if ($user_id == $input_user) { echo "selected=\"selected\""; }
             echo ">".$user_name_first."&nbsp;".$user_name_second."</option>";
 		}
 
@@ -2622,6 +2622,7 @@ function TenderList() {
 				$tender_keywords = $array['tender_keywords'];
 				$tender_submitted = $array['tender_submitted'];
 				$tender_result = $array['tender_result'];
+				$tender_responsible = $array['tender_responsible'];
 				
 				if ($tender_submitted == 1) { $submitted_total++; }
 				if ($tender_result == 1) { $successful_total++; }
@@ -2658,6 +2659,8 @@ function TenderList() {
 				
 				echo "<div class=\"bodybox\" $style><a href=\"index2.php?page=tender_edit&tender_id=$tender_id\" style=\"float: right; margin: 0 0 5px 5px;\"><img src=\"images/button_edit.png\" alt=\"Edit Tender\" /></a><p><strong><a href=\"index2.php?page=tender_view&amp;tender_id=$tender_id\">$tender_name</a></strong>$tender_type</p>";
 				echo "<p>Deadline: ". date("d M Y",$tender_date) . $deadline . "<br /><span class=\"minitext\">" . $tender_client . "</span></p>";
+				
+				if ($tender_responsible) { echo "<p>Responsible: " . UserDetails($tender_responsible) . "</p>"; }
 				
 				$time_line = $tender_date;
 				

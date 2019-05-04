@@ -43,6 +43,9 @@ $array = mysql_fetch_array($result);
 		$tender_description = $array['tender_description'];
 		$tender_instructions = $array['tender_instructions'];
 		$tender_notes = $array['tender_notes'];
+		$tender_responsible = $array['tender_responsible'];
+		$tender_added_by = $array['tender_added_by'];
+		$tender_added_time = $array['tender_added_time'];
 		
 		if ($tender_type) { $tender_name = $tender_name . "&nbsp;(" . $tender_type . ")"; }
 
@@ -69,6 +72,10 @@ $array = mysql_fetch_array($result);
 			if ($tender_client != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<h3>Client</h3><p>". $tender_client . "</p>"; }
 			
 			if ($tender_source != NULL AND $_GET[edit_question] == NULL AND $_GET[edit_answer] == NULL) { echo "<h3>Source of Tender</h3><p>". TextPresent($tender_source) . "</p>"; }
+			
+			if ($tender_responsible) { echo "<h3>Responsible</h3><p>" . UserDetails($tender_responsible) . "</p>"; }
+			
+			if ($tender_added_by && $tender_added_time) { echo "<h3>Added</h3><p>By " . UserDetails($tender_added_by) . ", on " . TimeFormatDetailed($tender_added_time) . "</p>"; }
 			
 			if ($tender_notes && !$_GET[edit_question] && !$_GET[edit_answer]) { echo "<h3>Notes</h3><p>". nl2br($tender_notes) . "</p>"; }
 

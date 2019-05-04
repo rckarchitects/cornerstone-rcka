@@ -28,6 +28,7 @@ function Tender_Form($tender_id) {
 		$tender_result = $array['tender_result'];
 		$tender_submitted = $array['tender_submitted'];
 		$tender_notes = $array['tender_notes'];
+		$tender_responsible = $array['tender_responsible'];
 		
 		echo "<h2>" . $tender_name . "</h2>";
 		
@@ -38,7 +39,7 @@ function Tender_Form($tender_id) {
 		$tender_date_day = CreateDateFromTimestamp($tender_date);
 		$tender_date_time = CreateTimeFromTimestamp($tender_date);
 	
-	
+		if (!$tender_responsible) { $tender_responsible = intval($_COOKIE[user]); }
 	
 	$tender_type_array = array("","Invitation to Tender","Pre-Qualification Questionnaire","Expression of Interest","Design Competition");
 	sort($tender_type_array);
@@ -48,7 +49,9 @@ function Tender_Form($tender_id) {
 	
 	echo "<div><p>Name of Tender</p><p><input type=\"text\" value=\"$tender_name\" name=\"tender_name\" maxlength=\"500\" size=\"" . strlen($tender_name) . "\" required=\"required\" class=\"mainform\" /></p></div>";
 	
-	echo "<div><p>Name of Client</p><p><input type=\"text\" value=\"$tender_client\" name=\"tender_client\" maxlength=\"100\" size=\"" . strlen($tender_client) . "\" required=\"required\" class=\"mainform\" /></p></div>";
+	echo "<div><p>Name of Client</p><p><input type=\"text\" value=\"$tender_client\" name=\"tender_client\" maxlength=\"100\" size=\"" . strlen($tender_client) . "\" required=\"required\" class=\"mainform\" list=\"tender_client\" /></p></div>";
+	
+	DataList('tender_client','intranet_tender');
 	
 	echo "<div><p>Submission Time &amp; Date</p><p><input type=\"time\" name=\"tender_date_time\" value=\"$tender_date_time\" />&nbsp;<input type=\"date\" value=\"$tender_date_day\" name=\"tender_date_day\" required=\"required\" /></p></div>";
 	
@@ -93,11 +96,15 @@ function Tender_Form($tender_id) {
 			<input type=\"radio\" name=\"tender_result\" value=\"1\" $select1 />&nbsp;Stage Successful&nbsp;
 			<input type=\"radio\" name=\"tender_result\" value=\"3\" $select3 />&nbsp;Stage Declined&nbsp;
 			</p></div>";
+			
+	echo "	<div><p>";
+			UserDropdown($tender_responsible,"tender_responsible");
+	echo "	</p></div>";
 	
 	if ($tender_submitted == 1) { $select = "checked=\"checked\""; } else { unset($select); } 
 	echo "<div><p><input type=\"checkbox\" name=\"tender_submitted\" value=\"1\" $select />&nbsp;Tender Submitted</p></div>";
 	
-	echo "<div><p><input type=\"hidden\" value=\"tender_edit\" name=\"action\" /><input type=\"hidden\" value=\"$tender_id\" name=\"tender_id\" /><input type=\"Submit\" /></p></div>";
+	echo "<div><p><input type=\"hidden\" value=\"tender_edit\" name=\"action\" /><input type=\"hidden\" value=\"" . $_COOKIE[user] . "\" name=\"tender_added_by\" /><input type=\"hidden\" value=\"$tender_id\" name=\"tender_id\" /><input type=\"Submit\" /></p></div>";
 	
 	echo "</form>";
 

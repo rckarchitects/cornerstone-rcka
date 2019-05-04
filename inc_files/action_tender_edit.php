@@ -16,6 +16,9 @@ $tender_instructions = CleanUp($_POST['tender_instructions']);
 $tender_result = intval($_POST['tender_result']);
 $tender_submitted = intval($_POST['tender_submitted']);
 $tender_notes = CleanUp($_POST['tender_notes']);
+$tender_added_time = time();
+$tender_added_by = intval($_POST['tender_added_by']);
+$tender_responsible = intval($_POST['tender_responsible']);
 
 if (intval($_POST['tender_linked']) == 0 ) { $tender_linked = "NULL"; } else { $tender_linked = intval($_POST['tender_linked']); }
 
@@ -37,7 +40,10 @@ if ($tender_id == 0) {
 		tender_result,
 		tender_submitted,
 		tender_notes,
-		tender_linked
+		tender_linked,
+		tender_added_time,
+		tender_added_by,
+		tender_responsible
 		) values (
 		'NULL',
 		'$tender_name',
@@ -52,7 +58,10 @@ if ($tender_id == 0) {
 		$tender_result,
 		$tender_submitted,
 		'$tender_notes',
-		$tender_linked
+		$tender_linked,
+		$tender_added_time,
+		$tender_added_by,
+		$tender_responsible
 		)";
 		
 		$tender_id = mysql_insert_id();
@@ -77,7 +86,10 @@ if ($tender_id == 0) {
 		tender_result = $tender_result,
 		tender_submitted = $tender_submitted,
 		tender_notes = '$tender_notes',
-		tender_linked = $tender_linked
+		tender_linked = $tender_linked,
+		tender_added_time = $tender_added_time,
+		tender_added_by = $tender_added_by,
+		tender_responsible = $tender_responsible
 		WHERE
 		tender_id = $tender_id
 		LIMIT 1";
