@@ -44,7 +44,7 @@ function Tender_Form($tender_id) {
 	$tender_type_array = array("","Invitation to Tender","Pre-Qualification Questionnaire","Expression of Interest","Design Competition");
 	sort($tender_type_array);
 	
-	$tender_procedure_array = array("","Open Procedure","Restricted Procedure (Two-Stage)","Invited Procedure","Negotiated Procedure");
+	$tender_procedure_array = array("","Open Procedure","Restricted Procedure (Two-Stage)","Invited Procedure","Negotiated Procedure","Dynamic Purchasing System");
 	sort($tender_procedure_array);
 	
 	echo "<div><p>Name of Tender</p><p><input type=\"text\" value=\"$tender_name\" name=\"tender_name\" maxlength=\"500\" size=\"" . strlen($tender_name) . "\" required=\"required\" class=\"mainform\" /></p></div>";

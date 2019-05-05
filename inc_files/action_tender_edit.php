@@ -87,8 +87,6 @@ if ($tender_id == 0) {
 		tender_submitted = $tender_submitted,
 		tender_notes = '$tender_notes',
 		tender_linked = $tender_linked,
-		tender_added_time = $tender_added_time,
-		tender_added_by = $tender_added_by,
 		tender_responsible = $tender_responsible
 		WHERE
 		tender_id = $tender_id

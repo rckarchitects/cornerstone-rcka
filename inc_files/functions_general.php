@@ -2556,6 +2556,20 @@ function ChangeHolidays($year) {
 		
 }
 
+function TenderGetDetails($field, $tender_id) {
+	
+	global $conn;
+	$sql = "SELECT " . $field . " FROM intranet_tender WHERE tender_id = " . intval($tender_id) . " LIMIT 1";
+	
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	$array = mysql_fetch_array($result);
+	
+	$output = addslashes($array[$field]);
+	
+	return $output;
+	
+}
+
 function TenderList() {
 
 		GLOBAL $conn;
@@ -2566,17 +2580,26 @@ function TenderList() {
 
 		$nowtime = time();
 
-		if ($_GET[detail] == "yes") { $detail = "yes"; }
+		if ($_GET['detail'] == "yes") { $detail = "yes"; }
+		
+		
+		if (urldecode($_GET['tender_filter']) == "tender_type" && intval($_GET['tender_id']) > 0) { $filter = "tender_type = '" . TenderGetDetails("tender_type",$_GET['tender_id']) . "'";  }
+		elseif (urldecode($_GET['tender_filter']) == "tender_procedure" && intval($_GET['tender_id']) > 0) { $filter = "tender_procedure = '" . TenderGetDetails("tender_procedure",$_GET['tender_id']) . "'"; }
+		elseif (urldecode($_GET['tender_filter']) == "tender_client" && intval($_GET['tender_id']) > 0) { $filter = "tender_client = '" . TenderGetDetails("tender_client",$_GET['tender_id']) . "'"; $analysis_client = " to " . TenderGetDetails("tender_client",$_GET['tender_id']) . ", "; }
 
 		if (intval($_GET[tender_submitted]) == 1) {
-			$sql = "SELECT * FROM intranet_tender ORDER BY tender_date DESC";
+			if ($filter) { $filter = "WHERE " . $filter; }
+			$sql = "SELECT * FROM intranet_tender $filter ORDER BY tender_date DESC";
 			echo "<h2>List of all tenders</h2>";
 		} elseif (intval($_GET[tender_pending]) == 1) {
-			$sql = "SELECT * FROM intranet_tender WHERE tender_submitted = 1 AND (tender_result = 0 OR tender_result IS NULL) ORDER BY tender_date DESC";
+			if ($filter) { $filter = "AND " . $filter; }
+			$sql = "SELECT * FROM intranet_tender WHERE tender_submitted = 1 AND (tender_result = 0 OR tender_result IS NULL) $filter ORDER BY tender_date DESC";
 			echo "<h2>List of all pending tenders</h2>";
 		} else {
-			$sql = "SELECT * FROM intranet_tender WHERE tender_submitted = 1 OR (tender_date > " . time() . " AND tender_result != 3) ORDER BY tender_date DESC";
+			if ($filter) { $filter = "AND " . $filter; }
+			$sql = "SELECT * FROM intranet_tender WHERE (tender_submitted = 1 OR (tender_date > " . time() . ") AND tender_result != 3) $filter ORDER BY tender_date DESC";
 			echo "<h2>List of all submitted and future tenders</h2>";
+			
 		}
 		
 		$result = mysql_query($sql, $conn) or die(mysql_error());
@@ -2611,11 +2634,16 @@ function TenderList() {
 
 			
 				while ($array = mysql_fetch_array($result)) {
-				
+					
 				$tender_id = $array['tender_id'];
+					
+					
+							
+				
+				
 				$tender_name = $array['tender_name'];
-				if ($array['tender_type']) { $tender_type = "<br />". $array['tender_type']; }
-				if ($array['tender_procedure']) { $tender_type = $tender_type . "<br /><span class=\"minitext\">". $array['tender_procedure'] . "</span>"; }
+				if ($array['tender_type']) { $tender_type = "<br /><a href=\"index2.php?page=tender_list&amp;tender_filter=tender_type&amp;tender_id=" . $tender_id . "\">". $array['tender_type'] . "</a>"; }
+				if ($array['tender_procedure']) { $tender_type = $tender_type . "<br /><span class=\"minitext\"><a href=\"index2.php?page=tender_list&amp;tender_filter=tender_procedure&amp;tender_id=" . $tender_id . "\">". $array['tender_procedure'] . "</a></span>"; }
 				$tender_date = $array['tender_date'];
 				$tender_client = $array['tender_client'];
 				$tender_description = nl2br($array['tender_description']);
@@ -2657,8 +2685,8 @@ function TenderList() {
 				if (($nowtime > $tender_date) && ($nowtime < $time_line)) { echo "<div class=\"bodybox\" style=\"background: white; color: rgba(255,0,0,1); border: solid 1px rgba(255,0,0,0.8); font-size: 2em;\"><strong><span class=\"minitext\">Today is</span><br />" . TimeFormat($nowtime) . "</strong></div>"; }
 										
 				
-				echo "<div class=\"bodybox\" $style><a href=\"index2.php?page=tender_edit&tender_id=$tender_id\" style=\"float: right; margin: 0 0 5px 5px;\"><img src=\"images/button_edit.png\" alt=\"Edit Tender\" /></a><p><strong><a href=\"index2.php?page=tender_view&amp;tender_id=$tender_id\">$tender_name</a></strong>$tender_type</p>";
-				echo "<p>Deadline: ". date("d M Y",$tender_date) . $deadline . "<br /><span class=\"minitext\">" . $tender_client . "</span></p>";
+				echo "<div class=\"bodybox\" $style><a href=\"index2.php?page=tender_edit&tender_id=$tender_id\" style=\"float: right; margin: 0 0 5px 5px;\"><img src=\"images/button_edit.png\" alt=\"Edit Tender\" /></a><p><strong><a href=\"index2.php?page=tender_view&amp;tender_id=$tender_id\">$tender_name</a></strong>" . $tender_type . "</p>";
+				echo "<p>Deadline: ". date("d M Y",$tender_date) . $deadline . "<br /><span class=\"minitext\"><a href=\"index2.php?page=tender_list&amp;tender_filter=tender_client&amp;tender_id=" . $tender_id . "\">". $tender_client . "</a></span></p>";
 				
 				if ($tender_responsible) { echo "<p>Responsible: " . UserDetails($tender_responsible) . "</p>"; }
 				
@@ -2680,7 +2708,7 @@ function TenderList() {
 				
 					$success_rate = number_format ( 100 * ($successful_total / $submitted_total), 0 );
 					
-					echo "<div class=\"bodybox\"><p><strong>Statistics</strong></p><p>You have submitted $submitted_total tenders with a " . $success_rate . "% success rate.</p></div>";
+					echo "<div class=\"bodybox\"><p><strong>Statistics</strong></p><p>You have submitted $submitted_total tenders $analysis_client with a " . $success_rate . "% success rate.</p></div>";
 					
 				}
 				
