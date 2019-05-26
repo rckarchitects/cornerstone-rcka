@@ -41,7 +41,7 @@ function Tender_Form($tender_id) {
 	
 		if (!$tender_responsible) { $tender_responsible = intval($_COOKIE[user]); }
 	
-	$tender_type_array = array("","Invitation to Tender","Pre-Qualification Questionnaire","Expression of Interest","Design Competition");
+	$tender_type_array = array("","Invitation to Tender","Pre-Qualification Questionnaire","Expression of Interest","Design Competition","Interview");
 	sort($tender_type_array);
 	
 	$tender_procedure_array = array("","Open Procedure","Restricted Procedure (Two-Stage)","Invited Procedure","Negotiated Procedure","Dynamic Purchasing System");

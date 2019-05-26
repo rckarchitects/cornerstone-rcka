@@ -5,7 +5,7 @@ function RiskList($proj_id) {
 	global $conn;
 	global $pref_practice;
 	
-	$sql = "SELECT * FROM intranet_project_risks WHERE risk_project = " . intval($proj_id) . " ORDER BY risk_category, risk_id";
+	$sql = "SELECT * FROM intranet_project_risks WHERE risk_project = " . intval($proj_id) . " ORDER BY risk_drawing DESC,  risk_category, risk_id";
 
 	$result = mysql_query($sql, $conn);
 	$counter_1 = 0;

@@ -126,13 +126,13 @@ $tender_id = intval ( $_GET[tender_id] );
 		
 		if ($answer_words != NULL) { $word_count = WordCount($answer_words); } else { $word_count = "0"; }
 				
-		if ($tender_editable == "yes" AND $answer_id != $_GET[edit_question] AND $_GET[edit_answer] == NULL AND $_GET[edit_question] == NULL) { $answer_ref = $answer_ref . "&nbsp;<a href=\"index2.php?page=tender_view&amp;tender_id=$_GET[tender_id]&amp;edit_question=$answer_id#$answer_id\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a>"; }
+		if ($tender_editable == "yes" AND $answer_id != $_GET[edit_question] AND $_GET[edit_answer] == NULL AND $_GET[edit_question] == NULL) { $answer_ref = "<strong>" . $answer_ref . "</strong>&nbsp;<a href=\"index2.php?page=tender_view&amp;tender_id=$_GET[tender_id]&amp;edit_question=$answer_id#$answer_id\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a>"; }
 		
 		if ($counter == 0) {
 			
 			echo "<h3>Responses</h3>";
 			
-			echo "<table summary=\"Lists of questions and responses\">";
+			echo "<div class=\"page\"><table summary=\"Lists of questions and responses\">";
 			if ($_GET[question] == "add") { EditForm('','','','','',$tender_id); echo "</th></tr>"; }
 		}
 		
@@ -150,9 +150,9 @@ $tender_id = intval ( $_GET[tender_id] );
 		EditForm($answer_id,$answer_question,$answer_ref,$answer_words,$answer_weighting,$tender_id);
 		
 		} else {
-			echo "<tr><td style=\"width: 10%; $bgcolor;\" rowspan=\"3\" >$answer_ref";
+			echo "<tr><td style=\"width: 10%;\" rowspan=\"3\" ><div style=\"" . $bgcolor . "; border-radius: 20px; padding: 10px; margin-right: 15px;\">$answer_ref";
 			if ($message != NULL) { echo "<p>(".$message.")</p>"; }
-			echo "</td><td>";
+			echo "</div></td><td>";
 			TenderWords($answer_question);
 		}
 		echo "</td></tr>";
@@ -215,8 +215,6 @@ $tender_id = intval ( $_GET[tender_id] );
 		echo "<p>There are currently no responses on the system. Get started by adding the first question below.</p>";
 		echo "<table summary=\"Lists of questions and responses\">";
 		EditForm($answer_id,$answer_question,$answer_ref,$answer_words,$answer_weighting,$tender_id);
-		echo "</table>";
+		echo "</table></div>";
 		
 		}
-		
-?>

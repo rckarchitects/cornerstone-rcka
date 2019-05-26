@@ -1160,7 +1160,7 @@ $country_printable_name = $array['country_printable_name'];
 					if ($proj_ambition_client) { echo "<tr><td><a href=\"index2.php?page=project_ambition_schedule&amp;type=client_ambition\">Client Ambition</a></td><td>" . nl2br ($proj_ambition_client) . "</td></tr>"; }
 					if ($proj_info) { echo "<tr><td><a href=\"index2.php?page=project_ambition_schedule&amp;type=project_information\">Project Information</a></td><td>" . nl2br ($proj_info) . "</td></tr>"; }
 					if ($proj_ambition_marketing) { echo "<tr><td><a href=\"index2.php?page=project_ambition_schedule&amp;type=project_marketing\">Marketing Ambition</a></td><td>" . nl2br ($proj_ambition_marketing) . "</td></tr>"; }
-					if ($proj_ambition_social) { echo "<tr><td><a href=\"index2.php?page=project_ambition_schedule&amp;type=project_marketing\">Social Value Ambition</a></td><td>" . nl2br ($proj_ambition_social) . "</td></tr>"; }
+					if ($proj_ambition_social) { echo "<tr><td><a href=\"index2.php?page=project_ambition_schedule&amp;type=project_ambition_social\">Social Value Ambition</a></td><td>" . nl2br ($proj_ambition_social) . "</td></tr>"; }
 				
 
 					if ($proj_procure > 0) {
@@ -3540,7 +3540,9 @@ function CheckListRows($proj_id,$group_id,$showhidden) {
 						if ($checklist_date == 0) { $checklist_date = "-";}
 						
 						if ($checklist_deadline != "0000-00-00" && $checklist_deadline != NULL) {
-							$checklist_date = $checklist_date . "<br /><span class=\"minitext\">Deadline: $checklist_deadline</span>";
+							$checklist_date_additional = "<br /><span class=\"minitext\">Deadline: " . DayLink(DisplayDate($checklist_deadline)) . "</span>";
+						} else {
+							unset($checklist_date_additional);
 						}
 					
 					if ($checklist_required != 1) { $rowshow_class = "class=\"RowShow\""; } else { $rowshow_class = "class=\"RowHide\" style=\"display: none;\""; }
@@ -3569,7 +3571,7 @@ function CheckListRows($proj_id,$group_id,$showhidden) {
 
 					if (!$item) {	
 						
-						echo "<td $bg>" . DayLink(DisplayDate($checklist_date)) . "</td>";
+						echo "<td $bg>" . DayLink(DisplayDate($checklist_date)) . $checklist_date_additional . "</td>";
 						echo "<td $bg>$checklist_comment</td>";
 						if ($checklist_link) {
 							echo "<td colspan=\"2\" $bg><a href=\"$checklist_link\" target=\"_blank\"><img src=\"images/button_internet.png\" /></a></td>";

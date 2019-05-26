@@ -21,7 +21,7 @@ function CheckListUpdate() {
 			$array_checklist_deadline = $_POST['checklist_deadline'];
 			$array_item_title = $_POST['item_title'];
 			
-			
+			//print_r($array_checklist_comment);
 
 		$array_update = array();
 
@@ -50,7 +50,7 @@ function CheckListUpdate() {
 				//echo "<p>" . $checklist_id . ", error: " . $fileError . ", filename: " . $fileName .  "</p>";
 				
 				
-			if ($fileError == 0) {
+			if ($fileError == 0 && $checklist_upload) {
 				
 				$array_checklist_comment = addslashes($array_checklist_comment);
 

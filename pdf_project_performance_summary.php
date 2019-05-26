@@ -16,7 +16,7 @@ $pdf= new fpdi();
 $pagecount = $pdf->setSourceFile("pdf/template.pdf");
 $tplidx = $pdf->ImportPage(1);
 
-$pdf->addPage(L);
+$pdf->addPage('L');
 
 if ($settings_pdffont != NULL) {
 $format_font = $settings_pdffont;
@@ -43,7 +43,9 @@ $current_date = TimeFormat(time());
 
 // Begin creating the page
 
-PDFProjectArray($_GET[proj_id]);
+PDFProjectArray(intval($_GET['proj_id']));
+
+PDFProjectAnalysis(intval($_GET['proj_id']));
 	
 
 // and send to output

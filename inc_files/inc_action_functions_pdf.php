@@ -678,7 +678,7 @@ function PDF_Fee_Drawdown ($proj_id) {
 			$pdf->SetLineWidth(0.5);
 			$pdf->SetFont('Helvetica','B',10);
 				
-			$pdf->Cell(75,7,"Total Fee",'T',0);
+			$pdf->Cell(75,7,"Total Fee",'T',0); // OK
 			$pdf->Cell(0,7,$total_fee,'T',1,'R');
 			
 			
@@ -1211,6 +1211,8 @@ function PDF_FileName ($proj_id, $file_name) {
 
 function StageTotal($stage_total, $hours_total, $running_cost_nf, $ts_fee_target ) {
 	
+	if ($stage_total > 0) {
+	
 		GLOBAL $pdf;
 		
 		$invoice_cost = $stage_total * $ts_fee_target;
@@ -1240,6 +1242,8 @@ function StageTotal($stage_total, $hours_total, $running_cost_nf, $ts_fee_target
 	
 		}
 		
+}
+		
 function StageFee($ts_fee_id) {
 			
 			if ($ts_fee_id > 0) {
@@ -1260,12 +1264,252 @@ function EstablishStageCost($ts_fee_id) {
 		
 		$ts_fee_id = intval($ts_fee_id);
 		
-		$sql = "SELECT SUM(ts_cost_factored) FROM intranet_timesheet WHERE ts_stage_fee = $ts_fee_id";
+		$sql = "SELECT SUM(`ts_cost_factored`) FROM intranet_timesheet WHERE ts_stage_fee = $ts_fee_id";
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		$array = mysql_fetch_array($result);
-		$output = floatval($array['SUM(ts_cost_factored)']);
+		$output = floatval($array['SUM(`ts_cost_factored`)']);
 		return $output;
 		
+}
+
+function PDFProjectAnalysis($proj_id) {
+	
+	global $conn;
+	global $pdf;
+	
+	$proj_id = intval($proj_id);
+	
+	$sql_minweeks = "SELECT ts_fee_commence FROM `intranet_timesheet_fees` WHERE `ts_fee_project` = " . $proj_id . " ORDER BY `ts_fee_commence` LIMIT 1";
+	$result_minweeks = mysql_query($sql_minweeks, $conn) or die(mysql_error());
+	$array_minweeks = mysql_fetch_array($result_minweeks);
+	$start = CreateDays($array_minweeks['ts_fee_commence'],0);
+	
+	$sql_maxweeks = "SELECT ts_fee_commence, ts_fee_time_end FROM `intranet_timesheet_fees` WHERE `ts_fee_project` = " . $proj_id . " ORDER BY (UNIX_TIMESTAMP(`ts_fee_commence`) + `ts_fee_time_end`) DESC LIMIT 1";
+	$result_maxweeks = mysql_query($sql_maxweeks, $conn) or die(mysql_error());
+	$array_maxweeks = mysql_fetch_array($result_maxweeks);
+	$end = CreateDays($array_maxweeks['ts_fee_commence'],24) + $array_maxweeks['ts_fee_time_end'];
+	
+	$sql_firstentry = "SELECT ts_entry FROM `intranet_timesheet` WHERE `ts_project` = " . $proj_id . " ORDER BY `ts_entry` LIMIT 1";
+	$result_firstentry = mysql_query($sql_firstentry, $conn) or die(mysql_error());
+	$array_firstentry = mysql_fetch_array($result_firstentry);
+	$firstentry = BeginWeek($array_firstentry['ts_entry']);
+	
+	$sql_lastentry = "SELECT ts_entry FROM `intranet_timesheet` WHERE `ts_project` = " . $proj_id . " ORDER BY `ts_entry` DESC LIMIT 1";
+	$result_lastentry = mysql_query($sql_lastentry, $conn) or die(mysql_error());
+	$array_lastentry = mysql_fetch_array($result_lastentry);
+	$lastentry = BeginWeek($array_lastentry['ts_entry'] + 604800);
+	
+	if ($firstentry < $start && $start > 0 && $firstentry > 0) { $start = $firstentry; }
+	if ($lastentry > $end) { $end = $lastentry; }
+	
+	$total_weeks = ceil(($end - $start) / 604800);
+	$total_days = ceil(($end - $start) / 86400);
+	
+	if ($start > 0) {
+		
+				$pdf->AddPage('L');
+				
+				$description = "Project extends from " . TimeFormat($start) . " to " . TimeFormat($end) . ", with a total length of " . $total_weeks . " weeks.";
+				
+				$weekwidth = 277 / $total_weeks;
+				$daywidth = 277 / $total_days;
+				
+				$grid_x = 10;
+				$pdf->SetLineWidth(0.1);
+				$pdf->SetDrawColor(150,150,150);
+				
+				while ($grid_x <= 287) {
+					
+					
+					$pdf->Line($grid_x,90,$grid_x,185);
+					
+					if ($weekwidth < 2) { 	
+						$grid_x = $grid_x + ($weekwidth * 4);
+					} else {
+						$grid_x = $grid_x + $weekwidth;
+					}
+					
+				}
+				
+				$pdf->Cell(0,5,$description,0,1);
+				
+				$sql_timesheets = "SELECT `ts_cost_factored`,`ts_entry` FROM `intranet_timesheet` WHERE `ts_project` = " . $proj_id . " ORDER BY `ts_entry`";
+				$result_timesheets = mysql_query($sql_timesheets, $conn) or die(mysql_error());
+				
+				$total_for_week = 0;
+				$total_for_ever = 0;
+				$start_of_week = $start;
+				$end_of_week = $start + 604800;
+				$array_weekcost = array();
+				$array_datestamp = array();
+
+				
+				$current_week = date("W",$start);
+				
+				while ($array_timesheets = mysql_fetch_array($result_timesheets)) {
+					
+					
+					if ($current_week != date("W",$array_timesheets['ts_entry'])) {
+
+						
+						//$pdf->Cell(25,5,date("W",$array_timesheets['ts_entry']),1,0); $pdf->Cell(25,5,date("Y",$array_timesheets['ts_entry']),1,0); $pdf->Cell(25,5,$total_for_week,1,1);
+						
+						$current_week = date("W",$array_timesheets['ts_entry']);
+						
+						$array_weekcost[] = $total_for_week;
+						$array_datestamp[] = $array_timesheets['ts_entry'];
+						$total_for_week = 0;
+
+						
+					}
+						
+						$total_for_week = $total_for_week + $array_timesheets['ts_cost_factored'];
+						$total_for_ever = $total_for_ever + $array_timesheets['ts_cost_factored'];			
+							
+				}
+				
+				//$pdf->Cell(50,5,'TOTAL',1,0); $pdf->Cell(25,5,$total_for_ever,1,1); $pdf->Ln(5);
+				
+				$maxvalue = max($array_weekcost);
+				
+
+				
+				$week_begin = $start;
+				$counter = 0;
+				
+				//$pdf->Cell(25,5,'Counter',1,0); $pdf->Cell(25,5,'Week Begin',1,0); $pdf->Cell(25,5,'Actual Week #',1,0); $pdf->Cell(25,5,'Week Value',0,1);
+				
+
+
+				$x = 10;
+				$pdf->SetDrawColor(255,255,255);
+				$pdf->SetFillColor(45,195,76);
+				$pdf->SetLineWidth(1);
+					
+				$pdf->SetFont('Helvetica','',8);	
+				
+				while ($week_begin <= $end) {
+					
+
+					
+					$cellheight = ($value / $maxvalue) * 60;
+					$start_y = 80 - $cellheight;
+					
+					$pdf->SetXY($x,$start_y);
+					
+					
+					
+					if (date("W",$array_datestamp[$counter]) == Date("W",$week_begin)) { $value = $array_weekcost[$counter]; $counter++; } else { $value = 0; }
+					
+					if ($value > 0) { $pdf->Cell($weekwidth,$cellheight,NULL,'R',0,NULL,TRUE); }
+
+					
+					$week_begin = $week_begin + 604800;
+					$x = $x + $weekwidth;
+					
+				}
+				
+				$total_weeks_print = $total_weeks . " weeks";
+				
+				// Create scale showing months
+				
+				$week_begin = $start;
+				
+				$pdf->SetXY(10,80);
+				$pdf->SetDrawColor(0,0,0);
+				$pdf->SetLineWidth(0.2);	
+				
+				$pdf->Cell(0,5,NULL,'T');
+				
+				$pdf->SetXY(10,80);
+				
+				$pdf->SetFont('Helvetica','B',8);
+				
+				$current_year != date("Y",$week_begin);
+				
+
+					while ($week_begin <= $end && $pdf->GetX() <= 287) {
+						
+						if ($current_year != date("Y",$week_begin)) { $pdf->Cell($weekwidth,5,$current_year,'R',0,'R'); $current_year = date("Y",$week_begin); } else { $pdf->Cell($weekwidth,5,'',0,0,'C'); }
+						
+						$week_begin = $week_begin + 604800;
+						
+					}
+				
+
+				
+				$week_begin = $start;
+				$pdf->SetXY(10,85);
+				$pdf->Cell(0,5,NULL,0);
+				$pdf->SetXY(10,85);
+				
+				$pdf->SetFont('Helvetica','',7);
+				
+				$current_month = date("M",$week_begin);
+				
+				while ($week_begin <= $end && $pdf->GetX() <= 287) {
+					
+					if ($current_month != date("M",$week_begin)) { $pdf->Cell($weekwidth,5,substr($current_month,0,1),'R',0,'R'); $current_month = date("M",$week_begin); } else { $pdf->Cell($weekwidth,5,'',0,0,'C'); }
+					
+					$week_begin = $week_begin + 604800; 
+					
+				}
+				
+				$pdf->SetXY(10,90);
+				$pdf->Cell(100,5,TimeFormat($start),'T',0,'L');
+				$pdf->Cell(77,5,$total_weeks_print,'T',0,'C');
+				$pdf->Cell(100,5,TimeFormat($end),'T',0,'R');
+				
+				//$pdf->Cell(50,5,'TOTAL',1,0); $pdf->Cell(25,5,$total_for_ever,1,1); $pdf->Ln(5);
+				
+				$pdf->SetXY(10,100);
+				
+				$sql_stages = "SELECT * FROM `intranet_timesheet_fees` WHERE `ts_fee_project` = " . $proj_id . " ORDER BY `ts_fee_commence`";
+				$result_stages = mysql_query($sql_stages, $conn) or die(mysql_error());
+				
+				$row_height = 85 / mysql_num_rows($result_stages);
+				
+				if ($row_height > 7.5) { $row_height = 7.5; }
+				
+				$week_begin = $start;
+				
+				$pdf->SetFont('Helvetica','',8);
+				$pdf->SetDrawColor(255,255,255);
+				$pdf->SetLineWidth(0.75);
+				
+				if (mysql_num_rows($result_stages) > 0) {
+				
+				while ($array_stages = mysql_fetch_array($result_stages)) {
+					
+						if ($array_stages['ts_fee_value'] > 0) {
+							$pdf->SetFillColor(45,195,76);
+						} else {
+							$pdf->SetFillColor(175,175,175);
+						}
+						
+						$bar_gap = ((CreateDays($array_stages['ts_fee_commence']) - $start) / 604800) * $weekwidth;
+						$bar_width = ($array_stages['ts_fee_time_end'] / 604800) * $weekwidth;
+						
+						if ($bar_gap > 0) { $pdf->Cell($bar_gap,$row_height,NULL,0,0,'L'); }
+						
+						if ($bar_width > 0) {
+						
+							if ($pdf->GetStringWidth($array_stages['ts_fee_text']) > (277 - $pdf->GetX())) {
+							$pdf->Cell($bar_width,$row_height,$array_stages['ts_fee_text'],0,1,'R',1);
+							$pdf->Ln(1);
+							} else {
+							$pdf->Cell($bar_width,$row_height,$array_stages['ts_fee_text'],0,1,'L',1);
+							$pdf->Ln(1);
+							}
+							
+						}
+						
+					}
+				
+				}
+	
+	}
+	
 }
 
 function PDFStageAnalysis($proj_id,$proj_value) {
@@ -1286,6 +1530,7 @@ function PDFStageAnalysis($proj_id,$proj_value) {
 	$pdf->Cell(15,5,"Target Profit",0,0,'R');
 	$pdf->Cell(15,5,"Staff / Week",0,0,'R');
 	$pdf->Cell(25,5,"Target / Actual Cost",0,0,'R');
+	$pdf->Cell(30,5,"Actual Fee",0,0,'R');
 	$pdf->Cell(0,5,"Stage Fee %",0,1,'R');
 	
 	$sql = "SELECT * FROM intranet_timesheet_fees LEFT JOIN intranet_timesheet_group ON ts_fee_group = group_id WHERE ts_fee_project = $proj_id AND ts_fee_prospect = 100 ORDER BY ts_fee_commence";
@@ -1295,6 +1540,7 @@ function PDFStageAnalysis($proj_id,$proj_value) {
 	$fee_target_total = 0;
 	$cost_actual = 0;
 	$target_fee_percentage_actual_total = 0;
+	$target_fee_profit_actual_total = 0;
 	$start_date = 0;
 	
 	while ($array = mysql_fetch_array($result)) {
@@ -1321,18 +1567,26 @@ function PDFStageAnalysis($proj_id,$proj_value) {
 			$ts_fee_actual = EstablishStageCost($array['ts_fee_id']);
 			$ts_fee_actual_print = PDFCurrencyFormat($ts_fee_actual);
 			
+			$ts_fee_actual_profit_print = PDFCurrencyFormat($ts_fee_actual * $array['ts_fee_target']);
+			$target_fee_profit_actual_total = $target_fee_profit_actual_total + ($ts_fee_actual * $array['ts_fee_target']);
+			
 			$target_fee_percentage_target = $array['ts_fee_value'] / $proj_value;
 			$target_fee_percentage_actual = ($array['ts_fee_target'] * $ts_fee_actual) / $proj_value;
 			
-			$target_fee_percentage_target_print = number_format ((100 * $target_fee_percentage_target),2) . "%" ;
-			$target_fee_percentage_actual_print = number_format ((100 * $target_fee_percentage_actual),2) . "%" ;
+			if ($target_fee_percentage_target > 0) {
+				$target_fee_percentage_target_print = number_format ((100 * $target_fee_percentage_target),2) . "%" ;
+			}
+			
+			if ($target_fee_percentage_actual > 0) {
+				$target_fee_percentage_actual_print = number_format ((100 * $target_fee_percentage_actual),2) . "%" ;
+			}
 			
 			$staff_per_week_actual_print = number_format ($ts_fee_actual / ($array['ts_fee_time_end'] / 604800) / $average_weekly_cost	,2);
 			
 			$ts_datum_commence_print = TimeFormat(AssessDays($array['ts_datum_commence'],12));
 			$ts_fee_commence_print = TimeFormat(AssessDays($array['ts_fee_commence'],12));
 			
-			$pdf->Cell(100,10,$ts_fee_text,'B',0);
+			$pdf->Cell(100,10,$ts_fee_text,'B',0); // OK
 			$pdf->SetLineWidth(0.1);
 			$pdf->Cell(25,10,$ts_fee_value_print,0,0,'R');
 			$pdf->Cell(25,5,$ts_datum_commence_print,'B',0,'R');
@@ -1352,10 +1606,13 @@ function PDFStageAnalysis($proj_id,$proj_value) {
 			$pdf->Cell(15,5,$staff_per_week_actual_print,'B',0,'R');
 			if ($ts_fee_actual > $ts_fee_target_actual) { $pdf->SetTextColor(255,0,0); } else { $pdf->SetTextColor(0,0,0); }
 			$pdf->Cell(25,5,$ts_fee_actual_print,'B',0,'R');
+			if (($ts_fee_actual * $array['ts_fee_target']) > 0) {
+				$pdf->Cell(30,5,$ts_fee_actual_profit_print,'B',0,'R');
+			}
 			$pdf->Cell(0,5,$target_fee_percentage_actual_print,'B',1,'R');
 			$pdf->SetTextColor(0,0,0);			
 			$pdf->SetLineWidth(0.5);
-			$pdf->Cell(0,1,'','T',1);
+			$pdf->Cell(0,1,'','T',1); // OK
 			
 			
 			$fee_total = $fee_total + $array['ts_fee_value'];
@@ -1368,6 +1625,8 @@ function PDFStageAnalysis($proj_id,$proj_value) {
 	$fee_total_print = PDFCurrencyFormat( $fee_total );
 	$fee_target_total_print = PDFCurrencyFormat( $fee_target_total );
 	$cost_actual_print = PDFCurrencyFormat( $cost_actual );
+	
+	$target_fee_profit_actual_total_print = PDFCurrencyFormat($target_fee_profit_actual_total);
 	
 	if ($proj_value) { $fee_total_print = $fee_total_print . " [" . number_format( ($fee_total / $proj_value * 100),2) . "%]"; }
 	if ($proj_value) { $fee_target_percent_total_print = number_format( ($fee_target_total / $proj_value * 100),2) . "%"; }
@@ -1395,6 +1654,9 @@ function PDFStageAnalysis($proj_id,$proj_value) {
 	$pdf->SetFont('Helvetica','B',10);
 	if ($cost_actual > $fee_target_total) { $pdf->SetTextColor(255,0,0); } else { $pdf->SetTextColor(0,0,0); }
 	$pdf->Cell(40,5,$cost_actual_print,'B',0,'R');
+	if ($target_fee_profit_actual_total > 0) {
+		$pdf->Cell(30,5,$target_fee_profit_actual_total_print,'B',0,'R');
+	}
 	$pdf->Cell(0,5,$cost_actual_percent_print,'B',1,'R');
 	
 	$pdf->SetTextColor(0,0,0);
@@ -1415,6 +1677,8 @@ function PDFProjectArray($proj_id) {
 		$sql = "SELECT proj_id, proj_num, proj_name, proj_type, proj_value, proj_procure FROM intranet_projects WHERE proj_active = 1 AND proj_fee_track = 1 $proj_id_filter ORDER BY proj_num";
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		$current_project = 0;
+		
+		if (mysql_num_rows($result) > 0) {
 		while ($array = mysql_fetch_array($result)) {
 
 			if ($current_project != $array['proj_id']) {
@@ -1428,7 +1692,7 @@ function PDFProjectArray($proj_id) {
 				$pdf->Cell(75,5,"Project Type",'T',0);
 				$pdf->Cell(50,5,"Contract Value",'T',0,'R');
 				$pdf->Cell(75,5,"Procurement Method",'T',0,'R');
-				$pdf->Cell(0,5,"",'T',1);
+				$pdf->Cell(0,5,"",'T',1); // OK
 				$pdf->SetLineWidth(0.5);
 				$pdf->SetFont($format_font,'B',10);
 				$pdf->Cell(75,5,$array['proj_type'],'B',0);
@@ -1448,6 +1712,8 @@ function PDFProjectArray($proj_id) {
 
 			
 		}
+		
+	}
 }
 
 function PDFTimeSheetProject($proj_id,$ts_stage_fee,$running_cost,$total_cost_nf) {
@@ -1459,12 +1725,13 @@ function PDFTimeSheetProject($proj_id,$ts_stage_fee,$running_cost,$total_cost_nf
 
 		$time_submit_begin = intval($_POST[submit_begin]);
 		$time_submit_end = intval($_POST[submit_end]);
-		if ($_POST[submit_project] > 0) { $proj_submit = $_POST[submit_project]; } elseif ($_GET[proj_id] > 0) { $proj_submit = $_GET[proj_id]; } else { header ("Location: index2.php"); }
+		if ($_POST[submit_project] > 0) { $proj_submit = intval($_POST[submit_project]); } elseif ($_GET[proj_id] > 0) { $proj_submit = intval($_GET[proj_id]); } else { header ("Location: index2.php"); }
 
-		if ($time_submit_begin == NULL) { $time_submit_begin = 0; }
-		if ($time_submit_end == NULL) { $time_submit_end = time(); }
+		if (intval($time_submit_begin) == 0) { $time_submit_begin = 0; } else { $time_submit_begin = intval($time_submit_begin); }
+		if (intval($time_submit_end) == 0) { $time_submit_end = time(); } else { $time_submit_end = intval($time_submit_end); }
 	
-		$sql = "SELECT * FROM intranet_user_details, intranet_timesheet LEFT JOIN intranet_timesheet_fees ON ts_project = ts_fee_stage WHERE ts_user = user_id AND ts_project = '$proj_submit' AND ts_stage_fee = " . $ts_stage_fee . " AND ts_entry BETWEEN '$time_submit_begin' AND '$time_submit_end' ORDER BY ts_fee_commence, ts_stage_fee, ts_fee_time_begin, ts_entry, ts_id";
+		$sql = "SELECT * FROM intranet_user_details, intranet_timesheet LEFT JOIN intranet_timesheet_fees ON ts_project = ts_fee_stage WHERE ts_user = user_id AND ts_project = " . intval($proj_submit) . " AND ts_stage_fee = " . $ts_stage_fee . " AND ( ts_entry BETWEEN " . $time_submit_begin . " AND " . $time_submit_end . " ) ORDER BY ts_fee_commence, ts_stage_fee, ts_fee_time_begin, ts_entry, ts_id";
+		
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 
 
@@ -1662,15 +1929,18 @@ function PDF_ArrayProjectStages($proj_id) {
 	
 	$sql = "SELECT proj_id,ts_fee_id FROM intranet_projects, intranet_timesheet_fees WHERE proj_id = " . $proj_id . " AND ts_fee_project = proj_id ORDER BY ts_fee_time_begin";
 	$result = mysql_query($sql, $conn) or die(mysql_error());
+	
+	$num_rows = mysql_num_rows($result);
+	
 	while ($array = mysql_fetch_array($result)) {
-		if ($count > 0) { $pdf->AddPage(); }
+		
 		$running_cost_array = PDFTimeSheetProject($proj_id,$array['ts_fee_id'],$running_cost,$total_cost_nf);
 		$running_cost = $running_cost + $running_cost_array[0];
 		$total_cost_nf = $total_cost_nf + $running_cost_array[1];
 		$count++;
 		
-			if ($_POST[separate_pages] != 1) {
-
+			if ($_POST[separate_pages] != 1 && $running_cost_array[0] > 0) {
+				
 						$cost_total_print = PDFCurrencyFormat($running_cost);
 						
 						$total_cost_nf_print = "(" . PDFCurrencyFormat($total_cost_nf) . ")";
@@ -1684,16 +1954,18 @@ function PDF_ArrayProjectStages($proj_id) {
 						$pdf->Cell(20,7,$cost_total_print,'TB', 0, R, 0);
 						$pdf->Cell(20,7,$total_cost_nf_print,'TB', 0, R, 0);
 						$pdf->Cell(0,7,'','TB', 1, R, 0);
+						
+						//if ($count < $num_rows) { $pdf->AddPage(); }
 				
 			}
 		
 	}
-	
-		$running_cost_array = PDFTimeSheetProject($proj_id,0,$running_cost,$total_cost_nf);
-		$running_cost = $running_cost + $running_cost_array[0];
-		$total_cost_nf = $total_cost_nf + $running_cost_array[1];
+			$running_cost_array = PDFTimeSheetProject($proj_id,0,$running_cost,$total_cost_nf);
+			$running_cost = $running_cost + $running_cost_array[0];
+			$total_cost_nf = $total_cost_nf + $running_cost_array[1];
 		
-			if ($_POST[separate_pages] != 1) {
+			if ($_POST[separate_pages] != 1 && $running_cost_array[0] > 0) {
+				
 
 						$cost_total_print = PDFCurrencyFormat($running_cost);
 						

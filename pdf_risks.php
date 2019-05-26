@@ -26,7 +26,7 @@ function PDFRiskDisplay($proj_id) {
 	global $pref_practice;
 	global $pdf;
 	
-	$sql = "SELECT * FROM intranet_project_risks WHERE risk_project = " . intval($proj_id) . " ORDER BY risk_category, risk_id";
+	$sql = "SELECT * FROM intranet_project_risks WHERE risk_project = " . intval($proj_id) . " ORDER BY risk_drawing DESC,  risk_category, risk_id";
 
 	$result = mysql_query($sql, $conn);
 	$counter_1 = 0;
@@ -39,7 +39,7 @@ function PDFRiskDisplay($proj_id) {
 			
 			while ($array = mysql_fetch_array($result)) {
 				
-			if ($pdf->GetY() > 220) { $pdf->addPage(); }
+			if ($pdf->GetY() > 200) { $pdf->addPage(); }
 			$new_y = 0;
 			$current_y = 0;
 				

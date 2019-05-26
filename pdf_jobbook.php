@@ -81,7 +81,7 @@ function PDFStagesHeader($column_width) {
 	
 	if (mysql_num_rows($result) > 0) {
 		
-		$pdf->Cell(100,10,'',0,0);
+		$pdf->Cell(100,20,'',0,0);
 		
 		while ($array = mysql_fetch_array($result)) {
 			
@@ -97,12 +97,25 @@ function PDFStagesHeader($column_width) {
 				
 				$pdf->SetX($x);
 			}
-
-			$pdf->Cell($column_width,10,PDFTidyText($array['group_code']),0,0,'C');
 			
+			$x = $pdf->GetX();
+			$y = $pdf->GetY();
+
+			$pdf->Cell($column_width,10,PDFTidyText($array['group_code']),0,1,'C');
+			$pdf->SetX($x);
+			
+			$column_width_buffer = $column_width - 2;
+			
+			PDF_TextShrinker(14,$array['group_description'],$column_width_buffer,'Helvetica','B');
+			
+			$pdf->Cell($column_width,10,PDFTidyText($array['group_description']),0,0,'C');
+			$x = $x + $column_width;
+			$pdf->SetXY($x,$y);
+		
 		}
 		
-		$pdf->Ln(10);
+		
+		$pdf->Ln(20);
 		
 	}
 	
@@ -173,6 +186,7 @@ function PDFTidyText ($text) {
 	return $output;
 	
 }
+
 
 PDFJobBookGetData();
 

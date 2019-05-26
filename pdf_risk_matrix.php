@@ -74,7 +74,7 @@ function PDFRiskMatrix($proj_id) {
 	global $pref_practice;
 	global $pdf;
 	
-	$sql = "SELECT * FROM intranet_project_risks WHERE risk_project = " . intval($proj_id) . " ORDER BY risk_drawing DESC, risk_category, risk_timestamp";
+	$sql = "SELECT * FROM intranet_project_risks WHERE risk_project = " . intval($proj_id) . " ORDER BY risk_drawing DESC, risk_category, risk_id";
 
 	$result = mysql_query($sql, $conn);
 	$counter_1 = 0;

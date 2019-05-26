@@ -13,13 +13,7 @@ $format_bg_r = "220";
 $format_bg_g = "220";
 $format_bg_b = "220";
 
-if ($settings_pdffont != NULL) {
-	$format_font = $settings_pdffont;
-	$format_font_2 = $settings_pdffont.".php";
-} else {
-	$format_font = "franklingothicbook";
-	$format_font_2 = "franklingothicbook.php";
-}
+	$format_font = "Helvetica";
 
 //  Use FDPI to get the template
 
@@ -34,8 +28,6 @@ $tplidx = $pdf->ImportPage(1);
 $pdf->addPage();
 $pdf->useTemplate($tplidx, 0, 0, 210, 297);
 
-$pdf->AddFont($format_font,'',$format_font_2);
-
 // Determine name of project
 
 ProjectHeading($proj_id,"Timesheet Analysis");
@@ -45,7 +37,10 @@ ProjectHeading($proj_id,"Timesheet Analysis");
 
 				if (intval($_POST[submit_begin]) > 0 OR (intval($_POST[submit_end]) > 0)) {
 					
-					$date_period = "Between " . TimeFormat($$time_submit_end) . " and " . TimeFormat($$time_submit_end) . ".";
+							if (intval($_POST[submit_begin]) == 0) { $time_submit_begin = 0; } else { $time_submit_begin = intval($_POST[submit_begin]); }
+							if (intval($_POST[submit_end]) == 0) { $time_submit_end = time(); } else { $time_submit_end = intval($_POST[submit_end]); }
+					
+					$date_period = "Between " . TimeFormat($time_submit_begin) . " and " . TimeFormat($time_submit_end) . ".";
 					$pdf->Multicell(0,4,$date_period);
 					
 				}

@@ -13,6 +13,7 @@ function ProjectListData($input,$proj_active) {
 		elseif ($input == "project_marketing") { $field = "proj_ambition_marketing"; echo "<h2>List of Marketing Ambitions</h2>";  }
 		elseif ($input == "project_location") { $field = "proj_location"; echo "<h2>List of Project File Locations</h2>"; }
 		elseif ($input == "project_type") { $field = "proj_type"; echo "<h2>List of Project Types</h2>"; }
+		elseif ($input == "project_ambition_social") { $field = "proj_ambition_social"; echo "<h2>List of Project Social Ambitions</h2>"; }
 		else { $field = "proj_ambition_internal"; unset($input); }
 		
 		if ($input) {
