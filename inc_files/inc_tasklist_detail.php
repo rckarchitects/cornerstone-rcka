@@ -110,17 +110,26 @@ function TaskListViewIndividual($tasklist_id) {
 		  echo "<div>";
 		  
 		  if ($tasklist_comment) { echo "<h3>Comments</h3><p>" . $tasklist_comment . "</p></div>"; }
+		 
 		  
-		  echo "</div>";
+		  if ($user_id == intval($_COOKIE[user])) {
 		  
-		  if ($tasklist_due < time() && $tasklist_percentage < 100) {
-		  
-			echo "<div><form action=\"index2.php?page=tasklist_detail&amp;tasklist_id=" . $tasklist_id  . "\" method=\"post\"><input type=\"hidden\" name=\"action\" value=\"tasklist_snooze\" /><input type=\"hidden\" name=\"snooze_value\" value=\"2\" /><input type=\"hidden\" name=\"tasklist_id\" value=\"" . $tasklist_id . "\" /><input type=\"submit\" value=\"Snooze for 2 weeks\" /></form></div>";
+			  if ($tasklist_due < time() && $tasklist_percentage < 100) {
+			  
+				echo "<div><form action=\"index2.php?page=tasklist_detail&amp;tasklist_id=" . $tasklist_id  . "\" method=\"post\"><input type=\"hidden\" name=\"action\" value=\"tasklist_snooze\" /><input type=\"hidden\" name=\"snooze_value\" value=\"2\" /><input type=\"hidden\" name=\"tasklist_id\" value=\"" . $tasklist_id . "\" /><input type=\"submit\" value=\"Snooze for 2 weeks\" /></form></div>";
+				
+			  }
+			  
+			  if ($tasklist_percentage < 100) {
+				
+				echo "<div><form action=\"index2.php?page=tasklist_detail&amp;tasklist_id=" . $tasklist_id  . "\" method=\"post\"><input type=\"hidden\" name=\"action\" value=\"tasklist_complete\" /><input type=\"hidden\" name=\"tasklist_id\" value=\"" . $tasklist_id . "\" /><input type=\"submit\" value=\"Mark Complete\" /></form></div>";
+				
+			  }
 		
 		  }
 		  
-		
 	echo "</div>";
+		  
 
 	echo "<div><h3>Other Tasks</h3>";
 	MiniTaskList($_COOKIE[user]);

@@ -16,6 +16,7 @@ if (intval($_POST[manual_id]) == 0 && $_POST[manual_text] != NULL) {
 		$manual_section = addslashes($_POST[manual_section]);
 		$manual_attachment = intval($_POST[manual_attachment]);
 		$manual_checklist = intval($_POST[manual_checklist]);
+		
 
 		// Construct the MySQL instruction to add these entries to the database
 
@@ -62,6 +63,8 @@ if (intval($_POST[manual_id]) == 0 && $_POST[manual_text] != NULL) {
 		$manual_section = addslashes($_POST[manual_section]);
 		$manual_attachment = intval($_POST[manual_attachment]);
 		$manual_checklist = intval($_POST[manual_checklist]);
+		
+		BackupProjectManual($manual_id);
 
 		// Construct the MySQL instruction to add these entries to the database
 

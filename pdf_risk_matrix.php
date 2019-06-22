@@ -27,17 +27,15 @@ function TableHeadings() {
 			$pdf->SetFont('Helvetica','',7);
 			$pdf->Cell(10,4,'#','',0);
 			$pdf->Cell(50,4,'Risk','',0);
-			$pdf->Cell(60,4,'Description','',0);
-			$pdf->Cell(60,4,'Analysis','',0);
+			$pdf->Cell(70,4,'Description','',0);
+			$pdf->Cell(70,4,'Analysis','',0);
 			$pdf->Cell(20,4,'Score','',0,'C');
 			$pdf->Cell(20,4,'Level','',0,'C');
-			$pdf->Cell(60,4,'Mitigation','',0);
+			$pdf->Cell(65,4,'Mitigation','',0);
 			$pdf->Cell(25,4,'Date Identified','',0);
 			$pdf->Cell(25,4,'Management','',0);
 			$pdf->Cell(25,4,'Responsibility','',0);
-			$pdf->Cell(15,4,'Transfer','',0,'C');
-			$pdf->Cell(15,4,'Eliminate','',0,'C');
-			$pdf->Cell(15,4,'Accept','',0,'C');
+			$pdf->Cell(20,4,'Updated','',0);
 			$pdf->Cell(0,4,'','',1);
 }
 
@@ -68,6 +66,18 @@ function GetHeight($text_array,$font_size,$cell_width_array,$line_height_array) 
 	
 }
 
+function HeatMap($threshold,$time) {
+	
+	$baseline = time() - $threshold;
+	
+	$updated = $time - $baseline;
+	
+	$percentage = intval (($updated / $threshold) * 255);
+
+	return 0;
+	
+}
+
 function PDFRiskMatrix($proj_id) {
 	
 	global $conn;
@@ -79,8 +89,6 @@ function PDFRiskMatrix($proj_id) {
 	$result = mysql_query($sql, $conn);
 	$counter_1 = 0;
 	$counter_2 = 1;
-	
-
 	
 	if (mysql_num_rows($result) > 0) {
 		
@@ -118,68 +126,73 @@ function PDFRiskMatrix($proj_id) {
 				if (!$company_name) { $company_name = $pref_practice; }
 					
 				if ($current_category != $array['risk_category']) { $pdf->SetLineWidth(0.5); $pdf->SetFont('Helvetica','b',10); $current_category = $array['risk_category']; $counter_1++; $print = $counter_1 . ".0 " ; $pdf->Ln(2); $pdf->Cell(0,2,'','T',1); $pdf->Cell(10,6,$print,0,0); $pdf->Cell(0,6,$array['risk_category'],0,1); $counter_2 = 1; $pdf->Ln(2); } else { $counter_2++; $pdf->Ln(2.5); }
+				
+				
+				
+				
+				if (intval($array['risk_resolved']) != 1) {
+					
+						$threshold = 604800;
 
-				$pdf->SetLineWidth(0.25);
-				$pdf->SetDrawColor(0,0,0);
-				
-				
-				$pdf->Cell(0,2,'','T',1);
-				
-				
-				$current_y = $pdf->GetY();
-				
-				$pdf->SetFont('Helvetica','',9);
-				$counterprint = $counter_1 . "." . $counter_2;
-				$pdf->Cell(10,4,$counterprint,0,0);
-				
-				$pdf->MultiCell(50,4,$array['risk_title'],0,'l');
-				if ($pdf->GetY() > $new_y) { $new_y = $pdf->GetY(); }
-				$pdf->SetXy(70,$current_y);
-				
-				$pdf->MultiCell(60,4,$array['risk_description'],0,'l');
-				if ($pdf->GetY() > $new_y) { $new_y = $pdf->GetY(); }
-				$pdf->SetXy(130,$current_y);
-				
-				$pdf->MultiCell(60,4,$array['risk_analysis'],0,'l');
-				if ($pdf->GetY() > $new_y) { $new_y = $pdf->GetY(); }
-				$pdf->SetXy(190,$current_y);
-				
-				if ( $array['risk_level'] == "red" ) { SetBarRed(); $pdf->SetTextColor(255,255,255); } elseif ($array['risk_level'] == "amber" ) { SetBarOrange(); } else { SetBarDGreen(); }
-				$pdf->Cell(20,5,ucwords($array['risk_level']),0,0,'C',1);
-				
-				if ( $array['risk_score'] == "high" ) { $pdf->SetFillColor(50,50,50); $pdf->SetTextColor(255,255,255); } elseif ($array['risk_score'] == "medium" ) { $pdf->SetFillColor(100,100,100); $pdf->SetTextColor(255,255,255); } else { $pdf->SetFillColor(200,200,200); }
-				$pdf->Cell(20,5,ucwords($array['risk_score']),0,0,'C',1);
-				$pdf->SetTextColor(0,0,0);
-				
-				$pdf->MultiCell(60,4,$array['risk_mitigation'],0,'l');
-				if ($pdf->GetY() > $new_y) { $new_y = $pdf->GetY(); }
-				$pdf->SetXy(290,$current_y);
-				
-				$pdf->Cell(25,5,TimeFormatBrief(DisplayDate($array['risk_date'])),0,0);
-				$pdf->Cell(25,5,ucwords($array['risk_management']),0,0);
-				$pdf->Cell(25,5,GetCompanyName($array['risk_responsibility']),0,0);
-				
-				$pdf->SetFont('ZapfDingbats','', 10);
-				
-				$symbol = "6";
-				
-				if ($array['risk_management'] == "accept") { $manage1 = ""; $manage2 = ""; $manage3 = $symbol; }
-				elseif ($array['risk_management'] == "eliminate") { $manage1 = ""; $manage2 = $symbol; $manage3 = ""; } 
-				elseif ($array['risk_management'] == "transfer") { $manage1 = $symbol; $manage2 = ""; $manage3 = ""; } 
-				
-				$pdf->Cell(15,4,$manage1,'',0,'C');
-				$pdf->Cell(15,4,$manage2,'',0,'C');
-				$pdf->Cell(15,4,$manage3,'',0,'C');
-				
-				$pdf->Cell(0,4,'','',1);
-				
-				$pdf->SetY($new_y);
+						$pdf->SetLineWidth(0.25);
+						$pdf->SetDrawColor(0,0,0);
+												
+						if (time() - intval($array['risk_timestamp']) < $threshold) { $pdf->SetTextColor(HeatMap($threshold,$array['risk_timestamp']),0,0); } else { $pdf->SetTextColor(0,0,0); $updated = 1; }
+						
+						
+						$pdf->Cell(0,2,'','T',1);
+						
+						
+						$current_y = $pdf->GetY();
+						
+						$pdf->SetFont('Helvetica','',9);
+						$counterprint = $counter_1 . "." . $counter_2;
+						$pdf->Cell(10,4,$counterprint,0,0);
+						
+						$pdf->MultiCell(50,4,$array['risk_title'],0,'l');
+						if ($pdf->GetY() > $new_y) { $new_y = $pdf->GetY(); }
+						$pdf->SetXy(70,$current_y);
+						
+						$pdf->MultiCell(70,4,$array['risk_description'],0,'l');
+						if ($pdf->GetY() > $new_y) { $new_y = $pdf->GetY(); }
+						$pdf->SetXy(140,$current_y);
+						
+						$pdf->MultiCell(70,4,$array['risk_analysis'],0,'l');
+						if ($pdf->GetY() > $new_y) { $new_y = $pdf->GetY(); }
+						$pdf->SetXy(210,$current_y);
+						
+						$pdf->SetTextColor(0,0,0);
+						
+						if ( $array['risk_level'] == "red" ) { SetBarRed(); $pdf->SetTextColor(255,255,255); } elseif ($array['risk_level'] == "amber" ) { SetBarOrange(); } else { SetBarDGreen(); }
+						$pdf->Cell(20,5,ucwords($array['risk_level']),0,0,'C',1);
+						
+						if ( $array['risk_score'] == "high" ) { $pdf->SetFillColor(50,50,50); $pdf->SetTextColor(255,255,255); } elseif ($array['risk_score'] == "medium" ) { $pdf->SetFillColor(100,100,100); $pdf->SetTextColor(255,255,255); } else { $pdf->SetFillColor(200,200,200); }
+						$pdf->Cell(20,5,ucwords($array['risk_score']),0,0,'C',1);
+						
+						if (time() - intval($array['risk_timestamp']) < $threshold) { $pdf->SetTextColor(HeatMap($threshold,$array['risk_timestamp']),0,0); } else { $pdf->SetTextColor(0,0,0); }
+						
+						$pdf->MultiCell(65,4,$array['risk_mitigation'],0,'l');
+						if ($pdf->GetY() > $new_y) { $new_y = $pdf->GetY(); }
+						$pdf->SetXy(315,$current_y);
+						
+						$pdf->Cell(25,5,TimeFormat(DisplayDate($array['risk_date'])),0,0);
+						$pdf->Cell(25,5,ucwords($array['risk_management']),0,0);
+						$pdf->Cell(25,5,GetCompanyName($array['risk_responsibility']),0,0);
+						
+						$pdf->Cell(15,5,TimeFormat($array['risk_timestamp']),0,0);
+						
+						$pdf->Cell(0,4,'','',1);
+						
+						$pdf->SetY($new_y);
+						
+						$pdf->SetTextColor(0,0,0);
 			
-	
+				}
 				
 			}
 			
 			$pdf->SetLineWidth(0.5); $pdf->Ln(2); $pdf->Cell(0,2,'','T',1);
+			
 	
 	}
 	

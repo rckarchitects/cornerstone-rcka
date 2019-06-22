@@ -5,7 +5,7 @@ function RiskList($proj_id) {
 	global $conn;
 	global $pref_practice;
 	
-	$sql = "SELECT * FROM intranet_project_risks WHERE risk_project = " . intval($proj_id) . " ORDER BY risk_drawing DESC,  risk_category, risk_id";
+	$sql = "SELECT * FROM intranet_project_risks WHERE risk_project = " . intval($proj_id) . " ORDER BY risk_drawing DESC, risk_category, risk_id";
 
 	$result = mysql_query($sql, $conn);
 	$counter_1 = 0;
@@ -20,11 +20,15 @@ function RiskList($proj_id) {
 			
 			$current_category = NULL;
 			
+			$current_drawing = NULL;
+			
 			while ($array = mysql_fetch_array($result)) {
 				
 				$company_name = RiskGetCompany($array['risk_responsibility']);
 				
 				if (!$company_name) { $company_name = $pref_practice; }
+				
+			if ($current_drawing != $array['risk_drawing']) { echo "</table><h2>" . $array['risk_drawing'] . "</h2><table>"; $counter_1 = 0; $counter_2 = 0; $current_drawing = $array['risk_drawing']; }
 				
 			if ($current_category != $array['risk_category']) { $current_category = $array['risk_category']; $counter_1++;  echo "<tr><td colspan=\"13\"><strong>" . $counter_1 . ".0 " . $array['risk_category'] . "</strong></td></tr>";  $counter_2 = 1; } else { $counter_2++; }
 			
@@ -39,8 +43,10 @@ function RiskList($proj_id) {
 			if ($array['risk_management'] == "transfer") { $management_1 = "X"; unset($management_2); unset($management_3); }
 			elseif ($array['risk_management'] == "eliminate") { $management_2 = "X"; unset($management_3); unset($management_1); }
 			elseif ($array['risk_management'] == "accept") { $management_3 = "X"; unset($management_1); unset($management_2); }
+			
+			if (intval($array['risk_resolved']) == 1) { $style = "style=\"text-decoration: line-through;\""; } else { unset($style); }
 				
-				echo "<tr><td>" . $counter_1 . "." . $counter_2 . "</td><td><p><strong>" . ucwords($array['risk_title']) . "</strong><br />" . nl2br($array['risk_description']) . "&nbsp; <a href=\"index2.php?page=project_risks&amp;risk_id=" . $array['risk_id'] . "\" /><img src=\"images/button_edit.png\" alt=\"Edit\"></a></p></td><td " . $background . "><td " . $background2 . "></td></td><td style=\"padding-left: 6px;\">" . $array['risk_analysis'] . "</td><td>" . $array['risk_warnings'] . "</td><td>" . $array['risk_mitigation'] . "</td><td style=\"text-align: center;\">" . $management_1 . "</td><td style=\"text-align: center;\">" . $management_2 . "</td><td style=\"text-align: center;\">" . $management_3 . "</td><td>" . $company_name . "</td><td style=\"text-align: right;\">" . $array['risk_date'] . "</td></tr>";
+				echo "<tr " . $style . "><td>" . $counter_1 . "." . $counter_2 . "</td><td><p><strong>" . ucwords($array['risk_title']) . "</strong><br />" . nl2br($array['risk_description']) . "&nbsp; <a href=\"index2.php?page=project_risks&amp;risk_id=" . $array['risk_id'] . "\" /><img src=\"images/button_edit.png\" alt=\"Edit\"></a></p></td><td " . $background . "><td " . $background2 . "></td></td><td style=\"padding-left: 6px;\">" . $array['risk_analysis'] . "</td><td>" . $array['risk_warnings'] . "</td><td>" . $array['risk_mitigation'] . "</td><td style=\"text-align: center;\">" . $management_1 . "</td><td style=\"text-align: center;\">" . $management_2 . "</td><td style=\"text-align: center;\">" . $management_3 . "</td><td>" . $company_name . "</td><td style=\"text-align: right;\">" . $array['risk_date'] . "</td></tr>";
 				
 			}
 			echo "</table></div>";
@@ -126,8 +132,20 @@ function RiskEdit($risk_id,$proj_id) {
 	echo "	
 				<div class=\"float\"><h4>Risk Title</h4><p><input type=\"text\" name=\"risk_title\" maxlength=\"75\" value=\"" . $array['risk_title'] . "\" required=\"required\" /><br /><span class=\"minitext\">Enter a brief title for this risk</span></p></div>
 				<div class=\"float\"><h4>Description of risk</h4><p><textarea name=\"risk_description\" class=\"inputbox\" style=\"width: 75%; height: 150px;\">" . $array['risk_description'] . "</textarea><br /><span class=\"minitext\">Provide a brief description of the risk</span></p></div>
-			</div>
-			<div>
+			";
+			
+	echo "		<div class=\"float\"><h4>Resolved</h4>";
+	
+				if ($array['risk_resolved'] == 1) { $resolved = "checked=\"checked\""; } else { unset($resolved); }
+	
+	echo		"<input type=\"checkbox\" name=\"risk_resolved\" value=\"1\" " . $resolved . " />&nbsp;Risk Resolved";
+	
+	echo "		</div>
+	
+				</div>";
+			
+	echo
+			"<div>
 				<div class=\"float\"><h4>Risk Level</h4>
 					<p><span class=\"minitext\">Rate the potential impact of this risk should it occur</span></p>
 					<p><span style=\"padding: 6px; margin: 8px; background: green; display: block;\"><input type=\"radio\" value=\"green\" name=\"risk_level\" " . $risk_level_green . " class=\"inputbox\" required=\"required\" />&nbsp;Green</span></p>
@@ -158,6 +176,8 @@ function RiskEdit($risk_id,$proj_id) {
 				<div class=\"float\"><h4>Document Number</h4><p><input type=\"text\" name=\"risk_drawing\" list=\"risk_drawing\" maxlength=\"200\" value=\"" . $risk_drawing . "\" /><br /><span class=\"minitext\">Enter the document reference number</span></p>";
 	
 				DataList("risk_drawing","intranet_project_risks",$risk_project,$risk_project);
+				
+				echo "<p><input type=\"checkbox\" name=\"update_drawing\" value=\"1\" checked=\checked\"/>&nbsp;Update all documents with this reference?</p>";
 	
 	echo "		</div>";
 	
@@ -174,6 +194,7 @@ function RiskEdit($risk_id,$proj_id) {
 					<input type=\"hidden\" name=\"risk_id\" value=\"" . $risk_id . "\" />
 					<input type=\"hidden\" name=\"risk_project\" value=\"" . $proj_id . "\" />
 					<input type=\"hidden\" name=\"proj_id\" value=\"" . $proj_id . "\" />
+					<input type=\"hidden\" name=\"current_drawing\" value=\"" . urlencode($risk_drawing) . "\" />
 					<input type=\"hidden\" name=\"action\" value=\"risk_edit\" />
 					</form>
 				</div>

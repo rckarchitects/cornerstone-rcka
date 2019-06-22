@@ -20,8 +20,6 @@
   $font_file = "skins/" . $settings_style . "/font.inc";
   if (file_exists($font_file)) { echo file_get_contents($font_file); }
   
-  
-  
   echo "
   
   <link rel=\"search\" href=\"opensearchdescription.xml\"
@@ -29,6 +27,8 @@
       title=\"$settings_name\" />
 	  
   <link rel=\"StyleSheet\" type=\"text/css\" href=\"skins/$settings_style/styles.css\" />
+  
+  <link rel=\"StyleSheet\" type=\"text/css\" media=\"print\" href=\"skins/printstyles.css\" />
 
 			<script type=\"text/javascript\">
 			var current = \"1\";

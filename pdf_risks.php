@@ -26,7 +26,7 @@ function PDFRiskDisplay($proj_id) {
 	global $pref_practice;
 	global $pdf;
 	
-	$sql = "SELECT * FROM intranet_project_risks WHERE risk_project = " . intval($proj_id) . " ORDER BY risk_drawing DESC,  risk_category, risk_id";
+	$sql = "SELECT * FROM intranet_project_risks WHERE risk_project = " . intval($proj_id) . " ORDER BY risk_drawing DESC, risk_category, risk_id";
 
 	$result = mysql_query($sql, $conn);
 	$counter_1 = 0;
@@ -53,82 +53,86 @@ function PDFRiskDisplay($proj_id) {
 			//elseif ($array['risk_management'] == "eliminate") { $management_2 = "X"; unset($management_3); unset($management_1); }
 			//elseif ($array['risk_management'] == "accept") { $management_3 = "X"; unset($management_1); unset($management_2); }
 			
+			if (intval($array['risk_resolved']) != 1) {
 			
-			$pdf->SetLineWidth(0.25);
-			$pdf->SetDrawColor(0,0,0);
-			
-			$pdf->SetFont('Helvetica','B',10);
-			$counterprint = $counter_1 . "." . $counter_2;
-			$pdf->Cell(10,5,$counterprint,'B',0);
-			$pdf->Cell(0,5,ucwords($array['risk_title']),'B',1);
-			$pdf->SetFont('Helvetica','',7);
-			
-			if ( $array['risk_level'] == "red" ) { SetBarRed(); } elseif ($array['risk_level'] == "amber" ) { SetBarOrange(); } else { SetBarDGreen(); }
-			
-			$pdf->Cell(5,5,'',1,0,0,1);
-			$pdf->Cell(5,5,'',0);
-			$pdf->Cell(90,5,'Description','',0);
-			$pdf->Cell(90,5,'Analysis','',1);
-			
-			$pdf->SetFont('Helvetica','',9);
-			
-			
-			$pdf->Ln(1);
-			$current_y = $pdf->GetY();
-			$pdf->Cell(10,5,'','',0);
-			$pdf->MultiCell(90,4,$array['risk_description'],'b','l');
-			$new_y = $pdf->GetY();
-			$pdf->SetXY(110,$current_y);
-			$pdf->MultiCell(90,4,$array['risk_analysis'] ,'b','l');
-			if ($pdf->GetY() > $new_y) { $pdf->SetX(10); } else { $pdf->SetXY(10,$new_y); }
-			$pdf->Ln(3);
-			$pdf->Cell(10,5,'',0);
-			$pdf->SetLineWidth(0.1);
-			$pdf->SetFont('Helvetica','',7);
-			$pdf->Cell(20,5,'Likelihood','TB',0);
-			$pdf->SetFont('Helvetica','',9);
-			$pdf->Cell(70,5,ucwords($array['risk_score']),'TB',0);
-			$pdf->SetFont('Helvetica','',7);
-			$pdf->Cell(20,5,'Impact','TB',0);
-			$pdf->SetFont('Helvetica','',9);
-			$pdf->Cell(70,5,ucwords($array['risk_level']),'TB',1);
-			$pdf->Ln(2);
-			
-			$pdf->SetFont('Helvetica','',10);
-			$pdf->Cell(10,5,'','',0);
-			$pdf->SetFont('Helvetica','',7);
-			$pdf->Cell(90,5,'Warning Signs','',0);
-			$pdf->Cell(90,5,'Mitigation Strategy','',1);
-			$pdf->SetFont('Helvetica','',9);
-			$pdf->Ln(1);
-			
-			$current_y = $pdf->GetY();
-			$pdf->Cell(10,5,'','',0);
-			$pdf->MultiCell(90,4,$array['risk_warnings'],'b','l');
-			$new_y = $pdf->GetY();
-			$pdf->SetXY(110,$current_y);
-			$pdf->MultiCell(90,4,$array['risk_mitigation'] ,0,'l');
-			if ($pdf->GetY() > $new_y) { $pdf->SetX(10); } else { $pdf->SetXY(10,$new_y); }
-			$pdf->Ln(3);
-			
-			$pdf->Cell(10,5,'',0);
-			$pdf->SetLineWidth(0.1);
-			$pdf->SetFont('Helvetica','',7);
-			$pdf->Cell(20,5,'Date Identified','TB',0);
-			$pdf->SetFont('Helvetica','',9);
-			$pdf->Cell(25,5,TimeFormatBrief(DisplayDate($array['risk_date'])),'TB',0);
-			$pdf->SetFont('Helvetica','',7);
-			$pdf->Cell(20,5,'Management','TB',0);
-			$pdf->SetFont('Helvetica','',9);
-			$pdf->Cell(25,5,ucwords($array['risk_management']),'TB',0);
+					
+					$pdf->SetLineWidth(0.25);
+					$pdf->SetDrawColor(0,0,0);
+					
+					$pdf->SetFont('Helvetica','B',10);
+					$counterprint = $counter_1 . "." . $counter_2;
+					$pdf->Cell(10,5,$counterprint,'B',0);
+					$pdf->Cell(0,5,ucwords($array['risk_title']),'B',1);
+					$pdf->SetFont('Helvetica','',7);
+					
+					if ( $array['risk_level'] == "red" ) { SetBarRed(); } elseif ($array['risk_level'] == "amber" ) { SetBarOrange(); } else { SetBarDGreen(); }
+					
+					$pdf->Cell(5,5,'',1,0,0,1);
+					$pdf->Cell(5,5,'',0);
+					$pdf->Cell(90,5,'Description','',0);
+					$pdf->Cell(90,5,'Analysis','',1);
+					
+					$pdf->SetFont('Helvetica','',9);
+					
+					
+					$pdf->Ln(1);
+					$current_y = $pdf->GetY();
+					$pdf->Cell(10,5,'','',0);
+					$pdf->MultiCell(90,4,$array['risk_description'],'b','l');
+					$new_y = $pdf->GetY();
+					$pdf->SetXY(110,$current_y);
+					$pdf->MultiCell(90,4,$array['risk_analysis'] ,'b','l');
+					if ($pdf->GetY() > $new_y) { $pdf->SetX(10); } else { $pdf->SetXY(10,$new_y); }
+					$pdf->Ln(3);
+					$pdf->Cell(10,5,'',0);
+					$pdf->SetLineWidth(0.1);
+					$pdf->SetFont('Helvetica','',7);
+					$pdf->Cell(20,5,'Likelihood','TB',0);
+					$pdf->SetFont('Helvetica','',9);
+					$pdf->Cell(70,5,ucwords($array['risk_score']),'TB',0);
+					$pdf->SetFont('Helvetica','',7);
+					$pdf->Cell(20,5,'Impact','TB',0);
+					$pdf->SetFont('Helvetica','',9);
+					$pdf->Cell(70,5,ucwords($array['risk_level']),'TB',1);
+					$pdf->Ln(2);
+					
+					$pdf->SetFont('Helvetica','',10);
+					$pdf->Cell(10,5,'','',0);
+					$pdf->SetFont('Helvetica','',7);
+					$pdf->Cell(90,5,'Warning Signs','',0);
+					$pdf->Cell(90,5,'Mitigation Strategy','',1);
+					$pdf->SetFont('Helvetica','',9);
+					$pdf->Ln(1);
+					
+					$current_y = $pdf->GetY();
+					$pdf->Cell(10,5,'','',0);
+					$pdf->MultiCell(90,4,$array['risk_warnings'],'b','l');
+					$new_y = $pdf->GetY();
+					$pdf->SetXY(110,$current_y);
+					$pdf->MultiCell(90,4,$array['risk_mitigation'] ,0,'l');
+					if ($pdf->GetY() > $new_y) { $pdf->SetX(10); } else { $pdf->SetXY(10,$new_y); }
+					$pdf->Ln(3);
+					
+					$pdf->Cell(10,5,'',0);
+					$pdf->SetLineWidth(0.1);
+					$pdf->SetFont('Helvetica','',7);
+					$pdf->Cell(20,5,'Date Identified','TB',0);
+					$pdf->SetFont('Helvetica','',9);
+					$pdf->Cell(25,5,TimeFormatBrief(DisplayDate($array['risk_date'])),'TB',0);
+					$pdf->SetFont('Helvetica','',7);
+					$pdf->Cell(20,5,'Management','TB',0);
+					$pdf->SetFont('Helvetica','',9);
+					$pdf->Cell(25,5,ucwords($array['risk_management']),'TB',0);
 
-			$pdf->SetFont('Helvetica','',7);
-			$pdf->Cell(20,5,'Owner','TB',0);
-			$pdf->SetFont('Helvetica','',9);
-			$pdf->Cell(0,5,GetCompanyName($array['risk_responsibility']),'TB',0);
-			$pdf->SetFont('Helvetica','',7);
+					$pdf->SetFont('Helvetica','',7);
+					$pdf->Cell(20,5,'Owner','TB',0);
+					$pdf->SetFont('Helvetica','',9);
+					$pdf->Cell(0,5,GetCompanyName($array['risk_responsibility']),'TB',0);
+					$pdf->SetFont('Helvetica','',7);
 
-			$pdf->Ln(3);
+					$pdf->Ln(3);
+			
+			}
 			
 			// . "</td><td>" . $array['risk_warnings'] . "</td><td>" . $array['risk_mitigation'] . "</td><td style=\"text-align: center;\">" . $management_1 . "</td><td style=\"text-align: center;\">" . $management_2 . "</td><td style=\"text-align: center;\">" . $management_3 . "</td><td>" . $company_name . "</td><td style=\"text-align: right;\">" . $array['risk_date'] . "</td></tr>";
 			

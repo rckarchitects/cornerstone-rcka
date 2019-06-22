@@ -11,6 +11,8 @@ $text_remove = array("�","�");
 
 ini_set("upload_max_filesize","10M");
 
+$backup_path = "backups/";
+
 
 function PinnedJournalEntries($user_usertype_current) {
 		
@@ -1979,24 +1981,40 @@ function DateList($impending_only) {
 			echo "<tr><th>Description</th><th>Date</th><th>Project</th><th colspan=\"2\" class=\"HideThis\">Category</th></th>";
 			
 			$counter = 1;
+			$headline = 0;
 	
 			foreach ($array_dates AS $date_item) {
 							
 				if ($date_item[0] == date("Y-m-d",time())) {
 					$style="alert_warning";
+					if ($headline < 1) { echo "<tr><th colspan=\"5\">Today</th></th>"; $headline = 1; }
 				} elseif (((DisplayDate($date_item[0]))) < (time() + 604800) && (DisplayDate($date_item[0]) > (time()))) {
+					if ($headline < 2) { echo "<tr><th colspan=\"5\">Next Fortnight</th></th>"; $headline = 2; }
 					$style="alert_careful";
+				} elseif (((DisplayDate($date_item[0]))) < (time() + 2678400) && (DisplayDate($date_item[0]) > (time()))) {
+					if ($headline < 3) { echo "<tr><th colspan=\"5\">Next Month</th></th>"; $headline = 3; }
+					unset($style);
+				} elseif (((DisplayDate($date_item[0]))) < (time() + 15552000) && (DisplayDate($date_item[0]) > (time()))) {
+					if ($headline < 4) { echo "<tr><th colspan=\"5\">Next Six Months</th></th>"; $headline = 4; }
+					unset($style);
+				} elseif (((DisplayDate($date_item[0]))) > (time() + 15552000) && (DisplayDate($date_item[0]) > (time()))) {
+					if ($headline < 5) { echo "<tr><th colspan=\"5\">In the Future</th></th>"; $headline = 5; }
+					unset($style);
 				} else {
 					unset($style);
 				}
 				
+				
+				
 				if ((intval($_GET[date_id]) == $date_item[0]) && $date_item[4]) { $embolden = "font-weight: bold;"; } else { unset($embolden); }
 	
-				echo "<tr><td class=\"$style\" style=\"width: 25%; $embolden\">". $date_item[3];
+				echo "<tr><td class=\"$style\" style=\"width: 50%; $embolden\">"; 
 
-				if ($date_item[4]) { echo "<a href=\"index2.php?page=date_list&amp;filter=" . intval($_GET[filter]) . "&amp;date_id=" . $counter . "\">&nbsp;&#8681;</a>"; }
+				if ($date_item[4]) { echo "<a href=\"index2.php?page=date_list&amp;filter=" . intval($_GET[filter]) . "&amp;date_id=" . $counter . "\" class=\"submenu_bar\" style=\"float: right;\">&#8681;</a>"; }
+				
+				echo $date_item[3];
 
-				echo "</td><td class=\"$style\"  style=\"width: 25%; $embolden\"><a href=\"index2.php?page=datebook_view_day&amp;timestamp=" . DisplayDate($date_item[0]) . "\">" . TimeFormat ( DisplayDate($date_item[0]) ) . "</a></td><td class=\"$style\"  style=\"width: 25%; $embolden\">" . $date_item[1] . "</td>";
+				echo "</td><td class=\"$style\"  style=\"width: 15%; $embolden\"><a href=\"index2.php?page=datebook_view_day&amp;timestamp=" . DisplayDate($date_item[0]) . "\">" . TimeFormat ( DisplayDate($date_item[0]) ) . "</a></td><td class=\"$style\"  style=\"width: 25%; $embolden\">" . $date_item[1] . "</td>";
 					echo "<td class=\"$style HideThis\" style=\"$embolden\">" . $date_item[2] . "</td><td style=\"text-align: right;\" class=\"$style HideThis\"><a href=\"" . $date_item[6] . "\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a></td>";
 
 
@@ -2577,6 +2595,11 @@ function TenderList() {
 		
 		$submitted_total = 0;
 		$successful_total = 0;
+		
+		$submitted_total_year = 0;
+		$successful_total_year = 0;
+		
+		$current_year = date("Y",time());
 
 		$nowtime = time();
 
@@ -2651,9 +2674,15 @@ function TenderList() {
 				$tender_submitted = $array['tender_submitted'];
 				$tender_result = $array['tender_result'];
 				$tender_responsible = $array['tender_responsible'];
+				$tender_linked = $array['tender_linked'];
 				
-				if ($tender_submitted == 1) { $submitted_total++; }
-				if ($tender_result == 1) { $successful_total++; }
+				// This checks to see if there were any previous stages to disregard
+				$sql_linked = "SELECT tender_id FROM intranet_tender WHERE tender_linked = " . intval($array['tender_id']) . " LIMIT 1";
+				$result_linked = mysql_query($sql_linked, $conn) or die(mysql_error());
+				if (mysql_num_rows($result_linked) > 0) { $previous_stage = 1; } else { $previous_stage = 0; }
+				
+				if ($tender_submitted == 1 && intval($previous_stage) == 0) { $submitted_total++; $submitted_total_year++; }
+				if ($tender_result == 1 && intval($previous_stage) == 1) { $successful_total++; $successful_total_year++; }
 				
 				
 				if (($tender_date > time()) && $tender_submitted == 1) {
@@ -2679,8 +2708,10 @@ function TenderList() {
 				if ($tender_date > time()) {
 					$deadline = " (" . DeadlineTime($tender_date - $nowtime) . ")";
 				} else {
-					unset($deadline);					
+					unset($deadline);			
 				}
+				
+				//if (date("Y",$tender_date) != $current_year) { TenderResultSummary($successful_total_year,$submitted_total_year,$current_year); $current_year = date("Y",$tender_date); $successful_total_year = 0; $tender_submitted_year = 0;  }
 				
 				if (($nowtime > $tender_date) && ($nowtime < $time_line)) { echo "<div class=\"bodybox\" style=\"background: white; color: rgba(255,0,0,1); border: solid 1px rgba(255,0,0,0.8); font-size: 2em;\"><strong><span class=\"minitext\">Today is</span><br />" . TimeFormat($nowtime) . "</strong></div>"; }
 										
@@ -2692,11 +2723,14 @@ function TenderList() {
 				
 				$time_line = $tender_date;
 				
+				//echo "<p>Submitted (Year): " . $successful_total_year . "/" . $submitted_total_year . "</p>";
+				//echo "<p>Submitted (All): " . $successful_total . "/" . $submitted_total . "</p>";
+				
 				echo "</div>";
 
 				}
 				
-				echo "</div>";
+				
 
 				} else {
 
@@ -2706,12 +2740,26 @@ function TenderList() {
 				
 				if ($submitted_total > 0 && (intval($_GET[tender_pending]) != 1)) {
 				
-					$success_rate = number_format ( 100 * ($successful_total / $submitted_total), 0 );
-					
-					echo "<div class=\"bodybox\"><p><strong>Statistics</strong></p><p>You have submitted $submitted_total tenders $analysis_client with a " . $success_rate . "% success rate.</p></div>";
+					//TenderResultSummary($successful_total,$submitted_total);
 					
 				}
 				
+				echo "</div>";
+				
+}
+
+function TenderResultSummary($successful_total,$submitted_total,$year) {
+	
+	if ($year > 0) { $year_intro = "In " . $year . " you submitted "; } else { $year_intro = "To date, you have submitted "; }
+	
+					if ($submitted_total > 0 && (intval($_GET[tender_pending]) != 1)) {
+				
+					$success_rate = number_format ( 100 * ($successful_total / $submitted_total), 0 );
+					
+					echo "<div class=\"bodybox\"><p><strong>Statistics</strong></p><p>" . $year_intro . " $submitted_total tenders $analysis_client with a " . $success_rate . "% success rate.</p></div>";
+					
+					}
+	
 }
 
 function NotAllowed() {
@@ -3032,7 +3080,7 @@ function AlertBoxShow($user_id) {
 		$sql = "SELECT * FROM intranet_alerts WHERE alert_timestamp < " . time() . " AND alert_user = " . $user_id . " AND (alert_status = 0 OR alert_status = NULL) ORDER BY alert_timestamp DESC";
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		if (mysql_num_rows($result) > 0) {
-			echo "<div>";
+			echo "<div id=\"warnings\">";
 			while ($array = mysql_fetch_array($result)) {
 				$alert_id = $array['alert_id'];
 				$alert_category = $array['alert_category'];
@@ -4884,12 +4932,15 @@ function ClassList($array_class_1,$array_class_2,$type) {
 		
 }
 
+
+
 function BackupJournal($blog_id) {
 	
 	global $conn;
 	global $user_id_current;
+	global $backup_path;
 	$blog_id = intval($blog_id);
-	$backup_path = "backup/";
+	
 	
 	$time = time();
 	
@@ -4917,6 +4968,80 @@ function BackupJournal($blog_id) {
 		AlertBoxInsert($user_id_current,"Journal Entry Archived",$alert_message,$array['blog_id'],0,0,$array['blog_proj']);
 		
 	}
+	
+}
+
+function BackupProjectManual($manual_id) {
+	
+	global $conn;
+	global $user_id_current;
+	global $backup_path;
+	$manual_id = intval($manual_id);
+	
+	$time = time();
+	
+	$sql = "SELECT * FROM intranet_stage_manual LEFT JOIN intranet_user_details ON manual_author = user_id WHERE manual_id = $manual_id LIMIT 1";
+	
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	if (mysql_num_rows($result) > 0) {
+		
+		$array = mysql_fetch_array($result);
+		
+		$backup_file = $backup_path . "projectmanual_" . $array['manual_id'] . "_" . $array['manual_author'] . "_" . $time . ".html";
+		
+		$output = "<h1>" . $array['manual_title'] . "</h1>";
+		if ($array['manual_section']) { $output = $output . "<h2>" . $array['manual_section'] . "</h2>"; }
+		$output = $output . "<h3>By " . $array['user_name_first'] . " " . $array['user_name_second'] . "</h3><hr />";
+		$output = $output . "<article>" . $array['manual_text'] . "</article>";
+		$output = $output . "<hr /><p>Entry date: " . TimeFormatDetailed($array['manual_updated']) . ", backed up " . TimeFormatDetailed($time) . "</p>";
+		
+		$file = fopen($backup_file, "w");
+		fwrite($file, $output);
+		fclose($file);
+		
+		$alert_message = "<p>Project Manual Entry <a href=\"index2.php?page=manual_page&amp;manual_id=" . $manual_id . "\">\"" . $array['manual_title'] . "</a>\" has been archived to the following location: <a href=\"" . $backup_file . "\">" . $backup_file . "</a></p>";
+		
+		AlertBoxInsert($user_id_current,"Project Manual Entry Archived",$alert_message,$array['manual_id'],0,0,NULL);
+		
+	}
+	
+}
+
+function ListBackups($type,$id) {
+	
+	global $backup_path;
+	
+	$limit = 10;
+	
+	$array_files = scandir ( $backup_path );
+	
+	$find_file = $type . "_" . $id . "_";
+	
+		$count = 1;
+	
+			rsort($array_files);
+			
+			foreach ($array_files AS $file) {
+				
+				$file_name = explode("_",$file);
+				
+				if ($file_name[0] == $type && intval($file_name[1]) == intval($id) ) {
+					
+					if ($count == 1) { echo "<div id=\"file_history\"><h3>Previous Versions</h3><table>"; }
+					
+					echo "<tr><td><a href=\"" . $backup_path . $file . "\">" . TimeFormat($file_name[3]) . "</a></td><td>" . GetUserNameOnly($file_name[2]) . "</td></tr>";
+					
+					 $count++;
+					
+					}
+					
+				if ($count > $limit) { echo "<tr><td colspan=\"2\"><i>Showing most recent " . $limit . " backups only.</i></td></tr>"; break;  }
+				
+			}
+			
+			
+			if ($count > 1) { echo "</table></div>"; }
+	
 	
 }
 

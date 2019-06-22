@@ -190,7 +190,7 @@ function MediaBrowse($filter) {
 	
 	MediaTopMenu ();
 
-	$sql = "SELECT * FROM `intranet_media` $filter ORDER BY media_category, media_timestamp DESC";
+	$sql = "SELECT * FROM `intranet_media` LEFT JOIN `intranet_projects` ON `proj_id` = `media_project` $filter ORDER BY media_category, media_timestamp DESC";
 	$result = mysql_query($sql, $conn) or die(mysql_error());
 	
 	

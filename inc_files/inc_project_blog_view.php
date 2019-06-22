@@ -130,5 +130,7 @@ function BlogView($blog_id) {
 
 $proj_id = BlogView($blog_id);
 
+ListBackups("journal",$blog_id);
+
 
 

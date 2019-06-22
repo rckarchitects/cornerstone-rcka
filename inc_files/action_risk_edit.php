@@ -26,6 +26,7 @@ function ActionRiskEdit() {
 		$risk_category = addslashes(trim($_POST[risk_category]));
 		$risk_drawing = addslashes(trim($_POST[risk_drawing]));
 		$risk_user = $_COOKIE[user];
+		$risk_resolved = intval($_POST[risk_resolved]);
 
 		
 	if ($risk_id > 0) {
@@ -45,7 +46,8 @@ function ActionRiskEdit() {
 		risk_date = '$risk_date',
 		risk_category = '$risk_category',
 		risk_user = $risk_user,
-		risk_drawing = '$risk_drawing'
+		risk_drawing = '$risk_drawing',
+		risk_resolved = $risk_resolved
 		WHERE risk_id = $risk_id LIMIT 1
 		";
 		
@@ -53,6 +55,8 @@ function ActionRiskEdit() {
 		$techmessage = $sql;
 		$actionmessage = "<p>Risk \'<a href=\"index2.php?page=project_risks&amp;proj_id=$risk_project\">\"". $risk_description ."\"</a>\' edited successfully.</p>";
 		AlertBoxInsert($_COOKIE[user],"Risk Updated",$actionmessage,$risk_id,0,0,$risk_project);
+		
+		if (urldecode($_POST[current_drawing]) != $_POST[risk_drawing] && $_POST[update_drawing] == 1) { $sql_update = "UPDATE intranet_project_risks SET risk_drawing = '" . $risk_drawing . "' WHERE risk_drawing = '" . addslashes($_POST[current_drawing]) . "' AND risk_project = " . $risk_project; $result_update = mysql_query($sql_update, $conn) or die(mysql_error()); }
 	
 	} else {
 
@@ -74,7 +78,8 @@ function ActionRiskEdit() {
 		risk_date,
 		risk_category,
 		risk_drawing,
-		risk_user
+		risk_user,
+		risk_resolved
 		) values (
 		NULL,
 		'$risk_title',
@@ -91,7 +96,8 @@ function ActionRiskEdit() {
 		'$risk_date',
 		'$risk_category',
 		'$risk_drawing',
-		$risk_user
+		$risk_user,
+		$risk_resolved
 		)";
 		
 	

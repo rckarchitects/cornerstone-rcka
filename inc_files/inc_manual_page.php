@@ -14,6 +14,8 @@ if ($user_usertype_current >= 2 && intval($_GET[manual_id]) > 0 && $_GET[action]
 	
 	ManualPageView(intval($_GET[manual_id]));
 	
+	ListBackups("projectmanual",$_GET[manual_id]);
+	
 } else {
 	
 	ManualIndexView();

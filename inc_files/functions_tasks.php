@@ -255,11 +255,11 @@ if (intval($proj_id) > 0) { $proj_id_filter = " AND tasklist_project = " . $proj
 
 if ($_GET[view] == "complete") {
 	
-	$sql = "SELECT * FROM intranet_tasklist, intranet_projects WHERE tasklist_project = proj_id AND tasklist_person = " . $user_id . " AND tasklist_percentage = 100 $proj_id_filter order by " . $order . "";
+	$sql = "SELECT * FROM intranet_tasklist LEFT JOIN intranet_projects ON tasklist_project = proj_id WHERE tasklist_person = " . $user_id . " AND tasklist_percentage = 100 $proj_id_filter order by " . $order . "";
 
 } else {
 	
-	$sql = "SELECT * FROM intranet_tasklist, intranet_projects WHERE tasklist_project = proj_id AND tasklist_person = " . $user_id . " AND tasklist_percentage < 100 $proj_id_filter order by " . $order . "";
+	$sql = "SELECT * FROM intranet_tasklist LEFT JOIN intranet_projects ON tasklist_project = proj_id WHERE tasklist_person = " . $user_id . " AND tasklist_percentage < 100 $proj_id_filter order by " . $order . "";
 
 }
 
