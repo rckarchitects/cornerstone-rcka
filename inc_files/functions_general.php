@@ -2661,7 +2661,7 @@ function TenderList() {
 				$tender_id = $array['tender_id'];
 					
 					
-							
+				
 				
 				
 				$tender_name = $array['tender_name'];
@@ -2676,13 +2676,16 @@ function TenderList() {
 				$tender_responsible = $array['tender_responsible'];
 				$tender_linked = $array['tender_linked'];
 				
-				// This checks to see if there were any previous stages to disregard
-				$sql_linked = "SELECT tender_id FROM intranet_tender WHERE tender_linked = " . intval($array['tender_id']) . " LIMIT 1";
-				$result_linked = mysql_query($sql_linked, $conn) or die(mysql_error());
-				if (mysql_num_rows($result_linked) > 0) { $previous_stage = 1; } else { $previous_stage = 0; }
+				if (date("Y",$tender_date) != $current_year) { TenderResultSummary($successful_total_year,$submitted_total_year,$current_year); $current_year = date("Y",$tender_date); $successful_total_year = 0; $submitted_total_year = 0;  }
 				
-				if ($tender_submitted == 1 && intval($previous_stage) == 0) { $submitted_total++; $submitted_total_year++; }
-				if ($tender_result == 1 && intval($previous_stage) == 1) { $successful_total++; $successful_total_year++; }
+				// This checks to see if there were any previous stages to disregard
+				$sql_linked = "SELECT tender_id, tender_type FROM intranet_tender WHERE tender_linked = " . intval($array['tender_id'])  . " " . $filter . " ORDER BY tender_date DESC LIMIT 1";
+				$result_linked = mysql_query($sql_linked, $conn) or die(mysql_error());
+				if (mysql_num_rows($result_linked) > 0) { $array_previous = mysql_fetch_array($result_linked); $previous_stage = $array_previous['tender_id']; $previous_stage_type = $array_previous['tender_type']; } else { $previous_stage = 0; unset($previous_stage_type); }
+				
+				
+				if ($tender_submitted == 1 && ($tender_result == 1 OR $tender_result == 2)) { $submitted_total++; $submitted_total_year++; }
+				if ($tender_result == 1 ) { $successful_total++; $successful_total_year++; }
 				
 				
 				if (($tender_date > time()) && $tender_submitted == 1) {
@@ -2711,7 +2714,7 @@ function TenderList() {
 					unset($deadline);			
 				}
 				
-				//if (date("Y",$tender_date) != $current_year) { TenderResultSummary($successful_total_year,$submitted_total_year,$current_year); $current_year = date("Y",$tender_date); $successful_total_year = 0; $tender_submitted_year = 0;  }
+				
 				
 				if (($nowtime > $tender_date) && ($nowtime < $time_line)) { echo "<div class=\"bodybox\" style=\"background: white; color: rgba(255,0,0,1); border: solid 1px rgba(255,0,0,0.8); font-size: 2em;\"><strong><span class=\"minitext\">Today is</span><br />" . TimeFormat($nowtime) . "</strong></div>"; }
 										
@@ -2725,6 +2728,8 @@ function TenderList() {
 				
 				//echo "<p>Submitted (Year): " . $successful_total_year . "/" . $submitted_total_year . "</p>";
 				//echo "<p>Submitted (All): " . $successful_total . "/" . $submitted_total . "</p>";
+				
+				if ($previous_stage > 0) { echo "<p class=\"minitext\">Subsequent Stage: <a href=\"index2.php?page=tender_view&amp;tender_id=" . $previous_stage . "\">" . $previous_stage_type . "</a></p>"; }
 				
 				echo "</div>";
 
@@ -2740,7 +2745,7 @@ function TenderList() {
 				
 				if ($submitted_total > 0 && (intval($_GET[tender_pending]) != 1)) {
 				
-					//TenderResultSummary($successful_total,$submitted_total);
+					TenderResultSummary($successful_total,$submitted_total);
 					
 				}
 				
@@ -2756,7 +2761,7 @@ function TenderResultSummary($successful_total,$submitted_total,$year) {
 				
 					$success_rate = number_format ( 100 * ($successful_total / $submitted_total), 0 );
 					
-					echo "<div class=\"bodybox\"><p><strong>Statistics</strong></p><p>" . $year_intro . " $submitted_total tenders $analysis_client with a " . $success_rate . "% success rate.</p></div>";
+					echo "<div class=\"bodybox\" style=\"border: 1px solid;\"><p><strong>Statistics</strong></p><p>" . $year_intro . " $submitted_total tenders $analysis_client with a " . $success_rate . "% success rate.</p></div>";
 					
 					}
 	
