@@ -58,8 +58,11 @@ if ($_GET[drawing_packages] != NULL) {
 	// ClassList($array_class_1,$array_class_2,"drawing_type");
 	// echo "<br /><span class=\"minitext\">(Note that changing these filters will clear anything you have selected below.)</span></p></form>";
 	
-	if ($drawing_class != NULL) { $drawing_class = " AND drawing_number LIKE '%-$drawing_class-%' "; } else { unset($drawing_class); }
-	if ($drawing_type != NULL) { $drawing_type = " AND drawing_number LIKE '%-$drawing_type-%' "; } else { unset($drawing_type); }	
+					if ($_GET[drawing_class]) { $drawing_class = $_GET[drawing_class]; } elseif ($_POST[drawing_class]) { $drawing_class = $_POST[drawing_class]; }
+					if ($_GET[drawing_type]) { $drawing_type = $_GET[drawing_type]; } elseif ($_POST[drawing_type]) { $drawing_type = $_POST[drawing_type]; }
+					
+					if ($drawing_class != NULL) { $drawing_class = " AND drawing_number LIKE '%-" . $drawing_class . "-%' "; } else { unset($drawing_class); }
+					if ($drawing_type != NULL) { $drawing_type = " AND drawing_number LIKE '%-" . $drawing_type . "-%' "; } else { unset($drawing_type); }
 	
 	
 	

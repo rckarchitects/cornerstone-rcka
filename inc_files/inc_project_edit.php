@@ -131,6 +131,8 @@ $proj_ambition_client = $array['proj_ambition_client'];
 $proj_ambition_marketing = $array['proj_ambition_marketing'];
 $proj_ambition_social = $array['proj_ambition_social'];
 
+$proj_identifier = $array['proj_identifier'];
+
 if (!$array['proj_info']) { $proj_info = file_get_contents('library/template_proj_info.txt') ;} else { $proj_info = $array['proj_info']; }
 
 $proj_location = $array['proj_location'];
@@ -204,6 +206,8 @@ $proj_ambition_social = $_POST[proj_ambition_social];
 $proj_info = $_POST[proj_info];
 $proj_location = $_POST[proj_location];
 
+$proj_identifier = $_POST[proj_identifier];
+
 // Find the next number in the sequence
 if ($_POST[proj_num] == NULL) {
 	$sql_newnum = "SELECT proj_num FROM intranet_projects ORDER BY proj_num DESC LIMIT 1";
@@ -228,6 +232,7 @@ echo "
 <p class=\"minitext\">Fields marked * are required.</p>
 <p>Project Number*<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_num\" maxlength=\"8\" value=\"$proj_num\" />$newnum</p>
 <p>Project Name*<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_name\" maxlength=\"50\" value=\"$proj_name\" /></p>
+<p>Project Identifier<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_identifier\" maxlength=\"6\" value=\"$proj_identifier\" /><br /><span class=\"minitext\">Between 4 - 6 characters, uppercase required</span></p>
 <h3>Project Address</h3>
 <p>Address Line 1<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_address_1\" maxlength=\"50\" value=\"$proj_address_1\" /></p>
 <p>Address Line 2<br /><input type=\"text\" class=\"inputbox\" size=\"54\" name=\"proj_address_2\" maxlength=\"50\" value=\"$proj_address_2\" /></p>

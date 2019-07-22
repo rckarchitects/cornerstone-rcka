@@ -1127,6 +1127,8 @@ $proj_location = $array['proj_location'];
 
 $proj_info = $array['proj_info'];
 
+$proj_identifier = $array['proj_identifier'];
+
 // Determine the country
 $sql = "SELECT country_printable_name FROM intranet_contacts_countrylist where country_id = '$proj_address_country' LIMIT 1";
 $result = mysql_query($sql, $conn);
@@ -1136,6 +1138,8 @@ $country_printable_name = $array['country_printable_name'];
 					
 
 					echo "<table summary=\"Project Information\">";
+					
+					if ($proj_identifier) { echo "<tr><td>Project Identifier</td><td>$proj_identifier</td></tr>"; }
 
 					echo "<tr><td style=\"width: 40%;\">Site Address</td><td>";
 
@@ -2683,6 +2687,11 @@ function TenderList() {
 				$result_linked = mysql_query($sql_linked, $conn) or die(mysql_error());
 				if (mysql_num_rows($result_linked) > 0) { $array_previous = mysql_fetch_array($result_linked); $previous_stage = $array_previous['tender_id']; $previous_stage_type = $array_previous['tender_type']; } else { $previous_stage = 0; unset($previous_stage_type); }
 				
+				// This checks to see if there were any subsequent stages to disregard
+				$sql_subsequent = "SELECT tender_id, tender_type FROM intranet_tender WHERE tender_id = " . intval($array['tender_linked'])  . " " . $filter . " ORDER BY tender_date DESC LIMIT 1";
+				$result_subsequent = mysql_query($sql_subsequent, $conn) or die(mysql_error());
+				if (mysql_num_rows($result_subsequent) > 0) { $array_subsequent = mysql_fetch_array($result_subsequent); $subsequent_stage_type = $array_subsequent['tender_type']; } else { unset($subsequent_stage_type); }
+				
 				
 				if ($tender_submitted == 1 && ($tender_result == 1 OR $tender_result == 2)) { $submitted_total++; $submitted_total_year++; }
 				if ($tender_result == 1 ) { $successful_total++; $successful_total_year++; }
@@ -2719,7 +2728,7 @@ function TenderList() {
 				if (($nowtime > $tender_date) && ($nowtime < $time_line)) { echo "<div class=\"bodybox\" style=\"background: white; color: rgba(255,0,0,1); border: solid 1px rgba(255,0,0,0.8); font-size: 2em;\"><strong><span class=\"minitext\">Today is</span><br />" . TimeFormat($nowtime) . "</strong></div>"; }
 										
 				
-				echo "<div class=\"bodybox\" $style><a href=\"index2.php?page=tender_edit&tender_id=$tender_id\" style=\"float: right; margin: 0 0 5px 5px;\"><img src=\"images/button_edit.png\" alt=\"Edit Tender\" /></a><p><strong><a href=\"index2.php?page=tender_view&amp;tender_id=$tender_id\">$tender_name</a></strong>" . $tender_type . "</p>";
+				echo "<div class=\"bodybox\" $style id=\"" . $tender_id . "\"><a href=\"index2.php?page=tender_edit&tender_id=$tender_id\" style=\"float: right; margin: 0 0 5px 5px;\"><img src=\"images/button_edit.png\" alt=\"Edit Tender\" /></a><p><strong><a href=\"index2.php?page=tender_view&amp;tender_id=$tender_id\">$tender_name</a></strong>" . $tender_type . "</p>";
 				echo "<p>Deadline: ". date("d M Y",$tender_date) . $deadline . "<br /><span class=\"minitext\"><a href=\"index2.php?page=tender_list&amp;tender_filter=tender_client&amp;tender_id=" . $tender_id . "\">". $tender_client . "</a></span></p>";
 				
 				if ($tender_responsible) { echo "<p>Responsible: " . UserDetails($tender_responsible) . "</p>"; }
@@ -2729,7 +2738,9 @@ function TenderList() {
 				//echo "<p>Submitted (Year): " . $successful_total_year . "/" . $submitted_total_year . "</p>";
 				//echo "<p>Submitted (All): " . $successful_total . "/" . $submitted_total . "</p>";
 				
-				if ($previous_stage > 0) { echo "<p class=\"minitext\">Subsequent Stage: <a href=\"index2.php?page=tender_view&amp;tender_id=" . $previous_stage . "\">" . $previous_stage_type . "</a></p>"; }
+				if ($previous_stage > 0) { echo "<p class=\"minitext\">Subsequent Stage: <a href=\"#" . $previous_stage . "\">" . $previous_stage_type . "</a></p>"; }
+				
+				if ($tender_linked > 0) { echo "<p class=\"minitext\">Previous Stage: <a href=\"#" . $tender_linked . "\">" . $subsequent_stage_type . "</a></p>"; }
 				
 				echo "</div>";
 
@@ -4775,7 +4786,7 @@ function ClassList($array_class_1,$array_class_2,$type) {
 						
 					}
 					
-	function DrawingFilter($page, $proj_id) {
+	function DrawingFilterOLD($page, $proj_id) {
 		
 					$drawing_class = $_POST[drawing_class];
 					$drawing_type = $_POST[drawing_type];
@@ -4792,18 +4803,33 @@ function ClassList($array_class_1,$array_class_2,$type) {
 		
 	}
 	
+	function DrawingFilter($page, $proj_id) {
+		
+					if ($_POST[drawing_class]) { $drawing_class = $_POST[drawing_class]; }
+					if ($_POST[drawing_type]) { $drawing_type = $_POST[drawing_type]; }
+					
+					$drawing_class = trim(trim($drawing_class,"-"));
+					$drawing_type = trim(trim($drawing_type,"-"));
+					
+					echo "<div><h3>Filter</h3>";
+					echo "<form method=\"post\" action=\"index2.php?page=" . $page. "&amp;proj_id=" . $proj_id . "\">";
+					echo "<div style=\"float: left; margin-right: 15px;\"><span class=\"minitext\">Filter 1</span><br /><input type=\"text\" name=\"drawing_class\" value=\"$drawing_class\" /></div>";
+					echo "<div style=\"float: left; margin-right: 15px;\"><span class=\"minitext\">Filter 2</span><br /><input type=\"text\" name=\"drawing_type\" value=\"$drawing_type\" /></div>";
+					echo "&nbsp;";
+					echo "<div style=\"float: left; margin-right: 15px;\"><br /><input type=\"submit\" /></div>";
+					echo "</form></div><p>Please note that by using this filter you will clear any entries you may have previously entered below.</p>";
+		
+	}
+	
 	function ProjectDrawingList($proj_id) {
 		
 		global $conn;
 					
-
+					if ($_GET[drawing_class]) { $drawing_class = $_GET[drawing_class]; } elseif ($_POST[drawing_class]) { $drawing_class = $_POST[drawing_class]; }
+					if ($_GET[drawing_type]) { $drawing_type = $_GET[drawing_type]; } elseif ($_POST[drawing_type]) { $drawing_type = $_POST[drawing_type]; }
 					
-					$drawing_class = $_POST[drawing_class];
-					$drawing_type = $_POST[drawing_type];
-					
-					
-					if ($drawing_class != NULL) { $drawing_class = " AND drawing_number LIKE '%-$drawing_class-%' "; } else { unset($drawing_class); }
-					if ($drawing_type != NULL) { $drawing_type = " AND drawing_number LIKE '%-$drawing_type-%' "; } else { unset($drawing_type); }
+					if ($drawing_class != NULL) { $drawing_class = " AND drawing_number LIKE '%-" . $drawing_class . "-%' "; } else { unset($drawing_class); }
+					if ($drawing_type != NULL) { $drawing_type = " AND drawing_number LIKE '%-" . $drawing_type . "-%' "; } else { unset($drawing_type); }
 
 				$sql = "SELECT * FROM intranet_drawings, intranet_drawings_scale, intranet_drawings_paper WHERE drawing_project = $proj_id AND drawing_scale = scale_id AND drawing_paper = paper_id $drawing_class $drawing_type order by drawing_number";
 				$result = mysql_query($sql, $conn) or die(mysql_error());

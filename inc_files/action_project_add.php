@@ -104,6 +104,8 @@ $proj_location = addslashes($_POST[proj_location]);
 $proj_info = addslashes($_POST[proj_info]);
 $proj_lpa = addslashes($_POST[proj_lpa]);
 
+$proj_identifier = addslashes(strtoupper($_POST[proj_identifier]));
+
 // Construct the MySQL instruction to add these entries to the database
 
 $sql_add = "INSERT INTO intranet_projects (
@@ -167,7 +169,8 @@ proj_ambition_marketing,
 proj_ambition_social,
 proj_location,
 proj_info,
-proj_lpa
+proj_lpa,
+proj_identifier
 ) values (
 'NULL',
 '$proj_num',
@@ -229,7 +232,8 @@ proj_lpa
 '$proj_ambition_social',
 '$proj_location',
 '$proj_info',
-'$proj_lpa'
+'$proj_lpa',
+'$proj_identifier'
 )";
 
 $result = mysql_query($sql_add, $conn) or die(mysql_error());
@@ -243,5 +247,3 @@ AlertBoxInsert($_COOKIE[user],"Project Added",$actionmessage,$project_id_added,8
 $techmessage = $result;
 
 }
-
-?>

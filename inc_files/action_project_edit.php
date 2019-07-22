@@ -111,6 +111,8 @@ $proj_ambition_social = trim(addslashes($_POST[proj_ambition_social]));
 
 $proj_location = trim(addslashes($_POST[proj_location]));
 
+$proj_identifier = addslashes(strtoupper($_POST[proj_identifier]));
+
 // Construct the MySQL instruction to add these entries to the database
 
 if ($user_usertype_current >= 3 OR $_COOKIE[user] == $proj_rep_black) {
@@ -164,8 +166,9 @@ proj_planning_ref = '$proj_planning_ref',
 proj_buildingcontrol_ref = '$proj_buildingcontrol_ref',
 proj_location = '$proj_location',
 proj_info = '$proj_info',
-proj_lpa = '$proj_lpa'
-WHERE proj_id = '$_POST[proj_id]'";
+proj_lpa = '$proj_lpa',
+proj_identifier = '$proj_identifier'
+WHERE proj_id = $proj_id";
 
 $result = mysql_query($sql_add, $conn) or die(mysql_error());
 
