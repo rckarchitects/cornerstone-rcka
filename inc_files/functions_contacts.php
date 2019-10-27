@@ -3,7 +3,7 @@
 function ContactViewDetailed($select_contact_id) {
 		
 		global $conn;
-		global $$user_usertype_current;
+		global $user_usertype_current;
 		
 			$select_contact_id = intval($select_contact_id);
 
@@ -61,14 +61,7 @@ function ContactViewDetailed($select_contact_id) {
 								$prefix_name = $array5['prefix_name'];
 								
 								if ($contact_prefix > 0) { $prefix_name = "(".$prefix_name.")"; }
-						
-						echo "<h2>$contact_namefirst $contact_namesecond</h2>";
-						
-						ProjectSubMenu(NULL,$user_usertype_current,"contacts_admin",1);
-						ProjectSubMenu(NULL,$user_usertype_current,"contacts_admin",2);
-						
-
-								
+													
 								$contact_name = $contact_namefirst." ".$contact_namesecond;
 								if ($contact_title) { $contact_name = $contact_name . ", $contact_title"; }
 								if ($contact_department != NULL) { $contact_name = $contact_name." (".$contact_department.")"; }
@@ -77,7 +70,7 @@ function ContactViewDetailed($select_contact_id) {
 						echo "<div><h3>".$contact_name;
 
 						
-						if ($contact_address != NULL) { echo "&nbsp;<a href=\"http://labelstudio.redcitrus.com/?address=$label_address\"><img src=\"images/button_pdf.png\" alt=\"Address Labels\" /></a>"; }
+						if ($contact_address != NULL) { echo "&nbsp;<a href=\"http://labelstudio.redcitrus.com/?address=$label_address\"><img src=\"images/button_pdf.png\" alt=\"Address Labels\" class=\"button\" /></a>"; }
 						echo "</h3>";
 						
 							  // Begin setting out the table
@@ -287,6 +280,17 @@ function ContactPostalAddress($contact_id) {
 	
 }
 
+function GetContactName($contact_id) {
+	
+	global $conn;
+	$contact_id = intval($contact_id);
+	$sql = "SELECT contact_namefirst, contact_namesecond FROM contacts_contactlist WHERE contact_id = " . $contact_id . " LIMIT 1";
+	$result = mysql_query($sql, $conn);
+	$array = mysql_fetch_array($result);
+	$output = $array['contact_namefirst'] . " " . $array['contact_namesecond'];
+	return $output;
+}
+
 function CompanyViewDetailed($company_id) {
 	
 	global $conn;
@@ -316,7 +320,7 @@ function CompanyViewDetailed($company_id) {
 			$label_address = urlencode($contact_name)."|".urlencode($company_name)."|".urlencode($company_address)."|".urlencode($company_city)."|".urlencode($company_county)."|".urlencode($company_postcode)."|".urlencode($company_country);
 	echo "<div><h3><a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">$company_name</a>";
 	
-	if ($company_address != NULL) { echo "&nbsp;<a href=\"http://labelstudio.redcitrus.com/?address=$label_address\"><img src=\"images/button_pdf.png\" alt=\"Address Labels\" /></a>"; }
+	if ($company_address != NULL) { echo "&nbsp;<a href=\"http://labelstudio.redcitrus.com/?address=$label_address\"><img src=\"images/button_pdf.png\" alt=\"Address Labels\" class=\"button\" /></a>"; }
 	echo "</h3>";
 	
 		  // Begin setting out the table
@@ -443,7 +447,7 @@ function DisciplineNonProject($discipline_id) {
 			echo "</a></td><td>";
 			if ($company_name != NULL) { echo "<a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">".$company_name."</a><br />"; }
 			echo "</td><td>";
-			if ($contact_email != NULL) { echo "Email: $contact_email&nbsp;<a href=\"mailto:$contact_email\"><img src=\"images/button_email.png\" alt=\"Email\"/></a><br />"; }
+			if ($contact_email != NULL) { echo "Email: $contact_email&nbsp;<a href=\"mailto:$contact_email\"><img src=\"images/button_email.png\" alt=\"Email\" class=\"button\" /></a><br />"; }
 			if ($contact_telephone != NULL) { echo "T: $contact_telephone<br />"; } elseif ($company_phone != NULL) { echo "T: $company_phone<br />"; }
 			if ($contact_mobile != NULL) { echo "M: $contact_mobile"; }
 			echo "</td>";
@@ -503,7 +507,7 @@ function DisciplineProject($discipline_id) {
 					echo "</a></td><td>";
 					if ($company_name != NULL) { echo "<a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">".$company_name."</a><br />"; } else { echo "--"; }
 					echo "</td><td>";
-					if ($contact_email != NULL) { echo "Email: $contact_email&nbsp;<a href=\"mailto:$contact_email\"><img src=\"images/button_email.png\" alt=\"Email\"/></a><br />"; }
+					if ($contact_email != NULL) { echo "Email: $contact_email&nbsp;<a href=\"mailto:$contact_email\"><img src=\"images/button_email.png\" alt=\"Email\" class=\"button\" /></a><br />"; }
 					if ($contact_telephone != NULL) { echo "T: $contact_telephone<br />"; } elseif ($company_phone != NULL) { echo "T: $company_phone<br />"; }
 					if ($contact_mobile != NULL) { echo "M: $contact_mobile"; }
 					echo "</td>";
@@ -654,11 +658,11 @@ function ListContacts($listorder,$startletter,$desc_order,$listbegin,$listmax) {
 					}
 					
 					if ($user_usertype_current > 0) {
-						echo "<a href=\"index2.php?page=contacts_edit&amp;contact_id=$contact_id&amp;status=edit\" style=\"float: right;\"><img src=\"images/button_edit.png\" alt=\"Edit Contact\" /></a>";
+						echo "<a href=\"index2.php?page=contacts_edit&amp;contact_id=$contact_id&amp;status=edit\" style=\"float: right;\"><img src=\"images/button_edit.png\" alt=\"Edit Contact\" class=\"button\" /></a>";
 					}
 					
 					if ($duplicate && $user_usertype_current > 0) {
-						echo "<a href=\"index2.php?page=contacts_merge&amp;contact_id=$contact_id\" style=\"float: right;\"><img src=\"images/button_delete.png\" alt=\"Merge Contact\" />&nbsp;</a>";
+						echo "<a href=\"index2.php?page=contacts_merge&amp;contact_id=$contact_id\" style=\"float: right;\"><img src=\"images/button_delete.png\" alt=\"Merge Contact\" class=\"button\" />&nbsp;</a>";
 					}
 					
 					
@@ -743,7 +747,7 @@ function ListDuplicates($contact_id) {
 					
 					echo "<table>";
 					
-					echo "<tr><th style=\"width: 20px; text-align: center;\"><img src=\"images/button_delete.png\" alt=\"Contact to merge\" /></th><th style=\"width: 20px; text-align: center;\"><img src=\"images/button_list.png\" alt=\"Contact to merge to\" /></th><th>Name</th><th>Title</th><th>Company</th><th>Email</th></tr>";
+					echo "<tr><th style=\"width: 20px; text-align: center;\"><img src=\"images/button_delete.png\" alt=\"Contact to merge\" class=\"button\" /></th><th style=\"width: 20px; text-align: center;\"><img src=\"images/button_list.png\" alt=\"Contact to merge to\" class=\"button\" /></th><th>Name</th><th>Title</th><th>Company</th><th>Email</th></tr>";
 					
 					echo "<tr><td style=\"width: 20px; text-align: center;\"><input type=\"radio\" checked=\"checked\" value=\"$contact_id\" name=\"contact_delete\" /></td><td style=\"width: 20px; text-align: center;\"><input type=\"radio\" value=\"$contact_id\" name=\"contact_mergeto\" /></td><td>$contact_namefirst $contact_namesecond</td><td>$contact_title</td><td>$company_name</td><td>$contact_email</td></tr>";
 					
@@ -1100,3 +1104,241 @@ function DeleteContact($contact_id_old,$contact_id_new) {
 			}
 
 }
+
+
+function ContactEmailChecker ($filter) {
+	
+	global $conn;
+	
+	$sql = "SELECT contact_id, contact_namefirst, contact_namesecond, contact_email, company_name, contact_company FROM contacts_contactlist LEFT JOIN contacts_companylist ON company_id = contact_company WHERE contact_company > 0 AND contact_namefirst != '' AND contact_namesecond != '' AND contact_email != '' AND contact_include > 0 ORDER BY contact_namesecond ,contact_namefirst, contact_id";
+	
+				$result = mysql_query($sql, $conn) or die(mysql_error());
+
+			if (mysql_num_rows($result) > 0) {
+				
+				echo "<h3>" . mysql_num_rows($result) . " items found.</h3>";
+				
+				echo "<p>Contacts with duplicate email addresses are highlighted in red.</p>";
+			
+				echo "<table><tr><th>Name</th><th>Company</th><th>Email</th></tr>";
+		
+			
+					while ($array = mysql_fetch_array($result)) {
+						
+				
+							if ($current_email == $array['contact_email'] && $current_email != NULL ) { $bg = "style=\"color: red;\""; } else { unset ($bg); $current_email = $array['contact_email'];  }
+							
+							echo "<tr" . $bg . "><td><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=" . $array['contact_id'] . "\">" . $array['contact_namefirst'] . " " . $array['contact_namesecond'] . "</a></td><td><a href=\"index2.php?page=contacts_company_view&amp;company_id=" . $array['contact_company'] . "\">" . $array['company_name'] . "</a></td><td>" . $array['contact_email'] . "</td></tr>";
+							
+					}
+					
+				echo "</table>";
+			
+			}
+	
+}
+
+
+function ProjectContacts($proj_id,$user_usertype_current) {
+
+global $conn;
+$proj_id = intval($proj_id);
+
+			
+			$sql_contact = "SELECT * FROM contacts_disciplinelist, contacts_contactlist, intranet_contacts_project LEFT JOIN contacts_companylist ON contact_proj_company = contacts_companylist.company_id WHERE contact_proj_contact = contact_id  AND discipline_id = contact_proj_role AND contact_proj_project = $proj_id ORDER BY discipline_order, discipline_name, contact_namesecond";
+			$result_contact = mysql_query($sql_contact, $conn) or die(mysql_error());
+
+			if (mysql_num_rows($result_contact) > 0) {
+
+			echo "<div><table>";
+				while ($array_contact = mysql_fetch_array($result_contact)) {
+					$contact_id = $array_contact['contact_id'];
+					$contact_namefirst = $array_contact['contact_namefirst'];
+					$contact_namesecond = $array_contact['contact_namesecond'];
+					$company_name = $array_contact['company_name'];
+					$company_id = $array_contact['company_id'];
+					$contact_email = $array_contact['contact_email'];
+					$contact_telephone = $array_contact['contact_telephone'];
+					$contact_mobile = $array_contact['contact_mobile'];
+					$company_phone = $array_contact['company_phone'];
+					$contact_company = $array_contact['contact_company'];
+					$discipline_id = $array_contact['discipline_id'];
+					$discipline_name = $array_contact['discipline_name'];
+					$contact_proj_id = $array_contact['contact_proj_id'];
+					$contact_proj_note = $array_contact['contact_proj_note'];
+					$contact_proj_company = $array_contact['contact_proj_company'];
+				
+					
+			print "<tr><td style=\"width: 30%;\"><a href=\"index2.php?page=discipline_view&amp;discipline_id=$discipline_id\">$discipline_name</a></td>";
+			echo "<td";
+			if (trim($contact_proj_note) == "") { echo " colspan=\"2\" "; }
+			echo "><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=$contact_id\">";
+			echo "$contact_namefirst $contact_namesecond";
+			echo "</a>";
+			if ($company_name != NULL) { echo ",&nbsp;<a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">".$company_name."</a>"; }
+			if ($company_change != NULL) { echo "$company_change"; }
+			if ($contact_email != NULL) { echo "<br />Email: $contact_email&nbsp;<a href=\"mailto:$contact_email\"><img src=\"images/button_email.png\" alt=\"Email\" class=\"button\"/></a>"; }
+			if ($contact_telephone != NULL) { echo "<br />T: $contact_telephone"; } elseif ($company_phone != NULL) { echo "<br />T: $company_phone"; }
+			if ($contact_mobile != NULL) { echo "<br />M: $contact_mobile"; }
+			echo "</td>";
+			if (trim($contact_proj_note) != "") {
+			echo "<td style=\"width: 25%;\">".$contact_proj_note.$note."</td>";
+			}
+			echo "<td><a href=\"index2.php?page=project_contacts&amp;contact_proj_id=$contact_proj_id&amp;proj_id=$_GET[proj_id]&amp;action=project_contact_remove&amp;contact_proj_id=$contact_proj_id\" onClick=\"javascript:return confirm('Are you sure you want to delete this project contact?');\"><img src=\"images/button_delete.png\" class=\"button\" /></a></td><td><a href=\"index2.php?page=project_contacts&amp;contact_proj_id=$contact_proj_id&amp;proj_id=$_GET[proj_id]\"><img src=\"images/button_edit.png\" class=\"button\" /></a></td></tr>";
+
+
+			}
+			echo "</table></div>";
+
+			} else { echo "<div><p>No Project Contacts Found.</p></div>"; }
+
+}
+
+
+function ProjectContactEdit($proj_id,$contact_proj_contact) {
+
+global $conn;
+
+		$proj_id = intval($proj_id);
+		$contact_proj_id = intval($contact_proj_contact);
+
+		// First, identify if we're adding or editing
+
+		if ( intval ( $contact_proj_id ) > 0 ) {
+
+				$contact_proj_array = ProjectContactCheck($_GET[contact_proj_id]);
+				$contact_proj_id = $contact_proj_array[0]; 
+				$contact_proj_contact = $contact_proj_array[1];
+				$contact_proj_role = $contact_proj_array[2];
+				$contact_proj_note = $contact_proj_array[3];
+				$contact_proj_company = $contact_proj_array[4];
+				$contact_id = $contact_proj_array[5];
+
+		// work out the CURRENT company to see if the contact has changed
+
+		$sql_check_previous = "SELECT contact_namefirst, contact_namesecond, contact_company FROM contacts_contactlist WHERE contact_id = " . intval ( $contact_id ) . " LIMIT 1 ";
+		$result_check_previous = mysql_query($sql_check_previous, $conn) or die(mysql_error());
+		$array_check_previous = mysql_fetch_array($result_check_previous);
+		$contact_company_previous = $array_check_previous['contact_company'];
+		$contact_namefirst = $array_check_previous['contact_namefirst'];
+		$contact_namesecond = $array_check_previous['contact_namesecond'];
+
+		echo "<h2>Edit Project Contact Entry for $contact_namefirst $contact_namesecond</h2>";
+		} else {
+		echo "<h2>Add Project Contacts</h2>";
+		}
+
+		echo "<div><form method=\"post\" action=\"index2.php?page=project_contacts&amp;proj_id=$proj_id\">";
+
+		if ($contact_proj_id > 0) {
+
+					if ($contact_proj_company != $contact_company_previous) {
+					echo "<div class=\"form_50\"><p><strong>$contact_proj_company / $contact_company_previous <br />Note:</strong><br />The contact listed for this project is no longer with the company which undertook the work on this project. Please ensure that the company listed below is correct.</p></div>";
+					}
+
+					// Contact company
+
+					print "<div class=\"form_50\">Company:<br /><select name=\"contact_proj_company\">";
+
+					$sql_company = "SELECT company_name, company_postcode, company_id FROM contacts_companylist ORDER BY company_name, company_postcode";
+					$result_company = mysql_query($sql_company, $conn) or die(mysql_error());
+					
+					if ($contact_proj_company > 0) { $company_selected = $contact_proj_company;} elseif ($project_company > 0) { $company_selected = $project_company;} else { $company_selected = NULL; }
+					
+					echo "<option value=\"\">-- None --</option>";
+						while ($array_company = mysql_fetch_array($result_company)) {
+
+							$company_id = $array_company['company_id'];
+							$company_name = $array_company['company_name'];
+							$company_postcode = $array_company['company_postcode'];
+							
+							if ($company_id == $company_selected) { $selected = "selected=\"selected\""; } else { $selected = NULL; }
+							echo "<option value=\"$company_id\" $selected>$company_name, $company_postcode</option>\n";
+					}
+
+					echo "</select>";
+					echo "<input type=\"hidden\" value=\"$contact_id\" name=\"contact_proj_contact\" >";
+					echo "</div>";
+
+		} else {
+		
+			$sql_contact = "SELECT contact_id, contact_namefirst, contact_namesecond, contact_company, company_name, company_postcode, company_id FROM contacts_contactlist LEFT JOIN contacts_companylist ON contacts_contactlist.contact_company = contacts_companylist.company_id WHERE contact_namefirst != '' AND contact_namesecond != '' AND contact_namesecond NOT LIKE '&%' AND contact_namesecond NOT LIKE '-%' AND contact_namesecond NOT LIKE '?%' ORDER BY contact_namesecond, contact_namefirst, contact_company";
+			$result_contact = mysql_query($sql_contact, $conn) or die(mysql_error());
+			echo "<div class=\"form_50\">Contact:<br />";
+			echo "<select name=\"contact_proj_contact\">";
+			
+					while ($array_contact = mysql_fetch_array($result_contact)) {
+
+						$contact_id = $array_contact['contact_id'];
+						$company_id = $array_contact['company_id'];
+						$contact_namefirst = $array_contact['contact_namefirst'];
+						$contact_namesecond = $array_contact['contact_namesecond'];
+						$contact_company = $array_contact['contact_company'];
+						$contact_postcode = $array_contact['contact_postcode'];
+						$company_name = $array_contact['company_name'];
+						$company_postcode = $array_contact['company_postcode'];
+						
+						$name_print = $contact_namesecond.", ".$contact_namefirst;
+						
+						if ($contact_proj_id == NULL AND $contact_company) { $print_company = "- " . $company_name." [".$company_postcode."]"; } else { $print_company = NULL; }
+						if ($contact_proj_contact == $contact_id) { $selected = "selected=\"selected\""; $project_company = $company_id; } else { $selected = NULL; }
+						echo "<option value=\"$contact_id\" $selected>$name_print $print_company</option>\n";
+			}
+			
+			echo "</select></div>";
+		
+		
+		}
+
+		echo "<div class=\"form_50\">Role<br />";
+		$sql_disc = "SELECT discipline_id, discipline_name, discipline_ref FROM contacts_disciplinelist ORDER BY discipline_name";
+		$result_disc = mysql_query($sql_disc, $conn) or die(mysql_error());
+		print "<select name=\"contacts_discipline\">";
+
+			while ($array_disc = mysql_fetch_array($result_disc)) {
+
+				$discipline_id = $array_disc['discipline_id'];
+				$discipline_name = $array_disc['discipline_name'];
+				if ($contact_proj_role == $discipline_id) { $selected = "selected=\"selected\""; } else { $selected = NULL; }
+				echo "<option value=\"$discipline_id\" $selected>$discipline_name</option>\n";
+		}
+
+		echo "</select></div><div class=\"form_50\">Notes:<br /><textarea name=\"contact_proj_note\" cols=\"38\" rows=\"3\">";
+		if ($_GET[contact_proj_id] > 0) { echo $contact_proj_note; }
+		echo "</textarea></div>";
+
+		echo "<div class=\"form_100\">";
+
+		if ($_GET[contact_proj_id] > 0) {
+		echo "<input type=\"hidden\" name=\"action\" value=\"project_contact_edit\" /><input type=\"hidden\" name=\"contact_proj_project\" value=\"$_GET[proj_id]\" /><input type=\"hidden\" name=\"contact_proj_id\" value=\"$contact_proj_id\" /><input type=\"submit\" value=\"Update Contact\" />";
+		} else {
+		echo "<input type=\"hidden\" name=\"action\" value=\"project_contact_add\" /><input type=\"hidden\" name=\"contact_proj_project\" value=\"$_GET[proj_id]\" /><input type=\"submit\" value=\"Add Contact\" />";
+		}
+
+		echo "</div>";
+
+		echo "</form></div>";
+
+}
+
+function ProjectContactCheck($contact_proj_id) {
+
+	global $conn;
+
+		$sql_check = "SELECT contact_proj_contact, contact_proj_role, contact_proj_note, contact_proj_company FROM intranet_contacts_project WHERE contact_proj_id = '$contact_proj_id' LIMIT 1 ";
+		$result_check = mysql_query($sql_check, $conn) or die(mysql_error());
+		$array_check = mysql_fetch_array($result_check);
+		
+		$return_array = array();
+		
+		$return_array[] = $contact_proj_id;
+		$return_array[] = $array_check['contact_proj_contact'];
+		$return_array[] = $array_check['contact_proj_role'];
+		$return_array[] = $array_check['contact_proj_note'];
+		$return_array[] = $array_check['contact_proj_company'];
+		$return_array[] = $array_check['contact_proj_contact'];
+		
+		return $return_array;
+		
+}
+

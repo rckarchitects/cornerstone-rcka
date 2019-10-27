@@ -125,7 +125,7 @@ function Logo($settings_style,$settings_name) {
 			echo "<a href=\"index2.php\" class=\"image\">";
 
 			if (file_exists($logo)) {
-					echo "<img src=\"$logo\" alt=\"$settings_name\" style=\"text-align: center; width: 150px;\" />";
+					echo "<img src=\"$logo\" alt=\"$settings_name\" style=\"text-align: center; width: 150px;\" class=\"practicelogo\" />";
 			} else {
 					echo $settings_name;
 			}
@@ -391,688 +391,6 @@ function ProjectTitle($show,$proj_id) {
 
 }
 
-function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
-	
-				global $user_usertype_current;
-				global $user_id_current;
-
-				$array_menu_page = array();
-				$array_menu_text = array();
-				$array_menu_image = array();
-				$array_menu_usertype = array();
-				
-				$proj_id = intval($proj_id);
-				$level = intval($level);
-
-	if ($page == "project_view" && $level == 1 && intval($proj_id) > 0) {
-		
-				$array_menu_page[] = "index2.php?page=project_view&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Project Home";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 1;
-			
-				$array_menu_page[] = "index2.php?page=project_contacts&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Contacts";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 2;
-			
-				$array_menu_page[] = "index2.php?page=tasklist_project&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Tasks";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 2;
-				
-				$array_menu_page[] = "index2.php?page=drawings_list&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Drawings";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 2;
-			
-				$array_menu_page[] = "index2.php?page=project_checklist&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Checklist";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 2;
-			
-				$array_menu_page[] = "index2.php?page=project_planningcondition_list&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Planning Tracker";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 2;
-				
-				$array_menu_page[] = "index2.php?page=project_blog_list&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Journal";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 2;
-				
-				$array_menu_page[] = "index2.php?page=project_fees&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Fees";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 4;
-				
-				$array_menu_page[] = "index2.php?page=timesheet_invoice_list&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Invoices";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 4;
-				
-				$array_menu_page[] = "index2.php?page=project_particulars&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Particulars";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 4;
-				
-				$array_menu_page[] = "index2.php?page=project_risks&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Risks";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 2;
-				
-				$array_menu_page[] = "index2.php?page=project_actionstream&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Action Stream";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 2;
-				
-	} elseif ($page == "project_view" && $level == 2 && intval($proj_id) > 0) {
-
-				$array_menu_page[] = "index2.php?page=project_edit&amp;status=edit&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Edit Project";
-				$array_menu_image[] = "button_edit.png";
-				$array_menu_usertype[] = 3;
-			
-				$array_menu_page[] = "index2.php?page=project_edit&amp;status=add";
-				$array_menu_text[] = "Add Project";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 0;
-			
-				$array_menu_page[] = "pdf_project_sheet.php?proj_id=$proj_id";
-				$array_menu_text[] = "Project Sheet";
-				$array_menu_image[] = "button_pdf.png";
-				$array_menu_usertype[] = 2;		
-				
-		
-	} elseif ($page == "project_invoice" && $level == 2 && intval($proj_id) > 0) {
-
-				$array_menu_page[] = "index2.php?page=timesheet_invoice_items_edit&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Add Invoice Item";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 3;
-
-				$array_menu_page[] = "index2.php?page=timesheet_invoice_edit&amp;invoice_id=" . intval($_GET[invoice_id]);
-				$array_menu_text[] = "Edit Invoice";
-				$array_menu_image[] = "button_edit.png";
-				$array_menu_usertype[] = 3;
-				
-	} elseif ($page == "project_risks" && $level == 2 && intval($proj_id) > 0) {
-
-				$array_menu_page[] = "index2.php?page=project_risks&amp;action=list&amp;view=list&amp;proj_id=$proj_id";
-				$array_menu_text[] = "List Risks";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 3;
-
-				$array_menu_page[] = "index2.php?page=project_risks&amp;action=add&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Add New Risk";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 3;
-
-				if (intval($_GET[risk_id]) > 0) {
-					$array_menu_page[] = "index2.php?page=project_risk&amp;action=edit&amp;risk_id=". intval($_GET[risk_id]);
-					$array_menu_text[] = "Edit Risk";
-					$array_menu_image[] = "button_edit.png";
-					$array_menu_usertype[] = 3;
-				}
-				
-				$array_menu_page[] = "pdf_risks.php?proj_id=" . $proj_id;
-				$array_menu_text[] = "Risk Register";
-				$array_menu_image[] = "button_pdf.png";
-				$array_menu_usertype[] = 2;
-				
-				$array_menu_page[] = "pdf_risks_matrix.php?proj_id=" . $proj_id;
-				$array_menu_text[] = "Risk Matrix";
-				$array_menu_image[] = "button_pdf.png";
-				$array_menu_usertype[] = 2;
-				
-	} elseif ($page == "project_fee" OR $page == "project_timesheet_view" && intval($proj_id) > 0) {
-
-				$array_menu_page[] = "index2.php?page=project_fees&proj_id=$proj_id";
-				$array_menu_text[] = "List Fee Stages";
-				$array_menu_image[] = "button_lsit.png";
-				$array_menu_usertype[] = 3;
-	
-				$array_menu_page[] = "index2.php?page=project_hourlyrates_view&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Edit Hourly Rates";
-				$array_menu_image[] = "button_edit.png";
-				$array_menu_usertype[] = 3;
-				
-				$array_menu_page[] = "index2.php?page=project_timesheet_view&amp;proj_id=$proj_id";
-				$array_menu_text[] = "View Expenditure";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 3;
-				
-				$array_menu_page[] = "index2.php?page=timesheet_fees_edit&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Add Fee Stage";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 3;
-				
-				$array_menu_page[] = "pdf_fee_drawdown.php?proj_id=$proj_id";
-				$array_menu_text[] = "View Fee Drawdown";
-				$array_menu_image[] = "button_pdf.png";
-				$array_menu_usertype[] = 3;
-				
-				$array_menu_page[] = "pdf_fee_drawdown.php?proj_id=$proj_id&amp;showinvoices=yes";
-				$array_menu_text[] = "View Fee Drawdown (with invoices)";
-				$array_menu_image[] = "button_pdf.png";
-				$array_menu_usertype[] = 3;
-				
-				$array_menu_page[] = "pdf_project_performance_summary.php?proj_id=" . intval($proj_id);
-				$array_menu_text[] = "Project Performance Summary";
-				$array_menu_image[] = "button_pdf.png";
-				$array_menu_usertype[] = 4;
-				
-	} elseif ($page == "project_contacts" && intval($proj_id) > 0) {
-	
-				$array_menu_page[] = "index2.php?page=project_contacts&amp;contact_proj_add=add&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Add Project Contact";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 3;
-				
-	} elseif (($page == "project_blog" OR $page == "project_blog_list" OR $page == "project_blog_edit")  && intval($proj_id) > 0 ) {
-	
-				$array_menu_page[] = "index2.php?page=project_blog_edit&status=add&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Add Journal Entry";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 1;
-				
-				$array_menu_page[] = "index2.php?page=project_blog_list&amp;proj_id=$proj_id";
-				$array_menu_text[] = "List Journal Entries";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 1;
-				
-	} elseif ($page == "project_tasks" && intval($proj_id) > 0) {
-	
-				$array_menu_page[] = "index2.php?page=tasklist_edit&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Add New Task";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 1;
-		
-				$array_menu_page[] = "index2.php?page=tasklist_project&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Outstanding Tasks";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 1;
-				
-				$array_menu_page[] = "index2.php?page=tasklist_project&amp;view=complete&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Completed Tasks";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 1;
-				
-				$array_menu_page[] = "pdf_tasklist.php?proj_id=" . $proj_id;
-				$array_menu_text[] = "Print Project Tasks";
-				$array_menu_image[] = "button_pdf.png";
-				$array_menu_usertype[] = 1;
-				
-	} elseif ($page == "tasklist_view") {
-	
-				$array_menu_page[] = "index2.php?page=tasklist_edit";
-				$array_menu_text[] = "Add New Task";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 1;
-		
-				$array_menu_page[] = "index2.php?page=tasklist_view";
-				$array_menu_text[] = "Outstanding Tasks";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 1;
-				
-				$array_menu_page[] = "index2.php?page=tasklist_view&amp;view=complete&amp;proj_id=" . $proj_id;
-				$array_menu_text[] = "Completed Tasks";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 1;
-				
-	} elseif ( $page == "date_list") {
-
-				$array_menu_page[] = "index2.php?page=date_list";
-				$array_menu_text[] = "List Future Dates";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 1;
-				
-				$array_menu_page[] = "index2.php?page=date_list&amp;filter=2";
-				$array_menu_text[] = "List Past Dates";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 1;
-
-				$array_menu_page[] = "index2.php?page=date_edit";
-				$array_menu_text[] = "Add New Dates";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 1;
-
-	} elseif ( $page == "project_expenses" && intval($proj_id) > 0) {
-
-				$array_menu_page[] = "timesheet_expense_edit&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Add Expenses";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 2;
-
-
-	} elseif ( $page == "drawings_list" && $level == 2 && intval($proj_id) > 0) {
-
-				$array_menu_page[] = "pdf_drawing_list.php?proj_id=$proj_id";
-				$array_menu_text[] = "Drawing Schedule";
-				$array_menu_image[] = "button_pdf.png";
-				$array_menu_usertype[] = 2;
-				
-				$array_menu_page[] = "pdf_drawing_matrix.php?proj_id=$proj_id";
-				$array_menu_text[] = "Drawing Matrix";
-				$array_menu_image[] = "button_pdf.png";
-				$array_menu_usertype[] = 2;
-				
-				$array_menu_page[] = "pdf_drawing_matrix.php?proj_id=$proj_id";
-				$array_menu_text[] = "Drawing Matrix";
-				$array_menu_image[] = "button_pdf.png";
-				$array_menu_usertype[] = 2;
-				
-
-	} elseif ( $page == "planning_conditions" && $level == 2 && intval($proj_id) > 0) {
-
-				if ($_GET[showdetail] == 1) {
-					$array_menu_page[] = "index2.php?page=project_planningcondition_list&amp;proj_id=$proj_id";
-					$array_menu_text[] = "Simple List";
-					$array_menu_image[] = "button_list.png";
-					$array_menu_usertype[] = 2;
-
-				} else {
-					$array_menu_page[] = "index2.php?page=project_planningcondition_list&amp;proj_id=$proj_id&amp;showdetail=1";
-					$array_menu_text[] = "Detailed List";
-					$array_menu_image[] = "button_list.png";
-					$array_menu_usertype[] = 2;
-				}
-				
-				$array_menu_page[] = "index2.php?page=project_planningcondition_edit&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Add New";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 2;
-				
-				$array_menu_page[] = "pdf_planning_conditions.php?proj_id=$proj_id";
-				$array_menu_text[] = "Condition Schedule";
-				$array_menu_image[] = "button_pdf.png";
-				$array_menu_usertype[] = 2;
-				
-
-	} elseif ( $page == "project_checklist" && $level == 2 && intval($proj_id) > 0) {
-		
-				$group_id = intval($_GET[group_id]);
-				
-				if ($_GET[page] == "project_checklist_edit") {
-					
-					$array_menu_page[] = "index2.php?page=project_checklist&amp;proj_id=$proj_id&amp;group_id=$group_id";
-					$array_menu_text[] = "Back to List";
-					$array_menu_image[] = "button_list.png";
-					$array_menu_usertype[] = 2;					
-				
-				}
-
-				$array_menu_page[] = "index2.php?page=project_checklist_edit&amp;proj_id=$proj_id&amp;group_id=$group_id";
-				$array_menu_text[] = "Edit Group";
-				$array_menu_image[] = "button_edit.png";
-				$array_menu_usertype[] = 2;		
-				
-				$array_menu_page[] = "pdf_project_checklist_stages.php?proj_id=$proj_id";
-				$array_menu_text[] = "Stages";
-				$array_menu_image[] = "button_pdf.png";
-				$array_menu_usertype[] = 2;
-				
-				$array_menu_page[] = "pdf_project_checklist.php?proj_id=$proj_id";
-				$array_menu_text[] = "Checklist";
-				$array_menu_image[] = "button_pdf.png";
-				$array_menu_usertype[] = 2;
-				
-	} elseif ( $page == "phonemessage_view") {
-		
-				if (intval($_GET[user_id]) > 0) { $user_id = intval($_GET[user_id]); } else { $user_id = intval($_COOKIE[user]); }
-		
-				$array_menu_page[] = "index2.php?page=phonemessage_view&amp;status=outstanding&amp;user_id=$user_id";
-				$array_menu_text[] = "Outstanding Messages";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 2;	
-
-				$array_menu_page[] = "index2.php?page=phonemessage_view&amp;status=all&amp;user_id=$user_id";
-				$array_menu_text[] = "All Messages";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 2;
-				
-				$array_menu_page[] = "index2.php?page=phonemessage_view&amp;status=user&amp;user_id=$user_id";
-				$array_menu_text[] = "Messages for Others";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 2;	
-				
-	
-		
-	} elseif ( $page == "project_drawings" && intval($proj_id) > 0) {
-		
-				if (intval($_GET[proj_id]) > 0) { $proj_id = intval($_GET[proj_id]); }
-		
-				$array_menu_page[] = "index2.php?page=project_view&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Project Home";
-				$array_menu_image[] = "button_home.png";
-				$array_menu_usertype[] = 1;	
-
-				$array_menu_page[] = "index2.php?page=drawings_list&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Drawing List";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 2;
-				
-				$array_menu_page[] = "index2.php?page=drawings_edit&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Add New Drawing";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 2;
-				
-				$array_menu_page[] = "index2.php?page=drawings_issue&amp;proj_id=$proj_id";
-				$array_menu_text[] = "Issue Drawings";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 2;
-	
-				$array_menu_page[] = "index2.php?page=drawings_issues&amp;proj_id=$proj_id";
-				$array_menu_text[] = "List Drawing Issues";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 2;
-		
-	} elseif ( $page == "contacts_admin"  && $level == 1) {
-	
-				$array_menu_page[] = "index2.php?page=contacts_view";
-				$array_menu_text[] = "All Contacts";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 2;	
-				
-				$array_menu_page[] = "index2.php?page=contacts_edit&amp;status=add";
-				$array_menu_text[] = "Add Contact";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 2;	
-
-				$array_menu_page[] = "index2.php?page=contacts_company_edit&amp;status=add";
-				$array_menu_text[] = "Add Company";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 2;
-				
-				$array_menu_page[] = "index2.php?page=contacts_add_sector";
-				$array_menu_text[] = "Add Sector";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 2;
-				
-				$array_menu_page[] = "index2.php?page=contacts_discipline_list";
-				$array_menu_text[] = "List Disciplines";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 2;
-	
-				$array_menu_page[] = "index2.php?page=contacts_company_merge";
-				$array_menu_text[] = "Merge Companies";
-				$array_menu_image[] = "button_settings.png";
-				$array_menu_usertype[] = 4;
-				
-	} elseif ( $page == "company_admin") {
-		
-				if (intval($_GET[company_id]) > 0) { $company_id = intval($_GET[company_id]);
-	
-					$array_menu_page[] = "index2.php?page=contacts_company_edit&amp;company_id=" . $company_id . "&amp;status=edit";
-					$array_menu_text[] = "Edit Company";
-					$array_menu_image[] = "button_edit.png";
-					$array_menu_usertype[] = 2;
-				
-				}
-
-	} elseif ( $page == "contacts_admin" OR $page == "contacts_view_detailed"  && $level == 2) {
-		
-				if (intval($contact_id) > 0) { $contact_id = intval(contact_id); } elseif (intval($_POST[contact_id]) > 0) { $contact_id = intval($_POST[contact_id]); } elseif (intval($_GET[contact_id]) > 0) { $contact_id = intval($_GET[contact_id]); }
-				
-					if (intval($contact_id) > 0) {
-		
-						$array_menu_page[] = "index2.php?page=contacts_edit&amp;contact_id=" . $contact_id."&amp;status=edit";
-						$array_menu_text[] = "Edit Contact";
-						$array_menu_image[] = "button_edit.png";
-						$array_menu_usertype[] = 1;
-						
-						$array_menu_page[] = "index2.php?page=project_blog_edit&amp;status=add&amp;contact_id=" . $contact_id;
-						$array_menu_text[] = "Add Journal Entry";
-						$array_menu_image[] = "button_new.png";
-						$array_menu_usertype[] = 1;
-						
-						$array_menu_page[] = "vcard.php?contact_id=" . $contact_id;
-						$array_menu_text[] = "VCard File";
-						$array_menu_image[] = "button_list.png";
-						$array_menu_usertype[] = 1;
-						
-						//if ($module_onepage == 1) {
-							$array_menu_page[] = ContactOnePage($contact_id);
-							$array_menu_text[] = "Add to OnepageCRM";
-							$array_menu_image[] = "button_new.png";
-							$array_menu_usertype[] = 1;
-						//}
-					
-					}
-				
-	} elseif ( $page == "timesheet_admin") {
-		
-			if (intval($_GET[user_id]) > 0) { $user_id = intval($_GET[user_id]); } else { $user_id = intval($_COOKIE[user]); }
-		
-				$array_menu_page[] = "index2.php?page=timesheet&user_view=$user_id";
-				$array_menu_text[] = "Timesheets Home";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 2;
-				
-				$array_menu_page[] = "index2.php?page=timesheet_analysis";
-				$array_menu_text[] = "Timesheet Analysis";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 4;
-				
-				$array_menu_page[] = "index2.php?page=timesheet_settings";
-				$array_menu_text[] = "Timesheet Settings";
-				$array_menu_image[] = "button_settings.png";
-				$array_menu_usertype[] = 4;
-				
-	} elseif ( $page == "timesheet_settings") {
-		
-				$array_menu_page[] = "index2.php?page=timesheet_rates_hourly";
-				$array_menu_text[] = "Hourly Rates";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 4;
-				
-				$array_menu_page[] = "index2.php?page=timesheet_rates_overhead";
-				$array_menu_text[] = "Overhead Rates";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 4;
-				
-				$array_menu_page[] = "index2.php?page=timesheet_rates_project";
-				$array_menu_text[] = "Project Rates";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 4;
-		
-	} elseif ( $page == "invoice_admin") {
-		
-				$array_menu_page[] = "index2.php?page=timesheet_invoice";
-				$array_menu_text[] = "Invoices Home";
-				$array_menu_image[] = "button_home.png";
-				$array_menu_usertype[] = 3;
-			
-				$array_menu_page[] = "index2.php?page=timesheet_invoice_edit";
-				$array_menu_text[] = "Add Invoice";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 3;
-				
-				$array_menu_page[] = "index2.php?page=timesheet_invoice_view_outstanding&amp;status=paid";
-				$array_menu_text[] = "Paid Invoices";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 3;
-				
-				$array_menu_page[] = "index2.php?page=timesheet_invoice_view_outstanding";
-				$array_menu_text[] = "Oustanding Invoices";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 3;
-				
-				$array_menu_page[] = "index2.php?page=timesheet_invoice_view_outstanding&amp;status=current";
-				$array_menu_text[] = "Current Invoices";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 3;
-				
-				$array_menu_page[] = "index2.php?page=timesheet_invoice_view_outstanding&amp;status=future";
-				$array_menu_text[] = "Future Invoices";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 3;
-				
-				$array_menu_page[] = "index2.php?page=timesheet_invoice_view_month";
-				$array_menu_text[] = "Invoices by Month";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 3;
-				
-	} elseif ( $page == "project_ambition") {
-				
-				$array_menu_page[] = "index2.php?page=project_ambition_schedule&amp;type=" . $_GET[type];
-				$array_menu_text[] = "List Active Projects";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype = 2;
-				
-				$array_menu_page[] = "index2.php?page=project_ambition_schedule&amp;filter=all&amp;type=" . $_GET[type];
-				$array_menu_text[] = "List All Projects";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 2;			
-			
-	} elseif ( $page == "media") {
-				
-				$array_menu_page[] = "index2.php?page=media";
-				$array_menu_text[] = "Media Library";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 1;
-				
-				$array_menu_page[] = "index2.php?page=media&action=upload";
-				$array_menu_text[] = "Upload Media";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 2;			
-		
-	} elseif ( $page == "user_admin" && $level == 1) {
-				
-				$array_menu_page[] = "index2.php?page=user_edit&amp;user_add=true";
-				$array_menu_text[] = "Add User";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 3;
-				
-				$array_menu_page[] = "index2.php?page=user_list";
-				$array_menu_text[] = "List Users";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 3;		
-				
-				$array_menu_page[] = "index2.php?page=phonemessage_edit&amp;status=new&amp;user_id=" . intval($_GET[user_id]);
-				$array_menu_text[] = "Add Phone Message";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 1;		
-		
-	} elseif ( $page == "user_admin" && $level == 2) {
-				
-				$array_menu_page[] = "index2.php?page=user_edit&status=edit&amp;user_id=" . intval($_GET[user_id]);
-				$array_menu_text[] = "Edit User";
-				$array_menu_image[] = "button_edit.png";
-				$array_menu_usertype[] = 3;
-				
-				$array_menu_page[] = "index2.php?page=user_change_password&amp;user_id=" . intval($_GET[user_id]);
-				$array_menu_text[] = "Change Password";
-				$array_menu_image[] = "button_edit.png";
-				if (intval($_COOKIE[user]) == intval($_GET[user_id])) { $array_menu_usertype[] = 1; } else { $array_menu_usertype[] = 4; }
-		
-	} elseif ( $page == "manual_page" && $level == 1) {
-				
-				$array_menu_page[] = "index2.php?page=manual_page";
-				$array_menu_text[] = "Contents";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 1;
-				
-				$array_menu_page[] = "index2.php?page=manual_page&amp;action=add";
-				$array_menu_text[] = "Add Page";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 2;
-				
-	} elseif ( $page == "manual_page" && $level == 2 && intval($_GET[manual_id]) > 0) {
-				
-				$array_menu_page[] = "index2.php?page=manual_page&amp;action=edit&amp;manual_id=" . intval($_GET[manual_id]) ;
-				$array_menu_text[] = "Edit";
-				$array_menu_image[] = "button_edit.png";
-				$array_menu_usertype[] = 2;
-				
-	} elseif ( $page == "blog_view" && $level == 2 && intval($_GET[blog_id]) > 0) {
-				
-				$array_menu_page[] = "index2.php?page=project_blog_list&amp;proj_id=" . intval($_GET[proj_id]) ;
-				$array_menu_text[] = "List All";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 1;
-				
-				$array_menu_page[] = "index2.php?page=project_blog_edit&amp;status=add&amp;proj_id=" . intval($_GET[proj_id]) ;
-				$array_menu_text[] = "Add Journal Entry";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 1;
-				
-				$array_menu_page[] = "index2.php?page=project_blog_edit&amp;status=edit&amp;proj_id=" . intval($proj_id) . "&amp;blog_id=" . intval($_GET[blog_id]);
-				$array_menu_text[] = "Edit Journal Entry";
-				$array_menu_image[] = "button_edit.png";
-				$array_menu_usertype[] = 2;
-				
-	} elseif ( $page == "blog_list" && intval($proj_id) > 0) {
-		
-				$array_menu_page[] = "index2.php?page=project_blog_list&amp;proj_id=" . intval($_GET[proj_id]) ;
-				$array_menu_text[] = "List All";
-				$array_menu_image[] = "button_list.png";
-				$array_menu_usertype[] = 1;
-				
-				$array_menu_page[] = "index2.php?page=project_blog_edit&amp;status=add&amp;proj_id=" . intval($_GET[proj_id]) ;
-				$array_menu_text[] = "Add Journal Entry";
-				$array_menu_image[] = "button_new.png";
-				$array_menu_usertype[] = 1;		
-		
-		
-	} elseif ( $page == "fee_stage_list") {
-		
-		
-				$array_menu_page[] = "pdf_jobbook.php" ;
-				$array_menu_text[] = "Printable Version";
-				$array_menu_image[] = "button_pdf.png";
-				$array_menu_usertype[] = 1;
-		
-		
-	}
-
-
-		$current_url =  htmlspecialchars ( substr($_SERVER[REQUEST_URI],1) );
-		
-		$count = 0;
-		
-		if ($level == 1) { $level_style = "menu_bar"; $tab_style = "menu_tab"; } else { $level_style = "submenu_bar"; $tab_style = "submenu_bar"; }
-		
-		if (count($array_menu_page) > 0) {
-			
-		
-				echo "<div class=\"" . $level_style . "\" id=\"" . $array_menu_page[$count] . "\">";
-				
-
-				foreach ($array_menu_page AS $menu_link) {
-					
-							if ($user_usertype_current >= $array_menu_usertype[$count]) {
-					
-									if ($current_url != $array_menu_page[$count]) {
-										 
-										echo "<a href=\"$array_menu_page[$count]\" class=\"" . $tab_style . "\">";
-										if ($array_menu_image[$count]) { echo "<img src=\"images/$array_menu_image[$count]\" />&nbsp;"; }
-										echo $array_menu_text[$count];
-										echo "</a>";
-										
-									} else {
-										
-										echo "<a href=\"$array_menu_page[$count]\" class=\"" . $tab_style . "\" style=\"background-color: white;\">";
-										if ($array_menu_image[$count]) { echo "<img src=\"images/$array_menu_image[$count]\" />&nbsp;"; }
-										echo $array_menu_text[$count];
-										echo "</a>";
-										
-									}
-									
-							}
-				 
-						$count++;
-				 
-				}
-
-				echo "</div>";
-		
-		}
-
-
-		
-}
-
 function ProjectList($proj_id) {
 	
 
@@ -1140,6 +458,8 @@ $country_printable_name = $array['country_printable_name'];
 					echo "<table summary=\"Project Information\">";
 					
 					if ($proj_identifier) { echo "<tr><td>Project Identifier</td><td>$proj_identifier</td></tr>"; }
+					
+					if ($proj_rep_black) { echo "<tr><td>Project Leader</td><td>" . GetUserNameOnly($proj_rep_black) . "</td></tr>"; }
 
 					echo "<tr><td style=\"width: 40%;\">Site Address</td><td>";
 
@@ -1252,7 +572,7 @@ global $conn;
 					
 }
 
-function ProjectSelect($proj_id_select,$field_name,$active,$include_null) {
+function ProjectSelect($proj_id_select,$field_name,$active,$include_null,$javascript) {
 	
 		GLOBAL $conn;
 		
@@ -1264,7 +584,7 @@ function ProjectSelect($proj_id_select,$field_name,$active,$include_null) {
 		
 		$sql = "SELECT * FROM intranet_projects WHERE $proj_id_select_add ORDER BY proj_active DESC, proj_num DESC";
 	
-		echo "<select name=\"" . $field_name .  "\">";
+		echo "<select name=\"" . $field_name .  "\" " . $javascript . ">";
 		
 		$active_test = NULL;
 		
@@ -2169,7 +1489,20 @@ function ListHolidays($days) {
 
 function FooterBar() {
 	
+	global $settings_companyname;
+	global $settings_companyweb;
+	global $settings_companyaddress;
+	global $settings_companytelephone;
+	
+	$settings_companyaddress = str_replace("\n"," | ", $settings_companyaddress);
+	
 	echo "<div id=\"mainfooter\">powered by <a href=\"https://github.com/rckarchitects/cornerstone-rcka/wiki/Welcome-to-Cornerstone\">RCKa Cornerstone</a></div>";
+	
+	echo "<div id=\"mainfooter_print\">";
+	
+	echo "<p><strong>" . $settings_companyname . " | " . $settings_companyaddress . " | T " . $settings_companytelephone . " | " . $settings_companyweb . "</strong><br />Current at " . TimeFormatDetailed(time()) . "</p>";
+	
+	echo "</div>";
 	
 }
 	
@@ -2971,21 +2304,7 @@ function ClauseCrossReference($qms_text) {
 		
 }
 
-function DrawingStatusDropdown ($current_status,$variable_name) {
-	
-	$drawing_status_array = array("","S0","S1","S2","S3","S4");
-	sort($drawing_status_array);
 
-
-echo "<select name=\"$variable_name\">";
-		foreach ($drawing_status_array AS $drawing_status_list) {
-		if ($drawing_status_list == $current_status) { $select = "selected=\"selected\""; } else { unset($select); }
-		echo "<option value=\"$drawing_status_list\" $select>$drawing_status_list</option>";
-	}
-echo "</select>";
-
-	
-}
 
 function DeadlineTime($time) {
 	
@@ -3024,7 +2343,7 @@ function ListProjectJournalEntries($proj_id) {
 		
 		$proj_id = intval($proj_id);
 
-					$sql = "SELECT * FROM intranet_projects_blog, intranet_projects, intranet_user_details WHERE blog_proj = proj_id AND proj_id = $proj_id AND blog_user = user_id AND (blog_access <= " . $user_usertype_current . " OR blog_access IS NULL) AND (blog_view = 0 OR blog_view = " . $user_id_current . ") order by blog_date DESC";
+					$sql = "SELECT * FROM intranet_projects_blog, intranet_projects, intranet_user_details WHERE blog_proj = proj_id AND proj_id = $proj_id AND blog_user = user_id AND (blog_access <= " . $user_usertype_current . " OR blog_access IS NULL) AND (blog_view = 0 OR blog_view = " . $user_id_current . ") order by blog_sticky DESC, blog_date DESC";
 					$result = mysql_query($sql, $conn) or die(mysql_error());
 					$result_project = mysql_query($sql, $conn) or die(mysql_error());
 					$array_project = mysql_fetch_array($result_project);
@@ -3056,6 +2375,8 @@ function ListProjectJournalEntries($proj_id) {
 							$blog_user = $array['blog_user'];
 							$blog_user_name_first = $array['user_name_first'];
 							$blog_user_name_second = $array['user_name_second'];
+							
+							$blog_sticky = $array['blog_sticky'];
 						
 						if ($blog_type == "phone") { $blog_type_view = "Telephone Call"; $type++; }
 						elseif ($blog_type == "filenote") { $blog_type_view = "File Note"; $type++; }
@@ -3067,10 +2388,13 @@ function ListProjectJournalEntries($proj_id) {
 						
 
 							echo "<tr>";
-							echo "<td>$type.</td><td><a href=\"index2.php?page=project_blog_view&amp;blog_id=$blog_id&amp;proj_id=$proj_id\">".$blog_title."</a>&nbsp;<a href=\"pdf_journal.php?blog_id=$blog_id\"><img src=\"images/button_pdf.png\" /></a></td>";
+							echo "<td>$type.</td><td><a href=\"index2.php?page=project_blog_view&amp;blog_id=$blog_id&amp;proj_id=$proj_id\">".$blog_title."</a></td>";
 							echo "<td style=\"width: 20%;\"><a href=\"index2.php?page=datebook_view_day&amp;time=$blog_date\">".TimeFormat($blog_date)."</a></td>";
 							echo "<td><a href=\"index2.php?page=user_view&amp;user_id=$user_id\">".$blog_user_name_first."&nbsp;".$blog_user_name_second."</a></td>";
 							echo "<td style=\"width: 20%;\"><span class=\"minitext\">$blog_type_view</span></td>";
+							
+							if ($blog_sticky == 1) { echo "<td><img src=\"images/icon_pinned.png\" style=\"width: 16px;\" alt=\"Pinned Journal Entry\" /></td>"; } else { echo "<td></td>"; }
+							
 							echo "</tr>";
 
 
@@ -3135,6 +2459,8 @@ function AlertBoxInsert($user_id,$alert_category,$alert_message,$alert_entryref,
 			$user_id = intval($user_id);
 			$alert_project = intval($alert_project);
 			if ($alert_project == 0) { $alert_project = "NULL"; }
+			
+			$alert_message = addslashes($alert_message);
 			
 			$alert_url = "'" . addslashes ( $_SERVER['HTTP_REFERER'] ) . "'";
 			
@@ -3418,19 +2744,13 @@ function UsersList($active) {
 	
 	GLOBAL $conn;
 	
-			echo "<h1>Users</h1>";
+			echo "<h2>Users</h2>";
 	
 			if ($active == 0) {
-				echo "<h2>Active Users</h2>";
-				echo "<div class=\"sub_menu\"><a class=\"menu_tab\" href=\"index2.php?page=user_list&amp;list_active=1\">All Users</a></div>";
-				
 				$showactive = " WHERE user_active = 1 ";
 			
 			} else {
-				echo "<h2>All Users</h2>";
-				
-				echo "<div class=\"sub_menu\"><a class=\"menu_tab\" href=\"index2.php?page=user_list\">Active Users</a></div>";
-				
+								
 				unset($showactive);
 			}
 
@@ -3493,12 +2813,12 @@ function UsersList($active) {
 								
 			}
 			
-			echo "<tr><td>Total Fee Hours</td><td colspan=\"10\" style=\"text-align: right;\">" . number_format ( $total_hours_week ) . "</td><td rowspan=\"6\"></td></tr>";
-			echo "<tr><td>Total Hourly Fee</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat($cost_per_hour_total) . "</td></tr>";
-			echo "<tr><td>Total Weekly Fee</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat($cost_per_week_total) . "</td></tr>";
-			echo "<tr><td>Total Fee Earners</td><td colspan=\"10\" style=\"text-align: right;\">" . number_format ($total_people) . "</td></tr>";
-			echo "<tr><td>Average Hourly Fee</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat($total_hourly_cost / $total_people) . "</td></tr>";
-			echo "<tr><td>Average Weekly Cost</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat(($total_hourly_cost / $total_people) * 40) . "</td></tr>";
+			echo "<tr><td>Total Fee Hours</td><td colspan=\"10\" style=\"text-align: right;\">" . number_format ( $total_hours_week ) . "</td><td></td><td></td></tr>";
+			echo "<tr><td>Total Hourly Fee</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat($cost_per_hour_total) . "</td><td></td></tr>";
+			echo "<tr><td>Total Weekly Fee</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat($cost_per_week_total) . "</td><td></td></tr>";
+			echo "<tr><td>Total Fee Earners</td><td colspan=\"10\" style=\"text-align: right;\">" . number_format ($total_people) . "</td><td></td></tr>";
+			echo "<tr><td>Average Hourly Fee</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat($total_hourly_cost / $total_people) . "</td><td></td></tr>";
+			echo "<tr><td>Average Weekly Cost</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat(($total_hourly_cost / $total_people) * 40) . "</td><td></td></tr>";
 			echo "</table>";
 		
 						
@@ -3823,9 +3143,11 @@ function ProjectFees($proj_id) {
 
 						if (mysql_num_rows($result) > 0) {
 							
+						echo "<form method=\"post\" action=\"index2.php?page=project_fees&amp;proj_id=$proj_id\">";
+							
 						echo "<table summary=\"Lists the fees for the selected project\">";
 						
-						echo "<form method=\"post\" action=\"index2.php?page=project_fees&amp;proj_id=$proj_id\">";
+						
 						
 						echo "<tr><th colspan=\"3\">Stage</th><th>Begin Date</th><th>End Date</th><th>Likelihood</th><th";
 						if ($user_usertype_current > 2) { echo " colspan=\"3\""; }
@@ -3993,9 +3315,11 @@ function ProjectFees($proj_id) {
 						
 						echo "<tr><td colspan=\"9\"><input type=\"submit\" value=\"Update Current Fee Stage\" /></td></tr>";
 						
-						echo "</form>";
+						
 						
 						echo "</table>";
+						
+						echo "</form>";
 						
 						$sql = "SELECT ts_fee_id, ts_fee_text FROM intranet_timesheet_fees WHERE ts_fee_project = $proj_id ORDER BY ts_fee_text, ts_fee_time_begin";
 						$result = mysql_query($sql, $conn) or die(mysql_error());
@@ -4228,210 +3552,6 @@ function ProjectInvoices($proj_id) {
 function InsufficientRights() {
 	
 	echo "<p>You do not have sufficient rights to perform this action.</p>";
-		
-}
-
-
-function ProjectContacts($proj_id,$user_usertype_current) {
-
-global $conn;
-$proj_id = intval($proj_id);
-
-			
-			$sql_contact = "SELECT * FROM contacts_disciplinelist, contacts_contactlist, intranet_contacts_project LEFT JOIN contacts_companylist ON contact_proj_company = contacts_companylist.company_id WHERE contact_proj_contact = contact_id  AND discipline_id = contact_proj_role AND contact_proj_project = $proj_id ORDER BY discipline_name, contact_namesecond";
-			$result_contact = mysql_query($sql_contact, $conn) or die(mysql_error());
-
-			if (mysql_num_rows($result_contact) > 0) {
-
-			echo "<div><table>";
-				while ($array_contact = mysql_fetch_array($result_contact)) {
-					$contact_id = $array_contact['contact_id'];
-					$contact_namefirst = $array_contact['contact_namefirst'];
-					$contact_namesecond = $array_contact['contact_namesecond'];
-					$company_name = $array_contact['company_name'];
-					$company_id = $array_contact['company_id'];
-					$contact_email = $array_contact['contact_email'];
-					$contact_telephone = $array_contact['contact_telephone'];
-					$contact_mobile = $array_contact['contact_mobile'];
-					$company_phone = $array_contact['company_phone'];
-					$contact_company = $array_contact['contact_company'];
-					$discipline_id = $array_contact['discipline_id'];
-					$discipline_name = $array_contact['discipline_name'];
-					$contact_proj_id = $array_contact['contact_proj_id'];
-					$contact_proj_note = $array_contact['contact_proj_note'];
-					$contact_proj_company = $array_contact['contact_proj_company'];
-				
-					
-			print "<tr><td style=\"width: 30%;\"><a href=\"index2.php?page=discipline_view&amp;discipline_id=$discipline_id\">$discipline_name</a></td>";
-			echo "<td";
-			if (trim($contact_proj_note) == "") { echo " colspan=\"2\" "; }
-			echo "><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=$contact_id\">";
-			echo "$contact_namefirst $contact_namesecond";
-			echo "</a>";
-			if ($company_name != NULL) { echo ",&nbsp;<a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">".$company_name."</a>"; }
-			if ($company_change != NULL) { echo "$company_change"; }
-			if ($contact_email != NULL) { echo "<br />Email: $contact_email&nbsp;<a href=\"mailto:$contact_email\"><img src=\"images/button_email.png\" alt=\"Email\"/></a>"; }
-			if ($contact_telephone != NULL) { echo "<br />T: $contact_telephone"; } elseif ($company_phone != NULL) { echo "<br />T: $company_phone"; }
-			if ($contact_mobile != NULL) { echo "<br />M: $contact_mobile"; }
-			echo "</td>";
-			if (trim($contact_proj_note) != "") {
-			echo "<td style=\"width: 25%;\">".$contact_proj_note.$note."</td>";
-			}
-			echo "<td><a href=\"index2.php?page=project_contacts&amp;contact_proj_id=$contact_proj_id&amp;proj_id=$_GET[proj_id]&amp;action=project_contact_remove&amp;contact_proj_id=$contact_proj_id\" onClick=\"javascript:return confirm('Are you sure you want to delete this project contact?');\"><img src=\"images/button_delete.png\" /></a></td><td><a href=\"index2.php?page=project_contacts&amp;contact_proj_id=$contact_proj_id&amp;proj_id=$_GET[proj_id]\"><img src=\"images/button_edit.png\" /></a></td></tr>";
-
-
-			}
-			echo "</table></div>";
-
-			} else { echo "<div><p>No Project Contacts Found.</p></div>"; }
-
-}
-
-
-function ProjectContactEdit($proj_id,$contact_proj_contact) {
-
-global $conn;
-
-		$proj_id = intval($proj_id);
-		$contact_proj_id = intval($contact_proj_contact);
-
-		// First, identify if we're adding or editing
-
-		if ( intval ( $contact_proj_id ) > 0 ) {
-
-				$contact_proj_array = ProjectContactCheck($_GET[contact_proj_id]);
-				$contact_proj_id = $contact_proj_array[0]; 
-				$contact_proj_contact = $contact_proj_array[1];
-				$contact_proj_role = $contact_proj_array[2];
-				$contact_proj_note = $contact_proj_array[3];
-				$contact_proj_company = $contact_proj_array[4];
-				$contact_id = $contact_proj_array[5];
-
-		// work out the CURRENT company to see if the contact has changed
-
-		$sql_check_previous = "SELECT contact_namefirst, contact_namesecond, contact_company FROM contacts_contactlist WHERE contact_id = " . intval ( $contact_id ) . " LIMIT 1 ";
-		$result_check_previous = mysql_query($sql_check_previous, $conn) or die(mysql_error());
-		$array_check_previous = mysql_fetch_array($result_check_previous);
-		$contact_company_previous = $array_check_previous['contact_company'];
-		$contact_namefirst = $array_check_previous['contact_namefirst'];
-		$contact_namesecond = $array_check_previous['contact_namesecond'];
-
-		echo "<h2>Edit Project Contact Entry for $contact_namefirst $contact_namesecond</h2>";
-		} else {
-		echo "<h2>Add Project Contacts</h2>";
-		}
-
-		echo "<div><form method=\"post\" action=\"index2.php?page=project_contacts&amp;proj_id=$proj_id\">";
-
-		if ($contact_proj_id > 0) {
-
-					if ($contact_proj_company != $contact_company_previous) {
-					echo "<div class=\"form_50\"><p><strong>$contact_proj_company / $contact_company_previous <br />Note:</strong><br />The contact listed for this project is no longer with the company which undertook the work on this project. Please ensure that the company listed below is correct.</p></div>";
-					}
-
-					// Contact company
-
-					print "<div class=\"form_50\">Company:<br /><select name=\"contact_proj_company\">";
-
-					$sql_company = "SELECT company_name, company_postcode, company_id FROM contacts_companylist ORDER BY company_name, company_postcode";
-					$result_company = mysql_query($sql_company, $conn) or die(mysql_error());
-					
-					if ($contact_proj_company > 0) { $company_selected = $contact_proj_company;} elseif ($project_company > 0) { $company_selected = $project_company;} else { $company_selected = NULL; }
-					
-					echo "<option value=\"\">-- None --</option>";
-						while ($array_company = mysql_fetch_array($result_company)) {
-
-							$company_id = $array_company['company_id'];
-							$company_name = $array_company['company_name'];
-							$company_postcode = $array_company['company_postcode'];
-							
-							if ($company_id == $company_selected) { $selected = "selected=\"selected\""; } else { $selected = NULL; }
-							echo "<option value=\"$company_id\" $selected>$company_name, $company_postcode</option>\n";
-					}
-
-					echo "</select>";
-					echo "<input type=\"hidden\" value=\"$contact_id\" name=\"contact_proj_contact\" >";
-					echo "</div>";
-
-		} else {
-		
-			$sql_contact = "SELECT contact_id, contact_namefirst, contact_namesecond, contact_company, company_name, company_postcode, company_id FROM contacts_contactlist LEFT JOIN contacts_companylist ON contacts_contactlist.contact_company = contacts_companylist.company_id WHERE contact_namefirst != '' AND contact_namesecond != '' AND contact_namesecond NOT LIKE '&%' AND contact_namesecond NOT LIKE '-%' AND contact_namesecond NOT LIKE '?%' ORDER BY contact_namesecond, contact_namefirst, contact_company";
-			$result_contact = mysql_query($sql_contact, $conn) or die(mysql_error());
-			echo "<div class=\"form_50\">Contact:<br />";
-			echo "<select name=\"contact_proj_contact\">";
-			
-					while ($array_contact = mysql_fetch_array($result_contact)) {
-
-						$contact_id = $array_contact['contact_id'];
-						$company_id = $array_contact['company_id'];
-						$contact_namefirst = $array_contact['contact_namefirst'];
-						$contact_namesecond = $array_contact['contact_namesecond'];
-						$contact_company = $array_contact['contact_company'];
-						$contact_postcode = $array_contact['contact_postcode'];
-						$company_name = $array_contact['company_name'];
-						$company_postcode = $array_contact['company_postcode'];
-						
-						$name_print = $contact_namesecond.", ".$contact_namefirst;
-						
-						if ($contact_proj_id == NULL AND $contact_company) { $print_company = "- " . $company_name." [".$company_postcode."]"; } else { $print_company = NULL; }
-						if ($contact_proj_contact == $contact_id) { $selected = "selected=\"selected\""; $project_company = $company_id; } else { $selected = NULL; }
-						echo "<option value=\"$contact_id\" $selected>$name_print $print_company</option>\n";
-			}
-			
-			echo "</select></div>";
-		
-		
-		}
-
-		echo "<div class=\"form_50\">Role<br />";
-		$sql_disc = "SELECT discipline_id, discipline_name, discipline_ref FROM contacts_disciplinelist ORDER BY discipline_name";
-		$result_disc = mysql_query($sql_disc, $conn) or die(mysql_error());
-		print "<select name=\"contacts_discipline\">";
-
-			while ($array_disc = mysql_fetch_array($result_disc)) {
-
-				$discipline_id = $array_disc['discipline_id'];
-				$discipline_name = $array_disc['discipline_name'];
-				if ($contact_proj_role == $discipline_id) { $selected = "selected=\"selected\""; } else { $selected = NULL; }
-				echo "<option value=\"$discipline_id\" $selected>$discipline_name</option>\n";
-		}
-
-		echo "</select></div><div class=\"form_50\">Notes:<br /><textarea name=\"contact_proj_note\" cols=\"38\" rows=\"3\">";
-		if ($_GET[contact_proj_id] > 0) { echo $contact_proj_note; }
-		echo "</textarea></div>";
-
-		echo "<div class=\"form_100\">";
-
-		if ($_GET[contact_proj_id] > 0) {
-		echo "<input type=\"hidden\" name=\"action\" value=\"project_contact_edit\" /><input type=\"hidden\" name=\"contact_proj_project\" value=\"$_GET[proj_id]\" /><input type=\"hidden\" name=\"contact_proj_id\" value=\"$contact_proj_id\" /><input type=\"submit\" value=\"Update Contact\" />";
-		} else {
-		echo "<input type=\"hidden\" name=\"action\" value=\"project_contact_add\" /><input type=\"hidden\" name=\"contact_proj_project\" value=\"$_GET[proj_id]\" /><input type=\"submit\" value=\"Add Contact\" />";
-		}
-
-		echo "</div>";
-
-		echo "</form></div>";
-
-}
-
-function ProjectContactCheck($contact_proj_id) {
-
-	global $conn;
-
-		$sql_check = "SELECT contact_proj_contact, contact_proj_role, contact_proj_note, contact_proj_company FROM intranet_contacts_project WHERE contact_proj_id = '$contact_proj_id' LIMIT 1 ";
-		$result_check = mysql_query($sql_check, $conn) or die(mysql_error());
-		$array_check = mysql_fetch_array($result_check);
-		
-		$return_array = array();
-		
-		$return_array[] = $contact_proj_id;
-		$return_array[] = $array_check['contact_proj_contact'];
-		$return_array[] = $array_check['contact_proj_role'];
-		$return_array[] = $array_check['contact_proj_note'];
-		$return_array[] = $array_check['contact_proj_company'];
-		$return_array[] = $array_check['contact_proj_contact'];
-		
-		return $return_array;
 		
 }
 
@@ -4785,43 +3905,8 @@ function ClassList($array_class_1,$array_class_2,$type) {
 						echo "</select>";
 						
 					}
-					
-	function DrawingFilterOLD($page, $proj_id) {
 		
-					$drawing_class = $_POST[drawing_class];
-					$drawing_type = $_POST[drawing_type];
-					echo "<div><h3>Filter</h3>";
-					echo "<form method=\"post\" action=\"index2.php?page=" . $page. "&amp;proj_id=" . $proj_id . "&amp;drawing_class=$drawing_class&amp;drawing_type=$drawing_type\" >";
-					$array_class_1 = array("","SK","PL","TD","CN","CT","FD","DR","M3","PP","SH","SP");
-					$array_class_2 = array("- All -","Sketch","Planning","Tender","Contract","Construction","Final Design","2d Drawing", "3d Model File","Presentation","Schedule","Specification");
-					ClassList($array_class_1,$array_class_2,"drawing_class");
-					echo "&nbsp;";
-					$array_class_1 = array("","SV","ST","GA","AS","DE","DOC","SCH");
-					$array_class_2 = array("- All -","Survey","Site Location","General Arrangement","Assembly","Detail","Document","Schedule");
-					ClassList($array_class_1,$array_class_2,"drawing_type");
-					echo "</form><p>Please note that by using this filter you will clear any entries you may have previously entered below.</p></div>";
-		
-	}
-	
-	function DrawingFilter($page, $proj_id) {
-		
-					if ($_POST[drawing_class]) { $drawing_class = $_POST[drawing_class]; }
-					if ($_POST[drawing_type]) { $drawing_type = $_POST[drawing_type]; }
-					
-					$drawing_class = trim(trim($drawing_class,"-"));
-					$drawing_type = trim(trim($drawing_type,"-"));
-					
-					echo "<div><h3>Filter</h3>";
-					echo "<form method=\"post\" action=\"index2.php?page=" . $page. "&amp;proj_id=" . $proj_id . "\">";
-					echo "<div style=\"float: left; margin-right: 15px;\"><span class=\"minitext\">Filter 1</span><br /><input type=\"text\" name=\"drawing_class\" value=\"$drawing_class\" /></div>";
-					echo "<div style=\"float: left; margin-right: 15px;\"><span class=\"minitext\">Filter 2</span><br /><input type=\"text\" name=\"drawing_type\" value=\"$drawing_type\" /></div>";
-					echo "&nbsp;";
-					echo "<div style=\"float: left; margin-right: 15px;\"><br /><input type=\"submit\" /></div>";
-					echo "</form></div><p>Please note that by using this filter you will clear any entries you may have previously entered below.</p>";
-		
-	}
-	
-	function ProjectDrawingList($proj_id) {
+function ProjectDrawingList($proj_id) {
 		
 		global $conn;
 					
@@ -5074,222 +4159,6 @@ function ListBackups($type,$id) {
 			if ($count > 1) { echo "</table></div>"; }
 	
 	
-}
-
-function DrawingDetail($drawing_id) {
-	
-		global $conn;
-	
-		$drawing_id = intval($drawing_id);
-
-		if ($drawing_id > 0) {
-
-		$sql = "SELECT * FROM intranet_drawings, intranet_drawings_scale, intranet_drawings_paper, intranet_projects, intranet_user_details WHERE drawing_id = '$_GET[drawing_id]' AND drawing_scale = scale_id AND drawing_paper = paper_id AND proj_id = drawing_project AND drawing_author = user_id LIMIT 1";
-		$result = mysql_query($sql, $conn) or die(mysql_error());
-
-
-				if (mysql_num_rows($result) > 0) {
-				
-				$array = mysql_fetch_array($result);
-				$drawing_number = $array['drawing_number'];
-				$drawing_id = $array['drawing_id'];
-				$scale_desc = $array['scale_desc'];
-				$paper_size = $array['paper_size'];
-				$drawing_title = $array['drawing_title'];
-				$drawing_author = $array['drawing_author'];
-				$drawing_date = $array['drawing_date'];
-				$drawing_status = $array['drawing_status'];
-				$proj_id = $array['proj_id'];
-				$proj_num = $array['proj_num'];
-				$proj_name = $array['proj_name'];
-				$drawing_author = $array['user_name_first']."&nbsp;".$array['user_name_second'];
-				
-				echo "<h2>$drawing_number</h2>";
-				
-				ProjectSubMenu($proj_id,$user_usertype_current,"project_drawings",1);
-				
-				if (!$drawing_status) { $drawing_status = "-"; }
-				
-						// Drawing issue menu
-							echo "<div class=\"submenu_bar\">";
-							echo "<a href=\"index2.php?page=drawings_list&amp;proj_id=$proj_id\" class=\"submenu_bar\"><img src=\"images/button_list.png\" alt=\"Drawing List\" />&nbsp;Drawing List</a>";
-							echo "<a href=\"index2.php?page=drawings_issue&proj_id=$proj_id\" class=\"submenu_bar\"><img src=\"images/button_list.png\" alt=\"Issue Drawings\" />&nbsp;Issue Drawings</a>";
-							echo "<a href=\"index2.php?page=drawings_edit&amp;drawing_id=$drawing_id&amp;proj_id=$proj_id&amp;drawing_edit=yes\" class=\"submenu_bar\"><img src=\"images/button_edit.png\" alt=\"Edit Drawing\" />&nbsp;Edit Drawing</a>";
-							echo "<a href=\"index2.php?page=drawings_revision_edit&amp;drawing_id=$drawing_id&amp;proj_id=$proj_id\" class=\"submenu_bar\"><img src=\"images/button_new.png\" alt=\"Add new revision\" />&nbsp;Add new revision</a>";
-							
-							// Allow this drawing to be deleted if it has not already been issued (in which case, it's too late)
-							
-							$sql_drawing_delete = "SELECT issue_id FROM intranet_drawings_issued WHERE issue_drawing = $drawing_id";
-							$result_drawing_delete = mysql_query($sql_drawing_delete, $conn) or die(mysql_error());
-							$drawing_issue_count = mysql_num_rows($result_drawing_delete);
-							if ($drawing_issue_count == 0) {
-							
-								echo "<a href=\"index2.php?page=drawings_list&amp;drawing_id=$drawing_id&amp;proj_id=$proj_id&amp;action=drawing_delete\" class=\"submenu_bar\"  onClick=\"javascript:return confirm('Are you sure you want to delete this drawing? Deleted drawings (and any revisions) will be permanently deleted and cannot be recovered. There are currently $drawing_count revisions of this drawing on the system.')\"><img src=\"images/button_delete.png\" alt=\"Delete Drawing\" />&nbsp;Delete Drawing</a>";
-							
-							}
-							
-							
-					echo "</div>";
-				
-				
-				
-				echo "<h3>Drawing Information</h3>";
-				
-
-				echo "<table summary=\"Lists the details for drawing $drawing_number\">";
-				
-				echo "<tr><td style=\"width: 25%;\"><strong>Project</strong></td><td>$proj_num $proj_name</td></tr>";
-				
-				echo "<tr><td><strong>Drawing Number</strong></td><td>$drawing_number";
-						if ($drawing_author == $_COOKIE[user] OR $user_usertype_current > 1) {
-						echo "&nbsp;<a href=\"index2.php?page=drawings_edit&amp;drawing_id=$drawing_id&amp;proj_id=$proj_id&amp;drawing_edit=yes\"><img src=\"images/button_edit.png\" alt=\"Edit this drawing\" /></a>";
-				}
-				echo "</td></tr>";
-				
-				echo "<tr><td><strong>Title</strong></td><td>".nl2br($drawing_title)."</td></tr>";
-				
-				echo "<tr><td><strong>Status</strong></td><td>$drawing_status</td></tr>";
-				
-				echo "<tr><td><strong>Scale</strong></td><td>$scale_desc</td></tr>";
-				
-				echo "<tr><td><strong>Paper</strong></td><td>$paper_size</td></tr>";
-				
-				echo "<tr><td><strong>Author</strong></td><td>$drawing_author</td></tr>";
-				
-				echo "<tr><td><strong>Date</strong></td><td>" . TimeFormat($drawing_date) . "</td></tr>";
-
-				echo "</table>";
-				
-
-				
-				
-				echo "<h3>Revision History</h3>";
-				
-				
-				$sql_rev = "SELECT * FROM intranet_drawings_revision, intranet_user_details WHERE revision_drawing = '$_GET[drawing_id]' AND revision_author = user_id ORDER BY revision_letter DESC";
-				$result_rev = mysql_query($sql_rev, $conn) or die(mysql_error());
-				
-				if (mysql_num_rows($result_rev) > 0) {
-					
-					
-
-				echo "<table desc=\"Revision list for drawing $drawing_number\">
-		<tr><th>Rev.</th><th>Date</th><th>Description</th><th>Author</th></tr>";
-				
-				while ($array_rev = mysql_fetch_array($result_rev)) {
-				$revision_id = $array_rev['revision_id'];
-				$revision_letter = strtoupper($array_rev['revision_letter']);
-				$revision_desc = nl2br($array_rev['revision_desc']);
-				$revision_time = $array_rev['revision_date'];
-				$revision_date = TimeFormat($revision_time);
-				$revision_author = $array_rev['revision_author'];
-				$revision_author_name = $array_rev['user_name_first']."&nbsp;".$array_rev['user_name_second'];
-				
-				echo "<tr><td>$revision_letter";
-				
-				if ($revision_author == $_COOKIE[user] OR $user_usertype_current > 1) {
-						echo "&nbsp;<a href=\"index2.php?page=drawings_revision_edit&amp;drawing_id=$drawing_id&amp;revision_id=$revision_id\"><img src=\"images/button_edit.png\" alt=\"Edit this revision\" /></a>";
-				}
-				
-				
-				echo "</td><td><a href=\"index2.php?page=datebook_view_day&amp;time=$revision_time\">$revision_date</a></td><td>$revision_desc</td><td>$revision_author_name</td></tr>";
-				
-				}
-				
-				print "</table>";
-				
-				} else {
-				
-				echo "<p>There are no revisions for this drawing.</p>";
-				
-				}
-
-				// Drawing Issues
-				
-				
-				
-				//$sql_issued = "SELECT * FROM intranet_drawings_issued, intranet_drawings_issued_set, intranet_drawings LEFT JOIN intranet_drawings_revision ON revision_drawing = drawing_id WHERE issue_drawing = $drawing_id AND set_id = issue_set AND drawing_id = issue_drawing ORDER BY set_date DESC";
-				
-				$sql_issued = "SELECT * FROM intranet_drawings_issued_set, intranet_drawings, intranet_drawings_issued LEFT JOIN intranet_drawings_revision ON revision_id = issue_revision WHERE drawing_id = $drawing_id AND set_id = issue_set AND drawing_id = issue_drawing GROUP BY set_id ORDER BY set_date DESC, issue_revision DESC, set_id DESC";
-				
-				$result_issued = mysql_query($sql_issued, $conn) or die(mysql_error());
-				
-				echo "<h3>Drawing Issues</h3>";
-				
-				
-				
-				if (mysql_num_rows($result_issued) > 0) {
-					
-					echo "<table>";
-					
-					echo "<tr><th>Issue Date</th><th>Issue Set</th><th>Revision</th><th colspan=\"2\">Issue Status</th></tr>";
-					
-					while ($array_issued = mysql_fetch_array($result_issued)) {
-					
-						$set_date = $array_issued['set_date'];
-						$revision_letter = strtoupper($array_issued['revision_letter']);
-						$issue_set = $array_issued['issue_set'];
-						$set_reason = $array_issued['set_reason'];
-						$set_id = $array_issued['set_id'];
-						
-						if ($revision_letter == NULL) { $revision_letter = "-"; }
-						
-							echo "<tr><td><a href=\"index2.php?page=datebook_view_day&amp;timestamp=$set_date\">" . TimeFormat($set_date) . "</a></td><td><a href=\"index2.php?page=drawings_issue_list&amp;set_id=$issue_set&amp;proj_id=$proj_id\">$set_id</a></td><td>$revision_letter</td><td><a href=\"index2.php?page=drawings_issue_list&amp;set_id=$issue_set&amp;proj_id=$proj_id\">$set_reason</a></td><td style=\"width: 20px;\">&nbsp;<a href=\"pdf_drawing_issue.php?issue_set=$issue_set&amp;proj_id=$proj_id\"><img src=\"images/button_pdf.png\" alt=\"PDF drawing issue sheet\" /></a></td></tr>";
-					
-							}
-							
-					echo "</table>";
-					
-				} else { echo "<p>This drawing has not been issued.</p>"; }  
-					
-				
-				
-				
-						// Drawing issue history
-						
-						
-						/* $sql_history = "SELECT * FROM intranet_drawings_issued_set, intranet_user_details, intranet_drawings_issued LEFT JOIN intranet_drawings_revision ON revision_id = issue_revision WHERE issue_set = set_id AND user_id = set_user AND issue_drawing = $_GET[drawing_id] ORDER BY set_date DESC";
-						$result_history = mysql_query($sql_history, $conn) or die(mysql_error());
-					
-						echo "<h2>Issue History</h2>";
-						
-						if (mysql_num_rows($result_history) > 0) {
-							
-							
-								
-								
-								echo "<table desc=\"Issue history for drawing $drawing_number\"><tr><th>Date</th><th>Revision</th><th>Reason</th><th>Issued by</th></tr>";
-								
-								
-						
-								while ($array_history = mysql_fetch_array($result_history)) {
-									
-									if ( $array_history['revision_id'] > 0) { $revision_letter = strtoupper ($array_history['revision_letter'] ); } else { $revision_letter = "-"; }
-									
-									echo "<tr><td>" . TimeFormat($array_history['set_date']) . "</td><td>" . $revision_letter . "</td><td><a href=\"index2.php?page=drawings_issue_list&amp;set_id=" . $array_history['set_id'] . "&amp;proj_id=" . $array_history['issue_project'] . "\">" . $array_history['set_reason'] . "</a></td><td>" . $array_history['user_initials'] . "</td></tr>";
-									
-								}
-							
-								
-								echo "</table>";
-						
-						
-						} else { echo "<p>This drawing has not been issued.</p>"; } */
-				
-				
-
-				} else {
-
-				echo "<p>This drawing does not exist.</p>";
-
-				}
-			
-		} else {
-
-		echo "<p>No project selected.</p>";
-
-		}
-
 }
 
 function UserChangePasswordForm($user_id) {

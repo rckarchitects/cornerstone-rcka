@@ -69,6 +69,13 @@ function BlogEdit($blog_id,$proj_id,$status) {
 						$blog_pinned = $array['blog_pinned'];
 						$blog_access = $array['blog_access'];
 						$blog_view = $array['blog_view'];
+						$blog_sticky = $array['blog_sticky'];
+						$blog_updated_date = $array['blog_updated_date'];
+						$blog_updated_by = $array['blog_updated_by'];
+						
+						$blog_revision = $array['blog_revision'];
+						
+						$blog_drawing_ref = $array['blog_drawing_ref'];
 						
 						$contact_id = $blog_contact;
 						
@@ -122,6 +129,13 @@ function BlogEdit($blog_id,$proj_id,$status) {
 						$blog_pinned = $_POST[blog_pinned];
 						$blog_access = $_POST[blog_access];
 						$blog_view = $_POST[blog_view];
+						$blog_sticky = $_POST[blog_sticky];
+						
+						$blog_drawing_ref = $_POST[blog_drawing_ref];
+						
+						$blog_updated_date = $_POST[blog_updated_date];
+						$blog_updated_by = $_POST[blog_updated_by];
+						$blog_drawing_ref = $_POST[blog_drawing_ref];
 						
 						$blog_date_minute = date("i",time());
 						$blog_date_hour = date("G",time());
@@ -140,6 +154,8 @@ function BlogEdit($blog_id,$proj_id,$status) {
 					echo "
 					<h3>Title</h3><p>
 					<input type=\"text\" name=\"blog_title\" maxlength=\"100\" size=\"50\" value=\"$blog_title\" required=\"required\" /></p>";
+					
+					echo "<h3>Document Reference</h3><p><input type=\"text\" name=\"blog_drawing_ref\" maxlength=\"50\" size=\"50\" value=\"" . $blog_drawing_ref . "\" /></p>";
 
 					if($status == "add" AND $proj_id != NULL) {
 
@@ -219,7 +235,7 @@ function BlogEdit($blog_id,$proj_id,$status) {
 								}
 								echo "</select></p>";
 							}
-							
+													
 					// Link this entry with a task
 
 							$sql4 = "SELECT tasklist_id, tasklist_notes, tasklist_added FROM intranet_tasklist WHERE tasklist_project = '$proj_id' AND tasklist_person = '$_COOKIE[user]' order by tasklist_due DESC";
@@ -283,9 +299,16 @@ function BlogEdit($blog_id,$proj_id,$status) {
 					echo "Year&nbsp;
 							<input type=\"text\" name=\"blog_date_year\" value=\"$blog_date_year\" maxlength=\"4\" size=\"5\"  />
 							";
-							
 					if ($blog_pinned == 1 ) { $blog_pinned = "checked=\"checked\""; } else { unset($blog_pinned); }
-					echo "<p><input type=\"checkbox\" value=\"1\" name=\"blog_pinned\" $blog_pinned />&nbsp;Pin to menu?</p>";
+					echo "<p><input type=\"checkbox\" value=\"1\" name=\"blog_pinned\" $blog_pinned />&nbsp;Pin to side menu?</p>";
+					
+					if ($blog_sticky == 1 ) { $blog_sticky = "checked=\"checked\""; } else { unset($blog_sticky); }
+					echo "<p><input type=\"checkbox\" value=\"1\" name=\"blog_sticky\" $blog_sticky />&nbsp;Pin to top?</p>";
+					
+					$blog_revision_new = $blog_revision + 1;
+					
+					echo "<p><input type=\"checkbox\" value=\"yes\" name=\"blog_formal_revision\" />&nbsp;Formal revision?<span class=\"minitext\"><br />(increases the revision number from " . $blog_revision . " to " . $blog_revision_new . ")</span></p>";
+					
 							
 							if ($blog_id > 0) {		
 								echo "<input type=\"hidden\" value=\"blog_edit\" name=\"action\" />";

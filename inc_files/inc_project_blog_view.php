@@ -34,6 +34,10 @@ function BlogView($blog_id) {
 					$blog_link = $array['blog_link'];
 					$blog_task = $array['blog_task'];
 					$blog_proj = $array['blog_proj'];
+					$blog_revision = $array['blog_revision'];
+					$blog_updated_date = $array['blog_updated_date'];
+					$blog_updated_by = $array['blog_updated_by'];
+					$blog_drawing_ref = $array['blog_drawing_ref'];
 
 					if (intval($proj_id) == 0) { "<h1>Journal $proj_id</h1>"; }
 
@@ -54,18 +58,31 @@ function BlogView($blog_id) {
 						$data_contact = $blog_contact; echo "<h3>Contact</h3><p>"; include("dropdowns/inc_data_contacts_name.php"); echo "</p>"; 
 					}
 
-					echo "<div><div class=\"float\"><article><h3>Date</h3><p>".date("g:ia", $blog_date)." <a href=\"index2.php?page=datebook_view_day&amp;timestamp=$blog_date\">".TimeFormat($blog_date)."</a>
+					echo "<div><article><div class=\"float\"><h4>Date</h4><p><a href=\"index2.php?page=datebook_view_day&amp;timestamp=$blog_date\">".TimeFormatDetailed($blog_date)."</a>
 					</p></div>";
 
 								$type_find = array("phone","filenote","meeting","email","rfi");
 								$type_replace = array("Telephone Call","File Note","Meeting Note", "Email Message","Request for Information (RFI)");
 								$blog_type_view = str_replace($type_find,$type_replace,$blog_type);
 								
-					echo "<div class=\"float\"><h3>Entry by</h3><p>";
+					echo "<div class=\"float\"><h4>Entry by</h4><p>";
 					$data_user_id = $blog_user; include("dropdowns/inc_data_user_name.php");
-					echo "</p></div></div>";
-
-					echo "<h3>$blog_type_view</h3><div class=\"page\"><p>".$blog_text."</p></article></div>";
+					echo "</p></div>";
+					
+					if ($blog_drawing_ref) {
+						echo "<div class=\"float\"><h4>Document</h4><p>" . $blog_drawing_ref . "</p></div>";
+					}
+					
+					if ($blog_revision > 0) {
+						echo "<div class=\"float\"><h4>Revision</h4><p>" . $blog_revision . "</p></div>";
+					}
+					
+					if ($blog_updated_date > 0) {
+						echo "<div class=\"float\"><h4>Updated</h4><p>" . TimeFormatDetailed($blog_updated_date) . " by " . GetUserNameOnly($blog_updated_by) . "</p></div>";
+					}
+					
+					echo "</div><h3>$blog_type_view</h3><div class=\"page\"><p>".$blog_text."</p></article></div>";
+					
 
 					// Blogs that this entry links to
 
@@ -115,7 +132,7 @@ function BlogView($blog_id) {
 					}
 
 
-					}
+			}
 					
 		if (intval($proj_id) > 0) { return $blog_proj; }
 		

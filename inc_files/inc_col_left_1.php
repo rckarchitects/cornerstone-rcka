@@ -118,19 +118,6 @@ if ($module_holidays == "1") {
 	SideMenu ("Holidays", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
 }
 
-// Menu - QMS
-
-if ($module_qms == "1") {
-
-	$array_pages = array("index2.php?page=qms_view","index2.php?page=qms_edit");
-	$array_title = array("View QMS","Edit QMS");
-	$array_images = array("button_list.png","button_edit.png");
-	$array_access = array(1,4);
-
-	SideMenu ("Quality Management", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
-	
-}
-
 // Menu - Timesheets
 
 if ($module_timesheets == "1") {
@@ -222,7 +209,20 @@ if ($module_phonemessages == 1) {
 	
 }
 
-// Menu - Office Manuals
+// Menu - Office Manual
+
+if ($module_qms == "1") {
+
+	$array_pages = array("index2.php?page=qms_view","index2.php?page=qms_edit");
+	$array_title = array("View Office Manual","Edit Office Manual");
+	$array_images = array("button_list.png","button_edit.png");
+	$array_access = array(1,4);
+
+	SideMenu ("Office Manual", $array_pages, $array_title, $array_access, $user_usertype_current, $array_images);
+	
+}
+
+// Menu - Project Manual
 
 if ($module_manual == 1) {
 

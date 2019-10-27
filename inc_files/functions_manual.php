@@ -143,21 +143,30 @@ function ManualPageView($manual_id) {
 	$manual_id = intval($manual_id);
 	
 
-	$sql = "SELECT * FROM intranet_stage_manual LEFT JOIN intranet_timesheet_group ON manual_stage = group_id LEFT JOIN intranet_media ON media_id = manual_attachment WHERE manual_id = $manual_id ORDER BY manual_stage, manual_section, manual_order";
+	$sql = "SELECT * FROM intranet_stage_manual LEFT JOIN intranet_timesheet_group ON manual_stage = group_id LEFT JOIN intranet_media ON media_id = manual_attachment WHERE manual_id = $manual_id";
 	$result = mysql_query($sql, $conn);
 	$array = mysql_fetch_array($result);
+	
+		
+	
 	echo "<h2>" . $array['manual_title'] . "</h2>";
 	
 	ProjectSubMenu(0,$user_usertype_current,"manual_page",1);
 	ProjectSubMenu(0,$user_usertype_current,"manual_page",2);
 	
-	echo "<h3>" . $array['group_code'] . "&nbsp;" . $array['group_description'] . "</h3>";
+	echo "<div class=\"page_details\"><p>Author: " . UserDetails($array['manual_author']) . "<br />Updated: " . TimeFormatDetailed($array['manual_updated']) . "</p></div>";
+	
+	if (!$array['manual_section']) { $manual_section = "General"; } else { $manual_section = $array['manual_section']; }
+	
+	echo "<h3>" . $manual_section . "</h3>";
+	
+	
+	
 	echo "<div class=\"page\">";
 	
 	if ($array['manual_attachment']) { echo "<div class=\"imagecontainer\"><p class=\"minitext\">Attachments</p><p><a href=\"" . $array['media_path'] . $array['media_file'] . "\">" . $array['media_title'] . "</a></p></div>"; }
 
 	echo $array['manual_text'] . "</div>";
-	echo "<p>Author: " . UserDetails($array['manual_author']) . "<br />Updated: " . TimeFormatDetailed($array['manual_updated']) . "</p>";
 	
 }
 
@@ -169,7 +178,7 @@ function ManualIndexView() {
 	
 	ProjectSubMenu(0,$user_usertype_current,"manual_page",1);
 	
-	$sql = "SELECT manual_id, manual_section, manual_title, manual_updated, group_id, group_code, group_description FROM intranet_stage_manual LEFT JOIN intranet_timesheet_group ON manual_stage = group_id ORDER BY group_code, manual_section, manual_order";
+	$sql = "SELECT manual_id, manual_section, manual_title, manual_updated, group_id, group_code, group_description FROM intranet_stage_manual LEFT JOIN intranet_timesheet_group ON manual_stage = group_id ORDER BY group_code, manual_section, manual_order, manual_title";
 	$result = mysql_query($sql, $conn);
 	unset($current_stage);
 	$current_section = NULL;

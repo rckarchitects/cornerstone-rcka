@@ -11,14 +11,12 @@
   
   echo "<meta name=\"robots\" content=\"noindex\">";
   
-  echo "
-  <title>
-  $settings_name
-  </title>
-  ";
+  echo "<title>" . $settings_name . "</title>";
   
   $font_file = "skins/" . $settings_style . "/font.inc";
   if (file_exists($font_file)) { echo file_get_contents($font_file); }
+  
+  echo "<link href=\"https://fonts.googleapis.com/css?family=Work+Sans&display=swap\" rel=\"stylesheet\">";
   
   echo "
   

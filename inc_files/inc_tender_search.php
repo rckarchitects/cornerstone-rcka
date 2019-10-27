@@ -2,10 +2,20 @@
 
 // Get the list of projects from the database
 
-$search = CleanUp($_GET[tender_keyword]);
+echo "<h1>Tenders</h1>";
 
-$sql = "SELECT * FROM intranet_tender_answers, intranet_tender WHERE tender_id = answer_tender_id AND answer_question LIKE '%$search%' ORDER BY tender_date DESC, answer_ref";
-$result = mysql_query($sql, $conn) or die(mysql_error());
+function TenderSearch($search) {
+	
+	global $conn;
+	
+	echo "<h2>Keyword: " . $search . "</h2>";
+	
+	echo "<div class=\"page\">";
+	
+	$search = addslashes($search);
+
+	$sql = "SELECT * FROM intranet_tender_answers, intranet_tender WHERE tender_id = answer_tender_id AND answer_question LIKE '%" . $search . "%' ORDER BY tender_date DESC, answer_ref";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
 
 	$counter = 0;
 		
@@ -24,13 +34,7 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		$tender_type = $array['tender_type'];
 		
 		if ($tender_date > time() AND $_GET[edit_question] != $answer_id) { $answer_ref = $answer_ref . "&nbsp;<a href=\"index2.php?page=tender_view&amp;tender_id=$tender_id&amp;edit_question=$answer_id#$answer_id\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a>"; }
-		
-		if ($counter == 0) {
-			echo "<h1>Searching: <i>$search</i></h1>";
-		print "<table summary=\"Lists of questions and responses\">";
-		if ($_GET[question] == "add") { EditForm('','','','','',$tender_id); echo "</th></tr>"; }
-		}
-		
+			
 		if ($answer_response == NULL) { $answer_response = "-- Not yet answered --"; }
 
 			echo "<tr><th style=\"width: 10%;\" >$answer_ref</th><th>";
@@ -45,6 +49,11 @@ $result = mysql_query($sql, $conn) or die(mysql_error());
 		$counter++;
 		}
 
-		print "</table>";
+		echo "</table>";
 		
-?>
+		echo "</div>";
+
+
+}
+
+TenderSearch($_GET[tender_keyword]);

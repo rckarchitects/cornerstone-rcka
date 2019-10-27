@@ -622,15 +622,17 @@ function SplitBag1($input) {
 			$y_current = $pdf->GetY();
 		}
 		
-function PDF_Fee_Drawdown ($proj_id) {
+function PDF_Fee_Drawdown ($proj_id, $confirmed) {
 	
 		global $conn;
 		global $pdf;
 		global $format_font;
 		
+		if (intval($confirmed) != 1) { $confirmed_only = "AND ts_fee_prospect > 0"; } else { $confirmed_only = "AND ts_fee_prospect = 100"; }
+		
 		$proj_id = intval($proj_id);
 		
-		$sql = "SELECT ts_fee_commence FROM intranet_timesheet_fees WHERE ts_fee_project = $proj_id AND ts_fee_value > 5 AND ts_fee_prospect > 0 ORDER BY ts_fee_commence";
+		$sql = "SELECT ts_fee_commence FROM intranet_timesheet_fees WHERE ts_fee_project = " . intval($proj_id) . " AND ts_fee_value > 5 " . $confirmed_only . " ORDER BY ts_fee_commence";
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		$array = mysql_fetch_array($result);
 		$ts_fee_commence = $array['ts_fee_commence'];
@@ -638,9 +640,11 @@ function PDF_Fee_Drawdown ($proj_id) {
 		if ($ts_fee_commence > date("Y-m-d",time())) { $title = "Proposed Fee Drawdown";	} else { $title = "Current Fee Status"; }
 		
 		
+		
+		
 		ProjectHeading($proj_id,$title);
 	
-		$sql = "SELECT * FROM intranet_timesheet_fees WHERE ts_fee_project = $proj_id AND ts_fee_value > 5 AND ts_fee_prospect = 100 ORDER BY ts_fee_commence";
+		$sql = "SELECT * FROM intranet_timesheet_fees WHERE ts_fee_project = $proj_id AND ts_fee_value > 5 " . $confirmed_only . " ORDER BY ts_fee_commence";
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		
 			if (mysql_num_rows($result) > 0) {

@@ -177,7 +177,10 @@ function PDFRiskMatrix($proj_id) {
 						
 						$pdf->Cell(25,5,TimeFormat(DisplayDate($array['risk_date'])),0,0);
 						$pdf->Cell(25,5,ucwords($array['risk_management']),0,0);
-						$pdf->Cell(25,5,GetCompanyName($array['risk_responsibility']),0,0);
+						
+						$pdf->MultiCell(25,4,GetCompanyName($array['risk_responsibility']),0,'1');
+						if ($pdf->GetY() > $new_y) { $new_y = $pdf->GetY(); }
+						$pdf->SetXY(390,$current_y);
 						
 						$pdf->Cell(15,5,TimeFormat($array['risk_timestamp']),0,0);
 						

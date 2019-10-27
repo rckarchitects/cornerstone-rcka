@@ -6,6 +6,14 @@
 	
 	echo "<h1>Contacts</h1>";
 	
+	echo "<h2>" . GetContactName($contact_id) . "</h2>";
+	
+	ProjectSubMenu(NULL,$user_usertype_current,"contacts_admin",1);
+	ProjectSubMenu(NULL,$user_usertype_current,"contacts_admin",2);
+	
+
+
+echo "<div class=\"page\">";
 
 $company_id = intval( ContactViewDetailed($contact_id) );
 
@@ -27,4 +35,6 @@ ContactNotes($contact_id);
 ContactDrawingList($contact_id);
 
 ContactProjects($contact_id);
+
+echo "</div>";
 

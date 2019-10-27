@@ -198,8 +198,8 @@ function MediaBrowse($filter) {
 	
 			while ($array = mysql_fetch_array($result)) {
 				
-				if (!$current_category) { echo "<div><h3>" . $array['media_category'] . "</h3>"; $current_category = $array['media_category']; }
-				elseif ($current_category != $array['media_category']) { echo "</div><div><h3>" . $array['media_category'] . "</h3>"; $current_category = $array['media_category']; }
+				if (!$current_category) { echo "<h3>" . $array['media_category'] . "</h3><div>"; $current_category = $array['media_category']; }
+				elseif ($current_category != $array['media_category']) { echo "</div><h3>" . $array['media_category'] . "</h3><div>"; $current_category = $array['media_category']; }
 				
 				if ((time() - intval($array['media_timestamp'])) < 86400) { $class = "alert_warning"; }
 				elseif ((time() - intval($array['media_timestamp'])) < 604800) { $class = "alert_careful"; }

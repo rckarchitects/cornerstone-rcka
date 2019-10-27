@@ -7,4 +7,6 @@ ProjectSwitcher("project_fees",$proj_id,1,1);
 	echo "<h2>Fee Stages</h2>";
 	ProjectSubMenu($proj_id,$user_usertype_current,"project_view",1);
 	ProjectSubMenu($proj_id,$user_usertype_current,"project_fee",2);
+	echo "<div class=\"page\">";
 	ProjectFees($proj_id);
+	echo "</div>";

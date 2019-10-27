@@ -229,7 +229,7 @@ function SearchManual($keywords_array) {
 				
 				$search_results = $search_results + mysql_num_rows($result);
 				
-				echo "<h3>Office Manual</h3>";
+				echo "<h3>Project Manual</h3>";
 				echo "<table>";
 				while ($array = mysql_fetch_array($result)) { echo "<tr><td><a href=\"index2.php?page=manual_page&amp;manual_id=" . $array['manual_id'] . "\">" . $array['manual_title'] . "</a></td></tr>"; }
 				echo "</table>";
@@ -473,11 +473,14 @@ echo "</table>";
 
 					echo "</table>";	
 	
-	
+			return mysql_num_rows($result);
 	
 	}
-	
-TenderSearch($keywords_array);
+
+$search_results = $search_results + TenderSearch($keywords_array);
+
+
+if (intval($search_results) == 0 ) { echo "<p>No results found.</p>"; } else { echo "<p>" . $search_results . " results found.</p>"; }
 
 
 } else {
@@ -519,6 +522,7 @@ function SearchResultsTenders($keywords_array) {
 						}
 
 					echo "</table>";
+				
 
 
 	}
@@ -535,6 +539,6 @@ function SearchResultsTenders($keywords_array) {
 
 }
 
-if (intval($search_results) == 0 ) { echo "<p>No results found.</p>"; } else { echo "<p>" . $search_results . " results found.</p>"; }
+
 
 echo "</div>";

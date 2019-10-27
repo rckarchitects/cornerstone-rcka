@@ -21,9 +21,9 @@ function ActionBlogAdd() {
 
 				// Begin to clean up the $_POST submissions
 
-				$blog_user = CleanUp($_POST[blog_user]);
+				$blog_user = intval($_POST[blog_user]);
 				$blog_date = CleanUp($_POST[blog_date]);
-				$blog_proj = CleanUp($_POST[blog_proj]);
+				$blog_proj = intval($_POST[blog_proj]);
 				$blog_text = addslashes($_POST[blog_text]);
 				$blog_view = CleanUp($_POST[blog_view]);
 				$blog_title = CleanUp($_POST[blog_title]);
@@ -33,6 +33,7 @@ function ActionBlogAdd() {
 				$blog_task = CleanUp($_POST[blog_task]);
 				$blog_task = intval($_POST[blog_pinned]);
 				$blog_access = intval($_POST[blog_access]);
+				$blog_sticky = intval($_POST[blog_sticky]);
 
 					$blog_date_minute = CleanNumber($_POST[blog_date_minute]);
 					$blog_date_hour = CleanNumber($_POST[blog_date_hour]);
@@ -57,12 +58,16 @@ function ActionBlogAdd() {
 				blog_link,
 				blog_task,
 				blog_pinned,
-				blog_access
+				blog_access,
+				blog_sticky,
+				blog_updated_date,
+				blog_updated_by,
+				blog_revision
 				) values (
 				'NULL',
 				'$blog_date',
-				'$blog_user',
-				'$blog_proj',
+				$blog_user,
+				$blog_proj,
 				'$blog_text',
 				'$blog_title',
 				'$blog_view',
@@ -70,8 +75,12 @@ function ActionBlogAdd() {
 				'$blog_contact',
 				'$blog_link',
 				'$blog_task',
-				'$blog_pinned',
-				'$blog_access'
+				$blog_pinned,
+				$blog_access,
+				$blog_sticky,
+				0,
+				0,
+				0
 				)";
 
 				$result = mysql_query($sql_add, $conn) or die(mysql_error());

@@ -10,4 +10,6 @@ echo "<h2>Journal Entries</h2>";
 
 ProjectSubMenu($proj_id,$user_usertype_current,"project_view",1);
 ProjectSubMenu($proj_id,$user_usertype_current,"project_blog_list");
+echo "<div class=\"page\">";
 ListProjectJournalEntries($proj_id);
+echo "</div>";

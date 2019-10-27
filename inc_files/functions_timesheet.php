@@ -112,7 +112,7 @@ function TimeSheetEdit($ts_weekbegin, $ts_user, $ts_id) {
 				}
 				
 			} else {
-				echo "<h3>Add Timesheet Entry</h3>";
+				echo "<h2>Add Timesheet Entry</h2>";
 			}
 
 			echo "<form action=\"index2.php?page=timesheet&amp;week=$ts_weekbegin"."&amp;user_view=$ts_user"."\" method=\"post\">";
@@ -420,24 +420,9 @@ function fillCombobox(oList, vValue){
 ";
 
 
-echo "<select name=\"ts_project\"  onchange=\"comboItemSelected(this,this.form.ts_stage_fee);\">";
 
-	if ($ts_project > 0) {
-		$sql = "SELECT * FROM intranet_projects WHERE proj_active = '1' order by proj_num";
-	} else {
-		$sql = "SELECT * FROM intranet_projects WHERE proj_active = '1' order by proj_num";
-	}
-		$result = mysql_query($sql, $conn) or die(mysql_error());
-	$test_first = 0;
-	while ($array = mysql_fetch_array($result)) {
-		$proj_num = $array['proj_num'];
-		$proj_name = $array['proj_name'];
-		$proj_id = $array['proj_id'];
-		if ($test_first == 0) { $test_first = $proj_id; }
-	echo "<option value=\"$proj_id\"";
-		if ($proj_id == $ts_project) { echo " selected "; }
-	echo ">$proj_num $proj_name</option>";
-	}
+	
+ProjectSelect($ts_project,"ts_project",1,0,"onchange=\"comboItemSelected(this,this.form.ts_stage_fee);\"");
 
 
 echo "</select>&nbsp;";
@@ -620,7 +605,7 @@ function TimeSheetList($user_id,$ts_weekbegin,$user_timesheet_hours) {
 									}
 									
 									echo "</td>";
-									echo "<td style=\"" . $style . "\">" . $ts_list_date . "</td>";
+									echo "<td style=\"" . $style . "\">" . date("l",$ts_list_entry) . "</td>";
 									echo "<td style=\"" . $style . "\">" . $ts_list_desc;
 									if ($editbutton == 1) {
 										echo "&nbsp;<a href=\"index2.php?page=timesheet&amp;week=$ts_weekbegin&amp;ts_id=$ts_list_id&amp;user_view=$user_id\"><img src=\"images/button_edit.png\" alt=\"Edit this entry\" /></a>";
@@ -708,7 +693,7 @@ function TimeSheetList($user_id,$ts_weekbegin,$user_timesheet_hours) {
 
 						} else {
 							
-						echo "<tr><td colspan=\"4\">There have been no entries added for this week.</td>";
+						echo "<tr><td colspan=\"5\">There have been no entries added for this week.</td>";
 
 						if ($user_usertype_current > 3) { echo "<td style=\"text-align: right; $background\" colspan=\"4\"></td>"; }
 

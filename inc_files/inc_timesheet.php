@@ -34,6 +34,8 @@ if (intval($_POST[ts_weekbegin]) > 0 ) {
 
 TimeSheetHeader($ts_weekbegin, $viewuser);
 
+echo "<div class=\"page\">";
+
 if ($viewuser == $_COOKIE[user] OR $_GET[ts_id] > 0 OR $viewuser == NULL OR $user_usertype_current > 3 ) {
 	TimeSheetEdit($ts_weekbegin,$viewuser,$ts_id);
 }
@@ -44,3 +46,4 @@ TimeSheetUserUpdates($viewuser, $ts_weekbegin);
 
 TimeSheetList($viewuser,$ts_weekbegin,$user_usertype_current);
 
+echo "</div>";

@@ -4,6 +4,8 @@ function DrawingsIssuedList($proj_id) {
 	
 	$proj_id = intval($proj_id);
 	
+	echo "<div class=\"page\">";
+	
 	if ($proj_id > 0) {
 		
 		echo "<table>";
@@ -28,6 +30,8 @@ function DrawingsIssuedList($proj_id) {
 		echo "<p>No project selected.</p>";
 		
 	}
+	
+	echo "</div>";
 		
 	
 }

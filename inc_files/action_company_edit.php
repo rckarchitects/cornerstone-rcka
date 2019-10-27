@@ -17,11 +17,11 @@ $company_id = $_POST[company_id];
 $company_name = CleanUpNames($_POST[company_name]);
 $company_phone = CleanUpPhone($_POST[company_phone]);
 $company_fax = CleanUpPhone($_POST[company_fax]);
-$company_address = CleanUpAddress($_POST[company_address]);
-$company_city = CleanUp($_POST[company_city]);
-$company_county = CleanUp($_POST[company_county]);
-$company_postcode = CleanUpPostcode($_POST[company_postcode]);
-$company_country = $_POST[company_country];
+$company_address = addslashes($_POST[company_address]);
+$company_city = addslashes($_POST[company_city]);
+$company_county = addslashes($_POST[company_county]);
+$company_postcode = addslashes($_POST[company_postcode]);
+$company_country = addslashes($_POST[company_country]);
 $company_web = str_replace ("http://", "", $_POST[company_web]);
 $company_notes = addslashes($_POST[company_notes]);
 

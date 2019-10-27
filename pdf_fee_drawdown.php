@@ -42,7 +42,9 @@ $pdf->AddFont($format_font,'',$format_font_2);
 // Now run the standard functions
 
 	
-	PDF_Fee_Drawdown($proj_id);
+	if ($_GET['confirmed'] == 1) { $confirmed = 1; } else { unset($confirmed); }
+	
+	PDF_Fee_Drawdown($proj_id,$confirmed);
 
 
 // If development code = "yes" (devcode = "yes") in the $_GET request, include some additional data

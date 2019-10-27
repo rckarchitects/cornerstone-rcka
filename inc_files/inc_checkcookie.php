@@ -31,7 +31,7 @@ date_default_timezone_set ( 'Europe/London ' );
 
 // Establish the functions we require based on the modules loaded
 
-			if ($_GET[time] != NULL) { $time = CleanNumber($_GET[time]); setcookie("lastdayview", $time);  } else { $time = time(); }
+			if ($_GET[time] != NULL) { $time = intval($_GET[time]); setcookie("lastdayview", $time);  } else { $time = time(); }
 
 			$ip_current = getenv("REMOTE_ADDR"); // get the ip number of the user
 
@@ -98,12 +98,14 @@ $user_timesheet_hours = $user_details_array[2];
 
 
 include_once("functions_general.php");
-if ($module_timesheets == 1) {  include_once("functions_timesheet.php"); }
-if ($module_contacts == 1) { include_once("functions_contacts.php"); }
-if ($module_tasks == 1) { include_once("functions_tasks.php"); }
-if ($module_manual == 1) { include_once("functions_manual.php"); }
-if ($module_media == 1) { include_once("functions_media.php"); }
-if ($module_risks == 1) { include_once("functions_risks.php"); }
+include_once("functions_menus.php");
+if (intval($module_timesheets) == 1) {  include_once("functions_timesheet.php"); }
+if (intval($module_contacts) == 1) { include_once("functions_contacts.php"); }
+if (intval($module_tasks) == 1) { include_once("functions_tasks.php"); }
+if (intval($module_manual) == 1) { include_once("functions_manual.php"); }
+if (intval($module_media) == 1) { include_once("functions_media.php"); }
+if (intval($module_risks) == 1) { include_once("functions_risks.php"); }
+if (intval($module_drawings) == 1) { include_once("functions_drawings.php"); }
 
 // Set the page-wide definitions from the $_GET submissions if they exist
 
