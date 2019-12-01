@@ -1,6 +1,7 @@
 <?php
 
-include "inc_files/inc_checkcookie.php";
+include_once "inc_files/inc_checkcookie.php";
+include_once "inc_files/inc_action_functions_pdf.php";
 include_once "secure/prefs.php";
 
 if ($_COOKIE[user] == NULL) { header ("Location: index2.php"); } else {
@@ -59,7 +60,7 @@ $array = mysql_fetch_array($result);
 $user_name_first = $array['user_name_first'];
 $user_name_second = $array['user_name_second'];
 
-$pdf->SetFont($format_font,'',10);
+$format_font = PDFFonts($settings_pdffont);
 
 $printed_on = "Generated ".date("r")." by ".$user_name_first." ".$user_name_second;
 

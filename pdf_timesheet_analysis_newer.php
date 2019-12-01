@@ -9,6 +9,7 @@ include_once "inc_files/inc_checkcookie.php";
 include_once "inc_files/inc_action_functions_pdf.php";
 include_once "secure/prefs.php";
 
+
 if ($user_usertype_current <= 3) { header ("Location: index2.php"); } else {
 
 $remove_symbols = array("Â","Ã");
@@ -44,13 +45,13 @@ function TotalCost($proj_id, $bar_scale, $bar_width_standard) {
 		GLOBAL $bar_width_standard;
 		GLOBAL $conn;
 				
-		$sql_cost_proj = " SELECT SUM(ts_cost_factored * (1 - user_prop_target)) FROM intranet_timesheet, intranet_user_details WHERE user_id = ts_user AND `ts_project` = $proj_id ";
+		$sql_cost_proj = " SELECT SUM(ts_cost_factored) FROM intranet_timesheet WHERE `ts_project` = $proj_id ";
 		$result_cost_proj = mysql_query($sql_cost_proj, $conn) or die(mysql_error());
 		$array_cost_proj = mysql_fetch_array($result_cost_proj);
-		$cost_proj = $array_cost_proj['SUM(ts_cost_factored * (1 - user_prop_target))'];
+		$cost_proj = $array_cost_proj['SUM(ts_cost_factored)'];
 		
 		$sql_fee_proj = "SELECT SUM(ts_fee_value) FROM intranet_timesheet_fees LEFT JOIN intranet_timesheet ON ts_fee_stage = ts_stage_fee WHERE `ts_fee_project` = $proj_id AND ts_id > 0";
-		$sql_fee_proj = " SELECT SUM(ts_fee_value), SUM(ts_fee_value * (1/ts_fee_target)) FROM intranet_timesheet_fees WHERE `ts_fee_project` = $proj_id AND ts_fee_prospect = 100 ";
+		//$sql_fee_proj = " SELECT SUM(ts_fee_value), SUM(ts_fee_value * (1/ts_fee_target)) FROM intranet_timesheet_fees WHERE `ts_fee_project` = $proj_id AND ts_fee_prospect = 100 ";
 		$result_fee_proj = mysql_query($sql_fee_proj, $conn) or die(mysql_error());
 		$array_fee_proj = mysql_fetch_array($result_fee_proj);
 		$fee_proj = $array_fee_proj['SUM(ts_fee_value)'];
@@ -155,6 +156,7 @@ function Checklist($proj_id) {
 			$pdf->SetY($current_y);
 }
 
+
 //  Use FDPI to get the template
 
 define('FPDF_FONTPATH','fpdf/font/');
@@ -197,14 +199,9 @@ $format_font = PDFFonts($settings_pdffont);
 	$pdf->MultiCell(0,5,$print_profit_text,0, L, 0);
 	$pdf->Cell(0,5,'',0,2);
 	
-	$pdf->SetFont($format_font,'',8);
-	$pdf->SetTextColor(0, 0, 0);
-	
-	$include = "Note that the figures below have now been factored down to account for expected non-fee-earning hours for each individual. (Check the discrepancy between the total cost and the individual fee stages, as these appear to be different.)";
-	$pdf->MultiCell(120,3.5,$include,0, L, 0);
-
 	$pdf->SetFont($format_font,'',10);
-	
+	$pdf->SetTextColor(0, 0, 0);
+
 // Array through the projects and fee stages
 
 	$bar_width_standard = 130;
@@ -308,7 +305,7 @@ $format_font = PDFFonts($settings_pdffont);
 			$pdf->addPage();			
 			}
 			
-			$proj_link = $pdf_location . "timesheet_pdf_2.php?proj_id=" . $proj_id;
+			$proj_link = $pdf_location . "/timesheet_pdf_2.php?proj_id=" . $proj_id;
 			
 			$pdf->Cell(0,8,'',0,1);
 			
@@ -379,16 +376,10 @@ $format_font = PDFFonts($settings_pdffont);
 			
 			// Now a bar which shows the unassigned work
 			
-			//$sql_cost_unassigned = " SELECT SUM(ts_cost_factored) FROM intranet_timesheet WHERE `ts_stage_fee` = 0 AND `ts_project`= $proj_id";
-				//$result_cost_unassigned = mysql_query($sql_cost_unassigned, $conn) or die(mysql_error());
-				//$array_cost_unassigned = mysql_fetch_array($result_cost_unassigned);
-				//$cost_unassigned = $array_cost_unassigned['SUM(ts_cost_factored)'];
-			
-			// The below code now factors down people's timesheets to account for the non-fee earning hours they are supposed to spend.
-			$sql_cost_unassigned = " SELECT SUM(ts_cost_factored * (1 - user_prop_target)) FROM intranet_timesheet, intranet_user_details WHERE user_id = ts_user AND `ts_stage_fee` = 0 AND `ts_project`= $proj_id";
+			$sql_cost_unassigned = " SELECT SUM(ts_cost_factored) FROM intranet_timesheet WHERE `ts_stage_fee` = 0 AND `ts_project`= $proj_id";
 				$result_cost_unassigned = mysql_query($sql_cost_unassigned, $conn) or die(mysql_error());
 				$array_cost_unassigned = mysql_fetch_array($result_cost_unassigned);
-				$cost_unassigned = $array_cost_unassigned['SUM(ts_cost_factored * (1 - user_prop_target))'];
+				$cost_unassigned = $array_cost_unassigned['SUM(ts_cost_factored)'];
 				
 				$project_cost_total = $project_cost_total + $cost_unassigned;
 				
@@ -459,20 +450,20 @@ $format_font = PDFFonts($settings_pdffont);
 		
 			
 			// Now establish the width of the timesheet hours to date for this fee stage only
-			$sql_cost_total = " SELECT SUM(ts_cost_factored * (1 - user_prop_target)) FROM intranet_timesheet, intranet_user_details WHERE user_id = ts_user AND `ts_stage_fee` = $ts_fee_id AND `ts_project` = $proj_id = 100";
+			$sql_cost_total = " SELECT SUM(ts_cost_factored) FROM intranet_timesheet WHERE `ts_stage_fee` = $ts_fee_id AND `ts_project` = $proj_id = 100";
 			$result_cost_total = mysql_query($sql_cost_total, $conn) or die(mysql_error());
 			$array_cost_total = mysql_fetch_array($result_cost_total);
-			$cost_total = $array_cost_total['SUM(ts_cost_factored * (1 - user_prop_target))'];
+			$cost_total = $array_cost_total['SUM(ts_cost_factored)'];
 			
-			$sql_cost_stage = " SELECT SUM(ts_cost_factored * (1 - user_prop_target)) FROM intranet_timesheet , intranet_user_details WHERE user_id = ts_user AND `ts_stage_fee` = $ts_fee_id AND `ts_project` = $proj_id  ";
+			$sql_cost_stage = " SELECT SUM(ts_cost_factored) FROM intranet_timesheet WHERE `ts_stage_fee` = $ts_fee_id AND `ts_project` = $proj_id  ";
 			$result_cost_stage = mysql_query($sql_cost_stage, $conn) or die(mysql_error());
 			$array_cost_stage = mysql_fetch_array($result_cost_stage);
-			$cost_stage = $array_cost_stage['SUM(ts_cost_factored * (1 - user_prop_target))'];
+			$cost_stage = $array_cost_stage['SUM(ts_cost_factored)'];
 
-			$sql_cost_stage_uf = " SELECT SUM(ts_rate * ts_hours * (1 - user_prop_target)) FROM intranet_timesheet , intranet_user_details WHERE user_id = ts_user AND `ts_stage_fee` = $ts_fee_id AND `ts_project` = $proj_id ";
+			$sql_cost_stage_uf = " SELECT SUM(ts_rate * ts_hours) FROM intranet_timesheet WHERE `ts_stage_fee` = $ts_fee_id AND `ts_project` = $proj_id ";
 			$result_cost_stage_uf = mysql_query($sql_cost_stage_uf, $conn) or die(mysql_error());
 			$array_cost_stage_uf = mysql_fetch_array($result_cost_stage_uf);
-			$cost_stage_uf = $array_cost_stage_uf['SUM(ts_rate * ts_hours * (1 - user_prop_target))'];
+			$cost_stage_uf = $array_cost_stage_uf['SUM(ts_rate * ts_hours)'];
 			
 			
 			$cost_total = $cost_stage;

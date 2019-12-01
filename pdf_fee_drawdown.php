@@ -21,22 +21,7 @@ $tplidx = $pdf->ImportPage(1);
 $pdf->addPage();
 $pdf->useTemplate($tplidx, 0, 0, 210, 297);
 
-if ($settings_pdffont != NULL) {
-$format_font = $settings_pdffont;
-$format_font_2 = $settings_pdffont.".php";
-} else {
-$format_font = "franklingothicbook";
-$format_font_2 = "franklingothicbook.php";
-}
-
-$pdf->AddFont($format_font,'',$format_font_2);
-
-
-
-
-
-
-
+$format_font = PDFFonts($settings_pdffont);
 
 
 // Now run the standard functions

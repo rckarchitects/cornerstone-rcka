@@ -1,7 +1,7 @@
 <?php
 
-include "inc_files/inc_checkcookie.php";
-
+include_once "inc_files/inc_checkcookie.php";
+include_once "inc_files/inc_action_functions_pdf.php";
 include_once "secure/prefs.php";
 
 //  Use FDPI to get the template
@@ -21,13 +21,7 @@ $pdf->addPage();
 $pdf->SetMargins(10,15,10);
 $pdf->useTemplate($tplidx, 0, 0, 210, 297);
 
-if ($settings_pdffont != NULL) {
-$format_font = $settings_pdffont;
-$format_font_2 = $settings_pdffont.".php";
-} else {
-$format_font = "franklingothicbook";
-$format_font_2 = "franklingothicbook.php";
-}
+$format_font = PDFFonts($settings_pdffont);
 
 if ($_GET[s1] > 0) {
 	

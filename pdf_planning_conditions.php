@@ -1,18 +1,14 @@
 <?php
 
+include_once "inc_files/inc_checkcookie.php";
+include_once "inc_files/inc_action_functions_pdf.php";
+include_once "secure/prefs.php";
+
 $format_bg_r = "0";
 $format_bg_g = "0";
 $format_bg_b = "0";
 
 if ($_GET[proj_id] != NULL) { $proj_id = $_GET[proj_id]; } else { header ("Location: ../index2.php"); }
-
-
-
-include_once "inc_files/inc_checkcookie.php";
-
-include_once "secure/prefs.php";
-
-include "inc_files/inc_action_functions_pdf.php";
 
 $proj_num = GetProjectNum($proj_id);
 
@@ -23,9 +19,7 @@ require('fpdf/fpdi.php');
 
 $pdf= new fpdi();
 
-$format_font = "century";
-$format_font_2 = "Century.php";
-$pdf->AddFont($format_font,'',$format_font_2);
+$format_font = PDFFonts($settings_pdffont);
 
 $pagecount = $pdf->setSourceFile("pdf/template.pdf");
 $tplidx = $pdf->ImportPage(1);

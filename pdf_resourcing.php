@@ -1,12 +1,8 @@
 <?php
 
-
-
-
 include_once "inc_files/inc_checkcookie.php";
 include_once "inc_files/inc_actions_functions.php";
-
-
+include_once "inc_files/inc_action_functions_pdf.php";
 
 
 if ($user_usertype_current <= 3) { header ("Location: index2.php"); } else {
@@ -25,14 +21,16 @@ $format_bg_g = "0";
 $format_bg_b = "0";
 
 
-
-
 //  Use FDPI to get the template
 
 define('FPDF_FONTPATH','fpdf/font/');
 require('fpdf/fpdi.php');
 
+
+
 $pdf= new fpdi();
+
+$format_font = PDFFonts($settings_pdffont);
 
 //$pagecount = $pdf->setSourceFile("pdf/template.pdf");
 //$tplidx = $pdf->ImportPage(1);
@@ -87,7 +85,7 @@ function DrawGrid() {
 		$y = 25;
 		$pdf->SetXY($x,$y);	
 		
-		$pdf->SetFont('Helvetica','',6);
+		$pdf->SetFont($format_font,'',6);
 		
 		$x = 50;
 		$pdf->SetXY($x,$y);
@@ -233,10 +231,10 @@ function CostBar($array_1,$array_2,$array_3,$name,$colwidth,$bold) {
 		$pdf->SetXY($x,$y);
 		
 		$pdf->SetTextColor(0);
-		$pdf->SetFont('Helvetica','B',$size);
+		$pdf->SetFont($format_font,'B',$size);
 		$pdf->Cell(0,5,'',0,1,L);
 		$pdf->Cell(40,5,$name,0,0,L);
-		$pdf->SetFont('Helvetica',$bold,6);
+		$pdf->SetFont($format_font,$bold,6);
 		$counter = 0;
 		$array_output = array();
 		while ($x <= 220) {
@@ -264,7 +262,7 @@ function CostBar($array_1,$array_2,$array_3,$name,$colwidth,$bold) {
 	$page_count = 1;
 
 	$pdf->SetY(10);
-	$pdf->SetFont('Helvetica','b',14);
+	$pdf->SetFont($format_font,'b',14);
 	
 	if (date ("n",$timestart) < 4) { $quarter = "Q1"; }
 	elseif (date ("n",$timestart) < 7) { $quarter = "Q2"; }
@@ -275,7 +273,7 @@ function CostBar($array_1,$array_2,$array_3,$name,$colwidth,$bold) {
 	$sheet_title = "Project Resourcing, " . $quarter;
 	$pdf->SetTextColor($format_bg_r, $format_bg_g, $format_bg_b);
 	$pdf->Cell(169.5,10,$sheet_title,0,0);
-	$pdf->SetFont('Helvetica','',8);
+	$pdf->SetFont($format_font,'',8);
 	$prev_month = $timestart - 7889184;
 	$next_month = $timestart + 7889184;
 	$prev_month = $_SERVER['HTTP_HOST'] . "/pdf_resourcing.php?timestart=$prev_month";
@@ -296,7 +294,7 @@ function CostBar($array_1,$array_2,$array_3,$name,$colwidth,$bold) {
 
 	$pdf->SetTextColor(0, 0, 0);
 	$pdf->SetY(50);
-	$pdf->SetFont('Helvetica','b',18);
+	$pdf->SetFont($format_font,'b',18);
 		
 DrawGrid();
 
@@ -306,7 +304,7 @@ DrawGrid();
 	$sql_proj = "SELECT * FROM intranet_projects, intranet_timesheet_fees WHERE ts_fee_project = proj_id AND proj_fee_track = 1 AND ts_fee_prospect > 0 AND (((UNIX_TIMESTAMP(ts_fee_commence) + ts_fee_time_end) > $capture_start) OR ((UNIX_TIMESTAMP(ts_datum_commence) + ts_datum_length) > $capture_start)) AND proj_active = 1 ORDER BY proj_num, ts_fee_commence";
 	$result_proj = mysql_query($sql_proj, $conn) or die(mysql_error());
 	
-	$pdf->SetFont('Helvetica','',7);
+	$pdf->SetFont($format_font,'',7);
 	
 	$current_proj = 0;
 	$count = 0;
@@ -343,11 +341,11 @@ DrawGrid();
 		
 		// Need to make sure the array continues from the very beginning of the line to count the number of columns in the right place
 	
-		if ($current_proj != $proj_id) { $pdf->SetFont('Helvetica','B',7); $pdf->SetTextColor(0,0,0); $pdf->Cell(50,6,$proj_num,0,1,L); }
+		if ($current_proj != $proj_id) { $pdf->SetFont($format_font,'B',7); $pdf->SetTextColor(0,0,0); $pdf->Cell(50,6,$proj_num,0,1,L); }
 		
 		if ($ts_fee_conclude >= BeginWeek($current_time)) {
 		
-			$pdf->SetFont('Helvetica','',7);
+			$pdf->SetFont($format_font,'',7);
 			$pdf->Cell(40,$rowheight,$ts_fee_text,0,0,L);
 			if ($proj_riba == $ts_fee_id) { $color = array(0.07,0.82,0.72); } else { $color = array(0.47,0.75,0.94); }
 			//$color = array(0.47,0.75,0.94);
@@ -360,7 +358,7 @@ DrawGrid();
 			$stage_start = Weeks($stage_start);
 			if ($stage_start > 0 & $stage_start < 230) {	$pdf->Cell($stage_start,$rowheight,'',0,0,L); }
 			$stage_width = Weeks ($ts_fee_time_end);
-			$pdf->SetFont('Helvetica','',5);
+			$pdf->SetFont($format_font,'',5);
 			$count = 0;
 			$arraycount = ($stage_start / $colwidth);
 
@@ -408,10 +406,10 @@ DrawGrid();
 		$beginweek = BeginWeek($current_time);
 		$month = date ("n" , $beginweek);
 		$currentmonth = date ("n" , $beginweek);
-		$pdf->SetFont('Helvetica','B',8);
+		$pdf->SetFont($format_font,'B',8);
 		$pdf->Cell(0,5,'',0,1,L);
 		$pdf->Cell(40,5,"MONTH",0,0,L);
-		$pdf->SetFont('Helvetica','',7);
+		$pdf->SetFont($format_font,'',7);
 		$pdf->SetDrawColor(100,100,100);
 		$arrayname = 0;
 		$monthtotal = 0;
@@ -507,7 +505,7 @@ DrawGrid();
 			
 			$day_width = $colwidth / 5;
 			
-			$pdf->SetFont('Helvetica','B',8);
+			$pdf->SetFont($format_font,'B',8);
 			$pdf->SetTextColor(0);
 			$pdf->Cell(0,5,"Holidays",0,1,L);
 				
@@ -521,13 +519,20 @@ DrawGrid();
 				
 				$user_start = $current_time + 43200;
 				
-				$pdf->SetFont('Helvetica','',3);
+				$pdf->SetFont($format_font,'',3);
 				
 				$pdf->SetTextColor(0);
-				$pdf->SetFont('Helvetica','B',6);
+				$pdf->SetFont($format_font,'B',6);
 				$pdf->Cell(40,5,$user_name,0,0,L);
 				
-				$sql_days = "SELECT holiday_datestamp FROM intranet_user_holidays WHERE holiday_user = $user_id ORDER BY holiday_timestamp";
+				$sql_bankholidays = "SELECT bankholidays_datestamp FROM intranet_user_holidays_bank";
+				$result_bankholidays = mysql_query($sql_bankholidays, $conn) or die(mysql_error());
+				$array_bankholidays_find = array();
+				while ($array_bankholidays = mysql_fetch_array($result_bankholidays)) {
+					$array_bankholidays_find[] = $array_bankholidays['bankholidays_datestamp'];
+				}
+				
+				$sql_days = "SELECT holiday_datestamp FROM intranet_user_holidays WHERE holiday_user = " . $user_id . " ORDER BY holiday_timestamp";
 				$result_days = mysql_query($sql_days, $conn) or die(mysql_error());
 				$array_days = mysql_fetch_array($result_days);
 				$print_array = print_r($array_days, true);		
@@ -539,6 +544,7 @@ DrawGrid();
 					if (CheckHols($date,$user_id,$current_time) == "yes" && date("z",$time) == date("z",$user_start) ) { $pdf->SetFillColor(255,150,150);
 					} elseif (CheckHols($date,$user_id,$current_time) == "yes" && date("z",$time) != date("z",$user_start) ) { $pdf->SetFillColor(220);
 					} elseif (CheckHols($date,$user_id,$current_time) != "yes" && date("z",$time) == date("z",$user_start) ) { $pdf->SetFillColor(255,0,0);
+					} elseif (in_array($date,$array_bankholidays_find)) { $pdf->SetFillColor(240);
 					} else { $pdf->SetFillColor(175);
 					}
 					if ($user_user_added >= $user_start) { $pdf->SetFillColor(255); } elseif ($user_user_ended <= $user_start && $user_user_ended > 0) { $pdf->SetFillColor(255); }

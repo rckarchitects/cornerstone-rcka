@@ -6,7 +6,8 @@ function InsertPage($input) {
 }
 
 include_once "inc_files/inc_checkcookie.php";
-include "inc_files/inc_action_functions_pdf.php";
+include_once "inc_files/inc_action_functions_pdf.php";
+include_once "secure/prefs.php";
 
 
 if ($user_usertype_current <= 3) { header ("Location: index2.php"); } else {
@@ -98,15 +99,6 @@ function TotalCost($proj_id, $bar_scale, $bar_width_standard) {
 		$pdf->SetLineWidth(0.2);
 }
 
-
-//if ($settings_pdffont != NULL) {
-//$format_font = $settings_pdffont;
-//$format_font_2 = $settings_pdffont.".php";
-//} else {
-$format_font = "Helvetica";
-$format_font_2 = "franklingothicbook.php";
-//}
-
 //  Use FDPI to get the template
 
 define('FPDF_FONTPATH','fpdf/font/');
@@ -121,7 +113,7 @@ $pdf->useTemplate($tplidx);
 
 $pdf->SetAutoPageBreak(0,1.5);
 
-$pdf->AddFont($format_font,'',$format_font_2);
+$format_font = PDFFonts($settings_pdffont);
 
 // Page headers
 

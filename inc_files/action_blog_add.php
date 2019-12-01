@@ -31,7 +31,7 @@ function ActionBlogAdd() {
 				$blog_contact = CleanNumber($_POST[blog_contact]);
 				$blog_link = CleanUp($_POST[blog_link]);
 				$blog_task = CleanUp($_POST[blog_task]);
-				$blog_task = intval($_POST[blog_pinned]);
+				$blog_pinned = intval($_POST[blog_pinned]);
 				$blog_access = intval($_POST[blog_access]);
 				$blog_sticky = intval($_POST[blog_sticky]);
 
@@ -64,7 +64,7 @@ function ActionBlogAdd() {
 				blog_updated_by,
 				blog_revision
 				) values (
-				'NULL',
+				NULL,
 				'$blog_date',
 				$blog_user,
 				$blog_proj,
@@ -82,6 +82,8 @@ function ActionBlogAdd() {
 				0,
 				0
 				)";
+				
+				//echo "<p>" . $sql_add . "</p>";
 
 				$result = mysql_query($sql_add, $conn) or die(mysql_error());
 

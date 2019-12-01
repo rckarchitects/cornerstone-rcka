@@ -1,10 +1,10 @@
 <?php
 
-include "inc_files/inc_checkcookie.php";
+include_once "inc_files/inc_checkcookie.php";
+include_once "inc_files/inc_action_functions_pdf.php";
+include_once "secure/prefs.php";
 
 if ($user_usertype_current < 2) { header ("Location: index2.php"); }
-
-include "inc_files/inc_action_functions_pdf.php";
 
 //  Use FDPI to get the template
 
@@ -13,7 +13,7 @@ require('fpdf/fpdf.php');
 $pdf = new FPDF('L','mm',array(594,841));
 
 $pdf->addPage();
-$pdf->SetFont('Helvetica','B',20);
+$format_font = PDFFonts($settings_pdffont);
 $pdf->Cell(0,10,'Job Book',0,1);
 
 function PDFJobBookGetData () {

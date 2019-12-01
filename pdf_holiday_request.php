@@ -1,12 +1,8 @@
 <?php
 
-include "inc_files/inc_checkcookie.php";
-
 include_once "inc_files/inc_checkcookie.php";
-
+include_once "inc_files/inc_action_functions_pdf.php";
 include_once "secure/prefs.php";
-
-include "inc_files/inc_action_functions_pdf.php";
 
 $proj_num = GetProjectNum($proj_id);
 
@@ -17,9 +13,7 @@ require('fpdf/fpdi.php');
 
 $pdf= new fpdi();
 
-$format_font = "century";
-$format_font_2 = "Century.php";
-$pdf->AddFont($format_font,'',$format_font_2);
+$format_font = PDFFonts($settings_pdffont);
 
 $pagecount = $pdf->setSourceFile("pdf/template.pdf");
 $tplidx = $pdf->ImportPage(1);
@@ -31,9 +25,6 @@ $pdf->useTemplate($tplidx);
 
 	$project_counter = 1;
 	$page_count = 1;
-
-
-	
 
 
 ProjectHeading($proj_id, "Holiday Request");

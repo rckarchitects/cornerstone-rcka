@@ -1,10 +1,10 @@
 <?php
 
-include "inc_files/inc_checkcookie.php";
+include_once "inc_files/inc_checkcookie.php";
+include_once "inc_files/inc_action_functions_pdf.php";
+include_once "secure/prefs.php";
 
 if ($user_usertype_current < 4) { header ("Location: index2.php"); }
-
-include "inc_files/inc_action_functions_pdf.php";
 
 //  Use FDPI to get the template
 
@@ -18,16 +18,7 @@ $tplidx = $pdf->ImportPage(1);
 
 $pdf->addPage('L');
 
-if ($settings_pdffont != NULL) {
-$format_font = $settings_pdffont;
-$format_font_2 = $settings_pdffont.".php";
-} else {
-$format_font = "franklingothicbook";
-$format_font_2 = "franklingothicbook.php";
-}
-
-$pdf->AddFont($format_font,'',$format_font_2);
-
+$format_font = PDFFonts($settings_pdffont);
 
 $format_bg_r = "0";
 $format_bg_g = "0";

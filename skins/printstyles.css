@@ -1,0 +1,132 @@
+@media print {
+
+		body {
+		padding: 0;
+		margin: 0;
+		width: 97%;
+		background: #fff;
+		font-family: 'Work Sans', sans-serif;
+		font-size: 8pt;
+		/* font-size: 1.0em; */
+		color: #000;
+		overflow: scroll;
+		margin-bottom: 50px;
+		float: none !important;
+		}
+		
+		a {
+			
+			color: black;
+			
+		}
+		
+		#mainpage, #column_left, .menu_bar, .submenu_bar, #file_history, #mainfooter, #warnings {
+			
+			display: none;
+			
+		}
+		
+		#mainfooter_print {
+			
+			display: block;
+			text-align: left;
+			font-size: 90%;
+			margin: 6px;
+		}
+		
+		img {
+			
+			border: 1pt solid black;
+			margin: 10pt 0 0 10pt;
+			max-width: 90%;
+			height: auto;
+			
+		}
+		
+		#maintitle {
+			
+			
+			padding: 0;
+			margin: 6px;
+			max-height: 25mm;
+			width: 95%;
+			position: absolute;
+			
+		}
+				
+		img.button {
+			
+			display: none;
+			
+		}
+
+		img.practicelogo {
+		
+			border: none;
+			margin: 0;
+			padding: 0;
+			float: right;
+
+		}			
+		
+		div.float {
+			
+			padding: 0;
+			margin: 0;
+			border-bottom: solid #000 1.5pt;
+			
+		}
+		
+		div.page {
+			
+			border: 0;
+			padding: 0;
+			
+		}
+		
+		div.page a {
+			
+			color: black;
+			
+		}
+		
+		h2 {
+			
+			border: 0;
+			
+		}
+		
+		ul, ol {
+			
+			list-style-position: outside;
+			padding-left: 25px;
+			
+		}
+		
+		p, li { orphans: 3; widows: 2; padding: 0 !important; margin: 0 !important; }
+		
+		h1 {
+			
+			page-break-inside: avoid;
+			page-break-before: always;
+			page-break-after: avoid;
+			orphans: 3; widows: 2;
+			padding-left: 0;
+			font-size: 14pt;
+			
+		}
+		
+		h2, h2, h3 {
+			page-break-inside: avoid;
+			max-width: 125mm;
+	  
+		}
+		
+		tr {
+			
+			page-break-inside: avoid;
+			
+		}
+ 
+ 
+}

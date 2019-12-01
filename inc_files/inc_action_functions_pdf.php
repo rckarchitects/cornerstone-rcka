@@ -21,6 +21,26 @@ function PDFCurrencyFormat($input) {
 	
 }
 
+function PDFFonts($settings_pdffont) {
+	
+	global $pdf;
+
+	if ($settings_pdffont != NULL) {
+		$format_font = $settings_pdffont;
+		$format_font_2 = $settings_pdffont.".php";
+	} else {
+		$format_font = "33556e46d0222547ecfe7afef7c10114_work_sans_400";
+		$format_font_2 = "33556e46d0222547ecfe7afef7c10114_work_sans_400.php";
+		$format_font_bold_2 = "3907928e02627409e10304cee9694645_work_sans_semibold_600.php";
+	}
+
+	$pdf->AddFont($format_font,'',$format_font_2);
+	$pdf->AddFont($format_font,'B',$format_font_bold_2);
+	
+	return $format_font;
+
+}
+
 function HolidayCalendar($year) {	
 	
 						GLOBAL $pdf;
@@ -190,7 +210,6 @@ function PDFHeader ($proj_id,$sheet_title) {
 		GLOBAL $pdf;
 		GLOBAL $conn;
 		GLOBAL $format_font;
-		GLOBAL $format_font_2;
 		
 		if ($proj_id > 0) {
 
@@ -203,7 +222,7 @@ function PDFHeader ($proj_id,$sheet_title) {
 							
 							if (!$sheet_title) { $sheet_title = "Project Checklist"; }
 							$pdf->SetXY(10,45);
-							$pdf->SetFont('Helvetica','B',24);
+							$pdf->SetFont($format_font,'B',24);
 							$pdf->SetTextColor(0, 0, 0);
 							$pdf->SetDrawColor(0, 0, 0);
 							$pdf->Cell(0,10,$sheet_title);
@@ -212,7 +231,7 @@ function PDFHeader ($proj_id,$sheet_title) {
 							
 							$sheet_date = "Current at ". $current_date;
 							if ($proj_id > 0) { $pdf->SetFont('Helvetica','',14); $sheet_subtitle = $proj_num." ".$proj_name; $pdf->Cell(0,7.5,$sheet_subtitle,0,1,L,0); }
-							$pdf->SetFont('Helvetica','',12);
+							$pdf->SetFont($format_font,'',12);
 							$pdf->Cell(0,7.5,$sheet_date,0,1,L,0);
 							$pdf->SetXY(10,70);
 							
@@ -250,9 +269,8 @@ function TaskArrays($proj_id, $group_id) {
 		GLOBAL $conn;
 		GLOBAL $pdf;
 		GLOBAL $format_font;
-		GLOBAL $format_font_2;
 
-						$sql_checklist = "SELECT * FROM intranet_timesheet_group, intranet_project_checklist_items LEFT JOIN intranet_project_checklist ON checklist_item = item_id AND checklist_project = $proj_id WHERE  item_stage = group_id AND group_id = $group_id ORDER BY item_group, item_order, checklist_date DESC, item_name";
+						$sql_checklist = "SELECT * FROM intranet_timesheet_group, intranet_project_checklist_items LEFT JOIN intranet_project_checklist ON checklist_item = item_id AND checklist_project = " . intval($proj_id) . " WHERE item_stage = group_id AND group_id = " . intval($group_id) . " ORDER BY item_group, item_order, checklist_date DESC, item_name";
 						$result_checklist = mysql_query($sql_checklist, $conn) or die(mysql_error());
 
 						$fill = 0;
@@ -411,17 +429,18 @@ function ProjectHeading($proj_id,$heading) {
 	
 	GLOBAL $conn;
 	GLOBAL $pdf;
+	GLOBAL $format_font;
 	
 	$current_y = $pdf->GetY() + 35;
 	
 	$pdf->SetY($current_y);
-	$pdf->SetFont('Helvetica','',18);
+	$pdf->SetFont($format_font,'',18);
 
 	$pdf->SetTextColor(0,0,0);
 	$pdf->Cell(0,10,$heading);
 
 	$pdf->Ln(10);
-	$pdf->SetFont('Helvetica','b',18);
+	$pdf->SetFont($format_font,'b',18);
 	
 
 	
@@ -656,7 +675,7 @@ function PDF_Fee_Drawdown ($proj_id, $confirmed) {
 					if ($pdf->GetY() > 250) { $pdf->addPage();  }
 				
 					$pdf->SetLineWidth(0.5);
-					$pdf->SetFont('Helvetica','',10);
+					$pdf->SetFont($format_font,'',10);
 					
 					$ts_fee_id = $array['ts_fee_id'];
 					$ts_fee_text = $array['ts_fee_text'];
@@ -667,9 +686,16 @@ function PDF_Fee_Drawdown ($proj_id, $confirmed) {
 					
 					$from_to = "From " . $ts_fee_commence . " to " . $ts_fee_time_end ;
 					
+					$pdf->SetLineWidth(0.25);
+					
+					$pdf->SetFont($format_font,'B',10);
 					$pdf->Cell(0,7,$ts_fee_text,0,1);
 					$pdf->SetFont($format_font,'',8);
-					$pdf->Cell(0,4,$from_to,'B',1);
+					$pdf->Cell(0,4,$from_to,0,1);
+					
+					if ($array['ts_fee_comment']) { $pdf->SetFont($format_font,'',7); $pdf->MultiCell(0,5,$array['ts_fee_comment'],0,1); }
+					
+					$pdf->Cell(0,1,NULL,'B',1);
 					
 					$total_fee = $total_fee + $array['ts_fee_value'];
 					
@@ -680,7 +706,7 @@ function PDF_Fee_Drawdown ($proj_id, $confirmed) {
 			$total_fee = utf8_decode( "£" . number_format ( $total_fee , 2 ) );
 				
 			$pdf->SetLineWidth(0.5);
-			$pdf->SetFont('Helvetica','B',10);
+			$pdf->SetFont($format_font,'B',10);
 				
 			$pdf->Cell(75,7,"Total Fee",'T',0); // OK
 			$pdf->Cell(0,7,$total_fee,'T',1,'R');
@@ -774,7 +800,7 @@ function PDF_Fee_Split ($stage_commence, $stage_length, $stage_fee, $ts_fee_id) 
 				$pdf->Cell(25,5,"100.00%",0,0,"R");
 				$pdf->Cell(0,5,CashPresent($stage_fee_remain,2),0,1,"R");
 		
-				$pdf->SetLineWidth(0.5);
+				$pdf->SetLineWidth(0.25);
 				$pdf->Cell(125,5,"Stage Total","T",0);
 				$pdf->Cell(0,5,CashPresent($stage_fee,2),"T",1,"R");
 				
@@ -1105,6 +1131,7 @@ function PDF_ListStages($day_begin) {
 				StyleBody($font_height,'Helvetica','');
 				$width = $pdf->GetStringWidth($stage_name) + 5;
 				$pdf->Cell(2,$row_height,'',0,0,'L',1);
+				if ($pdf->GetX() + $pdf->GetStringWidth($stage_name) > 275) { $stage_name = substr($stage_name,0,35) . "..."; $width = $pdf->GetStringWidth($stage_name) + 5; }
 				$pdf->Cell($width,$row_height,$stage_name,0,0,'L',1);
 				$pdf->Cell(1,$row_height,'');
 				
@@ -1537,7 +1564,9 @@ function PDFStageAnalysis($proj_id,$proj_value) {
 	$pdf->Cell(30,5,"Actual Fee",0,0,'R');
 	$pdf->Cell(0,5,"Stage Fee %",0,1,'R');
 	
-	$sql = "SELECT * FROM intranet_timesheet_fees LEFT JOIN intranet_timesheet_group ON ts_fee_group = group_id WHERE ts_fee_project = $proj_id AND ts_fee_prospect = 100 ORDER BY ts_fee_commence";
+	if ($_GET['view'] != "all") { $filter = "AND ts_fee_commence <= '" . date("Y-m-d",time()) . "'"; } else { unset($filter); }
+	
+	$sql = "SELECT * FROM intranet_timesheet_fees LEFT JOIN intranet_timesheet_group ON ts_fee_group = group_id WHERE ts_fee_project = " . $proj_id . " AND ts_fee_prospect = 100 " . $filter . " ORDER BY ts_fee_commence";
 	$result = mysql_query($sql, $conn) or die(mysql_error());
 	
 	$fee_total = 0;
@@ -1664,6 +1693,17 @@ function PDFStageAnalysis($proj_id,$proj_value) {
 	$pdf->Cell(0,5,$cost_actual_percent_print,'B',1,'R');
 	
 	$pdf->SetTextColor(0,0,0);
+	$pdf->SetFont('Helvetica','',9);
+	
+	if ($_GET['view'] != "all") { 
+		$message = "Only concluded or commenced stages are shown in the table above. For a full overview of all stages please click here.";
+		$link = "pdf_project_performance_summary.php?proj_id=" . intval($proj_id) . "&view=all";
+		$pdf->Cell(0,5,'',0,1); $pdf->Cell(0,5,$message,0,1,'l',0,$link);
+	} else {
+		$message = "Future stages are shown in the table above. For a full overview of only current or completed stages please click here.";
+		$link = "pdf_project_performance_summary.php?proj_id=" . intval($proj_id);
+		$pdf->Cell(0,5,'',0,1); $pdf->Cell(0,5,$message,0,1,'l',0,$link);		
+	}
 	
 }
 
@@ -1988,7 +2028,6 @@ function PDF_ArrayProjectStages($proj_id) {
 			}
 			
 }
-
 
 function StyleBody($size,$font,$bold){
 			Global $pdf;

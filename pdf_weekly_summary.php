@@ -1,10 +1,8 @@
 <?php
 
-include "inc_files/inc_checkcookie_logincheck.php";
-
-include "inc_files/inc_checkcookie.php";
-
-include "inc_files/inc_action_functions_pdf.php";
+include_once "inc_files/inc_checkcookie.php";
+include_once "inc_files/inc_action_functions_pdf.php";
+include_once "secure/prefs.php";
 
 //  Use FDPI to get the template
 
@@ -15,11 +13,7 @@ require('fpdf/fpdi.php');
 
 $pdf = new fpdi('P','mm','A3');
 
-$format_font = "century";
-$format_font_2 = "Century.php";
-$pdf->AddFont($format_font,'',$format_font_2);
-
-
+$format_font = PDFFonts($settings_pdffont);
 
 $pdf->setSourceFile("pdf/template_A3.pdf");
 $tplidx = $pdf->ImportPage(1);

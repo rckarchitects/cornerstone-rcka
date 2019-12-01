@@ -1339,7 +1339,7 @@ function DateList($impending_only) {
 				echo $date_item[3];
 
 				echo "</td><td class=\"$style\"  style=\"width: 15%; $embolden\"><a href=\"index2.php?page=datebook_view_day&amp;timestamp=" . DisplayDate($date_item[0]) . "\">" . TimeFormat ( DisplayDate($date_item[0]) ) . "</a></td><td class=\"$style\"  style=\"width: 25%; $embolden\">" . $date_item[1] . "</td>";
-					echo "<td class=\"$style HideThis\" style=\"$embolden\">" . $date_item[2] . "</td><td style=\"text-align: right;\" class=\"$style HideThis\"><a href=\"" . $date_item[6] . "\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a></td>";
+					echo "<td class=\"$style HideThis\" style=\"$embolden\">" . $date_item[2] . "</td><td style=\"text-align: right;\" class=\"$style HideThis\"><a href=\"" . $date_item[6] . "\"><img src=\"images/button_edit.png\" alt=\"Edit\" class=\"button\" /></a></td>";
 
 
 				if ((intval($_GET[date_id]) == $counter) && $date_item[4] && $_GET[date_id]) { echo "</table><div class=\"page\">" . $date_item[4] . "</div><table>"; }
@@ -2758,7 +2758,7 @@ function UsersList($active) {
 			$result = mysql_query($sql, $conn);
 			
 			
-			echo "<table><tr><th>Name</th><th>Initials</th><th>Date Started</th><th>Date Ended</th><th>Mobile</th><th>Email</th><th colspan=\"2\">User Type</th><th style=\"text-align: right;\">Hourly Rate (Cost)</th><th style=\"text-align: right;\">Weekly Hours</th><th style=\"text-align: right;\" colspan=\"2\">Target Fee-Earning Hours<span class=\"minitext\"><br />Equivalent Hourly Rate<br />Total Weekly Rate</span></th></tr>";
+			echo "<table><tr><th>Name</th><th>Initials</th><th>Date Started</th><th>Date Ended</th><th>Mobile</th><th>Email</th><th colspan=\"2\">User Type</th><th style=\"text-align: right;\">Hourly Rate (Cost)</th><th style=\"text-align: right;\">Weekly Hours</th><th style=\"text-align: right;\">Target Fee-Earning Hours</tr><tr><th colspan=\"11\" style=\"text-align: right;\"><span class=\"minitext\">Equivalent Hourly Rate<br />Total Weekly Rate</span></th></tr>";
 			
 			$cost_per_hour_total = 0;
 			$cost_per_week_total = 0;
@@ -2807,18 +2807,18 @@ function UsersList($active) {
 					
 					if ($current_active != $user_active) { echo "<tr><td colspan=\"12\"><strong>$user_active_print</strong></td></tr>"; $current_active = $user_active;  }
 					
-					echo "<tr><td><a href=\"index2.php?page=user_view&amp;user_id=$user_id\">$user_name_first $user_name_second</a></td><td>$user_initials</td><td>$user_user_added</td><td>$user_user_ended</td><td>$user_num_mob</td><td>$user_email</td><td>$user_usertype</td><td style=\"text-align: right;\">$user_user_rate</td><td style=\"text-align: right;\">$user_timesheet_hours</td><td style=\"text-align: right;\">" . $fee_earning_hours_per_week . "<span class=\"minitext\"><br />&pound;" . number_format($cost_per_hour,2) . "<br />&pound;" . number_format($cost_per_week,2) . "</span>
-					</td><td><a href=\"index2.php?page=user_edit&amp;status=edit&user_id=$user_id\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a></td></tr>";
+					echo "<tr><td><a href=\"index2.php?page=user_view&amp;user_id=$user_id\">$user_name_first $user_name_second</a>&nbsp;<a href=\"index2.php?page=user_edit&amp;status=edit&user_id=$user_id\"><img src=\"images/button_edit.png\" class=\"button\" alt=\"Edit\" /></a></td><td>$user_initials</td><td>$user_user_added</td><td>$user_user_ended</td><td>$user_num_mob</td><td>$user_email</td><td>$user_usertype</td><td style=\"text-align: right;\">$user_user_rate</td><td style=\"text-align: right;\">$user_timesheet_hours</td><td style=\"text-align: right;\">" . $fee_earning_hours_per_week . "<span class=\"minitext\"><br />&pound;" . number_format($cost_per_hour,2) . "<br />&pound;" . number_format($cost_per_week,2) . "</span>
+					</td></tr>";
 
 								
 			}
 			
-			echo "<tr><td>Total Fee Hours</td><td colspan=\"10\" style=\"text-align: right;\">" . number_format ( $total_hours_week ) . "</td><td></td><td></td></tr>";
-			echo "<tr><td>Total Hourly Fee</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat($cost_per_hour_total) . "</td><td></td></tr>";
-			echo "<tr><td>Total Weekly Fee</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat($cost_per_week_total) . "</td><td></td></tr>";
-			echo "<tr><td>Total Fee Earners</td><td colspan=\"10\" style=\"text-align: right;\">" . number_format ($total_people) . "</td><td></td></tr>";
-			echo "<tr><td>Average Hourly Fee</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat($total_hourly_cost / $total_people) . "</td><td></td></tr>";
-			echo "<tr><td>Average Weekly Cost</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat(($total_hourly_cost / $total_people) * 40) . "</td><td></td></tr>";
+			echo "<tr><td>Total Fee Hours</td><td colspan=\"10\" style=\"text-align: right;\">" . number_format ( $total_hours_week ) . "</td><td></td></tr>";
+			echo "<tr><td>Total Hourly Fee</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat($cost_per_hour_total) . "</td></tr>";
+			echo "<tr><td>Total Weekly Fee</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat($cost_per_week_total) . "</td></tr>";
+			echo "<tr><td>Total Fee Earners</td><td colspan=\"10\" style=\"text-align: right;\">" . number_format ($total_people) . "</td></tr>";
+			echo "<tr><td>Average Hourly Fee</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat($total_hourly_cost / $total_people) . "</td></tr>";
+			echo "<tr><td>Average Weekly Cost</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat(($total_hourly_cost / $total_people) * 40) . "</td></tr>";
 			echo "</table>";
 		
 						

@@ -56,7 +56,7 @@ if (strlen($keywords) > 2 ) {
 
 // Begin printing the results tables
 
-echo "<h2>Search for : $keywords</h2>";
+echo "<h2>Search for: " . $keywords . "</h2>";
 
 SearchPanel($user_usertype_current,"search_02");
 

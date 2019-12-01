@@ -131,6 +131,51 @@ function UpdateUser($user_id) {
 	
 }
 
+function ActionAddDrawingIssue($set_issued_to_name,$set_issued_to_company) {
+	
+	global $conn;
+	
+	$count = 0;
+	
+	foreach ($set_issued_to_name AS $issue_contact) {
+		
+		$sql_insert = "INSERT INTO intranet_drawings_issued (
+					issue_id,
+					issue_drawing,
+					issue_revision,
+					issue_project,
+					issue_contact,
+					issue_set,
+					issue_company,
+					issue_status
+					) VALUES (
+					NULL,
+					" . intval($_POST['drawing_id']) . ",
+					" . intval($_POST['revision_id']) . ",
+					" . intval($_POST['drawing_project']) . ",
+					" . intval($set_issued_to_name[$count]) . ",
+					" . intval($_POST['drawing_set']) . ",
+					" . intval($set_issued_to_company[$count]) . ",
+					'" . addslashes($_POST['drawing_status']) . "'
+					)
+				";
+				
+		$sql_remove = "DELETE FROM intranet_drawings_issued WHERE issue_set = " . intval($_POST['drawing_set']) . " AND issue_contact = " . intval($set_issued_to_name[$count]) . " AND issue_company = " . intval($set_issued_to_company[$count]) . " AND issue_drawing = " . intval($_POST['drawing_id']) . " AND issue_project = " . intval($_POST['drawing_project']) . " LIMIT 1";
+	
+		if ($_POST['drawing_issued'] == "yes") {
+			$result = mysql_query($sql_insert, $conn) or die(mysql_error());
+			//echo "<p>" . $sql_issued . "</p>";
+		} else {
+			$result = mysql_query($sql_remove, $conn) or die(mysql_error());
+			//echo "<p>" . $sql_remove . "</p>";
+		}
+
+			
+		$count++;
+		
+	}
+	
+}
 
 function ActionUserChangePassword($user_id) {
 	

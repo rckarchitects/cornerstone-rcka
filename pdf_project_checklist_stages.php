@@ -1,6 +1,8 @@
 <?php
 
-include "inc_files/inc_checkcookie.php";
+include_once "inc_files/inc_checkcookie.php";
+include_once "inc_files/inc_action_functions_pdf.php";
+include_once "secure/prefs.php";
 
 if ($_GET[proj_id] == NULL) { header ("Location: index2.php"); }
 
@@ -21,15 +23,7 @@ $tplidx = $pdf->ImportPage(1);
 $pdf->addPage();
 $pdf->useTemplate($tplidx, 0, 0, 210, 297);
 
-if ($settings_pdffont != NULL) {
-$format_font = $settings_pdffont;
-$format_font_2 = $settings_pdffont.".php";
-} else {
-$format_font = "franklingothicbook";
-$format_font_2 = "franklingothicbook.php";
-}
-
-$pdf->AddFont($format_font,'',$format_font_2);
+$format_font = PDFFonts($settings_pdffont);
 
 
 $format_bg_r = "220";

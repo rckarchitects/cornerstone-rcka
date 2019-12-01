@@ -1,14 +1,12 @@
 <?php
 
-include "inc_files/inc_checkcookie.php";
-
+include_once "inc_files/inc_checkcookie.php";
+include_once "inc_files/inc_action_functions_pdf.php";
+include_once "secure/prefs.php";
 
 $format_bg_r = "220";
 $format_bg_g = "220";
 $format_bg_b = "220";
-
-$format_font = "century";
-$format_font_2 = "Century.php";
 
 if ($_GET[time] != NULL) {
 	$ts_expense_verified = $_GET[time];
@@ -32,7 +30,7 @@ $tplidx = $pdf->ImportPage(1);
 $pdf->addPage();
 $pdf->useTemplate($tplidx, 0, 0, 210, 297);
 
-$pdf->AddFont($format_font,'',$format_font_2);
+$format_font = PDFFonts($settings_pdffont);
 
 // Begin creating the page
 
