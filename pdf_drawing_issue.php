@@ -124,7 +124,7 @@ $pdf->SetFont($format_font,'',9);
 $pdf->SetLineWidth(0.3);
 $pdf->SetFillColor(240,240,240);
 
-$fill = 1;
+$fill = 0;
 
 while ($array_drawings = mysql_fetch_array($result_drawings)) {
 
@@ -175,7 +175,7 @@ while ($array_drawings = mysql_fetch_array($result_drawings)) {
 		
 		if ($revision_letter != "-") {  $pdf->SetFont($format_font,'',8); $pdf->Cell(65,4,'',0,0,L,$fill); $pdf->Cell(10,4,$revision_letter,0,0,L,$fill); $pdf->Cell(25,4,$revision_date,0,0,L,$fill); $pdf->MultiCell(0,4,$revision_desc,0,L,$fill); $pdf->SetFont($format_font,'',9); }
 		
-		if ($fill == 0) { $fill = 1; } else { $fill = 0; }
+		//if ($fill == 0) { $fill = 1; } else { $fill = 0; }
 
 
 	}

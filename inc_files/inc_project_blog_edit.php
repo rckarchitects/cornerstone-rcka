@@ -207,6 +207,7 @@ function BlogEdit($blog_id,$proj_id,$status) {
 					echo "<option value=\"phone\" ";	if ($blog_type == "phone") { echo "selected"; }; echo ">Telephone Call</option>";
 					echo "<option value=\"rfi\" ";	if ($blog_type == "rfi") { echo "selected"; }; echo ">Request for Information (RFI)</option>";
 					echo "<option value=\"stage\" ";	if ($blog_type == "stage") { echo "selected"; }; echo ">Stage Report</option>";
+					echo "<option value=\"stage\" ";	if ($blog_type == "feeprop") { echo "selected"; }; echo ">Fee Proposal</option>";
 
 					echo "</select>";
 

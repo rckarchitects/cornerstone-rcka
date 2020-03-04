@@ -220,11 +220,14 @@ function CheckHols($date, $user_id, $start) {
 
 }
 
-function CostBar($array_1,$array_2,$array_3,$name,$colwidth,$bold) {
+function CostBar($array_1,$array_2,$array_3,$name,$colwidth,$bold,$border) {
 			
 	if ($bold == 1) { $bold = 'B'; $size = 8; } else { $bold = ''; $size = 6; }
+	if (!$border) { $border = NULL; }
 		
 		global $pdf;
+		
+		$pdf->SetDrawColor(0,0,0);
 		
 		$x = 0;
 		$y = $pdf->GetY();
@@ -243,7 +246,7 @@ function CostBar($array_1,$array_2,$array_3,$name,$colwidth,$bold) {
 			$array_output[] = $total;
 			if ($total < 0) { $pdf->SetTextColor(255,0,0); } else { $pdf->SetTextColor(0,0,0); }
 			$total = "£" . number_format ( $total ) ;
-			$pdf->Cell($colwidth,5,$total,0,0,R);
+			$pdf->Cell($colwidth,5,$total,$border,0,'R');
 			$counter++;
 		}
 		
@@ -255,6 +258,7 @@ function CostBar($array_1,$array_2,$array_3,$name,$colwidth,$bold) {
 	$array_total = array();
 	$array_total_fee_secured = array();
 	$array_total_profit_secured = array();
+	$revenue_total = array();
 
 // Header
 
@@ -338,6 +342,7 @@ DrawGrid();
 		$fee_weekly = round ( $ts_fee_value /( round (($ts_fee_time_end / 604800),0)) ,2 );
 		$profit_weekly = round ( $ts_fee_profit /( round (($ts_fee_time_end / 604800),0)) ,2 );
 		$fee_weekly_print = "£" . number_format ($fee_weekly);
+		$fee_weekly_print_profit = "(£" . number_format ($profit_weekly) . ")";
 		
 		// Need to make sure the array continues from the very beginning of the line to count the number of columns in the right place
 	
@@ -358,24 +363,29 @@ DrawGrid();
 			$stage_start = Weeks($stage_start);
 			if ($stage_start > 0 & $stage_start < 230) {	$pdf->Cell($stage_start,$rowheight,'',0,0,L); }
 			$stage_width = Weeks ($ts_fee_time_end);
-			$pdf->SetFont($format_font,'',5);
+			$pdf->SetFont($format_font,'',4);
 			$count = 0;
 			$arraycount = ($stage_start / $colwidth);
 
 			if ($pdf->GetX() < 280 & $stage_start < 230) {
 				while ($count < $stage_width && $x < 280) {
-					$pdf->Cell($colwidth,$rowheight,$fee_weekly_print,$border,0,R,true);
+					$x = $pdf->GetX();
+					$y = $pdf->GetY();
+					$pdf->Cell($colwidth,$rowheight*0.1,NULL,$border,2,R,true);
+					$pdf->Cell($colwidth,$rowheight*0.4,$fee_weekly_print,$border,2,R,true);
+					$pdf->Cell($colwidth,$rowheight*0.5,$fee_weekly_print_profit,$border,0,R,true);
+					$pdf->SetXY($x + $colwidth,$y);
 					$count = $count + $colwidth;
 					$x = $pdf->GetX();
 					$array_total[$arraycount] = $array_total[$arraycount] + $fee_weekly;
 					$array_profit[$arraycount] = $array_profit[$arraycount] + $profit_weekly;
+					$revenue_total[$arraycount] = $profit_weekly; //$revenue_total[$arraycount];
 					if ($array_proj['ts_fee_prospect'] == 100) {
 						$array_total_fee_secured[$arraycount] = $array_total_fee_secured[$arraycount] + $fee_weekly;
 						$array_total_profit_secured[$arraycount] = $array_total_profit_secured[$arraycount] + $profit_weekly;
 					}
 					$arraycount++;
 				}
-				
 				
 				$pdf->Cell(0,0,'',0,1,L);
 			}
@@ -399,7 +409,9 @@ DrawGrid();
 	// Now add the totals at the end
 	
 
-		CostBar($array_total,0,0,"TOTAL",$colwidth,0);
+		$array_weeklyincome = CostBar($array_total,0,0,"Weekly Fee Income [1]",$colwidth,0);
+		
+		
 		
 		$x = 0;
 		$bg = 220;
@@ -408,7 +420,7 @@ DrawGrid();
 		$currentmonth = date ("n" , $beginweek);
 		$pdf->SetFont($format_font,'B',8);
 		$pdf->Cell(0,5,'',0,1,L);
-		$pdf->Cell(40,5,"MONTH",0,0,L);
+		$pdf->Cell(40,5,"Monthly Fee Income [2]",0,0,L);
 		$pdf->SetFont($format_font,'',7);
 		$pdf->SetDrawColor(100,100,100);
 		$arrayname = 0;
@@ -430,7 +442,6 @@ DrawGrid();
 			$currentmonth = date ("n" , $beginweek);
 			$x = $x + $colwidth;
 		}
-		
 		
 		if ($pdf->GetY() > 170) { $pdf->addPage(L); DrawGrid(); }
 		
@@ -469,15 +480,38 @@ DrawGrid();
 			$weekdiff_array[] = $weekdiff;
 			$counter++;
 		}
+				
+		$staffcost_1 = CostBar($staffcost_1,0,0,"Operating Cost [3]",$colwidth,0);
 		
-		$staffcost_1 = CostBar($staffcost_1,0,0,"Staff Costs",$colwidth,0);
 		
-		CostBar($array_total_fee_secured,0,0,"Secured Fee",$colwidth,0);
-		CostBar($array_total_profit_secured,0,$staffcost_1,"Secured Profit",$colwidth,0);
+		CostBar($array_total_fee_secured,0,0,"Secured Fee Income [4]",$colwidth,0,'T');
+		CostBar($array_total_profit_secured,0,$staffcost_1,"Secured Target Profit [5]",$colwidth,0);
+		CostBar($array_total_profit_secured,$array_total_fee_secured,$staffcost_1,"Secured Revenue [6]",$colwidth,1,'B');
+		$weekdiff_array = CostBar($array_total,0,$staffcost_1,"Surplus Profit [7]",$colwidth,0);
+		$array_grossprofit = CostBar($array_profit,0,$array_total,"Target Profit [8]",$colwidth,0);
+		$array_netprofit = CostBar($weekdiff_array,$array_profit,$array_total,"Actual Profit [9]",$colwidth,0);
 		
-		$weekdiff_array = CostBar($array_total,0,$staffcost_1,"Surplus",$colwidth,0);
-		$array_grossprofit = CostBar($array_profit,0,$array_total,"Target Profit",$colwidth,0);
-		$array_netprofit = CostBar($weekdiff_array,$array_profit,$array_total,"Actual Profit",$colwidth,1);
+		CostBar($array_weeklyincome,$array_netprofit,0,"Weekly Revenue [10]",$colwidth,1,'T');
+		
+		$pdf->SetFont($format_font,'',7);
+		
+		$explainer = "
+Notes:\n
+[1] Total factored net fee income per week, excluding profit targets
+[2] Total factored net fee income per month, excluding profit targets
+[3] Operating cost per week (ie. sum of all weekly staff costs)
+[4] Total fee income only for stages which have been allocated a 100% chance of likelihood
+[5] Total profit only for stages which have been allocated a 100% chance of likelihood
+[6] Total revenue only for stages which have been allocated a 100% chance of likelihood (ie. [4] + [5])
+[7] Fee income less operating cost (ie. [1] - [3]). Generally, if this figure is positive then there is insufficient resource to meet the projected workload, and if negative, more resource than is required - and target profits are not being achieved
+[8] Anticipated profit (ie. total profit applied to each fee stage)
+[9] Total target profit plus surplus profit (ie. [7] + [8]). If this figure is negative then there will be a net loss for the week
+[10] Total factored gross fee income per week, including target profit (ie. [1] + [7] + [8]. This is the total estimated fee income for all projects
+";
+		
+		$pdf->SetFillColor(255,255,255);
+		$pdf->Cell(0,10,NULL,0,1);
+		$pdf->MultiCell(150,3,$explainer,0,'L',TRUE);
 	
 				
 		// List all of the upcoming holidays for each person

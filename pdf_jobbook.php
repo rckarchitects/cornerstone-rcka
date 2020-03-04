@@ -169,6 +169,16 @@ function PDFRowArray($book_title,$column_width) {
 	
 }
 
+function GetTextHeight($string, $cellwidth) {
+	
+	global $conn;
+	$total_length = $pdf->GetStringWidth($string);
+	$number_of_rows = ceil($total_length / $cellwidth);
+	
+	return $number_of_rows;
+	
+}
+
 function ExplodeRGB($input) {
 	
 	$output = explode(",", $input);

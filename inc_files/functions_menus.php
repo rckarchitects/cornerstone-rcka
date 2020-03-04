@@ -19,69 +19,74 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 
 	if ($page == "project_view" && $level == 1 && intval($proj_id) > 0) {
 		
-				$array_menu_page[] = "index2.php?page=project_view&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=project_view&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Project Home";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 1;
 			
-				$array_menu_page[] = "index2.php?page=project_contacts&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=project_contacts&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Contacts";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 2;
 			
-				$array_menu_page[] = "index2.php?page=tasklist_project&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=tasklist_project&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Tasks";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 2;
 				
-				$array_menu_page[] = "index2.php?page=drawings_list&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=drawings_list&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Drawings";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 2;
+				
+				$array_menu_page[] = "index2.php?page=project_reviews&amp;proj_id=" . $proj_id;
+				$array_menu_text[] = "Reviews";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype[] = 2;
 			
-				$array_menu_page[] = "index2.php?page=project_checklist&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=project_checklist&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Checklist";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 2;
 			
-				$array_menu_page[] = "index2.php?page=project_planningcondition_list&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=project_planningcondition_list&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Planning Tracker";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 2;
 				
-				$array_menu_page[] = "index2.php?page=project_blog_list&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=project_blog_list&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Journal";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 2;
 				
-				$array_menu_page[] = "index2.php?page=project_fees&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=project_fees&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Fees";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 4;
 				
-				$array_menu_page[] = "index2.php?page=timesheet_invoice_list&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=timesheet_invoice_list&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Invoices";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 4;
 				
-				$array_menu_page[] = "index2.php?page=project_particulars&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=project_particulars&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Particulars";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 4;
 				
-				$array_menu_page[] = "index2.php?page=project_risks&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=project_risks&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Risks";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 2;
 				
-				$array_menu_page[] = "index2.php?page=project_actionstream&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=project_actionstream&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Action Stream";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 2;
 				
 	} elseif ($page == "project_view" && $level == 2 && intval($proj_id) > 0) {
 
-				$array_menu_page[] = "index2.php?page=project_edit&amp;status=edit&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=project_edit&amp;status=edit&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Edit Project";
 				$array_menu_image[] = "button_edit.png";
 				$array_menu_usertype[] = 3;
@@ -99,7 +104,7 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 		
 	} elseif ($page == "project_invoice" && $level == 2 && intval($proj_id) > 0) {
 
-				$array_menu_page[] = "index2.php?page=timesheet_invoice_items_edit&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=timesheet_invoice_items_edit&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Add Invoice Item";
 				$array_menu_image[] = "button_new.png";
 				$array_menu_usertype[] = 3;
@@ -111,12 +116,12 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				
 	} elseif ($page == "project_risks" && $level == 2 && intval($proj_id) > 0) {
 
-				$array_menu_page[] = "index2.php?page=project_risks&amp;action=list&amp;view=list&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=project_risks&amp;action=list&amp;view=list&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "List Risks";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 3;
 
-				$array_menu_page[] = "index2.php?page=project_risks&amp;action=add&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=project_risks&amp;action=add&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Add New Risk";
 				$array_menu_image[] = "button_new.png";
 				$array_menu_usertype[] = 3;
@@ -145,22 +150,22 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_image[] = "button_lsit.png";
 				$array_menu_usertype[] = 3;
 	
-				$array_menu_page[] = "index2.php?page=project_hourlyrates_view&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=project_hourlyrates_view&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Edit Hourly Rates";
 				$array_menu_image[] = "button_edit.png";
 				$array_menu_usertype[] = 3;
 				
-				$array_menu_page[] = "index2.php?page=project_timesheet_view&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=project_timesheet_view&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "View Expenditure";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 3;
 				
-				$array_menu_page[] = "index2.php?page=timesheet_fees_edit&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=timesheet_fees_edit&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Add Fee Stage";
 				$array_menu_image[] = "button_new.png";
 				$array_menu_usertype[] = 3;
 				
-				$array_menu_page[] = "pdf_fee_drawdown.php?proj_id=$proj_id";
+				$array_menu_page[] = "pdf_fee_drawdown.php?proj_id=" . $proj_id;
 				$array_menu_text[] = "View Fee Drawdown (All Stages)";
 				$array_menu_image[] = "button_pdf.png";
 				$array_menu_usertype[] = 3;
@@ -180,38 +185,43 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_image[] = "button_pdf.png";
 				$array_menu_usertype[] = 4;
 				
+				$array_menu_page[] = "index2.php?page=timesheets_resource&amp;proj_id=" . intval($proj_id);
+				$array_menu_text[] = "Project Resource Summary";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype[] = 4;
+				
 	} elseif ($page == "project_contacts" && intval($proj_id) > 0) {
 	
-				$array_menu_page[] = "index2.php?page=project_contacts&amp;contact_proj_add=add&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=project_contacts&amp;contact_proj_add=add&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Add Project Contact";
 				$array_menu_image[] = "button_new.png";
 				$array_menu_usertype[] = 3;
 				
 	} elseif (($page == "project_blog" OR $page == "project_blog_list" OR $page == "project_blog_edit")  && intval($proj_id) > 0 ) {
 	
-				$array_menu_page[] = "index2.php?page=project_blog_edit&status=add&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=project_blog_edit&status=add&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Add Journal Entry";
 				$array_menu_image[] = "button_new.png";
 				$array_menu_usertype[] = 1;
 				
-				$array_menu_page[] = "index2.php?page=project_blog_list&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=project_blog_list&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "List Journal Entries";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 1;
 				
 	} elseif ($page == "project_tasks" && intval($proj_id) > 0) {
 	
-				$array_menu_page[] = "index2.php?page=tasklist_edit&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=tasklist_edit&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Add New Task";
 				$array_menu_image[] = "button_new.png";
 				$array_menu_usertype[] = 1;
 		
-				$array_menu_page[] = "index2.php?page=tasklist_project&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=tasklist_project&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Outstanding Tasks";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 1;
 				
-				$array_menu_page[] = "index2.php?page=tasklist_project&amp;view=complete&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=tasklist_project&amp;view=complete&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Completed Tasks";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 1;
@@ -257,7 +267,7 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 
 	} elseif ( $page == "project_expenses" && intval($proj_id) > 0) {
 
-				$array_menu_page[] = "timesheet_expense_edit&amp;proj_id=$proj_id";
+				$array_menu_page[] = "timesheet_expense_edit&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Add Expenses";
 				$array_menu_image[] = "button_new.png";
 				$array_menu_usertype[] = 2;
@@ -265,17 +275,17 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 
 	} elseif ( $page == "drawings_list" && $level == 2 && intval($proj_id) > 0) {
 
-				$array_menu_page[] = "pdf_drawing_list.php?proj_id=$proj_id";
+				$array_menu_page[] = "pdf_drawing_list.php?proj_id=" . $proj_id;
 				$array_menu_text[] = "Drawing Schedule";
 				$array_menu_image[] = "button_pdf.png";
 				$array_menu_usertype[] = 2;
 				
-				$array_menu_page[] = "pdf_drawing_matrix.php?proj_id=$proj_id";
+				$array_menu_page[] = "pdf_drawing_matrix.php?proj_id=" . $proj_id;
 				$array_menu_text[] = "Drawing Matrix";
 				$array_menu_image[] = "button_pdf.png";
 				$array_menu_usertype[] = 2;
 				
-				$array_menu_page[] = "pdf_drawing_matrix.php?proj_id=$proj_id";
+				$array_menu_page[] = "pdf_drawing_matrix.php?proj_id=" . $proj_id;
 				$array_menu_text[] = "Drawing Matrix";
 				$array_menu_image[] = "button_pdf.png";
 				$array_menu_usertype[] = 2;
@@ -284,7 +294,7 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 	} elseif ( $page == "planning_conditions" && $level == 2 && intval($proj_id) > 0) {
 
 				if ($_GET[showdetail] == 1) {
-					$array_menu_page[] = "index2.php?page=project_planningcondition_list&amp;proj_id=$proj_id";
+					$array_menu_page[] = "index2.php?page=project_planningcondition_list&amp;proj_id=" . $proj_id;
 					$array_menu_text[] = "Simple List";
 					$array_menu_image[] = "button_list.png";
 					$array_menu_usertype[] = 2;
@@ -296,12 +306,12 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 					$array_menu_usertype[] = 2;
 				}
 				
-				$array_menu_page[] = "index2.php?page=project_planningcondition_edit&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=project_planningcondition_edit&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Add New";
 				$array_menu_image[] = "button_new.png";
 				$array_menu_usertype[] = 2;
 				
-				$array_menu_page[] = "pdf_planning_conditions.php?proj_id=$proj_id";
+				$array_menu_page[] = "pdf_planning_conditions.php?proj_id=" . $proj_id;
 				$array_menu_text[] = "Condition Schedule";
 				$array_menu_image[] = "button_pdf.png";
 				$array_menu_usertype[] = 2;
@@ -325,12 +335,12 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_image[] = "button_edit.png";
 				$array_menu_usertype[] = 2;		
 				
-				$array_menu_page[] = "pdf_project_checklist_stages.php?proj_id=$proj_id";
+				$array_menu_page[] = "pdf_project_checklist_stages.php?proj_id=" . $proj_id;
 				$array_menu_text[] = "Stages";
 				$array_menu_image[] = "button_pdf.png";
 				$array_menu_usertype[] = 2;
 				
-				$array_menu_page[] = "pdf_project_checklist.php?proj_id=$proj_id";
+				$array_menu_page[] = "pdf_project_checklist.php?proj_id=" . $proj_id;
 				$array_menu_text[] = "Checklist";
 				$array_menu_image[] = "button_pdf.png";
 				$array_menu_usertype[] = 2;
@@ -360,22 +370,22 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 		
 				if (intval($_GET[proj_id]) > 0) { $proj_id = intval($_GET[proj_id]); }
 
-				$array_menu_page[] = "index2.php?page=drawings_list&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=drawings_list&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Drawing List";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 2;
 				
-				$array_menu_page[] = "index2.php?page=drawings_edit&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=drawings_edit&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Add New Drawing";
 				$array_menu_image[] = "button_new.png";
 				$array_menu_usertype[] = 2;
 				
-				$array_menu_page[] = "index2.php?page=drawings_issue&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=drawings_issue&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "Issue Drawings";
 				$array_menu_image[] = "button_new.png";
 				$array_menu_usertype[] = 2;
 	
-				$array_menu_page[] = "index2.php?page=drawings_issues&amp;proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=drawings_issues&amp;proj_id=" . $proj_id;
 				$array_menu_text[] = "List Drawing Issues";
 				$array_menu_image[] = "button_list.png";
 				$array_menu_usertype[] = 2;

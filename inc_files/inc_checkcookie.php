@@ -106,6 +106,7 @@ if (intval($module_manual) == 1) { include_once("functions_manual.php"); }
 if (intval($module_media) == 1) { include_once("functions_media.php"); }
 if (intval($module_risks) == 1) { include_once("functions_risks.php"); }
 if (intval($module_drawings) == 1) { include_once("functions_drawings.php"); }
+if (intval($module_reviews) == 1) { include_once("functions_reviews.php"); }
 
 // Set the page-wide definitions from the $_GET submissions if they exist
 

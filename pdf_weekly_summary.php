@@ -50,15 +50,14 @@ function SetColor4() { GLOBAL $pdf; $pdf->SetFillColor(177,227,227); }
 
 // List this week's holidays
 
-
-
-
 	PDF_HolidayPanel($begin_week);
 
 
 //Tenders
 
+	PDF_ListReviews($begin_week);
 
+//Reviews
 
 	PDF_ListTenders($begin_week);
 

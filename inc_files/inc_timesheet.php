@@ -37,7 +37,9 @@ TimeSheetHeader($ts_weekbegin, $viewuser);
 echo "<div class=\"page\">";
 
 if ($viewuser == $_COOKIE[user] OR $_GET[ts_id] > 0 OR $viewuser == NULL OR $user_usertype_current > 3 ) {
+	echo "<div class=\"noprint\">";
 	TimeSheetEdit($ts_weekbegin,$viewuser,$ts_id);
+	echo "</div>";
 }
 
 

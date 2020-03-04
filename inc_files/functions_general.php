@@ -323,6 +323,19 @@ function GetProjectNum($proj_id) {
 					return $proj_num;
 }
 
+function GetProjectStage($proj_id) {
+	
+					if ($proj_id != NULL) {
+						GLOBAL $conn;
+						$sql = "SELECT proj_riba FROM intranet_projects WHERE proj_id = " . $proj_id;
+						$result = mysql_query($sql, $conn) or die(mysql_error());
+						$array = mysql_fetch_array($result);
+						$proj_riba = $array['proj_riba'];
+					}
+					
+					return $proj_num;
+}
+
 function SearchPanel($user_usertype_current,$search_id) {
 	
 	

@@ -4,6 +4,26 @@ include_once "inc_files/inc_checkcookie.php";
 include_once "inc_files/inc_action_functions_pdf.php";
 include_once "secure/prefs.php";
 
+function PDFTruncateText($width,$string) {
+		
+		global $pdf;
+				
+		if ($pdf->GetStringWidth($string) > $width) {
+				
+				while ($pdf->GetStringWidth($string) > ($width - 2)) {
+					
+					$string = substr($string, 0, -1);
+					
+				}
+				
+				$string = $string . "...";
+				
+		}
+		
+		return $string;
+		
+}
+
 if ($_GET[proj_id] == NULL) { header ("Location: index2.php"); } else { $proj_id = intval($_GET[proj_id]); }
 
 if ($user_usertype_current < 2) { header ("Location: index2.php"); }
@@ -61,13 +81,13 @@ $pdf->SetY($y);
 $pdf->SetTextColor(0, 0, 0);
 $pdf->SetLineWidth(0.3);
 $pdf->SetFont("Helvetica",'B',6);
-$pdf->Cell(25,5,"Drawing Number",B,0,L,0);
+$pdf->Cell(40,5,"Drawing Number",B,0,L,0);
 $pdf->Cell(10,5,"Size",B,0,L,0);
 $pdf->Cell(20,5,"Scale",B,0,L,0);
-$pdf->Cell(70,5,"Drawing Title",B,0,L,0);
-$pdf->Cell(15,5,"Status",B,0,L,0);
+$pdf->Cell(60,5,"Drawing Title",B,0,L,0);
+$pdf->Cell(10,5,"Status",B,0,L,0);
 $pdf->Cell(15,5,"Target Date",B,0,L,0);
-$pdf->Cell(15,5,"Current Rev.",B,0,L,0);
+$pdf->Cell(15,5,"Current Rev.",B,0,R,0);
 $pdf->Cell(20,5,"Date",B,1,L,0);
 
 $pdf->SetTextColor(0, 0, 0);
@@ -115,19 +135,21 @@ while ($array_drawings = mysql_fetch_array($result_drawings)) {
 	
 
 	if ($current_drawing != $drawing_id) {
+		
+		$drawing_title = PDFTruncateText(60,$drawing_title);
 
-		$pdf->Cell(25,4.5,$drawing_number,$border,0,L,$fill,$link);
+		$pdf->Cell(40,4.5,$drawing_number,$border,0,L,$fill,$link);
 		$pdf->Cell(10,4.5,$paper_size,$border,0,L,$fill);
 		$pdf->Cell(20,4.5,$scale_desc,$border,0,L,$fill);
 		if ($drawing_targetdate != "0000-00-00") {
-			$pdf->Cell(70,4.5,$drawing_title,$border,0,L,$fill);
+			$pdf->Cell(60,4.5,$drawing_title,$border,0,L,$fill);
 			$pdf->Cell(15,4.5,$drawing_status,$border,0,L,$fill);
 			$pdf->Cell(15,4.5,$drawing_targetdate,$border,0,L,$fill);
 		} else {
-			$pdf->Cell(70,4.5,$drawing_title,$border,0,L,$fill);
+			$pdf->Cell(60,4.5,$drawing_title,$border,0,L,$fill);
 			$pdf->Cell(30,4.5,$drawing_status,$border,0,L,$fill);
 		}
-		$pdf->Cell(15,4.5,$revision_letter,$border,0,C,$fill);
+		$pdf->Cell(10,4.5,$revision_letter,$border,0,R,$fill);
 		$pdf->Cell(20,4.5,$revision_date,$border,1,L,$fill);
 		
 		$y = $pdf->GetY();
@@ -143,6 +165,8 @@ while ($array_drawings = mysql_fetch_array($result_drawings)) {
 		if ($fill == 1) { $fill = 0; } else { $fill = 1; }
 
 	}
+	
+
 	
 	$current_drawing = $drawing_id;
 	

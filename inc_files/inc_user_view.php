@@ -89,7 +89,7 @@ ProjectSubMenu($proj_id,$user_usertype_current,"user_admin",1);
 ProjectSubMenu($proj_id,$user_usertype_current,"user_admin",2);
 
 
-echo "<div><h3>Contact Details</h3>";
+echo "<div class=\"page\"><div><h3>Contact Details</h3>";
 
 	echo 	"<table>";
 	
@@ -149,6 +149,8 @@ if ($user_notes) {
 	echo "</div>";
 
 }
+
+echo "</div>";
 
 
 

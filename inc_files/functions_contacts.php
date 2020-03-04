@@ -36,6 +36,7 @@ function ContactViewDetailed($select_contact_id) {
 						$contact_fax = $array_contact['contact_fax'];
 						$contact_include = $array_contact['contact_include'];
 						$contact_linkedin = $array_contact['contact_linkedin'];
+					
 						
 						$user_name_first = $array_contact['user_name_first'];
 						$user_name_second = $array_contact['user_name_second'];
@@ -122,6 +123,11 @@ function ContactViewDetailed($select_contact_id) {
 								} else { unset($marketing); }
 								
 								echo "<tr><td colspan=\"4\"><span class=\"minitext\">Contact added: <a href=\"index2.php?page=datebook_view_day&amp;time=$contact_added\">".date("j M Y", $contact_added)."</a> by $user_name_first $user_name_second $marketing</span></td></tr>";
+								
+								if ($contact_reference) {
+									echo "<tr><th colspan=\"4\">Notes</th></tr>";
+									echo "<tr><td colspan=\"4\">" . $contact_reference . "</td></tr>";
+								}
 							
 								echo "</table>";
 								echo "</div>";
@@ -232,7 +238,7 @@ function ContactNotes($contact_id) {
 	
 	// Any file notes or phone records which relate to this client?
 	
-	$sql_blog = "SELECT blog_id, blog_date, blog_title FROM intranet_projects_blog WHERE blog_contact = '$contact_id' ORDER BY blog_date DESC";
+	$sql_blog = "SELECT blog_id, blog_date, blog_title FROM intranet_projects_blog WHERE blog_contact = '" . $contact_id . "' ORDER BY blog_date DESC";
 	$result_blog = mysql_query($sql_blog, $conn);
 	if (mysql_num_rows($result_blog) > 0) {
 		echo "<div><h3>Journal Entries</h3>";

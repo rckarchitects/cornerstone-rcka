@@ -306,7 +306,7 @@ function TimeSheetHeader($ts_weekbegin,$user_id) {
 					
 					// Now establish *this* user
 
-					$sql_user = "SELECT user_id, user_user_added, user_timesheet_hours, user_user_ended FROM intranet_user_details WHERE user_id = $user_id LIMIT 1";
+					$sql_user = "SELECT user_id, user_user_added, user_timesheet_hours, user_user_ended, user_name_first, user_name_second FROM intranet_user_details WHERE user_id = $user_id LIMIT 1";
 					$result_user = mysql_query($sql_user, $conn);
 					$array_user = mysql_fetch_array($result_user);
 					$user_timesheet_hours = $array_user['user_timesheet_hours'];
@@ -329,7 +329,7 @@ function TimeSheetHeader($ts_weekbegin,$user_id) {
 
 					// Header
 
-					echo "<h1>Timesheets</h1>";
+					echo "<h1>Timesheets: " . $array_user['user_name_first'] . " " . $array_user['user_name_second'] . "</h1>";
 					echo "<h2>Week Beginning " . TimeFormat($ts_weekbegin) . "</h2>";
 					
 					ProjectSubMenu($proj_id,$user_usertype_current,"timesheet_admin",1);
@@ -359,11 +359,15 @@ function TimeSheetHeader($ts_weekbegin,$user_id) {
 
 
 					echo "</div>";
+					
+					echo "<div class=\"noprint\">";
 
 					TimeSheetMenuUsers($user_id,$ts_weekbegin);
 					
 					$timesheetcomplete = TimeSheetHours($user_id,"return");	
 					echo "<p>Timesheets " . $timesheetcomplete . "% complete"; if ($user_id > 0) { echo " $user_name"; } echo " - Week " . $week_number . "</p>";
+					
+					echo "</div>";
 
 }
 
@@ -461,7 +465,7 @@ echo "if (!assocArray) var assocArray = new Object();";
 
 
 	$fee_repeat = NULL;
-	$sql2 = "SELECT * FROM  intranet_projects, intranet_timesheet_fees LEFT JOIN intranet_timesheet_group ON ts_fee_group = group_id WHERE ts_fee_project = proj_id AND proj_active = 1 AND ts_fee_prospect = 100 ORDER BY proj_num, ts_fee_commence";
+	$sql2 = "SELECT * FROM  intranet_projects, intranet_timesheet_fees LEFT JOIN intranet_timesheet_group ON ts_fee_group = group_id WHERE ts_fee_project = proj_id AND proj_active = 1 AND ts_fee_commence < '" . date("Y-m-d",time()) . "' ORDER BY proj_num, ts_fee_commence";
 	$result2 = mysql_query($sql2, $conn) or die(mysql_error());
 	while ($array2 = mysql_fetch_array($result2)) {
 	$ts_fee_text = $array2['ts_fee_text'];
@@ -514,6 +518,7 @@ function TimeSheetList($user_id,$ts_weekbegin,$user_timesheet_hours) {
 						$ts_list_total = 0;
 						$ts_cost_total = 0;
 						$week_complete_check = 1;
+						$week_fee_total = 0;
 
 						// Begin the daily loop
 
@@ -524,7 +529,7 @@ function TimeSheetList($user_id,$ts_weekbegin,$user_timesheet_hours) {
 
 						echo "<tr><th style=\"width: 20%;\">Project</th><th style=\"width: 10%;\">Day</th><th style=\"width: 35%;\">Description</th><th style=\"text-align: right;\">Hours</th>";
 
-						if ($user_usertype_current > 3) { echo "<th style=\"text-align: right; width: 10%;\">Added</th><th style=\"text-align: right;\">Non-Fee Earning</th><th style=\"text-align: right;\">Hourly Rate</th><th style=\"text-align: right;\">Actual Cost</th><th style=\"text-align: right;\">Time Cost</th>"; }
+						if ($user_usertype_current > 3) { echo "<th style=\"text-align: right; width: 10%;\" class=\"noprint\">Added</th><th style=\"text-align: right;\" class=\"noprint\">Non-Fee Earning</th><th style=\"text-align: right;\" class=\"noprint\">Hourly Rate</th><th style=\"text-align: right;\" class=\"noprint\">Actual Cost</th><th style=\"text-align: right;\" class=\"noprint\">Time Cost</th>"; }
 
 						echo "</tr>";
 							  
@@ -608,7 +613,7 @@ function TimeSheetList($user_id,$ts_weekbegin,$user_timesheet_hours) {
 									echo "<td style=\"" . $style . "\">" . date("l",$ts_list_entry) . "</td>";
 									echo "<td style=\"" . $style . "\">" . $ts_list_desc;
 									if ($editbutton == 1) {
-										echo "&nbsp;<a href=\"index2.php?page=timesheet&amp;week=$ts_weekbegin&amp;ts_id=$ts_list_id&amp;user_view=$user_id\"><img src=\"images/button_edit.png\" alt=\"Edit this entry\" /></a>";
+										echo "&nbsp;<a href=\"index2.php?page=timesheet&amp;week=$ts_weekbegin&amp;ts_id=$ts_list_id&amp;user_view=$user_id\"><img src=\"images/button_edit.png\" alt=\"Edit this entry\" class=\"button\" /></a>";
 									}
 									
 									echo "</td><td style=\"text-align: right;" . $style . "\">";
@@ -618,11 +623,11 @@ function TimeSheetList($user_id,$ts_weekbegin,$user_timesheet_hours) {
 									
 								if ($user_usertype_current > 3) {
 									if ($ts_list_project_fee_track != 1) { $style = $style . " color: #3fceb1; "; }
-									echo "<td style=\"text-align: right; text-decoration: italic;" . $style . "\">" . TimeFormat($ts_list_datestamp) . "</td>";
-									echo "<td style=\"text-align: right; text-decoration: italic;" . $style . "\">" . $ts_non_fee_earning . "%</td>";
-									echo "<td style=\"text-align: right; text-decoration: italic;" . $style . "\">" . PresentCost($ts_list_rate) . "</td>";
-									echo "<td style=\"text-align: right; text-decoration: italic;" . $style . "\">" . PresentCost($ts_cost_factored) . "</td>";
-									echo "<td style=\"text-align: right; text-decoration: italic;" . $style . "\">" . PresentCost($ts_list_hours * $ts_list_rate) . "</td>";
+									echo "<td class=\"noprint\" style=\"text-align: right; text-decoration: italic;" . $style . "\">" . TimeFormat($ts_list_datestamp) . "</td>";
+									echo "<td class=\"noprint\" style=\"text-align: right; text-decoration: italic;" . $style . "\">" . $ts_non_fee_earning . "%</td>";
+									echo "<td class=\"noprint\" style=\"text-align: right; text-decoration: italic;" . $style . "\">" . PresentCost($ts_list_rate) . "</td>";
+									echo "<td class=\"noprint\" style=\"text-align: right; text-decoration: italic;" . $style . "\">" . PresentCost($ts_cost_factored) . "</td>";
+									echo "<td class=\"noprint\" style=\"text-align: right; text-decoration: italic;" . $style . "\">" . PresentCost($ts_list_hours * $ts_list_rate) . "</td>";
 								}
 								echo "</tr>";
 								
@@ -633,6 +638,8 @@ function TimeSheetList($user_id,$ts_weekbegin,$user_timesheet_hours) {
 								
 								$ts_day_total_factored = $ts_cost_factored + $ts_day_total_factored;
 								$ts_week_total_factored = $ts_cost_factored + $ts_week_total_factored;
+								
+								if ($array['proj_fee_track']  == 1 ) { $week_fee_total = $week_fee_total + $ts_list_hours; }
 
 								}
 									
@@ -650,14 +657,17 @@ function TimeSheetList($user_id,$ts_weekbegin,$user_timesheet_hours) {
 										mysql_query($sql_update_day, $conn);
 										$background = "background-color: green;";	
 								}
+								
+								
 
 
 								echo "<tr><td colspan=\"3\" style=\"font-weight: bold; $background\"><u>Total Hours for $dayname</u></td><td style=\"font-weight: bold; text-align: right; $background\"><u>$ts_day_total</u></td>";
 								
-								if ($user_usertype_current > 3) { echo "<td style=\"font-weight: bold; text-decoration: underline; text-align: right; $background\" colspan=\"4\">" . MoneyFormat($ts_day_total_factored) . "</td><td style=\"$background\"></td>"; }
+								if ($user_usertype_current > 3) { echo "<td style=\"font-weight: bold; text-decoration: underline; text-align: right; $background\" colspan=\"4\" class=\"noprint\">" . MoneyFormat($ts_day_total_factored) . "</td><td style=\"$background\" class=\"noprint\"></td>"; }
 								
 								$ts_day_total_factored = 0;
 							
+								
 								
 								echo "</tr>";
 								
@@ -678,7 +688,14 @@ function TimeSheetList($user_id,$ts_weekbegin,$user_timesheet_hours) {
 
 						echo "<tr><td colspan=\"3\" style=\"$background\"><strong>Total Hours for Week</strong></td><td style=\"text-align: right; $background\"><strong>$ts_list_total</strong></td>";
 
-						if ($user_usertype_current > 3) { echo "<td style=\"text-align: right; $background\" colspan=\"4\" ><strong>" . MoneyFormat($ts_week_total_factored) . "</strong></td><td style=\"$background\"></td>"; }
+						if ($user_usertype_current > 3) { echo "<td style=\"text-align: right; $background\" colspan=\"4\" class=\"noprint\" ><strong>" . MoneyFormat($ts_week_total_factored) . "</strong></td><td style=\"$background\" class=\"noprint\"></td>"; }
+
+						echo "</tr>";
+						
+						
+						echo "<tr><td colspan=\"3\" style=\"$background\"><strong>Total Fee Hours for Week</strong></td><td style=\"text-align: right; $background\"><strong>" . $week_fee_total . "</strong></td>";
+
+						if ($user_usertype_current > 3) { echo "<td style=\"text-align: right; $background\" colspan=\"5\" class=\"noprint\" ></td>"; }
 
 						echo "</tr>";
 
@@ -758,7 +775,7 @@ function TimeSheetUserUpdates($user_id, $week_begin, $weeks_to_analyse) {
 			$ts_adjustment_factor =  ($user_timesheet_hours * (1 - $user_prop_target)) / ($user_timesheet_hours * (1 - $percent_actual));
 			
 			if ($user_usertype_current > 3) { 
-				echo "<blockquote><p><a href=\"index2.php?page=user_view&amp;user_id=162\">" . $user_name_first . "&nbsp;" . $user_name_second . "</a> is currently required to complete <strong>" . number_format($user_timesheet_hours) . "</strong> hours each week, with a currently hourly cost (excluding profit) of <strong>&pound;" . number_format($user_user_rate,2) ."</strong>. " . $user_name_first . "'s weekly proportion of non-working hours is <strong>" . number_format(($user_prop_target * 100),2) . "%</strong>, ie. <strong>" . number_format($user_timesheet_hours - ((1 - $user_prop_target) * $user_timesheet_hours),2) . "</strong> hours. Anticipated target cost per week (based on current figures) is therefore <strong>" . MoneyFormat($user_user_rate * (1 - $user_prop_target) * $user_timesheet_hours) . "</strong>.</p><p>Over the previous " . $weeks_to_analyse . " weeks, " . $user_name_first . " has registered non-fee-earning time of <strong>" . number_format(($percent_actual*100),2) . "%</strong>, compared to this expected rate of <strong>" . number_format(($user_prop_target * 100),2) ."%</strong>. On this basis, " . $user_name_first . "'s weekly cost has been adjusted to <strong>" . MoneyFormat( ($user_timesheet_hours * (1 - $user_prop_target)) / ($user_timesheet_hours * (1 - $percent_actual)) * ($user_user_rate * (1 - $user_prop_target) * $user_timesheet_hours) ) . "</strong> across <strong>" . $user_timesheet_hours . "</strong> hours (an equivalent hourly cost rate of <strong>&pound;" . number_format((($user_timesheet_hours * (1 - $user_prop_target)) / ($user_timesheet_hours * (1 - $percent_actual)) * ($user_user_rate * (1 - $user_prop_target) * $user_timesheet_hours) / $user_timesheet_hours),2) . "</strong>). This is an adjustment factor of <strong>" . number_format ((100 * $ts_adjustment_factor),2) . "%</strong>.</p>";
+				echo "<div class=\"noprint\"><blockquote><p><a href=\"index2.php?page=user_view&amp;user_id=162\">" . $user_name_first . "&nbsp;" . $user_name_second . "</a> is currently required to complete <strong>" . number_format($user_timesheet_hours) . "</strong> hours each week, with a currently hourly cost (excluding profit) of <strong>&pound;" . number_format($user_user_rate,2) ."</strong>. " . $user_name_first . "'s weekly proportion of non-working hours is <strong>" . number_format(($user_prop_target * 100),2) . "%</strong>, ie. <strong>" . number_format($user_timesheet_hours - ((1 - $user_prop_target) * $user_timesheet_hours),2) . "</strong> hours. Anticipated target cost per week (based on current figures) is therefore <strong>" . MoneyFormat($user_user_rate * (1 - $user_prop_target) * $user_timesheet_hours) . "</strong>.</p><p>Over the previous " . $weeks_to_analyse . " weeks, " . $user_name_first . " has registered non-fee-earning time of <strong>" . number_format(($percent_actual*100),2) . "%</strong>, compared to this expected rate of <strong>" . number_format(($user_prop_target * 100),2) ."%</strong>. On this basis, " . $user_name_first . "'s weekly cost has been adjusted to <strong>" . MoneyFormat( ($user_timesheet_hours * (1 - $user_prop_target)) / ($user_timesheet_hours * (1 - $percent_actual)) * ($user_user_rate * (1 - $user_prop_target) * $user_timesheet_hours) ) . "</strong> across <strong>" . $user_timesheet_hours . "</strong> hours (an equivalent hourly cost rate of <strong>&pound;" . number_format((($user_timesheet_hours * (1 - $user_prop_target)) / ($user_timesheet_hours * (1 - $percent_actual)) * ($user_user_rate * (1 - $user_prop_target) * $user_timesheet_hours) / $user_timesheet_hours),2) . "</strong>). This is an adjustment factor of <strong>" . number_format ((100 * $ts_adjustment_factor),2) . "%</strong>.</p>";
 				
 			}
 			
@@ -776,12 +793,12 @@ function TimeSheetUserUpdates($user_id, $week_begin, $weeks_to_analyse) {
 				
 				$ts_adjustment_factor = $ts_adjustment_factor * (1 - $user_prop_target);
 				
-				if ($user_usertype_current > 3) { echo "<p>The total adjustment figure is therefore <strong>" . number_format( ( 100 * $ts_adjustment_factor) ,2) . "%</strong>.</p></blockquote>"; }
+				if ($user_usertype_current > 3) { echo "<p>The total adjustment figure is therefore <strong>" . number_format( ( 100 * $ts_adjustment_factor) ,2) . "%</strong>.</p></blockquote></div>"; }
 
 				
 		} elseif ($user_usertype_current > 3) {
 			
-			echo "<blockquote><p>- Timesheets for this week incomplete -</p></blockquote>";
+			echo "<div class=\"noprint\"><blockquote><p>- Timesheets for this week incomplete -</p></blockquote></div>";
 		}
 		
 			
@@ -831,7 +848,7 @@ function TimeSheetMenuUsers($user_id_current,$ts_weekbegin) {
 					
 
 			echo "<div class=\"submenu_bar\">";
-			echo "<a href=\"index2.php?page=timesheet&amp;week=$ts_weekbegin\" class=\"submenu_bar\"><img src=\"/images/button_new.png\" alt=\"Add New Timesheet Entry\" />&nbsp;Add New</a>";
+			echo "<a href=\"index2.php?page=timesheet&amp;week=$ts_weekbegin\" class=\"submenu_bar\"><img src=\"/images/button_new.png\" alt=\"Add New Timesheet Entry\" class=\"button\" />&nbsp;Add New</a>";
 			if ($user_usertype_current > 3) {
 				$sql_userlist = "SELECT user_initials, user_id, user_name_first, user_name_second FROM intranet_user_details WHERE user_user_added < $ts_weekbegin AND (user_user_ended > $ts_weekbegin OR user_user_ended = 0) ORDER BY user_initials";
 				$result_userlist = mysql_query($sql_userlist, $conn);
@@ -875,7 +892,7 @@ function TimesheetListZeroCost($user_id) {
 					
 					while ($array = mysql_fetch_array($result)) {
 						
-						echo "<tr><td>" . TimeFormat($array['ts_entry']) . "</td><td>" . $array['user_name_first'] . "&nbsp;" . $array['user_name_second'] . "</td><td>" . $array['ts_id'] . "&nbsp;<a href=\"index2.php?page=timesheet&amp;user_view=" . $array['ts_user'] . "&amp;week=" . $array['ts_entry'] . "\"><img src=\"images/button_edit.png\" /></a></td><td style=\"text-align: right;\">" . $array['ts_hours'] . "</td><td style=\"text-align: right;\">&pound;" . number_format($array['ts_cost_factored'],2) . "</td><td style=\"text-align: right;\">" . number_format($array['ts_hours'],2) . "</td><td style=\"text-align: right;\">&pound;" . number_format($array['ts_rate'],2) . "</td><td style=\"text-align: right;\">" . $array['ts_non_fee_earning'] . "</td></tr>";
+						echo "<tr><td>" . TimeFormat($array['ts_entry']) . "</td><td>" . $array['user_name_first'] . "&nbsp;" . $array['user_name_second'] . "</td><td>" . $array['ts_id'] . "&nbsp;<a href=\"index2.php?page=timesheet&amp;user_view=" . $array['ts_user'] . "&amp;week=" . $array['ts_entry'] . "\"><img src=\"images/button_edit.png\" class=\"button\" /></a></td><td style=\"text-align: right;\">" . $array['ts_hours'] . "</td><td style=\"text-align: right;\">&pound;" . number_format($array['ts_cost_factored'],2) . "</td><td style=\"text-align: right;\">" . number_format($array['ts_hours'],2) . "</td><td style=\"text-align: right;\">&pound;" . number_format($array['ts_rate'],2) . "</td><td style=\"text-align: right;\">" . $array['ts_non_fee_earning'] . "</td></tr>";
 						
 					}
 					
@@ -905,7 +922,7 @@ function TimesheetListLowCost($user_id) {
 					
 					while ($array = mysql_fetch_array($result)) {
 						
-						echo "<tr><td>" . TimeFormat($array['ts_entry']) . "</td><td>" . $array['user_name_first'] . "&nbsp;" . $array['user_name_second'] . "</td><td>" . $array['ts_id'] . "&nbsp;<a href=\"index2.php?page=timesheet&amp;user_view=" . $array['ts_user'] . "&amp;week=" . $array['ts_entry'] . "\"><img src=\"images/button_edit.png\" /></a></td><td style=\"text-align: right;\">" . $array['ts_hours'] . "</td><td style=\"text-align: right;\">&pound;" . number_format($array['ts_cost_factored'],2) . "</td><td style=\"text-align: right;\">" . number_format($array['ts_hours'],2) . "</td><td style=\"text-align: right;\">&pound;" . number_format($array['ts_rate'],2) . "</td><td style=\"text-align: right;\">" . $array['ts_non_fee_earning'] . "</td></tr>";
+						echo "<tr><td>" . TimeFormat($array['ts_entry']) . "</td><td>" . $array['user_name_first'] . "&nbsp;" . $array['user_name_second'] . "</td><td>" . $array['ts_id'] . "&nbsp;<a href=\"index2.php?page=timesheet&amp;user_view=" . $array['ts_user'] . "&amp;week=" . $array['ts_entry'] . "\"><img src=\"images/button_edit.png\" class=\"button\" /></a></td><td style=\"text-align: right;\">" . $array['ts_hours'] . "</td><td style=\"text-align: right;\">&pound;" . number_format($array['ts_cost_factored'],2) . "</td><td style=\"text-align: right;\">" . number_format($array['ts_hours'],2) . "</td><td style=\"text-align: right;\">&pound;" . number_format($array['ts_rate'],2) . "</td><td style=\"text-align: right;\">" . $array['ts_non_fee_earning'] . "</td></tr>";
 						
 					}
 					
@@ -963,7 +980,7 @@ function ListFeeStages($group_id) {
 					
 					echo "<tr id=\"" . $array['group_id'] . "\" class=item_" . $group_id . "  ><td $highlight class=\"HideHeader\">" . $array['group_code'] . "</td><td $highlight class=\"HideHeader\"><a href=\"#" . $array['group_id'] ."\" onclick=\"HideItem('item_" . $array['group_id'] . "')\">" . $array['group_description'] . "</a></td><td $highlight class=\"HideHeader\"><a href=\"index2.php?page=user_view&amp;user_id="  . $array['user_id'] . "\">" . $array['user_name_first'] . " " . $array['user_name_second'] . "</a></td><td $highlight>";
 					
-					if ($user_usertype_current > 3 OR intval($_COOKIE[user]) == $array['group_leader']) { echo "<a href=\"\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a><a href=\"\">"; }
+					if ($user_usertype_current > 3 OR intval($_COOKIE[user]) == $array['group_leader']) { echo "<a href=\"\"><img src=\"images/button_edit.png\" alt=\"Edit\" class=\"button\" /></a><a href=\"\">"; }
 					
 					echo "</td></tr>";
 					
@@ -971,7 +988,7 @@ function ListFeeStages($group_id) {
 	
 					echo "<tr id=\"" . $array['group_id'] . "\"><td $highlight>" . $array['group_code'] . "</td><td $highlight>" . $array['group_description'] . "</td><td $highlight><a href=\"index2.php?page=user_view&amp;user_id="  . $array['user_id'] . "\">" . $array['user_name_first'] . " " . $array['user_name_second'] . "</a></td><td $highlight>";
 					
-					if ($user_usertype_current > 3 OR intval($_COOKIE[user]) == $array['group_leader']) { echo "<a href=\"\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a>"; }		
+					if ($user_usertype_current > 3 OR intval($_COOKIE[user]) == $array['group_leader']) { echo "<a href=\"\"><img src=\"images/button_edit.png\" class=\"button\" alt=\"Edit\" /></a>"; }		
 					
 					echo "</td></tr>";
 					
@@ -1044,13 +1061,13 @@ function ListFeeStageItems($group_id, $group_leader) {
 				
 				if ($counter == 0) { echo "<tr $display class=\"item_" . $group_id . " HideLine\"><td></td><td>Core Objective</td><td $highlight>" . $array['group_notes'] . "</td><td>";
 				
-				if ($user_usertype_current > 3 OR intval($_COOKIE[user]) == $group_leader) { echo "<a href=\"index2.php?page=timesheet_fee_list&amp;item=fee_group&amp;stage_id=" . $array['book_stage'] . "\"><img src=\"images/button_new.png\" alt=\"Add\" /></a>"; }
+				if ($user_usertype_current > 3 OR intval($_COOKIE[user]) == $group_leader) { echo "<a href=\"index2.php?page=timesheet_fee_list&amp;item=fee_group&amp;stage_id=" . $array['book_stage'] . "\"><img src=\"images/button_new.png\" class=\"button\" alt=\"Add\" /></a>"; }
 				
 				echo "</td></tr>"; $counter++; }
 				
 				echo "<tr $display class=\"item_" . $group_id . " HideLine\"><td></td><td>" . $array['book_order'] . ". " . $array['book_title'] . "</td><td>" . $array['book_description'] . "</a></td><td>";
 				
-				if ($user_usertype_current > 3 OR intval($_COOKIE[user]) == $group_leader) { echo "<a href=\"index2.php?page=timesheet_fee_list&amp;item=fee_group&amp;book_id=" . $array['book_id'] . "\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a>"; }
+				if ($user_usertype_current > 3 OR intval($_COOKIE[user]) == $group_leader) { echo "<a href=\"index2.php?page=timesheet_fee_list&amp;item=fee_group&amp;book_id=" . $array['book_id'] . "\"><img src=\"images/button_edit.png\" alt=\"Edit\" class=\"button\" /></a>"; }
 				
 				echo "</td></tr>";
 				
@@ -1132,4 +1149,46 @@ function DropDownFeeStage($field, $group_id) {
 	
 	}
 	
+}
+
+function ResourceByStage_Stages($proj_id) {
+	
+	global $conn;
+	
+	$sql = "SELECT ts_fee_id, ts_fee_text FROM intranet_timesheet_fees WHERE ts_fee_project = " . intval($proj_id) . " ORDER BY ts_fee_commence";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	if (mysql_num_rows($result) > 0) {
+		$total = 0;
+	
+		while ($array = mysql_fetch_array($result)) {
+			$total = $total + ResourceByStage_People($array['ts_fee_id'],$array['ts_fee_text']);
+		}
+		
+		echo "<table>";
+		echo "<tr><td style=\"width: 50%;\"><strong>Project Total</strong></td><td style=\"text-align: right;\"><strong>" . number_format ($total) . "</strong></td></tr>";
+		echo "</table>";
+	}
+	
+}
+
+function ResourceByStage_People($ts_fee_stage,$ts_fee_text) {	
+	
+	global $conn;
+	
+	$sql = "SELECT user_name_first, user_name_second, ts_user, SUM(ts_hours) FROM `intranet_timesheet`, `intranet_user_details` WHERE user_id = ts_user AND ts_stage_fee = " . intval($ts_fee_stage) . " GROUP BY ts_user";
+	$result = mysql_query($sql, $conn) or die(mysql_error());
+	if (mysql_num_rows($result) > 0) {
+		$total = 0;
+		echo "<h3>" . $ts_fee_text . "</h3>";
+		echo "<table>";
+		while ($array = mysql_fetch_array($result)) {
+			echo "<tr><td style=\"width: 50%;\">" . $array['user_name_first'] . " " . $array['user_name_second'] . "</td><td style=\"text-align: right;\">" . number_format ($array['SUM(ts_hours)']) . "</td></tr>";
+			$total = $total + $array['SUM(ts_hours)'];
+		}
+		
+		echo "<tr><td style=\"width: 50%;\"><strong>Stage Total</strong></td><td style=\"text-align: right;\"><strong>" . number_format ($total) . "</strong></td></tr>";
+		echo "</table>";
+	}
+	
+	return $total;
 }

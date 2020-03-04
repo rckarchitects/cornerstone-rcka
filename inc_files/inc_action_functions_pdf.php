@@ -939,7 +939,7 @@ function PDF_ListTenders($day_begin) {
 			if (mysql_num_rows($result) > 0) {
 			
 			StyleBody(16,'Helvetica','B');
-			$pdf->Cell(0,10,'Tenders Due (Next Fortnight)',0,1);
+			$pdf->Cell(0,10,'Tenders due (next fortnight)',0,1);
 			$color_swich = 1;
 			while ($array = mysql_fetch_array($result)) {
 			$tender_name = date("G:i",$array['tender_date']) . ": " . $array['tender_name'] . " (" . $array['tender_client'] . ")";
@@ -964,6 +964,49 @@ function PDF_ListTenders($day_begin) {
 		}
 
 
+}
+
+function PDF_ListReviews($begin_week) {
+	
+		GLOBAL $conn;
+		GLOBAL $pdf;
+	
+		StyleBody(14,'Helvetica','B');
+		
+			$time_end = BeginWeek ( $begin_week + 604800 );
+		
+			$sql = "SELECT * FROM  intranet_projects, intranet_project_reviews LEFT JOIN intranet_timesheet_fees ON ts_fee_project = review_proj WHERE review_proj = proj_id AND review_date >= '" . CreateDateFromTimestamp(time()) . "' AND review_date < '" . CreateDateFromTimestamp($time_end) . "' GROUP BY review_id ORDER BY review_date ASC";
+
+			
+			$result = mysql_query($sql, $conn) or die(mysql_error());
+	
+			
+			if (mysql_num_rows($result) > 0) {
+			
+			StyleBody(16,'Helvetica','B');
+			$pdf->Cell(0,10,'Reviews (this week)',0,1);
+			$color_swich = 1;
+			while ($array = mysql_fetch_array($result)) {
+			$review_name = $array['proj_num'] . " " . $array['proj_name'] . ": " . $array['ts_fee_text'] . " (" . $array['review_type'] . ")";
+				if ($color_switch == 1) { SetColor2(); $color_switch = 2; } else { SetColor3(); $color_switch = 1; }
+				StyleBody(10,'Helvetica','');
+				$day = date("D j",CreateDays($array['review_date'],12));
+				if ($current_day != $day) { $pdf->Cell(15,10,$day);  } else { $pdf->Cell(15,10,''); }
+				
+				
+				PDF_TextShrinker(13,$review_name,260,'Helvetica','B');
+				
+				$width = $pdf->GetStringWidth($review_name) + 5;
+				$pdf->Cell(2,12,'',0,0,'L',1);
+				$pdf->Cell($width,12,$review_name,0,1,'L',1);
+				$pdf->Ln(2);
+				$current_day = $day;
+				
+			}
+		
+		$pdf->Ln(5);
+		
+		}
 }
 
 function PDF_TaskDeadlines($day_begin) {
@@ -1498,7 +1541,7 @@ function PDFProjectAnalysis($proj_id) {
 				$sql_stages = "SELECT * FROM `intranet_timesheet_fees` WHERE `ts_fee_project` = " . $proj_id . " ORDER BY `ts_fee_commence`";
 				$result_stages = mysql_query($sql_stages, $conn) or die(mysql_error());
 				
-				$row_height = 85 / mysql_num_rows($result_stages);
+				$row_height = 70 / mysql_num_rows($result_stages);
 				
 				if ($row_height > 7.5) { $row_height = 7.5; }
 				
