@@ -57,7 +57,9 @@ $pdf->Ln();
 
 $legend = "Cost (Fa) = Factored cost\nCost (Ho) = Hourly cost (not factored)\nCost (Fa Acc) = Factored accumulative cost\nCost (Ho Acc) = Hourly accumulative cost (not factored)\n";
 
-$pdf->MultiCell(0,3,$legend);
+if ($_POST['separate_pages'] != 1) {
+	$pdf->MultiCell(0,3,$legend);
+}
 
 $pdf->SetFillColor(220, 220, 220);
 

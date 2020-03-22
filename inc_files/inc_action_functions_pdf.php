@@ -1297,22 +1297,30 @@ function StageTotal($stage_total, $hours_total, $running_cost_nf, $ts_fee_target
 				$pdf->Cell(0,1,'',T,1);
 				$pdf->Cell(20,4,'Stage Total', 0, 0, L);
 				$pdf->Cell(8,4,$hours_total, 0, 0, R);
-				$pdf->Cell(5,4,'hrs', 0, 0);
-				$pdf->Cell(38,4,'', 0, 0);
-				$pdf->Cell(20,4,$stage_total_print, 0, 0, R);
-				$pdf->Cell(20,4,$running_cost_nf_print, 0, 1, R);
+				$pdf->Cell(5,4,'hours', 0, 0);
+				$pdf->Cell(38,4,NULL, 0, 0);
+				if ($_POST['separate_pages'] != 1) {
+					$pdf->Cell(20,4,$stage_total_print, 0, 0, R);
+					$pdf->Cell(20,4,$running_cost_nf_print, 0, 1, R);
+				}
 				$pdf->Ln();
 				$stage_total = 0;
 				$hours_total= 0;
 				$running_cost_nf = 0;
 				
-				$ts_fee_target_print = ($ts_fee_target - 1) * 100;
-				$ts_fee_target_print = "Actual Fee (including profit at " . number_format($ts_fee_target_print,2) . "%)";
+				if ($_POST['separate_pages'] != 1) {
 				
-				$pdf->Cell(0,1,'',T,1);
-				$pdf->Cell(71,4,$ts_fee_target_print, 0, 0, L);
-				$pdf->Cell(20,4,$invoice_cost_print, 0, 1, R);
-				$pdf->Ln();
+					$ts_fee_target_print = ($ts_fee_target - 1) * 100;
+					$ts_fee_target_print = "Actual Fee (including profit at " . number_format($ts_fee_target_print,2) . "%)";
+					
+					$pdf->Cell(0,1,'',T,1);
+					$pdf->Cell(71,4,$ts_fee_target_print, 0, 0, L);
+					$pdf->Cell(20,4,$invoice_cost_print, 0, 1, R);
+					$pdf->Ln();
+				
+				}
+				
+				if ($_POST['separate_pages'] == 1) { $pdf->AddPage(); }
 	
 		}
 		
@@ -1810,9 +1818,9 @@ function PDFTimeSheetProject($proj_id,$ts_stage_fee,$running_cost,$total_cost_nf
 	
 	// Establish the parameters for what we are showing
 
-		$time_submit_begin = intval($_POST[submit_begin]);
-		$time_submit_end = intval($_POST[submit_end]);
-		if ($_POST[submit_project] > 0) { $proj_submit = intval($_POST[submit_project]); } elseif ($_GET[proj_id] > 0) { $proj_submit = intval($_GET[proj_id]); } else { header ("Location: index2.php"); }
+		$time_submit_begin = intval($_POST['submit_begin']);
+		$time_submit_end = intval($_POST['submit_end']);
+		if ($_POST['submit_project'] > 0) { $proj_submit = intval($_POST['submit_project']); } elseif ($_GET['proj_id'] > 0) { $proj_submit = intval($_GET['proj_id']); } else { header ("Location: index2.php"); }
 
 		if (intval($time_submit_begin) == 0) { $time_submit_begin = 0; } else { $time_submit_begin = intval($time_submit_begin); }
 		if (intval($time_submit_end) == 0) { $time_submit_end = time(); } else { $time_submit_end = intval($time_submit_end); }
@@ -1871,8 +1879,10 @@ function PDFTimeSheetProject($proj_id,$ts_stage_fee,$running_cost,$total_cost_nf
 				
 				$ts_fee_target = $array_fee_text['ts_fee_target'];
 				if ( $ts_fee_target == NULL) { $ts_fee_target = 1; }
-				if ($_POST[separate_pages] != 1) {
+				if ($_POST['separate_pages'] != 1) {
 					$ts_fee_text = $array_fee_text['ts_fee_text'] . " (Fee target: " . number_format((100 * ($ts_fee_target - 1))) . "%)";
+				} else { 
+					$ts_fee_text = $array_fee_text['ts_fee_text'];
 				}
 				
 
@@ -1892,15 +1902,15 @@ function PDFTimeSheetProject($proj_id,$ts_stage_fee,$running_cost,$total_cost_nf
 				
 					// Add the stage total if necessary
 					
-						if ($current_fee_stage != NULL AND $_POST[separate_pages] != 1) {
+						if ($current_fee_stage != NULL AND $_POST['separate_pages'] != 1) {
 							StageTotal($stage_total, $hours_total, $running_cost_nf, $ts_fee_target );
 							StageFee($ts_stage_fee);
 						} elseif ($current_fee_stage != NULL) {
 							$pdf->SetFont($format_font,'',8);
-							$pdf->Cell(20,7,'Total', T, 0, L);
+							$pdf->Cell(20,7,'Total', 'T', 0, 'L');
 							$hours_total_print = number_format($hours_total);
-							$pdf->Cell(8,7,$hours_total_print, T, 0, R);
-							$pdf->Cell(0,7,'hours', T, 1, L);
+							$pdf->Cell(8,7,$hours_total_print, 'T', 0, 'R');
+							$pdf->Cell(0,7,'hours', 'T', 1, 'L');
 							$hours_total = 0;
 						}
 						
@@ -1910,18 +1920,33 @@ function PDFTimeSheetProject($proj_id,$ts_stage_fee,$running_cost,$total_cost_nf
 					
 					$pdf->SetFont('Helvetica','B',12);
 					$pdf->Ln(3);
-					$pdf->Cell(0,8,$ts_fee_text, 0, 1, L);
+					$pdf->Cell(0,8,$ts_fee_text, 0, 1, 'L');
 					$pdf->Ln(2);
 					$pdf->SetFont($format_font,'',6);
-					$pdf->Cell(20,4,'Date',0,0,L);
-					$pdf->Cell(13,4,'Hours',0,0,R);
-					$pdf->Cell(15,4,'Cost (Fa)',0,0,R);
-					$pdf->Cell(15,4,'Cost (Ho)',0,0,R);
-					$pdf->Cell(8,4,'Init',0,0,C);
-					$pdf->Cell(20,4,'Cost (Fa Acc)',0,0,R);
-					$pdf->Cell(20,4,'Cost (Ho Acc)',0,0,R);
-					$pdf->Cell(0,4,'Description',0,0,L);
-					$pdf->Ln();
+					
+					if ($_POST['separate_pages'] != 1) {
+					
+						$pdf->Cell(20,4,'Date',0,0,'L');
+						$pdf->Cell(13,4,'Hours',0,0,'R');
+						$pdf->Cell(15,4,'Cost (Fa)',0,0,'R');
+						$pdf->Cell(15,4,'Cost (Ho)',0,0,'R');
+						$pdf->Cell(8,4,'Init',0,0,'C');
+						$pdf->Cell(20,4,'Cost (Fa Acc)',0,0,'R');
+						$pdf->Cell(20,4,'Cost (Ho Acc)',0,0,'R');
+						$pdf->Cell(0,4,'Description',0,0,'L');
+						$pdf->Ln();
+					
+					} else {
+						
+						$pdf->Cell(20,4,'Date',0,0,'L');
+						$pdf->Cell(8,4,'Hours',0,0,'R');
+						$pdf->Cell(15,4,NULL,0,0,'R');
+						$pdf->Cell(40,4,'Name',0,0,'L');
+						$pdf->Cell(0,4,'Description',0,0,'L');
+						$pdf->Ln();						
+						
+					}
+					
 					$current_fee_stage = $ts_stage_fee;
 				}
 
@@ -1962,22 +1987,22 @@ function PDFTimeSheetProject($proj_id,$ts_stage_fee,$running_cost,$total_cost_nf
 								
 								$ts_link = $pref_location . "popup_timesheet.php?week=" . BeginWeek($ts_entry) . "&ts_id=" . $ts_id . "&user_view=" . $user_id;
 								
-									$pdf->Cell(20,4,$entry_day,0, 0, L, 0, $ts_link);
-									$pdf->Cell(8,4,$view_hours,0, 0, R, 0);
-									if ($_POST[separate_pages] != 1) {
-									$pdf->Cell(5,4,'hrs',0, 0, R, 0);
-									$pdf->Cell(15,4,$entry_cost_print,0, 0, R, 0);
-									$pdf->Cell(15,4,$ts_cost_nf_print,0, 0, R, 0);
-									$pdf->Cell(8,4,$user_initials,0, 0, C, 0);
-									$pdf->Cell(20,4,$running_cost_print,0, 0, R, 0);
-									$pdf->Cell(20,4,$running_cost_nf_print,0, 0, R, 0);
+									$pdf->Cell(20,4,$entry_day,0, 0, 'L', 0, $ts_link);
+									$pdf->Cell(8,4,$view_hours,0, 0, 'R', 0);
+									if ($_POST['separate_pages'] != 1) {
+										$pdf->Cell(5,4,'hrs',0, 0, 'R', 0);
+										$pdf->Cell(15,4,$entry_cost_print,0, 0, 'R', 0);
+										$pdf->Cell(15,4,$ts_cost_nf_print,0, 0, 'R', 0);
+										$pdf->Cell(8,4,$user_initials,0, 0, 'L', 0);
+										$pdf->Cell(20,4,$running_cost_print,0, 0, 'R', 0);
+										$pdf->Cell(20,4,$running_cost_nf_print,0, 0, 'R', 0);
 									} else {
 									if ($view_hours <= 1) { $print_hours = "hour"; } else { $print_hours = "hours"; }
-									$pdf->Cell(15,4,$print_hours,R, 0, L, 0);
-									$pdf->Cell(40,4,$user_name,0, 0, L, 0);
+										$pdf->Cell(15,4,$print_hours,0, 0, 'L', 0);
+										$pdf->Cell(40,4,$user_name,0, 0, 'L', 0);
 									}
 									
-									$pdf->MultiCell(0,4,$ts_desc,0,L);
+									$pdf->MultiCell(0,4,$ts_desc,0,'L');
 									
 								$pdf->Cell(0,1,'',0,1);
 								
@@ -1985,22 +2010,14 @@ function PDFTimeSheetProject($proj_id,$ts_stage_fee,$running_cost,$total_cost_nf
 								
 				
 			}
-
-						if ($_POST[separate_pages] != 1) {
+						$pdf->SetFont($format_font,'B');
+						if ($_POST['separate_pages'] != 1) {
 							StageTotal($stage_total, $hours_total, $running_cost_nf, $ts_fee_target );
 							StageFee($ts_stage_fee);
+						} else {
+							StageTotal($stage_total, $hours_total, NULL, NULL );							
 						}
 						
-						
-						
-						
-						
-						
-
-
-
-
-			
 			
 		$return_array = array($stage_total,$running_cost_nf);
 		return $return_array;
@@ -2026,7 +2043,7 @@ function PDF_ArrayProjectStages($proj_id) {
 		$total_cost_nf = $total_cost_nf + $running_cost_array[1];
 		$count++;
 		
-			if ($_POST[separate_pages] != 1 && $running_cost_array[0] > 0) {
+			if ($_POST['separate_pages'] != 1 && $running_cost_array[0] > 0) {
 				
 						$cost_total_print = PDFCurrencyFormat($running_cost);
 						

@@ -1453,9 +1453,9 @@ function ListHolidays($days) {
 	
 	$time =  60 * 60 * 24 * intval ($days);
 	
-	echo "<h2>Upcoming Holidays - Next $days Days</h2>";
+	echo "<h2>Upcoming Holidays - Next " . $days . " Days</h2>";
 
-		$sql5 = "SELECT user_id, user_name_first, user_name_second, holiday_date, holiday_timestamp, holiday_paid, holiday_length, holiday_approved FROM intranet_user_details, intranet_user_holidays WHERE holiday_user = user_id AND holiday_timestamp BETWEEN $nowtime AND " . ($nowtime + $time) ." ORDER BY holiday_timestamp, user_name_second";
+		$sql5 = "SELECT user_id, user_name_first, user_name_second, holiday_date, holiday_timestamp, holiday_paid, holiday_length, holiday_approved, holiday_datestamp FROM intranet_user_details, intranet_user_holidays WHERE holiday_user = user_id AND holiday_timestamp BETWEEN $nowtime AND " . ($nowtime + $time) ." ORDER BY holiday_timestamp, user_name_second";
 		$result5 = mysql_query($sql5, $conn) or die(mysql_error());
 		if (mysql_num_rows($result5) > 0) {
 			$current_date = 0;
@@ -1465,7 +1465,7 @@ function ListHolidays($days) {
 			
 					if ($current_id != $user_id AND $current_id > 0) {
 						$holidaymessage = $holidaymessage . "</td></tr>";
-					} 
+					}
 					
 					$user_id = $array5['user_id'];
 					$user_name_first = $array5['user_name_first'];
@@ -1487,7 +1487,7 @@ function ListHolidays($days) {
 					
 					if ($holiday_length < 1) { $holiday_length = " (Half Day)"; } else { unset($holiday_length); }
 					
-					$holidaymessage = $holidaymessage . "<a href=\"$calendar_link\">" . $holiday_approved1 . $user_name_first . " " . $user_name_second . $holiday_length . $holiday_approved2 . "</a>"; ;
+					$holidaymessage = $holidaymessage . "<a href=\"" . $calendar_link . "\">" . $holiday_approved1 . $user_name_first . " " . $user_name_second . $holiday_length . $holiday_approved2 . "</a>"; ;
 					
 					$current_date = $holiday_date;
 			}
@@ -1496,7 +1496,6 @@ function ListHolidays($days) {
 		}
 
 	echo $holidaymessage;
-
 
 }
 
@@ -3918,76 +3917,6 @@ function ClassList($array_class_1,$array_class_2,$type) {
 						echo "</select>";
 						
 					}
-		
-function ProjectDrawingList($proj_id) {
-		
-		global $conn;
-					
-					if ($_GET[drawing_class]) { $drawing_class = $_GET[drawing_class]; } elseif ($_POST[drawing_class]) { $drawing_class = $_POST[drawing_class]; }
-					if ($_GET[drawing_type]) { $drawing_type = $_GET[drawing_type]; } elseif ($_POST[drawing_type]) { $drawing_type = $_POST[drawing_type]; }
-					
-					if ($drawing_class != NULL) { $drawing_class = " AND drawing_number LIKE '%-" . $drawing_class . "-%' "; } else { unset($drawing_class); }
-					if ($drawing_type != NULL) { $drawing_type = " AND drawing_number LIKE '%-" . $drawing_type . "-%' "; } else { unset($drawing_type); }
-
-				$sql = "SELECT * FROM intranet_drawings, intranet_drawings_scale, intranet_drawings_paper WHERE drawing_project = $proj_id AND drawing_scale = scale_id AND drawing_paper = paper_id $drawing_class $drawing_type order by drawing_number";
-				$result = mysql_query($sql, $conn) or die(mysql_error());
-				
-					echo "<div>";
-					DrawingFilter("drawings_list", $proj_id);
-					echo "</div>";
-					
-
-						if (mysql_num_rows($result) > 0) {
-							
-						echo "<div>";
-
-						echo "<table summary=\"Lists all of the drawings for the project\">";
-						echo "<tr><td><strong>Drawing Number</strong></td><td><strong>Title</strong></td><td><strong>Rev.</strong></td><td><strong>Status</strong></td><td><strong>Scale</strong></td><td><strong>Paper</strong></td></tr>";
-
-						while ($array = mysql_fetch_array($result)) {
-						$drawing_id = $array['drawing_id'];
-						$drawing_number = $array['drawing_number'];
-						$scale_desc = $array['scale_desc'];
-						$paper_size = $array['paper_size'];
-						$drawing_title = $array['drawing_title'];
-						$drawing_author = $array['drawing_author'];
-						$drawing_status = $array['drawing_status'];
-						
-						if (!$drawing_status) { $drawing_status = "-"; }
-						
-						$sql_rev = "SELECT * FROM intranet_drawings_revision WHERE revision_drawing = '$drawing_id' ORDER BY revision_letter DESC LIMIT 1";
-						$result_rev = mysql_query($sql_rev, $conn) or die(mysql_error());
-						$array_rev = mysql_fetch_array($result_rev);
-						if ($array_rev['revision_letter'] != NULL) { $revision_letter = strtoupper($array_rev['revision_letter']); } else { $revision_letter = " - "; }
-						
-						if ($revision_letter == "*") { $strikethrough = "; text-decoration: strikethrough"; } else { unset($strikethrough); }
-						
-						if ($drawing_id == $drawing_affected) { $background = " style=\"bgcolor: red; $strikethrough\""; } else { unset($background); }		
-
-						echo "<tr><td $background><a href=\"index2.php?page=drawings_detailed&amp;drawing_id=$drawing_id&proj_id=$proj_id\">$drawing_number</a>";
-						
-						if ($drawing_author == $_COOKIE[user] OR $user_usertype_current > 2) {
-							echo "&nbsp;<a href=\"index2.php?page=drawings_edit&amp;drawing_id=$drawing_id&amp;proj_id=$proj_id&amp;drawing_edit=yes\"><img src=\"images/button_edit.png\" alt=\"Edit this drawing\" /></a>";
-						}
-
-						echo "</td><td $background>".nl2br($drawing_title)."</td><td $background>$revision_letter</td><td $background>$drawing_status</td><td $background>$scale_desc</td><td $background>$paper_size</td>";
-
-
-						echo "</tr>";
-
-						}
-
-						echo "</table>";
-						
-						echo "</div>";
-
-						} else {
-
-						echo "<div><p>No drawings found.</p></div>";
-
-						}
-	}
-	
 	
 	function TelephoneMessage($user_id) {
 	
@@ -4522,3 +4451,149 @@ function FileUploadChecklist($media_title,$media_project,$media_category,$fileNa
 
 }
 
+function UserLocationCalc($count, $total) {
+	
+	$output = "<span class=\"minitext\">(" . $count . "/" . number_format(100*($count/$total),0) . "%)</span>";
+	
+	return $output;
+	
+}
+
+function UserLocationList($prefs_nonworking) {
+	
+	if (!in_array(date("N",time()),$prefs_nonworking)) {
+	
+		global $conn;
+		
+		$holiday_array = UserLocationHolidayArray();
+		
+		$sql = "SELECT * FROM intranet_user_details LEFT JOIN intranet_user_location ON location_user = user_id AND location_date = '" . date("Y-m-d",time()) . "' WHERE user_active = 1 AND user_user_added < " . time() . " AND (user_user_ended > " . time() . " OR user_user_ended = 0) ORDER BY location_type DESC, user_name_second, user_name_first";
+			
+		$result = mysql_query($sql, $conn);
+		
+		$total = mysql_num_rows($result);
+		
+		$current_type = NULL;
+		
+		echo "<h3>Where are people working today?</h3>";
+		
+		$count = 1;
+		
+		echo "<div>";
+			
+		while ($array = mysql_fetch_array($result)) {
+			
+			
+			if (!in_array($array['user_id'],$holiday_array)) {
+				
+				if ($array['location_type'] == NULL) { $location_type = "Not confirmed"; $background = "rgba(255,0,0,0.25)"; } else { $location_type = $array['location_type']; $background = "rgba(173,226,227,0.5)"; }
+				
+				if ($current_type == NULL) { echo "<div><h4>" . $location_type . "</h4><p>"; $current_type = $location_type; $count = 1; }
+				elseif ($current_type != $location_type) { echo UserLocationCalc($count, $total) . "</p><h4>" . $location_type . "</h4><p>"; $current_type = $location_type; $count = 1; } else { $count++; }
+			
+				echo "<span style=\"margin-right: 8px; padding: 1px 5px 1px 5px; line-height: 32px; border-radius: 5px; white-space: pre; background: " . $background . "; \">" . $array['user_name_first'] . " " . $array['user_name_second'] . "</span>";
+				
+				if ($array['user_id'] == $_COOKIE['user']) { $confirmed = $array['location_type']; }
+			
+			}
+		
+		}
+		
+		echo UserLocationCalc($count, $total) . "</p>";
+		
+		echo "</div>";
+		
+		echo "<div>";
+		UserLocationConfirm($array['user_id'],$confirmed);
+		echo "</div>";
+	
+	}
+}
+
+function UserLocationConfirm($user_id,$confirmed) {
+	
+	$array_types = array("Working from home","Working elsewhere","In the studio","Self-isolating","Sick");
+	
+		echo "<div><form action=\"index2.php\" method=\"post\"><p><strong>Today (" . date("l", time()) . "), I am...</strong><br />";
+		
+		
+		foreach ($array_types AS $type) {
+		
+			echo "<span style=\"\white-space: pre; float: left; padding: 8px 15px 8px 10px; margin: 8px 8px 0 0; background: #eee; border-radius: 15px;\"><input type=\"radio\" value=\"" . $type . "\" name=\"location_type\"";
+				if ($confirmed == $type) { echo " checked=\"checked\" "; }
+			echo "onchange=\"this.form.submit()\" id=\"" . $type . "\" />&nbsp;";
+			echo "<label for=\"" . $type . "\">" . $type . "</label></span>";
+		
+		}
+		
+		echo "<input type=\"hidden\" value=\"user_location_add\" name=\"action\" />";
+		echo "</form></div></div>";
+		
+	
+}
+
+function UserLocationAlertBox($user_id) {
+	
+	global $conn;
+	
+	$alert = 0;
+	
+	$sql = "SELECT location_id FROM intranet_user_location WHERE location_user = " . intval($user_id) . " AND location_date = '" . date("Y-m-d",time()) . "' LIMIT 1";
+	$result = mysql_query($sql, $conn);
+	$array = mysql_fetch_array($result);
+	
+	if (intval($array['location_id']) == 0) {
+		
+		$sql = "SELECT holiday_id FROM intranet_user_holidays WHERE holidays_user = " . intval($user_id) . " AND holiday_datestamp = '" . date("Y-m-d",time()) . "' LIMIT 1";
+		$result = mysql_query($sql, $conn);
+		$array = mysql_fetch_array($result);
+		
+		
+			if (intval($array['holiday_id']) == 0) {
+				
+				$sql = "SELECT bankholidays_id FROM intranet_user_holidays_bank WHERE bankholidays_datestamp = '" . date("Y-m-d",time()) . "' LIMIT 1";
+				$result = mysql_query($sql, $conn);
+				$array = mysql_fetch_array($result);
+				
+				if (intval($array['bankholidays_id']) == 0) {
+					
+					$alert = 1;
+					
+				} 
+				
+			}
+		
+	}
+	
+	if ($alert == 1) { echo 
+	
+			"\n\n<script type=\"text/javascript\">
+				function LocationAlertBox() {
+					alert(\"Please confirm your location!\");
+				}
+			</script>";
+			
+			return $alert;
+	
+	}
+	
+}
+
+function UserLocationHolidayArray() {
+	
+	global $conn;
+	
+	$sql = "SELECT holiday_user FROM intranet_user_holidays WHERE holiday_datestamp = '" . date("Y-m-d",time()) . "'";
+	$result = mysql_query($sql, $conn);
+	
+	$holiday_array = array();
+	
+	while ($array = mysql_fetch_array($result)) {
+		
+		$holiday_array[] = $array['holiday_user'];
+		
+	}
+	
+	return $holiday_array;
+	
+}

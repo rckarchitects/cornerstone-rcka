@@ -165,15 +165,18 @@
 
 echo "<script src=\"/plugins/tinymce/tinymce.min.js\"></script>";
 
+// For some reason this dialogue popup is causing problems which prevent the screen loading.
+//if (UserLocationAlertBox($_COOKIE['user']) == 1) { $popup = "onload=\"LocationAlertBox()\""; } else { unset($popup); }
+
 if ($module_contacts == 1 && $_GET['page'] == "contacts_view" ) { ToggleTargetList(); }
 
 if ($module_drawings == 1 && $_GET['page'] == "drawings_issue" ) { ToggleDrawingIssue(); }
 
 
 echo "
-	
+
 </head>
 
-<body>
+<body " . $popup . ">
 
 ";

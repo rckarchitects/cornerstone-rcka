@@ -37,8 +37,6 @@ if ($_GET[s1] > 0) {
 	if ($_GET[s1] > 0) { $s1 = intval($_GET[s1]); $section = "Section " . $_GET[s1] . " only - " . $qms_firstpage; $s1 = " WHERE qms_toc1 = $s1 "; } else { unset($s1); }
 	if ($_GET[s2] > 0) { $s2 = intval($_GET[s2]); $section = "Section " . $_GET[s1] . "." . $_GET[s2] . " only - " . $qms_firstpage; $s2 = " AND qms_toc2 = $s2 "; } else { unset($s2); }
 
-$pdf->AddFont($format_font,'',$format_font_2);
-
 	$pdf->SetXY(10,175);
 	
 	$pdf->SetTextColor(0, 0, 0);

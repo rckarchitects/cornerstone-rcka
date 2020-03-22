@@ -10,8 +10,8 @@ function CheckLogin() {
 	include_once("inc_files/inc_functions_general.php");
 	
 
-	$checkform_username = addslashes($_POST[checkform_username]);
-	$password_submitted = md5($_POST[password]);
+	$checkform_username = addslashes($_POST['checkform_username']);
+	$password_submitted = md5($_POST['password']);
 
 	$sql = "SELECT * FROM intranet_user_details where user_username = '" . $checkform_username . "' ";
 	$result = mysql_query($sql, $conn);
@@ -31,9 +31,9 @@ function CheckLogin() {
 
 
 		
-		setcookie(user, "");
-		setcookie(password, "");
-		setcookie(name, $checkform_username, time()+60);
+		setcookie("user", NULL);
+		setcookie("password", NULL);
+		setcookie("name", $checkform_username, time()+60);
 		
 
 
@@ -54,12 +54,12 @@ function CheckLogin() {
 
 	} else {
 
-					if ($_POST[publicpc] != 1) {
-					setcookie(user, $user_id, time()+36000);
-					setcookie(password, $password_actual, time()+604800);
+					if ($_POST['publicpc'] != 1) {
+					setcookie("user", $user_id, time() + 2419200);
+					setcookie("password", $password_actual, time() + 2419200);
 					} else {
-					setcookie(user, $user_id);
-					setcookie(password, $password_actual);
+					setcookie("user", $user_id);
+					setcookie("password", $password_actual);
 					}	
 					header ("Location: index2.php");
 	}

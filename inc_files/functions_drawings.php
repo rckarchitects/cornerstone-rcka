@@ -180,6 +180,78 @@ function DrawingDetail($drawing_id) {
 
 }
 
+	
+function ProjectDrawingList($proj_id) {
+		
+		global $conn;
+					
+					if ($_GET[drawing_class]) { $drawing_class = $_GET[drawing_class]; } elseif ($_POST[drawing_class]) { $drawing_class = $_POST[drawing_class]; }
+					if ($_GET[drawing_type]) { $drawing_type = $_GET[drawing_type]; } elseif ($_POST[drawing_type]) { $drawing_type = $_POST[drawing_type]; }
+					
+					if ($drawing_class != NULL) { $drawing_class = " AND drawing_number LIKE '%-" . $drawing_class . "-%' "; } else { unset($drawing_class); }
+					if ($drawing_type != NULL) { $drawing_type = " AND drawing_number LIKE '%-" . $drawing_type . "-%' "; } else { unset($drawing_type); }
+
+				$sql = "SELECT * FROM intranet_drawings, intranet_drawings_scale, intranet_drawings_paper WHERE drawing_project = $proj_id AND drawing_scale = scale_id AND drawing_paper = paper_id $drawing_class $drawing_type order by drawing_number";
+				$result = mysql_query($sql, $conn) or die(mysql_error());
+				
+					echo "<div class=\"HideThis\">";
+					DrawingFilter("drawings_list", $proj_id);
+					echo "</div>";
+					
+
+						if (mysql_num_rows($result) > 0) {
+							
+						echo "<div class=\"page\">";
+
+						echo "<table summary=\"Lists all of the drawings for the project\">";
+						echo "<tr><td><strong>Drawing Number</strong></td><td><strong>Title</strong></td><td><strong>Rev.</strong></td><td><strong>Status</strong></td><td><strong>Scale</strong></td><td><strong>Paper</strong></td></tr>";
+
+						while ($array = mysql_fetch_array($result)) {
+						$drawing_id = $array['drawing_id'];
+						$drawing_number = $array['drawing_number'];
+						$scale_desc = $array['scale_desc'];
+						$paper_size = $array['paper_size'];
+						$drawing_title = $array['drawing_title'];
+						$drawing_author = $array['drawing_author'];
+						$drawing_status = $array['drawing_status'];
+						
+						if (!$drawing_status) { $drawing_status = "-"; }
+						
+						$sql_rev = "SELECT * FROM intranet_drawings_revision WHERE revision_drawing = '$drawing_id' ORDER BY revision_letter DESC LIMIT 1";
+						$result_rev = mysql_query($sql_rev, $conn) or die(mysql_error());
+						$array_rev = mysql_fetch_array($result_rev);
+						if ($array_rev['revision_letter'] != NULL) { $revision_letter = strtoupper($array_rev['revision_letter']); } else { $revision_letter = " - "; }
+						
+						if ($revision_letter == "*") { $strikethrough = "; text-decoration: strikethrough"; } else { unset($strikethrough); }
+						
+						if ($drawing_id == $drawing_affected) { $background = " style=\"bgcolor: red; $strikethrough\""; } else { unset($background); }		
+
+						echo "<tr><td $background><a href=\"index2.php?page=drawings_detailed&amp;drawing_id=$drawing_id&proj_id=$proj_id\">$drawing_number</a>";
+						
+						if ($drawing_author == $_COOKIE[user] OR $user_usertype_current > 2) {
+							echo "&nbsp;<a href=\"index2.php?page=drawings_edit&amp;drawing_id=$drawing_id&amp;proj_id=$proj_id&amp;drawing_edit=yes\"><img src=\"images/button_edit.png\" alt=\"Edit this drawing\" class=\"button\" /></a>";
+						}
+
+						echo "</td><td $background>".nl2br($drawing_title)."</td><td $background>$revision_letter</td><td $background>$drawing_status</td><td $background>$scale_desc</td><td $background>$paper_size</td>";
+
+
+						echo "</tr>";
+
+						}
+
+						echo "</table>";
+						
+						echo "</div>";
+
+						} else {
+
+						echo "<div><p>No drawings found.</p></div>";
+
+						}
+	}
+	
+	
+
 function DrawingRevisionHistory($drawing_id) {
 	
 	
