@@ -35,8 +35,13 @@ date_default_timezone_set ( 'Europe/London ' );
 
 			$ip_current = getenv("REMOTE_ADDR"); // get the ip number of the user
 
-			if ($_COOKIE[password] == NULL OR $_COOKIE[user] == NULL) {
-			header("Location: index.php");
+			if ($_COOKIE['password'] == NULL OR $_COOKIE['user'] == NULL) {
+				
+				$target_page = "index2.php?" . $_SERVER['QUERY_STRING'];
+				
+				if (!$target_page) { $target = "Location: index.php"; } else { $target = "Location: index.php?target=" . urlencode($target_page); }
+				
+				header($target);
 
 
 } else {
@@ -82,8 +87,8 @@ date_default_timezone_set ( 'Europe/London ' );
 			if ($settings_ip_address != $ip_current AND $settings_ip_lock == 1) { header("Location: wrongip.php"); }
 
 			// Assign the database connection settings
-			$conn = mysql_connect("$database_location", "$database_username", "$database_password");
-			mysql_select_db("$database_name", $conn);
+			$conn = mysql_connect($database_location, $database_username, $database_password);
+			mysql_select_db($database_name, $conn);
 
 			//Check whether the currently logged-in user is valid 
 
@@ -110,5 +115,5 @@ if (intval($module_reviews) == 1) { include_once("functions_reviews.php"); }
 
 // Set the page-wide definitions from the $_GET submissions if they exist
 
-if ($_GET[page] != NULL ) { $page = $_GET[page]; }
-if ($_GET[action] != NULL ) { $action = $_GET[action]; }
+if ($_GET['page'] != NULL ) { $page = $_GET['page']; }
+if ($_GET['action'] != NULL ) { $action = $_GET['action']; }

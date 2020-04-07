@@ -170,7 +170,7 @@ function StaffCost($time) {
 			$start = $time;
 			$end = $time + 604800;
 			//$sql_staff = "SELECT user_timesheet_hours, user_user_rate, user_prop, user_prop_target FROM intranet_user_details WHERE user_user_added < $start AND ( user_user_ended > $start OR user_user_ended IS NULL OR user_user_ended = 0 ) OR (user_user_added < $start AND user_user_ended > $start)";
-			$sql_staff = "SELECT user_id, user_name_first, user_timesheet_hours, user_user_rate, user_prop_target, (user_user_rate * (1 - user_prop_target) * user_timesheet_hours) FROM intranet_user_details WHERE (user_user_added < $end) AND (user_user_ended > $start OR user_user_ended = 0)";
+			$sql_staff = "SELECT user_id, user_name_first, user_timesheet_hours, user_user_rate, user_prop_target, (user_user_rate * (1 - user_prop_target) * user_timesheet_hours) FROM intranet_user_details WHERE (user_user_added < " . $end . ") AND (user_user_ended > " . $start . " OR user_user_ended = 0)";
 			
 			
 			
@@ -206,7 +206,7 @@ function CheckHols($date, $user_id, $start) {
 	
 	GLOBAL $conn;
 
-				$sql_days = "SELECT holiday_datestamp FROM intranet_user_holidays WHERE holiday_user = $user_id AND holiday_timestamp > $start ORDER BY holiday_timestamp";
+				$sql_days = "SELECT holiday_datestamp FROM intranet_user_holidays WHERE holiday_user = " . intval($user_id) . " AND holiday_timestamp > " . intval($start) . " ORDER BY holiday_timestamp";
 				$result_days = mysql_query($sql_days, $conn) or die(mysql_error());				
 				$array_print = array();
 				
@@ -280,9 +280,9 @@ function CostBar($array_1,$array_2,$array_3,$name,$colwidth,$bold,$border) {
 	$pdf->SetFont($format_font,'',8);
 	$prev_month = $timestart - 7889184;
 	$next_month = $timestart + 7889184;
-	$prev_month = $_SERVER['HTTP_HOST'] . "/pdf_resourcing.php?timestart=$prev_month";
+	$prev_month = $_SERVER['HTTP_HOST'] . "/pdf_resourcing.php?timestart=" . $prev_month;
 	$this_month = $_SERVER['HTTP_HOST'] . "/pdf_resourcing.php";
-	$next_month = $_SERVER['HTTP_HOST'] . "/pdf_resourcing.php?timestart=$next_month";
+	$next_month = $_SERVER['HTTP_HOST'] . "/pdf_resourcing.php?timestart=" . $next_month;
 
 	$print_date = "Date: " . date ("r",time());
 	$pdf->Cell(25,4,$print_date,0,0,R,0);
@@ -304,8 +304,10 @@ DrawGrid();
 
 // Begin listing the projects
 
+if ($_GET['secured'] != 1) { $secured = "> 0"; } else { $secured = "= 100"; }
+
 	//$sql_proj = "SELECT * FROM intranet_projects, intranet_timesheet_fees WHERE ts_fee_project = proj_id AND proj_active = 1 AND proj_fee_track = 1 AND ts_fee_value > 0 ORDER BY proj_num, ts_fee_commence";
-	$sql_proj = "SELECT * FROM intranet_projects, intranet_timesheet_fees WHERE ts_fee_project = proj_id AND proj_fee_track = 1 AND ts_fee_prospect > 0 AND (((UNIX_TIMESTAMP(ts_fee_commence) + ts_fee_time_end) > $capture_start) OR ((UNIX_TIMESTAMP(ts_datum_commence) + ts_datum_length) > $capture_start)) AND proj_active = 1 ORDER BY proj_num, ts_fee_commence";
+	$sql_proj = "SELECT * FROM intranet_projects, intranet_timesheet_fees WHERE ts_fee_project = proj_id AND proj_fee_track = 1 AND ts_fee_prospect " . $secured . " AND (((UNIX_TIMESTAMP(ts_fee_commence) + ts_fee_time_end) > " . $capture_start . ") OR ((UNIX_TIMESTAMP(ts_datum_commence) + ts_datum_length) > " . $capture_start . ")) AND proj_active = 1 ORDER BY proj_num, ts_fee_commence";
 	$result_proj = mysql_query($sql_proj, $conn) or die(mysql_error());
 	
 	$pdf->SetFont($format_font,'',7);
@@ -534,7 +536,7 @@ Notes:\n
 		$array_bankholidays = mysql_fetch_array($result_bankholidays);
 		
 		
-		$sql_holidays = "SELECT user_name_first, user_name_second, user_id, user_user_added, user_user_ended FROM intranet_user_details WHERE ( user_user_ended > $current_time OR user_user_ended IS NULL OR user_user_ended = 0 ) OR (user_user_added < $current_time AND user_user_ended > $start) ORDER BY user_name_second, user_name_first";
+		$sql_holidays = "SELECT user_name_first, user_name_second, user_id, user_user_added, user_user_ended FROM intranet_user_details WHERE ( user_user_ended > " . $current_time . " OR user_user_ended IS NULL OR user_user_ended = 0 ) OR (user_user_added < " . $current_time . " AND user_user_ended > $start) ORDER BY user_name_second, user_name_first";
 			$result_holidays = mysql_query($sql_holidays, $conn) or die(mysql_error());
 			
 			$day_width = $colwidth / 5;

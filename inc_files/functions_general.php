@@ -227,7 +227,6 @@ function PresentCost($input) {
 		return $output;
 }	
 
-
 function StageTabs ($group_id_selected, $proj_id, $page, $filter) {
 	GLOBAL $conn;
 	
@@ -257,7 +256,6 @@ function StageTabs ($group_id_selected, $proj_id, $page, $filter) {
 		
 	}
 }
-
 
 function SelectStage($item_stage, $bg) {
 
@@ -405,8 +403,6 @@ function ProjectTitle($show,$proj_id) {
 }
 
 function ProjectList($proj_id) {
-	
-
 
 	global $conn;
 	
@@ -524,7 +520,6 @@ $country_printable_name = $array['country_printable_name'];
 					echo "</table>";
 					
 }
-
 
 function ProjectClientList($proj_id,$user_usertype_current) {
 
@@ -694,7 +689,6 @@ function CreateTimeFromDetailedTime($time,$date) {
 
 }
 
-
 function CreateDateFromTimestamp($timestamp) {
 
 		$output = date("Y-m-d",$timestamp);
@@ -838,7 +832,7 @@ function CashFormat($input) {
 		$input = "�".number_format($input,2,'.',',');
 		return($input);
 		}
-		
+
 function RemoveShit($input) {
 $remove_symbols = array("�","�");
 $swap_1 = array("€", "\n");
@@ -1007,7 +1001,7 @@ function WordCount($input) {
 	$output = str_word_count(strip_tags($input));
 	return $output;
 }
-		
+
 function ShowSkins($input) {
 $input = "/".$input;
 $array_skins = scandir($input);
@@ -1141,7 +1135,7 @@ GLOBAL $conn;
 	
 	if ($class) { $class = "class=\"" . $class . "\""; } else { $class = "class=\"inputbox\""; }
 
-	echo "<select $class name=\"" . $input_name . "\">";
+	echo "<select " . $class . " name=\"" . $input_name . "\">";
 
 	unset($user_active_test);
 	
@@ -1185,7 +1179,6 @@ function DisplayDay($time) {
 	return $output;
 
 }
-
 
 function DateList_Important($impending_only) {
 	
@@ -1243,7 +1236,6 @@ function DateList_Important($impending_only) {
 	
 	}
 	
-	
 function DateList_Tenders($impending_only) {
 	
 	global $conn; 
@@ -1283,7 +1275,6 @@ function DateList_Tenders($impending_only) {
 		return $output_array;
 		
 }
-	
 	
 function DateList($impending_only) {
 	
@@ -1368,7 +1359,6 @@ function DateList($impending_only) {
 		}	
 	
 	}
-
 
 function ListAvailableImages($directory) {
 	
@@ -2214,7 +2204,7 @@ function UpDate ($qms_date) {
 						$pdf->SetXY($current_x,$current_y);
 					
 					}
-					
+
 function AddBullets($input) {
 	
 		GLOBAL $pdf;
@@ -2315,8 +2305,6 @@ function ClauseCrossReference($qms_text) {
 		return $qms_text;
 		
 }
-
-
 
 function DeadlineTime($time) {
 	
@@ -2424,7 +2412,6 @@ function ListProjectJournalEntries($proj_id) {
 					}
 
 }
-
 
 function AlertBoxShow($user_id) {
 	
@@ -2835,7 +2822,6 @@ function UsersList($active) {
 		
 						
 }
-
 
 function CheckListRows($proj_id,$group_id,$showhidden) {
 
@@ -3383,7 +3369,7 @@ function ProjectFees($proj_id) {
 				}
 				
 }
-				
+
 function ProjectParticulars($proj_id) {
 
 global $conn;
@@ -3444,7 +3430,6 @@ global $conn;
 					echo "</table>";
 
 }
-
 
 function ProjectInvoices($proj_id) {
 
@@ -3567,12 +3552,11 @@ function InsufficientRights() {
 		
 }
 
-
 function ProjActive($input,$input2,$proj_id) {
 	if ($input != "1") { $output = "<del><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$input2</a></del>"; } else { $output = "<a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$input2</a>"; }
 	return $output;
 }
-			
+
 function TimeRemaining($proj_id, $ts_fee_id, $ts_fee_target, $ts_fee_value) {
 		GLOBAL $conn;
 		GLOBAL $user_id;
@@ -3692,7 +3676,6 @@ function SelectProjectStage($option_name, $current_id) {
 	echo "</select>";
 	
 }
-
 
 function ProjectListFrontPage($user_id_current) {
 	
@@ -3894,8 +3877,6 @@ array_push($array_projects_recent,$array_timesheet_projects['ts_project']);
 		
 }
 
-
-
 function ClassList($array_class_1,$array_class_2,$type) {
 					GLOBAL $proj_id;
 					GLOBAL $drawing_class;
@@ -3917,8 +3898,8 @@ function ClassList($array_class_1,$array_class_2,$type) {
 						echo "</select>";
 						
 					}
-	
-	function TelephoneMessage($user_id) {
+
+function TelephoneMessage($user_id) {
 	
 	global $conn;
 
@@ -3989,8 +3970,6 @@ function ClassList($array_class_1,$array_class_2,$type) {
 				}
 		
 }
-
-
 
 function BackupJournal($blog_id) {
 	
@@ -4126,7 +4105,6 @@ function UserChangePasswordForm($user_id) {
 	
 }
 
-
 function GetUserName($user_id) {
 	
 	GLOBAL $conn;
@@ -4146,7 +4124,6 @@ function GetUserName($user_id) {
 		echo "<h2>Error</h2>";
 	}
 }
-
 
 function GetUserNameOnly($user_id) {
 	
@@ -4201,7 +4178,7 @@ function UserForm ($user_id) {
 	
 	echo "<div><h3>Name</h3>";
 	
-		echo "<p>First Name<br /><input type=\"text\" name=\"user_name_first\" value=\"$user_name_first\" maxlength=\"50\" size=\"32\" required=\"required\" /></p>";
+		echo "<p>First Name<br /><input type=\"text\" name=\"user_name_first\" value=\"" . $user_name_first . "\" maxlength=\"50\" size=\"32\" required=\"required\" /></p>";
 		echo "<p>Surname<br /><input type=\"text\" name=\"user_name_second\" value=\"$user_name_second\" maxlength=\"50\" size=\"32\" required=\"required\" /></p>";
 		if ($user_usertype_current > 2) {
 		echo "<p>Username<br /><input type=\"text\" name=\"user_username\" value=\"$user_username\" maxlength=\"50\" size=\"32\" required=\"required\" /></p>";
@@ -4453,7 +4430,7 @@ function FileUploadChecklist($media_title,$media_project,$media_category,$fileNa
 
 function UserLocationCalc($count, $total) {
 	
-	$output = "<span class=\"minitext\">(" . $count . "/" . number_format(100*($count/$total),0) . "%)</span>";
+	$output = "<li style=\"margin-right: 8px; width: auto; display: inline; white-space: pre; padding: 1px 5px 1px 5px; line-height: 32px; border-radius: 5px; background: #fff; border: 2px #ccc solid; \">" . $count . " / " . number_format(100*($count/$total),0) . "%</li>";
 	
 	return $output;
 	
@@ -4484,14 +4461,17 @@ function UserLocationList($prefs_nonworking) {
 		while ($array = mysql_fetch_array($result)) {
 			
 			
+			$location_category = UserLocationCategory($array['location_type']);
+			
+			
 			if (!in_array($array['user_id'],$holiday_array)) {
 				
-				if ($array['location_type'] == NULL) { $location_type = "Not confirmed"; $background = "rgba(255,0,0,0.25)"; } else { $location_type = $array['location_type']; $background = "rgba(173,226,227,0.5)"; }
+				if ($location_category == NULL) { $location_type = "Not confirmed"; $background = "rgba(255,0,0,0.25)"; } else { $location_type = $location_category; $background = "rgba(173,226,227,0.5)"; }
 				
-				if ($current_type == NULL) { echo "<div><h4>" . $location_type . "</h4><p>"; $current_type = $location_type; $count = 1; }
-				elseif ($current_type != $location_type) { echo UserLocationCalc($count, $total) . "</p><h4>" . $location_type . "</h4><p>"; $current_type = $location_type; $count = 1; } else { $count++; }
+				if ($current_type == NULL) { echo "<div><h4>" . $location_type . "</h4><ul style=\"list-style-type: none;\">"; $current_type = $location_type; $count = 1; }
+				elseif ($current_type != $location_type) { echo UserLocationCalc($count, $total) . "</ul><h4>" . $location_type . "</h4><ul style=\"list-style-type: none;\">"; $current_type = $location_type; $count = 1; } else { $count++; }
 			
-				echo "<span style=\"margin-right: 8px; padding: 1px 5px 1px 5px; line-height: 32px; border-radius: 5px; white-space: pre; background: " . $background . "; \">" . $array['user_name_first'] . " " . $array['user_name_second'] . "</span>";
+				echo "<li style=\"margin-right: 8px; width: auto; display: inline; white-space: pre; padding: 1px 5px 1px 5px; line-height: 32px; border-radius: 5px; background: " . $background . "; \">" . $array['user_name_first'] . " " . $array['user_name_second'] . "</li>";
 				
 				if ($array['user_id'] == $_COOKIE['user']) { $confirmed = $array['location_type']; }
 			
@@ -4499,7 +4479,7 @@ function UserLocationList($prefs_nonworking) {
 		
 		}
 		
-		echo UserLocationCalc($count, $total) . "</p>";
+		echo UserLocationCalc($count, $total) . "</ul>";
 		
 		echo "</div>";
 		
@@ -4512,7 +4492,10 @@ function UserLocationList($prefs_nonworking) {
 
 function UserLocationConfirm($user_id,$confirmed) {
 	
-	$array_types = array("Working from home","Working elsewhere","In the studio","Self-isolating","Sick");
+	$array_types = array("Working from home","Working elsewhere","In the studio","Self-isolating","Sick","Furloughed","Compassionate Leave");
+	
+	sort($array_types);
+	
 	
 		echo "<div><form action=\"index2.php\" method=\"post\"><p><strong>Today (" . date("l", time()) . "), I am...</strong><br />";
 		
@@ -4597,3 +4580,17 @@ function UserLocationHolidayArray() {
 	return $holiday_array;
 	
 }
+
+function UserLocationCategory($location_type) {
+	
+	if ($location_type == "Working from home") { return "Available - At Home"; }
+	elseif ($location_type == "Working elsewhere") { return "Available - Working Elsewhere"; }
+	elseif ($location_type == "In the studio") { return "Available - In the Studio"; }
+	elseif ($location_type == "Self-isolating") { return "Available - At Home"; }
+	elseif ($location_type == "Sick") { return "Unavailable"; }
+	elseif ($location_type == "Furloughed") { return "Unavailable"; }
+	elseif ($location_type == "Compassionate Leave") { return "Unavailable"; }
+	else { return ""; }
+	
+}
+

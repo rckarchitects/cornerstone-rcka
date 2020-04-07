@@ -101,15 +101,15 @@ if ($module_tasks == "1") {
 // Menu - Holidays
 
 if ($module_holidays == "1") {
-	$array_pages = array("index2.php?page=holiday_request","index2.php?page=holiday_approval");
-	$array_title = array("Holiday Request","Holiday Calendar");
-	$array_images = array("button_calendar.png","button_calendar.png");
-	$array_access = array(1,1);
+	$array_pages = array("index2.php?page=holiday_request","index2.php?page=holiday_approval","index2.php?page=holiday_bank_add");
+	$array_title = array("Holiday Request","Holiday Calendar","Bank Holidays");
+	$array_images = array("button_calendar.png","button_calendar.png","button_calendar.png");
+	$array_access = array(1,1,4);
 	
-	$sql_user_holidays = "SELECT holiday_length FROM intranet_user_holidays WHERE holiday_user = $_COOKIE[user] AND holiday_approved IS NULL";
+	$sql_user_holidays = "SELECT holiday_length FROM intranet_user_holidays WHERE holiday_user = " . $_COOKIE['user'] . " AND holiday_approved IS NULL";
 	$result_user_holidays = mysql_query($sql_user_holidays, $conn) or die(mysql_error());
 	if (mysql_num_rows($result_user_holidays) > 0) {
-		$array_pages[] = "pdf_holiday_request.php?user_id=$_COOKIE[user]";
+		$array_pages[] = "pdf_holiday_request.php?user_id=" . $_COOKIE['user'];
 		$array_title[] = "Holiday Request";
 		$array_images[] = "button_pdf.png";
 		$array_access[] = 1;

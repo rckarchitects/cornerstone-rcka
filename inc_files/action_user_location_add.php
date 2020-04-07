@@ -19,7 +19,7 @@ function ActionLocationAdd($location_id) {
 	
 	global $conn;
 
-	$sql = "INSERT INTO intranet_user_location (location_id, location_user, location_date, location_type) VALUES (NULL, " . intval($_COOKIE['user']) . ", '" . date("Y-m-d",time()) . "', '" . addslashes($_POST['location_type']) . "')";
+	$sql = "INSERT INTO intranet_user_location (location_id, location_user, location_date, location_type, location_timestamp) VALUES (NULL, " . intval($_COOKIE['user']) . ", '" . date("Y-m-d",time()) . "', '" . addslashes($_POST['location_type']) . "', "  . time() . ")";
 	$result = mysql_query($sql, $conn);
 
 }
@@ -28,7 +28,7 @@ function ActionLocationUpdate($location_id) {
 	
 	global $conn;
 
-	$sql = "UPDATE intranet_user_location SET location_type = '" . addslashes($_POST['location_type']) . "' WHERE location_id = " . intval($location_id) . " LIMIT 1";
+	$sql = "UPDATE intranet_user_location SET location_type = '" . addslashes($_POST['location_type']) . "', location_timestamp = " . time() . " WHERE location_id = " . intval($location_id) . " LIMIT 1";
 	
 	$result = mysql_query($sql, $conn);
 
