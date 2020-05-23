@@ -145,7 +145,7 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				
 	} elseif ($page == "project_fee" OR $page == "project_timesheet_view" && intval($proj_id) > 0) {
 
-				$array_menu_page[] = "index2.php?page=project_fees&proj_id=$proj_id";
+				$array_menu_page[] = "index2.php?page=project_fees&proj_id=" . $proj_id;
 				$array_menu_text[] = "List Fee Stages";
 				$array_menu_image[] = "button_lsit.png";
 				$array_menu_usertype[] = 3;
@@ -170,12 +170,17 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_image[] = "button_pdf.png";
 				$array_menu_usertype[] = 3;
 				
-				$array_menu_page[] = "pdf_fee_drawdown.php?proj_id=$proj_id&amp;confirmed=1";
+				$array_menu_page[] = "pdf_fee_drawdown.php?proj_id=" . $proj_id . "&amp;future=1";
+				$array_menu_text[] = "View Fee Drawdown (Future Only)";
+				$array_menu_image[] = "button_pdf.png";
+				$array_menu_usertype[] = 3;
+				
+				$array_menu_page[] = "pdf_fee_drawdown.php?proj_id=" . $proj_id . "&amp;confirmed=1";
 				$array_menu_text[] = "View Fee Drawdown (Confirmed Stages Only)";
 				$array_menu_image[] = "button_pdf.png";
 				$array_menu_usertype[] = 3;
 				
-				$array_menu_page[] = "pdf_fee_drawdown.php?proj_id=$proj_id&amp;showinvoices=yes";
+				$array_menu_page[] = "pdf_fee_drawdown.php?proj_id=" . $proj_id . "&amp;showinvoices=yes";
 				$array_menu_text[] = "View Fee Drawdown (with invoices)";
 				$array_menu_image[] = "button_pdf.png";
 				$array_menu_usertype[] = 3;

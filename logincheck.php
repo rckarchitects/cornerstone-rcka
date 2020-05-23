@@ -2,7 +2,7 @@
 
 // Include the cookie check information
 
-function CheckLogin() {
+function CheckLogin($target_url) {
 	
 	global $conn;
 
@@ -25,11 +25,10 @@ function CheckLogin() {
 	$user_active = intval(intval($array['user_active']));
 	$user_user_added = intval($array['user_user_added']);
 	
+	$target_url = "Location: " . urldecode($_POST['target_url']);
+	
 
 	if (($password_actual != $password_submitted) OR ($user_active == 0)) {
-		
-
-
 		
 		setcookie("user", NULL);
 		setcookie("password", NULL);
@@ -49,7 +48,6 @@ function CheckLogin() {
 			AlertBoxInsert($user_ids,"Login Failed",$actionmessage,1,86400,1);
 		} */
 
-
 		header ("Location: index.php");
 
 	} else {
@@ -60,8 +58,14 @@ function CheckLogin() {
 					} else {
 					setcookie("user", $user_id);
 					setcookie("password", $password_actual);
-					}	
-					header ("Location: index2.php");
+					}
+					
+					if ($_POST['target_url']) {
+						//echo $target_url;
+						header ($target_url);
+					} else {
+						header ("Location: index2.php");
+					}
 	}
 
 }

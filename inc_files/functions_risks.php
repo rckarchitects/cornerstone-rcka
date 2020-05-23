@@ -36,9 +36,9 @@ function RiskList($proj_id) {
 			elseif ($array['risk_level'] == "amber") { $background = " style=\"background: orange; min-width: 25px;\""; }
 			elseif ($array['risk_level'] == "red") { $background = " style=\"background: red; min-width: 25px;\""; }
 			
-			if ($array['risk_score'] == "low") { $background2 = " style=\"background: rgb(50,50,50); min-width: 25px;\""; }
+			if ($array['risk_score'] == "low") { $background2 = " style=\"background: rgb(200,200,200); min-width: 25px;\""; }
 			elseif ($array['risk_score'] == "medium") { $background2 = " style=\"background: rgb(100,100,100); min-width: 25px;\""; }
-			elseif ($array['risk_score'] == "high") { $background2 = " style=\"background: rgb(200,200,200); min-width: 25px;\""; }
+			elseif ($array['risk_score'] == "high") { $background2 = " style=\"background: rgb(50,50,50); min-width: 25px;\""; }
 			
 			if ($array['risk_management'] == "transfer") { $management_1 = "X"; unset($management_2); unset($management_3); }
 			elseif ($array['risk_management'] == "eliminate") { $management_2 = "X"; unset($management_3); unset($management_1); }
@@ -46,7 +46,9 @@ function RiskList($proj_id) {
 			
 			if (intval($array['risk_resolved']) == 1) { $style = "style=\"text-decoration: line-through;\""; } else { unset($style); }
 				
-				echo "<tr " . $style . "><td>" . $counter_1 . "." . $counter_2 . "</td><td><p><strong>" . ucwords($array['risk_title']) . "</strong><br />" . nl2br($array['risk_description']) . "&nbsp; <a href=\"index2.php?page=project_risks&amp;risk_id=" . $array['risk_id'] . "\" /><img src=\"images/button_edit.png\" alt=\"Edit\"></a></p></td><td " . $background . "><td " . $background2 . "></td></td><td style=\"padding-left: 6px;\">" . $array['risk_analysis'] . "</td><td>" . $array['risk_warnings'] . "</td><td>" . $array['risk_mitigation'] . "</td><td style=\"text-align: center;\">" . $management_1 . "</td><td style=\"text-align: center;\">" . $management_2 . "</td><td style=\"text-align: center;\">" . $management_3 . "</td><td>" . $company_name . "</td><td style=\"text-align: right;\">" . $array['risk_date'] . "</td></tr>";
+				echo "<tr " . $style . "><td rowspan=\"2\">" . $counter_1 . "." . $counter_2 . "</td><td><strong>" . ucwords($array['risk_title']) . "</strong></td><td " . $background . "><td " . $background2 . "></td></td><td style=\"padding-left: 6px;\" rowspan=\"2\">" . $array['risk_analysis'] . "</td><td colspan=\"2\"></td><td style=\"text-align: center;\">" . $management_1 . "</td><td style=\"text-align: center;\">" . $management_2 . "</td><td style=\"text-align: center;\">" . $management_3 . "</td><td>" . $company_name . "</td><td style=\"text-align: right;\">" . $array['risk_date'] . "</td></tr>";
+				
+				echo "<tr " . $style . "><td colspan=\"3\">" . nl2br($array['risk_description']) . "&nbsp; <a href=\"index2.php?page=project_risks&amp;risk_id=" . $array['risk_id'] . "\" /><img src=\"images/button_edit.png\" alt=\"Edit\"></a></p></td><td colspan=\"4\">" . $array['risk_warnings'] . "</td><td colspan=\"3\">" . $array['risk_mitigation'] . "</td></tr>";
 				
 			}
 			echo "</table></div>";
@@ -62,7 +64,7 @@ function RiskGetCompany($company_id) {
 	
 	if ($company_id > 0) {
 		
-		$sql = "SELECT company_name FROM contacts_companylist WHERE company_id = $company_id";
+		$sql = "SELECT company_name FROM contacts_companylist WHERE company_id = " . $company_id;
 		
 		$result = mysql_query($sql, $conn);
 		$array = mysql_fetch_array($result);

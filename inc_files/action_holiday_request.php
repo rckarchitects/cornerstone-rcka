@@ -52,18 +52,18 @@ $counter_time = $start;
 	
 	echo "</ul>";
 	
-	$actionmessage = "<p>Holiday Request for user #<a href=\"index2.php?page=user_view&amp;user_id=$user\">" . $user . "</a> beginning $start for $length day(s) added successfully.</p>";
+	$actionmessage = "<p>Holiday Request for user #<a href=\"index2.php?page=user_view&amp;user_id=" . $user . "\">" . $user . "</a> beginning " . $start . " for " . $length . " day(s) added successfully.</p>";
 
-	AlertBoxInsert($_COOKIE[user],"Holiday Request",$actionmessage,$user,0);
+	AlertBoxInsert($_COOKIE['user'],"Holiday Request",$actionmessage,$user,0);
 
 	return $counter_days;
 
 }
 
-$holiday_begin = $_POST[holiday_day_start];
+$holiday_begin = $_POST['holiday_day_start'];
 $time_begin = AssessDays($holiday_begin);
 
-$holiday_back = $_POST[holiday_day_back];
+$holiday_back = $_POST['holiday_day_back'];
 $time_back = AssessDays($holiday_back);
 
 

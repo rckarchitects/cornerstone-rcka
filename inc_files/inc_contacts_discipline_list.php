@@ -5,4 +5,8 @@
 
 ProjectSubMenu(NULL,$user_usertype_current,"contacts_admin",1);
 
+echo "<div class=\"page\">";
+
 ContactsDisciplines();
+
+echo "</div>";

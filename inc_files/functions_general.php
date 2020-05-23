@@ -1833,7 +1833,7 @@ GLOBAL $conn;
 												elseif ($array_totalhols['holiday_paid'] == 2 ) { $holiday_type = "Study Leave";  }
 												elseif ($array_totalhols['holiday_paid'] == 3 ) { $holiday_type = "Jury Service"; }
 												elseif ($array_totalhols['holiday_paid'] == 4 ) { $holiday_type = "TOIL"; }
-												elseif ($array_totalhols['holiday_paid'] == 5 ) { $holiday_type = "Compassionate Leave"; }
+												elseif ($array_totalhols['holiday_paid'] == 5 ) { $holiday_type = "Compassionate eave"; }
 												else { $holiday_type = "Standard"; $totalhols_count = $totalhols_count + $holiday_length; }
 												
 												if ($holiday_length == 0.5) { $holiday_type = $holiday_type . " (half day)"; }
@@ -1886,7 +1886,7 @@ function ChangeHolidays($year) {
 		$year_before = $year - 1;
 		$year_after = $year + 1;
 		
-		echo "<table class=\"HideThis\"><tr><td rowspan=\"4\">Change selected holidays</td>
+		echo "<table class=\"HideThis\"><tr><td rowspan=\"5\">Change selected holidays</td>
 		<td><input type=\"radio\" value=\"approve\" name=\"approve\" checked=\"checked\" />&nbsp;Approve</td>
 		<td><input type=\"radio\" value=\"unapprove\" name=\"approve\" />&nbsp;Unapprove</td>
 		<td><input type=\"radio\" value=\"delete\" name=\"approve\" />&nbsp;Delete</td>
@@ -1900,10 +1900,16 @@ function ChangeHolidays($year) {
 		<td><input type=\"radio\" value=\"to_toil\" name=\"approve\" />&nbsp;Make TOIL</td>
 		</tr><tr>
 		<td><input type=\"radio\" value=\"compassionate\" name=\"approve\" />&nbsp;Make Compassionate Leave</td>
+		<td><input type=\"radio\" value=\"furloughed\" name=\"approve\" />&nbsp;Make Furloughed</td>
 		<td><input type=\"radio\" value=\"$year_before\" name=\"approve\" />&nbsp;Assign to " . $year_before . "</td>
 		<td><input type=\"radio\" value=\"$year\" name=\"approve\" />&nbsp;Assign to " . $year . "</td>
 		<td><input type=\"radio\" value=\"$year_after\" name=\"approve\" />&nbsp;Assign to " . $year_after . "</td>
+		</tr><tr>
 		<td><input type=\"radio\" value=\"to_maternity\" name=\"approve\" />&nbsp;Make Maternity / Paternity Leave</td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
 		</tr>
 		<tr>
 		<td colspan=\"5\"><input type=\"hidden\" value=\"$_COOKIE[user]\" name=\"user_id\" /><input type=\"submit\" value=\"Submit\" /></td>
@@ -4492,7 +4498,7 @@ function UserLocationList($prefs_nonworking) {
 
 function UserLocationConfirm($user_id,$confirmed) {
 	
-	$array_types = array("Working from home","Working elsewhere","In the studio","Self-isolating","Sick","Furloughed","Compassionate Leave");
+	$array_types = array("Working from home","Working elsewhere","In the studio","Self-isolating","Sick","Furloughed","Compassionate leave");
 	
 	sort($array_types);
 	
@@ -4581,6 +4587,21 @@ function UserLocationHolidayArray() {
 	
 }
 
+function GetNextBankHoliday($time) {
+	
+	if (!$time) { $time = time(); } else { $time = intval($time); }
+	
+	global $conn;
+
+	$sql_bankholidays = "SELECT bankholiday_timestamp, bankholidays_description FROM intranet_user_holidays_bank WHERE bankholiday_timestamp > " . $time . " ORDER BY bankholiday_timestamp LIMIT 1";
+	$result_bankholidays = mysql_query($sql_bankholidays, $conn);
+	$array_bankholidays = mysql_fetch_array($result_bankholidays);
+	$bankholiday_timestamp  = $array_bankholidays['bankholiday_timestamp'];
+	
+	echo "<p>The next Bank Holiday is " . $array_bankholidays['bankholidays_description'] . ", on " . TimeFormat($bankholiday_timestamp) . ".</p>";
+
+}
+
 function UserLocationCategory($location_type) {
 	
 	if ($location_type == "Working from home") { return "Available - At Home"; }
@@ -4589,7 +4610,7 @@ function UserLocationCategory($location_type) {
 	elseif ($location_type == "Self-isolating") { return "Available - At Home"; }
 	elseif ($location_type == "Sick") { return "Unavailable"; }
 	elseif ($location_type == "Furloughed") { return "Unavailable"; }
-	elseif ($location_type == "Compassionate Leave") { return "Unavailable"; }
+	elseif ($location_type == "Compassionate leave") { return "Unavailable"; }
 	else { return ""; }
 	
 }

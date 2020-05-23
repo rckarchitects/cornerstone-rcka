@@ -6,6 +6,8 @@ include_once "secure/prefs.php";
 
 if ($user_usertype_current < 4) { header ("Location: index2.php"); }
 
+$proj_id = intval($_GET['proj_id']);
+
 //  Use FDPI to get the template
 
 define('FPDF_FONTPATH','fpdf/font/');
@@ -34,15 +36,15 @@ $current_date = TimeFormat(time());
 
 // Begin creating the page
 
-PDFProjectArray(intval($_GET['proj_id']));
+PDFProjectArray($proj_id);
 
-PDFProjectAnalysis(intval($_GET['proj_id']));
+PDFProjectAnalysis($proj_id);
 	
 
 // and send to output
 
 $file_date = time();
 
-$file_name = $proj_num."_2.05_".Date("Y",$file_date)."-".Date("m",$file_date)."-".Date("d",$file_date)."_Drawing_Schedule.pdf";
+$file_name = GetProjectNum($proj_id) ."_" . DisplayDay(time()) . "_Project_Performance_Summary.pdf";
 
-$pdf->Output($file_name,I);
+$pdf->Output($file_name,'I');

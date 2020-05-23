@@ -8,8 +8,8 @@ include_once("inc_files/inc_ipcheck.php");
 
 include_once("inc_files/inc_checkcookie.php");
 
-$usercheck = $_POST[usercheck];
-$checkform_user = $_POST[checkform_user];
+$usercheck = $_POST['usercheck'];
+$checkform_user = $_POST['checkform_user'];
 
 if ($_POST['action'] != "") { include_once("inc_files/functions_actions.php"); include("inc_files/action_$_POST[action].php"); }
 elseif ($_GET['action'] != "") { include_once("inc_files/functions_actions.php"); include("inc_files/action_$_GET[action].php"); }
@@ -48,16 +48,16 @@ Logo($settings_style,$settings_name);
 	$displaytime = time() + 30; //86400;
 	
 	
-	if ($invoiceduemessage != "" AND $_GET['page'] == NULL AND $_COOKIE['invoiceduemessage'] == NULL AND $_POST['action'] != "invoice_due_setcookie") { echo "<h1 class=\"heading_alert\">Invoices Overdue&nbsp;</h1>$invoiceduemessage<form action=\"index2.php\" method=\"post\"><input type=\"hidden\" value=\"".time()."\" name=\"invoiceduemessage\" /><input type=\"hidden\" name=\"action\" value=\"invoice_due_setcookie\" /><input type=\"submit\" value=\"Hide for 24 hours\" /></form>"; }
+	if ($invoiceduemessage != "" AND $_GET['page'] == NULL AND $_COOKIE['invoiceduemessage'] == NULL AND $_POST['action'] != "invoice_due_setcookie") { echo "<h1 class=\"heading_alert\">Invoices Overdue&nbsp;</h1>" . $invoiceduemessage . "<form action=\"index2.php\" method=\"post\"><input type=\"hidden\" value=\"".time()."\" name=\"invoiceduemessage\" /><input type=\"hidden\" name=\"action\" value=\"invoice_due_setcookie\" /><input type=\"submit\" value=\"Hide for 24 hours\" /></form>"; }
 	
-	if ($invoicemessage != "" AND $_GET['page'] == NULL) { $timesheetaction = $timesheetaction . "<div class=\"warning\"><p><strong>Invoices To Be Issued Today</strong></p>$invoicemessage</div>"; }
+	if ($invoicemessage != "" AND $_GET['page'] == NULL) { $timesheetaction = $timesheetaction . "<div class=\"warning\"><p><strong>Invoices To Be Issued Today</strong></p>" . $invoicemessage . "</div>"; }
 	
-	if ($alertmessage) { $timesheetaction = $timesheetaction . "<div class=\"warning\"><p><strong>Error</strong></p><p>$alertmessage</p></div>"; }
+	if ($alertmessage) { $timesheetaction = $timesheetaction . "<div class=\"warning\"><p><strong>Error</strong></p><p>" . $alertmessage . "</p></div>"; }
 	
-	if ($actionmessage) { $timesheetaction = $timesheetaction . "<div class=\"warning\"><p><strong>Information</strong></p><p>$actionmessage</p></div>"; }
+	if ($actionmessage) { $timesheetaction = $timesheetaction . "<div class=\"warning\"><p><strong>Information</strong></p><p>" . $actionmessage . "</p></div>"; }
 	
 	
-	if ($techmessage != "" AND $settings_showtech == "1" AND $usertype_status == "admin") { $timesheetaction = $timesheetaction . "<div class=\"warning\"><p><strong>Support Messages</strong></p><p>$techmessage</p></div>"; }
+	if ($techmessage != "" AND $settings_showtech == "1" AND $usertype_status == "admin") { $timesheetaction = $timesheetaction . "<div class=\"warning\"><p><strong>Support Messages</strong></p><p>" . $techmessage . "</p></div>"; }
 	
 			// This includes the "outstanding" section, which alerts users to outstanding actions.
 	   
@@ -114,7 +114,7 @@ if (!$_GET['page']) {
 		$proj_details = ProjectTitle();
 		$proj_id = $proj_details[0];
 		if ($proj_id) {
-			$proj_title = "<h1 id=\"project_title\"><a href=\"#\" onclick=\"ShowProjectSwitcher()\">$proj_details[1] $proj_details[2]</a></h1>";
+			$proj_title = "<h1 id=\"project_title\"><a href=\"#\" onclick=\"ShowProjectSwitcher()\">" . $proj_details[1] . " " . $proj_details[2] . "</a></h1>";
 		} else {
 			unset($proj_title);
 		}
@@ -134,7 +134,7 @@ if (!$_GET['page']) {
             $inc_file = "inc_files/inc_default.php";
         }
 		
-		if (file_exists($inc_file)) { include($inc_file); } else { include("inc_files/inc_default.php?$page_variables"); }
+		if (file_exists($inc_file)) { include($inc_file); } else { include("inc_files/inc_default.php?" . $page_variables); }
 		}
 	
 

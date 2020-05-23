@@ -98,22 +98,7 @@ echo "<form method=\"post\" action=\"timesheet_pdf_2.php\">";
 
 	echo "<p>Choose start of period<br />";
 
-echo "<select name=\"submit_begin\" class=\"inputbox\">";
-
-	echo "<option value=\"0\">-- All Time --</option>";
-	// Array through the weeks
-for ($counter = 1; $counter<=50; $counter++) {
-
-	$date_prev_begin = date("l, jS F Y",$time_prev_begin);
-	$time_prev_end = $time_prev_begin+388799;
-	$date_prev_end = date("l, jS F Y",$time_prev_end);
-
-echo "<option value=\"$time_prev_end\">$date_prev_end</option>";
-
-	$time_prev_begin = $time_prev_begin + 604800;
-}
-
-echo "</select></p>";
+echo "<input type=\"date\" name=\"submit_begin\" class=\"inputbox\"></p>";
 
 
 	$time_now = time();
@@ -133,22 +118,7 @@ echo "</select></p>";
 
 	echo "<p>Choose end of period<br />";
 
-echo "<select name=\"submit_end\" class=\"inputbox\">";
-	// Array through the weeks
-for ($counter = 1; $counter<=17; $counter++) {
-
-	$date_prev_begin = date("l, jS F Y",$time_prev_begin);
-	$time_prev_end = $time_prev_begin+388799;
-	$date_prev_end = date("l, jS F Y",$time_prev_end);
-
-echo "<option value=\"$time_prev_end\">$date_prev_end</option>";
-
-	$time_prev_begin = $time_prev_begin + 604800;
-}
-
-echo "<option value=\"$nowtime\" selected>Today</option>";
-
-echo "</select></p>";
+echo "<input type=\"date\" name=\"submit_end\" value=\"" . DisplayDay(time()) . "\" class=\"inputbox\"></p>";
 
 echo "<p><input type=\"checkbox\" name=\"separate_pages\" value=\"1\" />&nbsp;Separate fee stages by page, remove costs</p>";
 echo "<p><input type=submit value=\"Go\" class=\"inputsubmit\" /></p>";

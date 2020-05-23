@@ -21,8 +21,9 @@ function GetCompanyName($company_id) {
 function TableHeadings() {
 	
 	global $pdf;
+	global $format_font;
 	
-			$pdf->SetFont('Helvetica','',7);
+			$pdf->SetFont($format_font,'',7);
 			$pdf->Cell(10,4,'#','',0);
 			$pdf->Cell(50,4,'Risk','',0);
 			$pdf->Cell(70,4,'Description','',0);
@@ -40,7 +41,8 @@ function TableHeadings() {
 function GetHeight($text_array,$font_size,$cell_width_array,$line_height_array) {
 	
 	global $pdf;
-	$pdf->SetFont('Helvetica','',$font_size);
+	global $format_font;
+	$pdf->SetFont($format_font,'',$font_size);
 	
 	$max_height = 0;
 	
@@ -81,6 +83,7 @@ function PDFRiskMatrix($proj_id) {
 	global $conn;
 	global $pref_practice;
 	global $pdf;
+	global $format_font;
 	
 	$sql = "SELECT * FROM intranet_project_risks WHERE risk_project = " . intval($proj_id) . " ORDER BY risk_drawing DESC, risk_category, risk_id";
 
@@ -123,10 +126,7 @@ function PDFRiskMatrix($proj_id) {
 				
 				if (!$company_name) { $company_name = $pref_practice; }
 					
-				if ($current_category != $array['risk_category']) { $pdf->SetLineWidth(0.5); $pdf->SetFont('Helvetica','b',10); $current_category = $array['risk_category']; $counter_1++; $print = $counter_1 . ".0 " ; $pdf->Ln(2); $pdf->Cell(0,2,'','T',1); $pdf->Cell(10,6,$print,0,0); $pdf->Cell(0,6,$array['risk_category'],0,1); $counter_2 = 1; $pdf->Ln(2); } else { $counter_2++; $pdf->Ln(2.5); }
-				
-				
-				
+				if ($current_category != $array['risk_category']) { $pdf->SetLineWidth(0.5); $pdf->SetFont($format_font,'',10); $current_category = $array['risk_category']; $counter_1++; $print = $counter_1 . ".0 " ; $pdf->Ln(2); $pdf->Cell(0,2,'','T',1); $pdf->Cell(10,6,$print,0,0); $pdf->Cell(0,6,$array['risk_category'],0,1); $counter_2 = 1; $pdf->Ln(2); } else { $counter_2++; $pdf->Ln(2.5); }
 				
 				if (intval($array['risk_resolved']) != 1) {
 					
@@ -143,7 +143,7 @@ function PDFRiskMatrix($proj_id) {
 						
 						$current_y = $pdf->GetY();
 						
-						$pdf->SetFont('Helvetica','',9);
+						$pdf->SetFont($format_font,'',9);
 						$counterprint = $counter_1 . "." . $counter_2;
 						$pdf->Cell(10,4,$counterprint,0,0);
 						
@@ -242,7 +242,7 @@ if (count($download_name_array) > 0) {
 	
 } else {
 	
-	$drawing_name = $array['risk_project'];
+	$drawing_name = GetProjectNum($proj_id);
 	
 }
 

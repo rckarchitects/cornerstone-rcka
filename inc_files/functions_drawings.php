@@ -28,7 +28,7 @@ function DrawingDetail($drawing_id) {
 				$proj_name = $array['proj_name'];
 				$drawing_author = $array['user_name_first']."&nbsp;".$array['user_name_second'];
 				
-				echo "<h2>$drawing_number</h2>";
+				echo "<h2>" . $drawing_number . "</h2>";
 				
 				ProjectSubMenu($proj_id,$user_usertype_current,"project_drawings",1);
 				
@@ -179,7 +179,6 @@ function DrawingDetail($drawing_id) {
 		echo "</div>";
 
 }
-
 	
 function ProjectDrawingList($proj_id) {
 		
@@ -249,8 +248,6 @@ function ProjectDrawingList($proj_id) {
 
 						}
 	}
-	
-	
 
 function DrawingRevisionHistory($drawing_id) {
 	
@@ -736,7 +733,7 @@ function DrawingIssueConfirm($set_id,$set_issued_to_name,$set_issued_to_company)
 		echo "</table></div>";	
 	}
 	
-	echo "<div><form action=\"index2.php?page=drawings_issue_list&amp;set_id=" . intval($set_id) . "&amp;proj_id=" .  intval($array['set_project']) . "\"><input type=\"submit\" value=\"Submit\" /></form></div>";
+	echo "<div><form action=\"index2.php?page=page=drawings_issues&amp;set_id=" . intval($set_id) . "&amp;proj_id=" .  intval($array['set_project']) . "\"><input type=\"submit\" value=\"Submit\" /></form></div>";
 	
 	echo "</div>";
 	

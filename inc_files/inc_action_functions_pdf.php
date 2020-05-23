@@ -647,11 +647,13 @@ function PDF_Fee_Drawdown ($proj_id, $confirmed) {
 		global $pdf;
 		global $format_font;
 		
-		if (intval($confirmed) != 1) { $confirmed_only = "AND ts_fee_prospect > 0"; } else { $confirmed_only = "AND ts_fee_prospect = 100"; }
+		if (intval($confirmed) != 1) { $confirmed_only = " AND ts_fee_prospect > 0"; } else { $confirmed_only = "AND ts_fee_prospect = 100"; }
+		
+		if (intval($_GET['future']) == 1) { $future_only = " AND ts_fee_commence > '" . date("Y-m-d",time()) . "'" ; } else { unset($future_only); }
 		
 		$proj_id = intval($proj_id);
 		
-		$sql = "SELECT ts_fee_commence FROM intranet_timesheet_fees WHERE ts_fee_project = " . intval($proj_id) . " AND ts_fee_value > 5 " . $confirmed_only . " ORDER BY ts_fee_commence";
+		$sql = "SELECT ts_fee_commence FROM intranet_timesheet_fees WHERE ts_fee_project = " . intval($proj_id) . " AND ts_fee_value > 5 " . $confirmed_only . $future_only . " ORDER BY ts_fee_commence";
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		$array = mysql_fetch_array($result);
 		$ts_fee_commence = $array['ts_fee_commence'];
@@ -663,7 +665,7 @@ function PDF_Fee_Drawdown ($proj_id, $confirmed) {
 		
 		ProjectHeading($proj_id,$title);
 	
-		$sql = "SELECT * FROM intranet_timesheet_fees WHERE ts_fee_project = $proj_id AND ts_fee_value > 5 " . $confirmed_only . " ORDER BY ts_fee_commence";
+		$sql = "SELECT * FROM intranet_timesheet_fees WHERE ts_fee_project = " . $proj_id . " AND ts_fee_value > 5 " . $confirmed_only . $future_only . " ORDER BY ts_fee_commence";
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		
 			if (mysql_num_rows($result) > 0) {
@@ -1546,7 +1548,7 @@ function PDFProjectAnalysis($proj_id) {
 				
 				$pdf->SetXY(10,100);
 				
-				$sql_stages = "SELECT * FROM `intranet_timesheet_fees` WHERE `ts_fee_project` = " . $proj_id . " ORDER BY `ts_fee_commence`";
+				$sql_stages = "SELECT * FROM `intranet_timesheet_fees` WHERE `ts_fee_project` = " . $proj_id . " AND ts_fee_prospect = 100 ORDER BY `ts_fee_commence`";
 				$result_stages = mysql_query($sql_stages, $conn) or die(mysql_error());
 				
 				$row_height = 70 / mysql_num_rows($result_stages);
@@ -1763,15 +1765,18 @@ function PDFProjectArray($proj_id) {
 	global $conn;
 	global $pdf;
 	
+	$proj_id = intval($proj_id);
+	
 	$pdf->SetTextColor(0,0,0);
 	$pdf->SetLineWidth(0.25);
-	
-	if (intval($proj_id) > 0) { $proj_id_filter = "AND proj_id = " . intval($proj_id); } else { unset($proj_id_filter); } 
+		
+	if (intval($proj_id) > 0) { $proj_id_filter = "WHERE proj_id = " . intval($proj_id); } else { $proj_id_filter = "WHERE proj_active = 1 AND proj_fee_track = 1"; } 
 	
 	//global $format_font;
-		$sql = "SELECT proj_id, proj_num, proj_name, proj_type, proj_value, proj_procure FROM intranet_projects WHERE proj_active = 1 AND proj_fee_track = 1 $proj_id_filter ORDER BY proj_num";
+		$sql = "SELECT proj_id, proj_num, proj_name, proj_type, proj_value, proj_procure FROM intranet_projects " . $proj_id_filter . " ORDER BY proj_num";
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		$current_project = 0;
+
 		
 		if (mysql_num_rows($result) > 0) {
 		while ($array = mysql_fetch_array($result)) {
@@ -1786,20 +1791,27 @@ function PDFProjectArray($proj_id) {
 				$pdf->SetFont($format_font,'',7);
 				$pdf->Cell(75,5,"Project Type",'T',0);
 				$pdf->Cell(50,5,"Contract Value",'T',0,'R');
-				$pdf->Cell(75,5,"Procurement Method",'T',0,'R');
-				$pdf->Cell(0,5,"",'T',1); // OK
+				$pdf->Cell(0,5,"Procurement Method",'T',1,'R');
+				//$pdf->Cell(0,5,"",'T',1); // OK
 				$pdf->SetLineWidth(0.5);
 				$pdf->SetFont($format_font,'B',10);
 				$pdf->Cell(75,5,$array['proj_type'],'B',0);
-				$proj_value = "£" . number_format ($array['proj_value'], 2);
-				$proj_value = utf8_decode($proj_value);
+				if ($array['proj_value']) {
+					$proj_value = "£" . number_format ($array['proj_value'], 2);
+					$proj_value = utf8_decode($proj_value); 
+				} else {
+					$proj_value = "-"; 
+				}
 				$pdf->Cell(50,5,$proj_value,'B',0,'R');
 				
 				//THIS NEEDS UPDATING TO OUTPUT PROJECT PROCUREMENT TYPE
-				//$proj_procure = html_entity_decode(ProjectProcurement($array['proj_procure'],$proj_id));
-				
-				$pdf->Cell(75,5,$proj_procure,'B',0,'R');
-				$pdf->Cell(0,5,"",'B',1);
+				if ($array['proj_procure']) {
+					$proj_procure = html_entity_decode(ProjectProcurement($array['proj_procure'],$proj_id));
+				} else {
+					$proj_procure =	"-";
+				}
+				$pdf->Cell(0,5,$proj_procure,'B',1,'R');
+				//$pdf->Cell(0,5,"",'B',1);
 			}
 			
 			
@@ -1818,8 +1830,8 @@ function PDFTimeSheetProject($proj_id,$ts_stage_fee,$running_cost,$total_cost_nf
 	
 	// Establish the parameters for what we are showing
 
-		$time_submit_begin = intval($_POST['submit_begin']);
-		$time_submit_end = intval($_POST['submit_end']);
+		$time_submit_begin = DisplayDate($_POST['submit_begin']);
+		$time_submit_end = DisplayDate($_POST['submit_end']);
 		if ($_POST['submit_project'] > 0) { $proj_submit = intval($_POST['submit_project']); } elseif ($_GET['proj_id'] > 0) { $proj_submit = intval($_GET['proj_id']); } else { header ("Location: index2.php"); }
 
 		if (intval($time_submit_begin) == 0) { $time_submit_begin = 0; } else { $time_submit_begin = intval($time_submit_begin); }

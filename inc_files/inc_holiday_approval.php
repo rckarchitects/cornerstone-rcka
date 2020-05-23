@@ -1,6 +1,6 @@
 <?php
 
-if ($_GET[year] != NULL) { $year = $_GET[year]; } else { $year = date("Y",time()); }
+if ($_GET['year'] != NULL) { $year = $_GET['year']; } else { $year = date("Y",time()); }
 
 echo "<h1>Holiday Calendar</h1>";
 
@@ -31,7 +31,7 @@ $counter_time = $monday  ;
 $this_year = $year;
 
 	if ($user_usertype_current > 3) {
-		echo "<form method=\"post\" action=\"index2.php?page=holiday_approval&amp;year=$year\"><input type=\"hidden\" value=\"$_COOKIE[user]\" name=\"holiday_approved\" /><input type=\"hidden\" value=\"holiday_approve\" name=\"action\" />";
+		echo "<form method=\"post\" action=\"index2.php?page=holiday_approval&amp;year=" . $year . "\"><input type=\"hidden\" value=\"" . $_COOKIE['user'] . "\" name=\"holiday_approved\" /><input type=\"hidden\" value=\"holiday_approve\" name=\"action\" />";
 	}
 
 echo "<table>";
@@ -55,7 +55,7 @@ while ($counter_time < $beginnning_of_next_year) {
 	$this_week_begin = BeginWeek(time());
 	$this_week_end = $this_week_begin + (60*60*24*7);
 	
-	$sql_bankholidays = "SELECT bankholidays_description FROM intranet_user_holidays_bank WHERE bankholidays_day = $counter_date AND bankholidays_month = $counter_month AND bankholidays_year = $counter_year LIMIT 1";
+	$sql_bankholidays = "SELECT bankholidays_description FROM intranet_user_holidays_bank WHERE bankholidays_day = " . $counter_date . " AND bankholidays_month = " . $counter_month . " AND bankholidays_year = " . $counter_year . " LIMIT 1";
 	$result_bankholidays = mysql_query($sql_bankholidays, $conn);
 	$array_bankholidays = mysql_fetch_array($result_bankholidays);
 	$bankholidays_description = $array_bankholidays['bankholidays_description'];
@@ -77,12 +77,12 @@ while ($counter_time < $beginnning_of_next_year) {
 	
 	
 	
-	$sql_holiday_list = "SELECT user_id, user_initials, holiday_approved, holiday_id, holiday_length, holiday_paid, holiday_assigned, holiday_year FROM intranet_user_holidays, intranet_user_details WHERE user_id = holiday_user AND holiday_date = $counter_date AND holiday_month = $counter_month AND holiday_year = $counter_year ORDER BY user_initials";
+	$sql_holiday_list = "SELECT user_id, user_initials, holiday_approved, holiday_id, holiday_length, holiday_paid, holiday_assigned, holiday_year FROM intranet_user_holidays, intranet_user_details WHERE user_id = holiday_user AND holiday_date = " . $counter_date . " AND holiday_month = " . $counter_month . " AND holiday_year = " . $counter_year . " ORDER BY user_initials";
 	$result_holiday_list = mysql_query($sql_holiday_list, $conn);
 	
 
 		if (date("w", $counter_time) > 0 AND date("w", $counter_time) < 6) {
-		echo "<td $background><span class=\"minitext\">" . TimeFormat($counter_time) . "<br />$bankholidays_description</span>";
+		echo "<td $background><span class=\"minitext\">" . TimeFormat($counter_time) . "<br />" . $bankholidays_description . "</span>";
 		
 		if (mysql_num_rows($result_holiday_list) > 0) { echo "<br />"; }
 		
@@ -105,13 +105,14 @@ while ($counter_time < $beginnning_of_next_year) {
 				elseif ($holiday_paid == 4) { $user_initials = $user_initials . "<span class=\"HideThis\">: <i>TOIL</i></span>"; }
 				elseif ($holiday_paid == 5) { $user_initials = $user_initials . "<span class=\"HideThis\">: <i>Discretionary Leave</i></span>"; }
 				elseif ($holiday_paid == 6) { $user_initials = $user_initials . "<span class=\"HideThis\">: <i>Maternity / Paternity Leave</i></span>"; }
+				elseif ($holiday_paid == 7) { $user_initials = $user_initials . "<span class=\"HideThis\">: <i>Furloughed</i></span>"; }
 				
 				if ($holiday_length == 0.5) { $user_initials = $user_initials . "<span class=\"HideThis\"> (half day)</span>"; }
 				
 				$user_initials = $user_initials . $assignment;
 				
 				if ($user_usertype_current > 3)  {
-						$action = "&nbsp;<input type=\"checkbox\" name=\"holiday_id[]\" value=\"$holiday_id\" class=\"HideThis\" />&nbsp;";
+						$action = "&nbsp;<input type=\"checkbox\" name=\"holiday_id[]\" value=\"" . $holiday_id . "\" class=\"HideThis\" />&nbsp;";
 				} else { unset($action); }
 				
 				if ($holiday_approved != NULL) { 

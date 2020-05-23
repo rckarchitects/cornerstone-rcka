@@ -2,7 +2,7 @@
 
 include_once "inc_files/inc_checkcookie.php";
 
-$proj_id = intval($_POST[submit_project]);
+$proj_id = intval($_POST['submit_project']);
 
 
 if ($user_usertype_current <= 3) { header ("Location: index2.php"); } else {
@@ -35,10 +35,11 @@ ProjectHeading($proj_id,"Timesheet Analysis");
 // Printed by, and on...
 
 
-				if (intval($_POST[submit_begin]) > 0 OR (intval($_POST[submit_end]) > 0)) {
+				if (intval($_POST['submit_begin']) > 0 OR (intval($_POST['submit_end']) > 0)) {
 					
-							if (intval($_POST[submit_begin]) == 0) { $time_submit_begin = 0; } else { $time_submit_begin = intval($_POST[submit_begin]); }
-							if (intval($_POST[submit_end]) == 0) { $time_submit_end = time(); } else { $time_submit_end = intval($_POST[submit_end]); }
+					
+							if (intval($_POST['submit_begin']) == 0) { $time_submit_begin = 0; } else { $time_submit_begin = DisplayDate($_POST['submit_begin']); }
+							if (intval($_POST['submit_end']) == 0) { $time_submit_end = time(); } else { $time_submit_end = DisplayDate($_POST['submit_end']); }
 					
 					$date_period = "Between " . TimeFormat($time_submit_begin) . " and " . TimeFormat($time_submit_end) . ".";
 					$pdf->Multicell(0,4,$date_period);
@@ -65,8 +66,12 @@ $pdf->SetFillColor(220, 220, 220);
 
 PDF_ArrayProjectStages($proj_id);
 
-$file_name = "Project_Analysis_".$proj_num . ".pdf";
+// and send to output
 
-$pdf->Output($file_name,I);
+$file_date = time();
+
+$file_name = GetProjectNum($proj_id) ."_" . DisplayDay(time()) . "_Timesheet_Analysis.pdf";
+
+$pdf->Output($file_name,'I');
 
 }

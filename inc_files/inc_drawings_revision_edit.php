@@ -77,7 +77,7 @@ echo "</select></p>";
 
 print "<p>";
 print "Revision Description<br />";
-print "<textarea name=\"revision_desc\" rows=\"4\" cols=\"42\">$revision_desc</textarea>";
+print "<textarea name=\"revision_desc\" rows=\"4\" cols=\"42\" required=\"required\">" . $revision_desc . "</textarea>";
 print "</p>";
 
 print "<p>";

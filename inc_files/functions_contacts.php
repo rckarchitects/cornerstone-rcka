@@ -44,19 +44,19 @@ function ContactViewDetailed($select_contact_id) {
 						$contact_added_date = "Added ".date("jS M y",$contact_added);
 						
 						// Select Sector
-								$sql3 = "SELECT * FROM contacts_sectorlist WHERE sector_id = '$contact_sector' LIMIT 1";
+								$sql3 = "SELECT * FROM contacts_sectorlist WHERE sector_id = '" . $contact_sector . "' LIMIT 1";
 								$result3 = mysql_query($sql3, $conn) or die(mysql_error());
 								$array3 = mysql_fetch_array($result3);
 								$sector_name = $array3['sector_name'];
 
 						// Select Relationship
-								$sql4 = "SELECT * FROM contacts_relationlist WHERE relation_id = '$contact_relation' LIMIT 1";
+								$sql4 = "SELECT * FROM contacts_relationlist WHERE relation_id = '" . $contact_relation . "' LIMIT 1";
 								$result4 = mysql_query($sql4, $conn) or die(mysql_error());
 								$array4 = mysql_fetch_array($result4);
 								$relation_color = $array4['relation_color'];
 
 						// Select Prefix
-								$sql5 = "SELECT * FROM contacts_prefixlist WHERE prefix_id = '$contact_prefix' LIMIT 1";
+								$sql5 = "SELECT * FROM contacts_prefixlist WHERE prefix_id = '" . $contact_prefix . "' LIMIT 1";
 								$result5 = mysql_query($sql5, $conn) or die(mysql_error());
 								$array5 = mysql_fetch_array($result5);
 								$prefix_name = $array5['prefix_name'];
@@ -64,14 +64,14 @@ function ContactViewDetailed($select_contact_id) {
 								if ($contact_prefix > 0) { $prefix_name = "(".$prefix_name.")"; }
 													
 								$contact_name = $contact_namefirst." ".$contact_namesecond;
-								if ($contact_title) { $contact_name = $contact_name . ", $contact_title"; }
+								if ($contact_title) { $contact_name = $contact_name . ", " . $contact_title; }
 								if ($contact_department != NULL) { $contact_name = $contact_name." (".$contact_department.")"; }
 								
 								$label_address = urlencode($contact_name)."|".urlencode($contact_address)."|".urlencode($contact_city)."|".urlencode($contact_county)."|".urlencode($contact_postcode)."|".urlencode($contact_country);
 						echo "<div><h3>".$contact_name;
 
 						
-						if ($contact_address != NULL) { echo "&nbsp;<a href=\"http://labelstudio.redcitrus.com/?address=$label_address\"><img src=\"images/button_pdf.png\" alt=\"Address Labels\" class=\"button\" /></a>"; }
+						if ($contact_address != NULL) { echo "&nbsp;<a href=\"http://labelstudio.redcitrus.com/?address=" . $label_address . "\"><img src=\"images/button_pdf.png\" alt=\"Address Labels\" class=\"button\" /></a>"; }
 						echo "</h3>";
 						
 							  // Begin setting out the table
@@ -79,7 +79,7 @@ function ContactViewDetailed($select_contact_id) {
 							  
 							  // Email address
 							  echo "<tr><td style=\"width: 20px;\" class=\"color\">E</td><td class=\"color\">";
-							  if ($contact_email != NULL) { echo "<a href=\"mailto:$contact_email\">$contact_email</a>"; } else { echo "--"; }
+							  if ($contact_email != NULL) { echo "<a href=\"mailto:" . $contact_email . "\">" . $contact_email . "</a>"; } else { echo "--"; }
 							  echo "</td>";
 							  
 							  echo "<td rowspan=\"4\" style=\"width: 20px;\">A</td>";
@@ -91,7 +91,7 @@ function ContactViewDetailed($select_contact_id) {
 								if ($contact_address != NULL) { echo nl2br($contact_address); $checkaddress = 1;  }
 								if ($contact_city != NULL) { echo "<br />".$contact_city; $checkaddress = 1;  }
 								if ($contact_county != NULL) { echo "<br />".$contact_county; $checkaddress = 1;  }
-								if ($contact_postcode != NULL) { echo "<br /><a href=\"$postcode\">".$contact_postcode."</a>"; $checkaddress = 1;  }
+								if ($contact_postcode != NULL) { echo "<br /><a href=\"" . $postcode . "\">".$contact_postcode."</a>"; $checkaddress = 1;  }
 								
 								if ($checkaddress == 0) { echo "--"; } else { $checkaddress = 0; }
 						
@@ -111,7 +111,7 @@ function ContactViewDetailed($select_contact_id) {
 								echo "</td></tr>";
 								
 								if ($contact_linkedin) {
-									echo "<tr><td>L</td><td colspan=\"3\"><a href=\"$contact_linkedin\">$contact_linkedin</a></td></tr>";				
+									echo "<tr><td>L</td><td colspan=\"3\"><a href=\"" . $contact_linkedin . "\">" . $contact_linkedin . "</a></td></tr>";				
 								}
 								
 								if ($contact_include == 1) { $marketing = ".&nbsp;This person receives both emails and hard copy marketing.";
@@ -122,7 +122,7 @@ function ContactViewDetailed($select_contact_id) {
 									
 								} else { unset($marketing); }
 								
-								echo "<tr><td colspan=\"4\"><span class=\"minitext\">Contact added: <a href=\"index2.php?page=datebook_view_day&amp;time=$contact_added\">".date("j M Y", $contact_added)."</a> by $user_name_first $user_name_second $marketing</span></td></tr>";
+								echo "<tr><td colspan=\"4\"><span class=\"minitext\">Contact added: <a href=\"index2.php?page=datebook_view_day&amp;time=" . $contact_added . "\">".date("j M Y", $contact_added)."</a> by " . $user_name_first . " " . $user_name_second . " " . $marketing . "</span></td></tr>";
 								
 								if ($contact_reference) {
 									echo "<tr><th colspan=\"4\">Notes</th></tr>";
@@ -147,7 +147,7 @@ function ContactProjects($contact_id) {
 	
 	// List other projects for this contact
 	
-	$sql_proj = "SELECT * FROM intranet_contacts_project, intranet_projects WHERE contact_proj_project = proj_id AND contact_proj_contact = $contact_id ORDER BY proj_num";
+	$sql_proj = "SELECT * FROM intranet_contacts_project, intranet_projects WHERE contact_proj_project = proj_id AND contact_proj_contact = " . $contact_id . " ORDER BY proj_num";
 	$result_proj = mysql_query($sql_proj, $conn);
 	
 	if (mysql_num_rows($result_proj) > 0) {
@@ -159,7 +159,7 @@ function ContactProjects($contact_id) {
 			$proj_id = $array_proj['proj_id'];
 			$proj_num = $array_proj['proj_num'];
 			$proj_name = $array_proj['proj_name'];
-			echo "<tr><td style=\"width: 15%;\"><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num</a></td><td>$proj_name</td>";
+			echo "<tr><td style=\"width: 15%;\"><a href=\"index2.php?page=project_view&amp;proj_id=" . $proj_id . "\">" . $proj_num . "</a></td><td>" . $proj_name . "</td>";
 		}
 		echo "</table>";
 	
@@ -177,7 +177,7 @@ function ContactOnePage($contact_id) {
 	$contact_id = intval($contact_id);
 	$url = "http://app.onepagecrm.com/add_new_contact?";
 	
-	$sql = "SELECT * FROM contacts_contactlist LEFT JOIN contacts_companylist ON company_id = contact_company WHERE contact_id = $contact_id LIMIT 1";
+	$sql = "SELECT * FROM contacts_contactlist LEFT JOIN contacts_companylist ON company_id = contact_company WHERE contact_id = " . $contact_id . " LIMIT 1";
 	$result = mysql_query($sql, $conn);
 	
 	
@@ -212,7 +212,7 @@ function ContactClient($contact_id) {
 	
 	$contact_id = intval($contact_id);
 	
-	$sql_client = "SELECT proj_num, proj_name, proj_id FROM intranet_projects WHERE proj_client_contact_id = $contact_id";
+	$sql_client = "SELECT proj_num, proj_name, proj_id FROM intranet_projects WHERE proj_client_contact_id = " . $contact_id;
 	$result_client = mysql_query($sql_client, $conn);
 	if (mysql_num_rows($result_client) > 0) {
 		echo "<div><h3>Client for projects</h3>";
@@ -221,7 +221,7 @@ function ContactClient($contact_id) {
 		$proj_id = $array_client['proj_id'];
 		$proj_num = $array_client['proj_num'];
 		$proj_name = $array_client['proj_name'];
-		echo "<tr><td style=\"width: 15%;\"><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num</a></td><td>$proj_name</td></tr>";
+		echo "<tr><td style=\"width: 15%;\"><a href=\"index2.php?page=project_view&amp;proj_id=" . $proj_id . "\">" . $proj_num . "</a></td><td>" . $proj_name . "</td></tr>";
 		}
 		echo "</table></div>";
 	}
@@ -247,7 +247,7 @@ function ContactNotes($contact_id) {
 		$blog_id = $array_blog['blog_id'];
 		$blog_date = $array_blog['blog_date'];
 		$blog_title = $array_blog['blog_title'];
-		echo "<tr><td style=\"width: 25%;\"><a href=\"index2.php?page=datebook_view_day&amp;time=$blog_date\">".TimeFormat($blog_date)."</a></td><td><a href=\"index2.php?page=project_blog_view&amp;blog_id=$blog_id\">$blog_title</a></td></tr>";
+		echo "<tr><td style=\"width: 25%;\"><a href=\"index2.php?page=datebook_view_day&amp;time=" . $blog_date . "\">".TimeFormat($blog_date)."</a></td><td><a href=\"index2.php?page=project_blog_view&amp;blog_id=" . $blog_id . "\">" . $blog_title . "</a></td></tr>";
 		}
 		echo "</table></div>";
 	}
@@ -303,7 +303,7 @@ function CompanyViewDetailed($company_id) {
 	
 	$company_id = intval($company_id);
 	
-	$sql_company = "SELECT * FROM contacts_companylist WHERE company_id = $company_id LIMIT 1";
+	$sql_company = "SELECT * FROM contacts_companylist WHERE company_id = " . $company_id . " LIMIT 1";
 	$result_company = mysql_query($sql_company, $conn);
 	$array_company = mysql_fetch_array($result_company);
 	
@@ -317,16 +317,16 @@ function CompanyViewDetailed($company_id) {
 	$company_phone = $array_company['company_phone'];
 	$company_country = $array_company['company_country'];
 	
-	$sql_country = "SELECT * FROM intranet_contacts_countrylist WHERE country_id = '$company_country' LIMIT 1";
+	$sql_country = "SELECT * FROM intranet_contacts_countrylist WHERE country_id = " . intval($company_country) . " LIMIT 1";
 	$result_country = mysql_query($sql_country, $conn);
 	$array_country = mysql_fetch_array($result_country);
 	$country_name = $array_country['country_name'];
 
 	
 			$label_address = urlencode($contact_name)."|".urlencode($company_name)."|".urlencode($company_address)."|".urlencode($company_city)."|".urlencode($company_county)."|".urlencode($company_postcode)."|".urlencode($company_country);
-	echo "<div><h3><a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">$company_name</a>";
+	echo "<div><h3><a href=\"index2.php?page=contacts_company_view&amp;company_id=" . $company_id . "\">" . $company_name . "</a>";
 	
-	if ($company_address != NULL) { echo "&nbsp;<a href=\"http://labelstudio.redcitrus.com/?address=$label_address\"><img src=\"images/button_pdf.png\" alt=\"Address Labels\" class=\"button\" /></a>"; }
+	if ($company_address != NULL) { echo "&nbsp;<a href=\"http://labelstudio.redcitrus.com/?address=" . $label_address . "\"><img src=\"images/button_pdf.png\" alt=\"Address Labels\" class=\"button\" /></a>"; }
 	echo "</h3>";
 	
 		  // Begin setting out the table
@@ -334,7 +334,7 @@ function CompanyViewDetailed($company_id) {
 		  
 		  // Email address
 		  echo "<tr><td style=\"width: 20px;\" class=\"color\">W</td><td class=\"color\">";
-		  if ($company_web != NULL) { echo "<a href=\"http://$company_web\">$company_web</a>"; } else { echo "--"; }
+		  if ($company_web != NULL) { echo "<a href=\"http://" . $company_web . "\">" . $company_web . "</a>"; } else { echo "--"; }
 		  echo "</td>";
 		  
 		  echo "<td rowspan=\"3\" style=\"width: 20px;\">A</td>";
@@ -348,7 +348,7 @@ function CompanyViewDetailed($company_id) {
 			if ($company_city != NULL) { $print_address = $print_address . "<br />".$company_city; }
 			if ($company_county != NULL) { $print_address = $print_address . "<br />".$company_county; }
 			echo $print_address;
-			if ($company_postcode != NULL) { echo "<br /><a href=\"$postcode\">".$company_postcode."</a>"; }
+			if ($company_postcode != NULL) { echo "<br /><a href=\"" . $postcode . "\">".$company_postcode."</a>"; }
 	
 			echo "</td></tr>";
 			
@@ -378,7 +378,7 @@ function ContactRelatedContacts($contact_company, $contact_id) {
 	
 		// List others from the same company
 		
-		$sql_company_members = "SELECT * FROM contacts_contactlist, contacts_companylist WHERE contact_company = $contact_company AND contact_company = company_id AND contact_id != $contact_id ORDER BY contact_namesecond";
+		$sql_company_members = "SELECT * FROM contacts_contactlist, contacts_companylist WHERE contact_company = " . $contact_company . " AND contact_company = company_id AND contact_id != " . $contact_id . " ORDER BY contact_namesecond";
 		$result_company_members = mysql_query($sql_company_members, $conn) or die(mysql_error());
 		
 		if (mysql_num_rows($result_company_members) > 1 AND $contact_company > 0) {
@@ -396,13 +396,13 @@ function ContactRelatedContacts($contact_company, $contact_id) {
 			$contact_other_email = $array_company_members['contact_email'];
 			$company_other_postcode = $array_company_members['contact_postcode'];
 					if ($contact_other_id != $contact_other_id_exclude) {
-					echo "<tr><td><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=$contact_other_id\">$contact_other_namefirst&nbsp;$contact_other_namesecond</a></td><td>";
+					echo "<tr><td><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=" . $contact_other_id . "\">" . $contact_other_namefirst . "&nbsp;" . $contact_other_namesecond . "</a></td><td>";
 					
 					if ($contact_email != NULL) {
-					echo "<a href=\"mailto:$contact_other_email\">$contact_other_email</a>";
+					echo "<a href=\"mailto:" . $contact_other_email . "\">" . $contact_other_email . "</a>";
 					} else { echo "--"; }
 					
-					echo "</td><td>$company_other_postcode</td></tr>";
+					echo "</td><td>" . $company_other_postcode . "</td></tr>";
 					
 					}
 			}
@@ -424,7 +424,7 @@ function DisciplineNonProject($discipline_id) {
 
 		echo "<div><h3>Other Contacts</h3>";
 
-		$sql_contact = "SELECT * FROM contacts_disciplinelist, contacts_contactlist LEFT JOIN contacts_companylist ON contacts_contactlist.contact_company = contacts_companylist.company_id WHERE contact_discipline = $discipline_id AND discipline_id = contact_discipline ORDER BY contact_namesecond, contact_namefirst";
+		$sql_contact = "SELECT * FROM contacts_disciplinelist, contacts_contactlist LEFT JOIN contacts_companylist ON contacts_contactlist.contact_company = contacts_companylist.company_id WHERE contact_discipline = " . $discipline_id . " AND discipline_id = contact_discipline ORDER BY contact_namesecond, contact_namefirst";
 		$result_contact = mysql_query($sql_contact, $conn) or die(mysql_error());
 
 		$count = 0;
@@ -448,17 +448,17 @@ function DisciplineNonProject($discipline_id) {
 				
 				$count++;
 				
-			print "\n<tr><td style=\"width: 30%;\"><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=$contact_id\">";
-			echo "$contact_namefirst $contact_namesecond";
+			print "\n<tr><td style=\"width: 30%;\"><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=" . $contact_id . "\">";
+			echo $contact_namefirst . " " . $contact_namesecond;
 			echo "</a></td><td>";
-			if ($company_name != NULL) { echo "<a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">".$company_name."</a><br />"; }
+			if ($company_name != NULL) { echo "<a href=\"index2.php?page=contacts_company_view&amp;company_id=" . $company_id . "\">".$company_name."</a><br />"; }
 			echo "</td><td>";
-			if ($contact_email != NULL) { echo "Email: $contact_email&nbsp;<a href=\"mailto:$contact_email\"><img src=\"images/button_email.png\" alt=\"Email\" class=\"button\" /></a><br />"; }
-			if ($contact_telephone != NULL) { echo "T: $contact_telephone<br />"; } elseif ($company_phone != NULL) { echo "T: $company_phone<br />"; }
-			if ($contact_mobile != NULL) { echo "M: $contact_mobile"; }
+			if ($contact_email != NULL) { echo "Email: " . $contact_email . "&nbsp;<a href=\"mailto:" . $contact_email . "\"><img src=\"images/button_email.png\" alt=\"Email\" class=\"button\" /></a><br />"; }
+			if ($contact_telephone != NULL) { echo "T: " . $contact_telephone . "<br />"; } elseif ($company_phone != NULL) { echo "T: " . $company_phone . "<br />"; }
+			if ($contact_mobile != NULL) { echo "M: " . $contact_mobile; }
 			echo "</td>";
 			if (trim($contact_proj_note) != "") {
-			echo "<td>$contact_proj_note</td>";
+			echo "<td>" . $contact_proj_note . "</td>";
 			}
 			echo "\n</tr>";
 			}
@@ -477,14 +477,15 @@ function DisciplineProject($discipline_id) {
 	
 	$discipline_id = intval($discipline_id);
 
-				echo "<div><h3>Project Contacts</h3>";
+				echo "<h3>Project Contacts</h3>";
 
-				$sql_contact = "SELECT * FROM contacts_disciplinelist, intranet_projects, intranet_contacts_project, contacts_contactlist LEFT JOIN contacts_companylist ON contacts_contactlist.contact_company = contacts_companylist.company_id WHERE contact_proj_contact = contact_id  AND discipline_id = contact_proj_role AND discipline_id = $discipline_id AND contact_proj_project = proj_id ORDER BY contact_namesecond, contact_namefirst, proj_num";
+				$sql_contact = "SELECT * FROM intranet_projects, intranet_contacts_project, contacts_companylist WHERE company_id = contact_proj_company AND contact_proj_role = " . $discipline_id . " AND contact_proj_project = proj_id ORDER BY company_name, proj_num DESC";
 				$result_contact = mysql_query($sql_contact, $conn) or die(mysql_error());
 
 				if (mysql_num_rows($result_contact) > 0) {
 
-				$current_id = NULL;
+				$current_company = NULL;
+				$current_project = NULL;
 
 				echo "\n<table>";
 					while ($array_contact = mysql_fetch_array($result_contact)) {
@@ -492,45 +493,43 @@ function DisciplineProject($discipline_id) {
 						$contact_namefirst = $array_contact['contact_namefirst'];
 						$contact_namesecond = $array_contact['contact_namesecond'];
 						$company_name = $array_contact['company_name'];
-						$company_id = $array_contact['company_id'];
+						$company_id = intval($array_contact['company_id']);
 						$contact_email = $array_contact['contact_email'];
 						$contact_telephone = $array_contact['contact_telephone'];
 						$contact_mobile = $array_contact['contact_mobile'];
 						$company_phone = $array_contact['company_phone'];
+						$company_notes = $array_contact['company_notes'];
 						$discipline_id = $array_contact['discipline_id'];
 						$discipline_name = $array_contact['discipline_name'];
 						$proj_id = $array_contact['proj_id'];
 						$proj_num = $array_contact['proj_num'];
 						$proj_name = $array_contact['proj_name'];
 						$contact_proj_note = $array_contact['contact_proj_note'];
+						if ($array_contact['company_postcode']) { $company_postcode = " (" . $array_contact['company_postcode'] . ")"; } else { unset($company_postcode); }
 						
 						if ($current_id > 0 AND $contact_id != $current_id ) { echo "</td></tr>"; }
 						
-						if ($contact_id != $current_id) {
-						
-					print "\n<tr><td style=\"width: 30%;\" rowspan=\"2\"><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=$contact_id\">";
-					echo "$contact_namefirst $contact_namesecond";
-					echo "</a></td><td>";
-					if ($company_name != NULL) { echo "<a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">".$company_name."</a><br />"; } else { echo "--"; }
-					echo "</td><td>";
-					if ($contact_email != NULL) { echo "Email: $contact_email&nbsp;<a href=\"mailto:$contact_email\"><img src=\"images/button_email.png\" alt=\"Email\" class=\"button\" /></a><br />"; }
-					if ($contact_telephone != NULL) { echo "T: $contact_telephone<br />"; } elseif ($company_phone != NULL) { echo "T: $company_phone<br />"; }
-					if ($contact_mobile != NULL) { echo "M: $contact_mobile"; }
-					echo "</td>";
-					echo "</tr>";
-					echo "\n<tr><td colspan=\"2\"><a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a>";
+					
+					if ($current_company != $company_id) {
+						echo "\n<tr><td style=\"min-width: 35%\">";
+							echo "<a href=\"index2.php?page=contacts_company_view&amp;company_id=" . $company_id . "\"><strong>".$company_name."</strong></a>" . $company_postcode . "<br />";
+						echo "</td><td>" . $company_notes . "</td></tr>";
+						$current_company = $company_id;
+					}
+					
+					if ($current_project != $proj_id) {
+						echo "<tr><td colspan=\"2\"><a href=\"index2.php?page=project_contacts&amp;proj_id=" . $proj_id . "\">" . $proj_num . " " . $proj_name . "</a></td></tr>";
+						$current_project = $proj_id;
+					}
 					
 					$jobs_array[] = $contact_id;
 					
-					} else { echo ", <a href=\"index2.php?page=project_view&amp;proj_id=$proj_id\">".$proj_num." ".$proj_name."</a>"; }
 				$current_id = $contact_id;
 				}
 				echo "</td></tr>";
 				echo "</table>";
 
-				} else { echo "<p>- None - </p>"; }
-
-				echo "</div>";
+				}
 
 }
 
@@ -539,9 +538,9 @@ function SelectCompany () {
 	$sql = "SELECT DISTINCT company_name, company_id, company_postcode FROM contacts_companylist ORDER BY company_name, company_postcode";
 	$result = mysql_query($sql, $conn) or die(mysql_error());
 	while ($array = mysql_fetch_array($result)) {
-		echo "<option value=\"" . $array[company_id] . "\">" . $array[company_name];
-		if ($array[company_postcode] != NULL) { echo " (" . $array[company_postcode] . ")"; }
-		echo " - id: " . $array[company_id] . "</option>";
+		echo "<option value=\"" . $array['company_id'] . "\">" . $array['company_name'];
+		if ($array['company_postcode'] != NULL) { echo " (" . $array['company_postcode'] . ")"; }
+		echo " - id: " . $array['company_id'] . "</option>";
 	}
 }
 
@@ -562,7 +561,7 @@ function ContactsDisciplines() {
 			while ($array_discipline = mysql_fetch_array($result_discipline)) {
 				$discipline_id = $array_discipline['discipline_id'];
 				$discipline_name = $array_discipline['discipline_name'];
-				echo "<tr><td><a href=\"index2.php?page=contacts_discipline_view&amp;discipline_id=$discipline_id\">$discipline_name</a></td></tr>";
+				echo "<tr><td><a href=\"index2.php?page=contacts_discipline_view&amp;discipline_id=" . $discipline_id . "\">" . $discipline_name . "</a></td></tr>";
 			}
 			
 				echo "</table>";
@@ -582,7 +581,7 @@ function ListContacts($listorder,$startletter,$desc_order,$listbegin,$listmax) {
 	if (intval($listmax) == 0) { $listmax = 1000; } else { $listmax = intval($listmax) ;}
 	if (intval($desc_order) > 0) { $desc_order = "DESC"; } else { unset($desc_order); }
 
-  			$sql = "SELECT * FROM contacts_contactlist LEFT JOIN contacts_companylist ON company_id = contact_company LEFT JOIN intranet_contacts_targetlist ON target_contact = contact_id WHERE $listorder LIKE '$startletter%' ORDER BY $listorder $desc_order,contact_namefirst, contact_id LIMIT $listbegin,$listmax";
+  			$sql = "SELECT * FROM contacts_contactlist LEFT JOIN contacts_companylist ON company_id = contact_company LEFT JOIN intranet_contacts_targetlist ON target_contact = contact_id WHERE " . $listorder . " LIKE '" . $startletter . "%' ORDER BY " . $listorder . " " . $desc_order . ",contact_namefirst, contact_id LIMIT " . $listbegin . "," . $listmax;
 
 			$result = mysql_query($sql, $conn) or die(mysql_error());
 
@@ -637,42 +636,42 @@ function ListContacts($listorder,$startletter,$desc_order,$listbegin,$listmax) {
 					$checkrepeat_namesecond = $contact_namesecond;
 					$checkrepeat_company = $contact_company;
 					
-					if ($target_id > 0 && $target_user == $_COOKIE[user]) {
+					if ($target_id > 0 && $target_user == intval($_COOKIE['user'])) {
 						$selected = "checked=\"checked\""; 
 					} else {
 						unset($selected);
 					}
 					
 					if ($duplicate) {
-						echo "<div class=\"bodybox1\" id=\"target_$contact_id\">";
-					} elseif ($target_id > 0 && $target_user == $_COOKIE[user]) {
-						echo "<div class=\"bodybox2\" id=\"target_$contact_id\">";
+						echo "<div class=\"bodybox1\" id=\"target_" . $contact_id . "\">";
+					} elseif ($target_id > 0 && $target_user == intval($_COOKIE['user'])) {
+						echo "<div class=\"bodybox2\" id=\"target_" . $contact_id . "\">";
 					} else {
-						echo "<div class=\"bodybox\" id=\"target_$contact_id\">";
+						echo "<div class=\"bodybox\" id=\"target_" . $contact_id . "\">";
 					}
 					
 					if ($target_user == $_COOKIE[user] OR $target_user == 0) {
 					
-						echo "<form><input type=\"checkbox\" class=\"clickbox\" $selected value=\"$contact_id\" name=\"target_user\" /></form>";
+						echo "<form><input type=\"checkbox\" class=\"clickbox\" " . $selected . " value=\"" . $contact_id . "\" name=\"target_user\" /></form>";
 					
 					}
 
 					if ($company_name) {
-						echo "<p class=\"minitext\" id=\"company_$company_id\"><a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">$company_name</a></p>";
+						echo "<p class=\"minitext\" id=\"company_" . $company_id . "\"><a href=\"index2.php?page=contacts_company_view&amp;company_id=" . $company_id . "\">" . $company_name . "</a></p>";
 					} else {
 						echo "<p class=\"minitext\">&nbsp;</p>";
 					}
 					
 					if ($user_usertype_current > 0) {
-						echo "<a href=\"index2.php?page=contacts_edit&amp;contact_id=$contact_id&amp;status=edit\" style=\"float: right;\"><img src=\"images/button_edit.png\" alt=\"Edit Contact\" class=\"button\" /></a>";
+						echo "<a href=\"index2.php?page=contacts_edit&amp;contact_id=" . $contact_id . "&amp;status=edit\" style=\"float: right;\"><img src=\"images/button_edit.png\" alt=\"Edit Contact\" class=\"button\" /></a>";
 					}
 					
 					if ($duplicate && $user_usertype_current > 0) {
-						echo "<a href=\"index2.php?page=contacts_merge&amp;contact_id=$contact_id\" style=\"float: right;\"><img src=\"images/button_delete.png\" alt=\"Merge Contact\" class=\"button\" />&nbsp;</a>";
+						echo "<a href=\"index2.php?page=contacts_merge&amp;contact_id=" . $contact_id . "\" style=\"float: right;\"><img src=\"images/button_delete.png\" alt=\"Merge Contact\" class=\"button\" />&nbsp;</a>";
 					}
 					
 					
-					echo "<p class=\"maxitext\"><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=$contact_id\">$contact_namefirst $contact_namesecond</a></p>";
+					echo "<p class=\"maxitext\"><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=" . $contact_id . "\">" . $contact_namefirst . " " . $contact_namesecond . "</a></p>";
 					
 					if ($contact_title) { echo "<p>" . $contact_title . "</p>"; }
 					
@@ -714,7 +713,7 @@ echo "<div class=\"menu_bar\">";
 
 foreach ($letter_array AS $letter) {
 
-	echo "<a class=\"submenu_bar\" href=\"index2.php?page=contacts_view&amp;startletter=$letter&desc_order=$desc_order\">" . strtoupper ( $letter ) . "</a>";
+	echo "<a class=\"submenu_bar\" href=\"index2.php?page=contacts_view&amp;startletter=" . $letter . "&amp;desc_order=" . $desc_order . "\">" . strtoupper ( $letter ) . "</a>";
 
 }
 
@@ -728,7 +727,7 @@ function ListDuplicates($contact_id) {
 
 	global $conn;
 
-		$sql = "SELECT * FROM contacts_contactlist LEFT JOIN contacts_companylist ON company_id = contact_company WHERE contact_id = $contact_id";
+		$sql = "SELECT * FROM contacts_contactlist LEFT JOIN contacts_companylist ON company_id = contact_company WHERE contact_id = " . $contact_id;
 
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		
@@ -755,9 +754,9 @@ function ListDuplicates($contact_id) {
 					
 					echo "<tr><th style=\"width: 20px; text-align: center;\"><img src=\"images/button_delete.png\" alt=\"Contact to merge\" class=\"button\" /></th><th style=\"width: 20px; text-align: center;\"><img src=\"images/button_list.png\" alt=\"Contact to merge to\" class=\"button\" /></th><th>Name</th><th>Title</th><th>Company</th><th>Email</th></tr>";
 					
-					echo "<tr><td style=\"width: 20px; text-align: center;\"><input type=\"radio\" checked=\"checked\" value=\"$contact_id\" name=\"contact_delete\" /></td><td style=\"width: 20px; text-align: center;\"><input type=\"radio\" value=\"$contact_id\" name=\"contact_mergeto\" /></td><td>$contact_namefirst $contact_namesecond</td><td>$contact_title</td><td>$company_name</td><td>$contact_email</td></tr>";
+					echo "<tr><td style=\"width: 20px; text-align: center;\"><input type=\"radio\" checked=\"checked\" value=\"" . $contact_id . "\" name=\"contact_delete\" /></td><td style=\"width: 20px; text-align: center;\"><input type=\"radio\" value=\"" . $contact_id . "\" name=\"contact_mergeto\" /></td><td>" . $contact_namefirst . " " . $contact_namesecond . "</td><td>" . $contact_title . "</td><td>" . $company_name . "</td><td>" . $contact_email . "</td></tr>";
 					
-					$sql_find = "SELECT * FROM contacts_contactlist LEFT JOIN contacts_companylist ON company_id = contact_company WHERE contact_namefirst = '$contact_namefirst' AND contact_namesecond = '$contact_namesecond' AND contact_id != $contact_id AND contact_company $contact_company";
+					$sql_find = "SELECT * FROM contacts_contactlist LEFT JOIN contacts_companylist ON company_id = contact_company WHERE contact_namefirst = '" . $contact_namefirst . "' AND contact_namesecond = '" . $contact_namesecond . "' AND contact_id != " . $contact_id . " AND contact_company " . $contact_company;
 					$result_find = mysql_query($sql_find, $conn) or die(mysql_error());
 					
 					while ($array_find = mysql_fetch_array($result_find)) {
@@ -769,7 +768,7 @@ function ListDuplicates($contact_id) {
 						$contact_title_find = $array_find['contact_title'];
 						$company_name_find = $array_find['company_name'];
 						
-						echo "<tr><td style=\"width: 25px; text-align: center;\"><input type=\"radio\" value=\"$contact_id_find\" name=\"contact_delete\" /></td><td style=\"width: 20px; text-align: center;\"><input type=\"radio\" value=\"$contact_id_find\" name=\"contact_mergeto\" /></td><td>$contact_namefirst_find $contact_namesecond_find</td><td>$contact_title_find</td><td>$company_name_find</td><td>$contact_email_find</td></tr>";
+						echo "<tr><td style=\"width: 25px; text-align: center;\"><input type=\"radio\" value=\"" . $contact_id_find . "\" name=\"contact_delete\" /></td><td style=\"width: 20px; text-align: center;\"><input type=\"radio\" value=\"" . $contact_id_find . "\" name=\"contact_mergeto\" /></td><td>" . $contact_namefirst_find . " " . $contact_namesecond_find . "</td><td>" . $contact_title_find . "</td><td>" . $company_name_find . "</td><td>" . $contact_email_find . "</td></tr>";
 					
 					}
 					
@@ -780,18 +779,14 @@ function ListDuplicates($contact_id) {
 
 function GetCompanyFromContact($contact_id) {
 
-
-
 	global $conn;
 	if (intval($contact_id) > 0) {
-		$sql = "SELECT contact_company FROM contacts_contactlist WHERE contact_id = $contact_id LIMIT 1";
+		$sql = "SELECT contact_company FROM contacts_contactlist WHERE contact_id = " . intval($contact_id) . " LIMIT 1";
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		$array = mysql_fetch_array($result);
 		$company_id = $array['contact_company'];
-
-		
+	
 		return $company_id;
-		
 		
 	}
 	
@@ -835,7 +830,7 @@ function ContactsDropdownSelect($contact_id_select,$fieldname) {
 	$sql = "SELECT contact_id, contact_namefirst, contact_namesecond, contact_company FROM contacts_contactlist ORDER BY contact_namesecond";
 	$result = mysql_query($sql, $conn) or die(mysql_error());
 
-	echo "<select class=\"inputbox\" name=\"$fieldname\">";
+	echo "<select class=\"inputbox\" name=\"" . $fieldname . "\">";
 
 	echo "<option value=\"\">-- None --</option>";
 
@@ -847,7 +842,7 @@ function ContactsDropdownSelect($contact_id_select,$fieldname) {
 		$contact_company = $array['contact_company'];
 
 		if ($contact_company > 0) {
-            $sql2 = "SELECT company_name, company_postcode FROM contacts_companylist WHERE company_id = $contact_company LIMIT 1";
+            $sql2 = "SELECT company_name, company_postcode FROM contacts_companylist WHERE company_id = " . $contact_company . " LIMIT 1";
             $result2 = mysql_query($sql2, $conn) or die(mysql_error());
             $array2 = mysql_fetch_array($result2);
             $company_name = $array2['company_name'];
@@ -867,7 +862,7 @@ function ContactsDropdownSelect($contact_id_select,$fieldname) {
 
             }
 
-            echo "<option value=\"$contact_id\"";
+            echo "<option value=\"" . $contact_id . "\"";
             if ($contact_id == $contact_id_select) { echo " selected"; }
             echo ">".$contact_namesecond.", ".$contact_namefirst.$print_company_details."</option>";
 
@@ -888,7 +883,7 @@ function ContactDrawingList($contact_id) {
 		
 		$contact_id = intval($contact_id);
 		
-		$sql_drawing = "SELECT * FROM intranet_drawings_issued_set, intranet_projects, intranet_drawings_issued LEFT JOIN contacts_companylist ON company_id = issue_company WHERE proj_id = set_project AND issue_contact = $contact_id AND issue_set = set_id ORDER BY set_date DESC";
+		$sql_drawing = "SELECT * FROM intranet_drawings_issued_set, intranet_projects, intranet_drawings_issued LEFT JOIN contacts_companylist ON company_id = issue_company WHERE proj_id = set_project AND issue_contact = " . $contact_id . " AND issue_set = set_id ORDER BY set_date DESC";
 		
 		$current_set = 0;
 		
@@ -911,7 +906,7 @@ function ContactDrawingList($contact_id) {
 				
 					if ($set_id != $current_set) {
 						
-						echo "<tr><td><a href=\"index2.php?page=datebook_view_day&amp;time=$set_date\">" . TimeFormat($set_date) . "</a></td><td><a href=\"" . $pref_location . "/index2.php?page=project_view&amp;proj_id=$proj_id\">$proj_num $proj_name</a></td><td><a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">$company_name</a></td><td><a href=\"index2.php?page=drawings_issue_list&set_id=$set_id&amp;proj_id=$proj_id\">$set_reason</a></td></tr>";
+						echo "<tr><td><a href=\"index2.php?page=datebook_view_day&amp;time=" . $set_date . "\">" . TimeFormat($set_date) . "</a></td><td><a href=\"" . $pref_location . "/index2.php?page=project_view&amp;proj_id=" . $proj_id . "\">" . $proj_num . " " . $proj_name . "</a></td><td><a href=\"index2.php?page=contacts_company_view&amp;company_id=" . $company_id . "\">" . $company_name . "</a></td><td><a href=\"index2.php?page=drawings_issue_list&set_id=" . $set_id . "&amp;proj_id=" . $proj_id . "\">" . $set_reason . "</a></td></tr>";
 				
 				}
 				
@@ -1024,7 +1019,7 @@ function ToggleTarget($target_contact) {
 
 	global $conn;
 	
-			$sql = "SELECT target_id FROM intranet_contacts_targetlist WHERE target_contact = $target_contact AND target_user = " . $_COOKIE[user] . " LIMIT 1";
+			$sql = "SELECT target_id FROM intranet_contacts_targetlist WHERE target_contact = " . $target_contact . " AND target_user = " . $_COOKIE['user'] . " LIMIT 1";
 			$result = mysql_query($sql, $conn) or die(mysql_error());
 			$array = mysql_fetch_array($result);
 			$target_id = $array['target_id'];
@@ -1033,12 +1028,12 @@ function ToggleTarget($target_contact) {
 			
 			if ($target_id > 0) {
 			
-				$sql_update = "DELETE FROM intranet_contacts_targetlist WHERE target_id = $target_id LIMIT 1";
+				$sql_update = "DELETE FROM intranet_contacts_targetlist WHERE target_id = " . $target_id . " LIMIT 1";
 			
 			} else {
 				
 				$target_date = CreateDateFromTimestamp(time());
-				$sql_update = "INSERT INTO intranet_contacts_targetlist (target_id, target_contact, target_user, target_date, target_type) VALUES (NULL, $target_contact, $_COOKIE[user], '$target_date', '$target_type')";
+				$sql_update = "INSERT INTO intranet_contacts_targetlist (target_id, target_contact, target_user, target_date, target_type) VALUES (NULL, " . $target_contact . ", " . $_COOKIE['user'] . ", '" . $target_date . "', '" . $target_type . "')";
 			
 			}
 			
@@ -1063,26 +1058,26 @@ function DeleteContact($contact_id_old,$contact_id_new) {
 					
 					if ($company_id_new && $company_id_old) {
 						
-						$sql[] = "UPDATE intranet_contacts_project SET contact_proj_contact = $contact_id_new, contact_proj_company = $company_id_new WHERE contact_proj_contact = $contact_id_old AND contact_proj_company = $company_id_old";
+						$sql[] = "UPDATE intranet_contacts_project SET contact_proj_contact = " . $contact_id_new . ", contact_proj_company = " . $company_id_new . " WHERE contact_proj_contact = " . $contact_id_old . " AND contact_proj_company = " . $company_id_old;
 						
-						$sql[] = "UPDATE intranet_drawings_issued SET issue_contact = $contact_id_new, issue_company = $company_id_new WHERE issue_contact = $contact_id_old AND issue_company = $company_id_old";
+						$sql[] = "UPDATE intranet_drawings_issued SET issue_contact = " . $contact_id_new . ", issue_company = " . $company_id_new . " WHERE issue_contact = " . $contact_id_old . " AND issue_company = " . $company_id_old;
 						
 					} elseif (!$company_id_new && !$company_id_old) {
 					
-						$sql[] = "UPDATE intranet_contacts_project SET contact_proj_contact = $contact_id_new WHERE contact_proj_contact = $contact_id_old";
+						$sql[] = "UPDATE intranet_contacts_project SET contact_proj_contact = " . $contact_id_new . " WHERE contact_proj_contact = " . $contact_id_old;
 						
-						$sql[] = "UPDATE intranet_drawings_issued SET issue_contact = $contact_id_new WHERE issue_contact = $contact_id_old";
+						$sql[] = "UPDATE intranet_drawings_issued SET issue_contact = " . $contact_id_new . " WHERE issue_contact = " . $contact_id_old;
 						
 					}
 					
-					$sql[] = "UPDATE intranet_projects SET proj_client_contact_id = $contact_id_new WHERE proj_client_contact_id = $contact_id_old";
+					$sql[] = "UPDATE intranet_projects SET proj_client_contact_id = " . $contact_id_new . " WHERE proj_client_contact_id = " . $contact_id_old;
 					
-					$sql[] = "UPDATE intranet_phonemessage SET message_from_id = $contact_id_new WHERE message_from_id = $contact_id_old";
+					$sql[] = "UPDATE intranet_phonemessage SET message_from_id = " . $contact_id_new . " WHERE message_from_id = " . $contact_id_old;
 					
-					$sql[] = "UPDATE intranet_projects_blog SET blog_contact = $contact_id_new WHERE blog_contact = $contact_id_old";
+					$sql[] = "UPDATE intranet_projects_blog SET blog_contact = " . $contact_id_new . " WHERE blog_contact = " . $contact_id_old;
 
 					
-					$sql[] = "DELETE FROM contacts_contactlist WHERE contact_id = $contact_id_old LIMIT 1";
+					$sql[] = "DELETE FROM contacts_contactlist WHERE contact_id = " . $contact_id_old . " LIMIT 1";
 
 					$affected_rows = 0;
 					
@@ -1099,7 +1094,7 @@ function DeleteContact($contact_id_old,$contact_id_new) {
 					
 					$output = array($techmessage,$affected_rows);
 					
-					$actionmessage = "<p>Contact with ID $contact_id_new has been updated.</p>";
+					$actionmessage = "<p>Contact with ID " . $contact_id_new . " has been updated.</p>";
 					
 					AlertBoxInsert($_COOKIE[user],"Contact Merged",$actionmessage,$contact_id_new,0,0);
 					
@@ -1110,7 +1105,6 @@ function DeleteContact($contact_id_old,$contact_id_new) {
 			}
 
 }
-
 
 function ContactEmailChecker ($filter) {
 	
@@ -1144,14 +1138,13 @@ function ContactEmailChecker ($filter) {
 	
 }
 
-
 function ProjectContacts($proj_id,$user_usertype_current) {
 
 global $conn;
 $proj_id = intval($proj_id);
 
 			
-			$sql_contact = "SELECT * FROM contacts_disciplinelist, contacts_contactlist, intranet_contacts_project LEFT JOIN contacts_companylist ON contact_proj_company = contacts_companylist.company_id WHERE contact_proj_contact = contact_id  AND discipline_id = contact_proj_role AND contact_proj_project = $proj_id ORDER BY discipline_order, discipline_name, contact_namesecond";
+			$sql_contact = "SELECT * FROM contacts_disciplinelist, contacts_contactlist, intranet_contacts_project LEFT JOIN contacts_companylist ON contact_proj_company = contacts_companylist.company_id WHERE contact_proj_contact = contact_id  AND discipline_id = contact_proj_role AND contact_proj_project = " . $proj_id . " ORDER BY discipline_order, discipline_name, contact_namesecond";
 			$result_contact = mysql_query($sql_contact, $conn) or die(mysql_error());
 
 			if (mysql_num_rows($result_contact) > 0) {
@@ -1175,22 +1168,22 @@ $proj_id = intval($proj_id);
 					$contact_proj_company = $array_contact['contact_proj_company'];
 				
 					
-			print "<tr><td style=\"width: 30%;\"><a href=\"index2.php?page=discipline_view&amp;discipline_id=$discipline_id\">$discipline_name</a></td>";
+			print "<tr><td style=\"width: 30%;\"><a href=\"index2.php?page=contacts_discipline_view&amp;discipline_id=" . $discipline_id . "\">" . $discipline_name . "</a></td>";
 			echo "<td";
 			if (trim($contact_proj_note) == "") { echo " colspan=\"2\" "; }
-			echo "><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=$contact_id\">";
-			echo "$contact_namefirst $contact_namesecond";
+			echo "><a href=\"index2.php?page=contacts_view_detailed&amp;contact_id=" . $contact_id . "\">";
+			echo $contact_namefirst . " " . $contact_namesecond;
 			echo "</a>";
-			if ($company_name != NULL) { echo ",&nbsp;<a href=\"index2.php?page=contacts_company_view&amp;company_id=$company_id\">".$company_name."</a>"; }
-			if ($company_change != NULL) { echo "$company_change"; }
-			if ($contact_email != NULL) { echo "<br />Email: $contact_email&nbsp;<a href=\"mailto:$contact_email\"><img src=\"images/button_email.png\" alt=\"Email\" class=\"button\"/></a>"; }
-			if ($contact_telephone != NULL) { echo "<br />T: $contact_telephone"; } elseif ($company_phone != NULL) { echo "<br />T: $company_phone"; }
-			if ($contact_mobile != NULL) { echo "<br />M: $contact_mobile"; }
+			if ($company_name != NULL) { echo ",&nbsp;<a href=\"index2.php?page=contacts_company_view&amp;company_id=" . $company_id . "\">".$company_name."</a>"; }
+			if ($company_change != NULL) { echo $company_change; }
+			if ($contact_email != NULL) { echo "<br />Email: " . $contact_email . "&nbsp;<a href=\"mailto:" . $contact_email . "\"><img src=\"images/button_email.png\" alt=\"Email\" class=\"button\"/></a>"; }
+			if ($contact_telephone != NULL) { echo "<br />T: " . $contact_telephone; } elseif ($company_phone != NULL) { echo "<br />T: " . $company_phone; }
+			if ($contact_mobile != NULL) { echo "<br />M: " . $contact_mobile; }
 			echo "</td>";
 			if (trim($contact_proj_note) != "") {
 			echo "<td style=\"width: 25%;\">".$contact_proj_note.$note."</td>";
 			}
-			echo "<td><a href=\"index2.php?page=project_contacts&amp;contact_proj_id=$contact_proj_id&amp;proj_id=$_GET[proj_id]&amp;action=project_contact_remove&amp;contact_proj_id=$contact_proj_id\" onClick=\"javascript:return confirm('Are you sure you want to delete this project contact?');\"><img src=\"images/button_delete.png\" class=\"button\" /></a></td><td><a href=\"index2.php?page=project_contacts&amp;contact_proj_id=$contact_proj_id&amp;proj_id=$_GET[proj_id]\"><img src=\"images/button_edit.png\" class=\"button\" /></a></td></tr>";
+			echo "<td><a href=\"index2.php?page=project_contacts&amp;contact_proj_id=" . $contact_proj_id . "&amp;proj_id=" . $proj_id . "&amp;action=project_contact_remove&amp;contact_proj_id=" . $contact_proj_id . "\" onClick=\"javascript:return confirm('Are you sure you want to delete this project contact?');\"><img src=\"images/button_delete.png\" class=\"button\" /></a></td><td><a href=\"index2.php?page=project_contacts&amp;contact_proj_id=" . $contact_proj_id . "&amp;proj_id=" . $proj_id . "\"><img src=\"images/button_edit.png\" class=\"button\" /></a></td></tr>";
 
 
 			}
@@ -1199,7 +1192,6 @@ $proj_id = intval($proj_id);
 			} else { echo "<div><p>No Project Contacts Found.</p></div>"; }
 
 }
-
 
 function ProjectContactEdit($proj_id,$contact_proj_contact) {
 
