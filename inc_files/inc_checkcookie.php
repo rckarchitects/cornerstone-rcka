@@ -1,6 +1,10 @@
 <?php
 
 include_once("functions_general.php");
+include_once("functions_holidays.php");
+include_once("functions_projects.php");
+include_once("functions_tenders.php");
+include_once("functions_users.php");
 
 function CheckUserStatus() {
 	

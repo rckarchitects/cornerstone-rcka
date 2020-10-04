@@ -61,7 +61,7 @@ Logo($settings_style,$settings_name);
 	
 			// This includes the "outstanding" section, which alerts users to outstanding actions.
 	   
-	AlertBoxShow($_COOKIE['user']);
+	AlertBoxShow(intval($_COOKIE['user']));
 	
 
     if ($useraction == "defineuser") {

@@ -98,6 +98,37 @@ function ProjectSubMenu($proj_id,$user_usertype_test,$page,$level) {
 				$array_menu_usertype[] = 3;
 				$array_project_access[] = 1;
 				
+	} elseif ($page == "project_list" && $level == 1 && intval($proj_id) == 0) {
+		
+				$array_menu_page[] = "index2.php?page=project_all&amp;active=1";
+				$array_menu_text[] = "Active Projects";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype[] = 2;
+				
+				$array_menu_page[] = "index2.php?page=project_all&amp;team=" . intval(UserGetTeam($_COOKIE['user']));
+				$array_menu_text[] = "Team Projects";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype[] = 2;
+				
+				$array_menu_page[] = "index2.php?page=project_all&amp;active=2";
+				$array_menu_text[] = "Inactive Projects";
+				$array_menu_image[] = "button_list.png";
+				$array_menu_usertype[] = 2;
+
+				
+	} elseif ($page == "project_list" && $level == 2 && intval($proj_id) == 0) {
+		
+				$array_menu_page[] = "index2.php?page=project_edit&amp;status=add";
+				$array_menu_text[] = "Add Project";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype[] = 3;
+				
+				$array_menu_page[] = "index2.php?page=project_blog_edit&amp;status=add";
+				$array_menu_text[] = "Add Journal Entry";
+				$array_menu_image[] = "button_new.png";
+				$array_menu_usertype[] = 2;
+				
+				
 	} elseif ($page == "project_view" && $level == 2 && intval($proj_id) > 0) {
 
 				$array_menu_page[] = "index2.php?page=project_edit&amp;status=edit&amp;proj_id=" . $proj_id;

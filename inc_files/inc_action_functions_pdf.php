@@ -2143,4 +2143,105 @@ function StyleHeading($title,$text,$notes){
 			
 }
 	
+function NewPage() {
+
+	GLOBAL $pdf;
+	$pdf->addPage();
+	$current_y = $pdf->GetY();
+	$new_y = $current_y + 50;
+	$pdf->SetY($new_y);
+
+}
+
+function Paragraph ($input) {
+	
+	GLOBAL $pdf;
+	GLOBAL $format_font;
+	
+	$text_array = explode ("\n",$input);
+	
+	$header = 1;
+	
+	foreach ($text_array AS $para ) {
+		
+		$para = trim($para);
+		
+		
+		
+		$pdf->SetTextColor(0);
+		if (substr($para,0,3) == "-- ") {
+			$pdf->SetFont('ZapfDingbats','',4);
+			$para = trim($para,"-- ");
+			$pdf->SetX(0);
+			$pdf->Cell(35,4,'n',0,0,R,0);
+			$pdf->SetX(35);
+			$pdf->SetFont($format_font,'',10);
+			$pdf->MultiCell(145,4,$para,0,L);
+		} elseif (substr($para,0,2) == "- ") {
+			$pdf->SetFont('ZapfDingbats','',5);
+			$para = trim($para,"- ");
+			$pdf->SetX(0);
+			$pdf->Cell(30,4,'l',0,0,R,0);
+			$pdf->SetX(30);
+			$pdf->SetFont($format_font,'',10);
+			$pdf->MultiCell(145,4,$para,0,L);
+		} elseif (substr($para,0,1) == "|") {
+			if ($header == 1) { $pdf->SetLineWidth(0.5); $header = 0; } else { $pdf->SetLineWidth(0.2); }
+			$row = explode ("|",$para);
+			$delete = array_shift($row);
+			foreach ($row AS $cell ) {
+				$cell_width = 150 / count($row);
+				$pdf->SetFont($format_font,'',10);
+				$pdf->Cell($cell_width,7,$cell,1,0,L,0);
+				$pdf->SetFont($format_font,'',10);
+			}
+			$pdf->Ln(7);
+			$pdf->SetX(25);
+		} else {
+		$pdf->SetX(25);
+		$pdf->SetFont($format_font,'',10);
+		$pdf->MultiCell(150,4,$para,0,L);
+		}
+		
+		
+	
+	}
+	
+	
+}
+
+function UpDate ($qms_date) {
+						
+						GLOBAL $pdf;
+						
+						$current_x = $pdf->GetX();
+						$current_y = $pdf->GetY();
+						$new_y = $pdf->GetY() + 2;
+					
+						$pdf->SetXY(180,$new_y);
+						$pdf->SetTextColor(180);
+						$pdf->SetDrawColor(180);
+						$pdf->SetFont('Helvetica','',5);
+						$pdf->Cell(0,2,$qms_date,0,0);
+						$pdf->SetTextColor(0);
+						
+						$pdf->SetXY($current_x,$current_y);
+					
+					}
+
+function AddBullets($input) {
+	
+		GLOBAL $pdf;
+		
+		if (substr($input,2) == "- ") {
+			
+			
+		} else {
+			
+			
+		}
+	
+	
+}
+
 	

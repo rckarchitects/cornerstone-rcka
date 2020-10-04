@@ -8,7 +8,7 @@ echo "<h2>My Projects</h2>";
 
 echo "<div>";
 
-	ProjectListFrontPage($user_id_current);
+	ProjectListFrontPage($_COOKIE['user']);
 
 echo "</div>";
 
