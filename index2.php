@@ -8,11 +8,11 @@ include_once("inc_files/inc_ipcheck.php");
 
 include_once("inc_files/inc_checkcookie.php");
 
-$usercheck = $_POST['usercheck'];
-$checkform_user = $_POST['checkform_user'];
+$usercheck = filter_input(INPUT_POST, 'usercheck', FILTER_SANITIZE_STRING);
+$checkform_user = filter_input(INPUT_POST, 'checkform_user', FILTER_SANITIZE_STRING);
 
-if ($_POST['action'] != "") { include_once("inc_files/functions_actions.php"); include("inc_files/action_$_POST[action].php"); }
-elseif ($_GET['action'] != "") { include_once("inc_files/functions_actions.php"); include("inc_files/action_$_GET[action].php"); }
+if ($_POST['action']) { $action = filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING); include_once("inc_files/functions_actions.php"); include("inc_files/action_" . $action . ".php"); }
+elseif ($_GET['action']) { $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING); include_once("inc_files/functions_actions.php"); include("inc_files/action_" . $action . ".php"); } 
 
 // Include the standard header file
 
@@ -80,6 +80,7 @@ if (!$_GET['page']) {
 
 	echo "<div id=\"HolidayList\" class=\"FloatBoxHalf\">";
 	ListHolidays();
+	GetNextBankHoliday(time());
 	if ($prefs_nonworking) {
 		UserLocationList($prefs_nonworking);
 	}

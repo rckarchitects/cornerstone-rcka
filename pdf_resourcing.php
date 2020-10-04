@@ -341,10 +341,12 @@ if ($user_usertype_current <= 3) { header ("Location: index2.php"); } else {
 
 		// Begin listing the projects
 
-		if ($_GET['secured'] == 3) { $secured = "= 100"; } elseif ( $secured = 1 ) { $secured = ">= 50"; } elseif ( $secured = 2 ) { $secured = ">= 75"; } else { $secured = "> 0"; }
+		if (intval($_GET['secured']) == 3) { $secured = "= 100"; } elseif ( intval($_GET['secured']) == 1 ) { $secured = ">= 50"; } elseif ( intval($_GET['secured']) == 2 ) { $secured = ">= 75"; } else { $secured = "> 0"; }
 
 			$sql_proj = "SELECT * FROM intranet_projects, intranet_timesheet_fees WHERE ts_fee_project = proj_id AND proj_fee_track = 1 AND ts_fee_prospect " . $secured . " AND (((UNIX_TIMESTAMP(ts_fee_commence) + ts_fee_time_end) > " . $capture_start . ") OR ((UNIX_TIMESTAMP(ts_datum_commence) + ts_datum_length) > " . $capture_start . ")) AND proj_active = 1 ORDER BY proj_num, ts_fee_commence";
 			$result_proj = mysql_query($sql_proj, $conn) or die(mysql_error());
+			
+			//$pdf->Multicell(0,5,$sql_proj);
 			
 			$pdf->SetFont($format_font,'',7);
 			
