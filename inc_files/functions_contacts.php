@@ -580,8 +580,10 @@ function ListContacts($listorder,$startletter,$desc_order,$listbegin,$listmax) {
 	if (intval($listbegin) > 0) { $listbegin = intval($listbegin); } else { $listbegin = 0 ;}
 	if (intval($listmax) == 0) { $listmax = 1000; } else { $listmax = intval($listmax) ;}
 	if (intval($desc_order) > 0) { $desc_order = "DESC"; } else { unset($desc_order); }
-
-  			$sql = "SELECT * FROM contacts_contactlist LEFT JOIN contacts_companylist ON company_id = contact_company LEFT JOIN intranet_contacts_targetlist ON target_contact = contact_id WHERE " . $listorder . " LIKE '" . $startletter . "%' ORDER BY " . $listorder . " " . $desc_order . ",contact_namefirst, contact_id LIMIT " . $listbegin . "," . $listmax;
+	
+	
+	if ($_GET['list_order'] == "date_added") { $sql = "SELECT * FROM contacts_contactlist LEFT JOIN contacts_companylist ON company_id = contact_company LEFT JOIN intranet_contacts_targetlist ON target_contact = contact_id ORDER BY contact_added DESC, contact_namefirst, contact_id LIMIT " . $listbegin . "," . $listmax; }
+	else { $sql = "SELECT * FROM contacts_contactlist LEFT JOIN contacts_companylist ON company_id = contact_company LEFT JOIN intranet_contacts_targetlist ON target_contact = contact_id WHERE " . $listorder . " LIKE '" . $startletter . "%' ORDER BY " . $listorder . " " . $desc_order . ",contact_namefirst, contact_id LIMIT " . $listbegin . "," . $listmax; }
 
 			$result = mysql_query($sql, $conn) or die(mysql_error());
 
@@ -589,7 +591,7 @@ function ListContacts($listorder,$startletter,$desc_order,$listbegin,$listmax) {
 			
 			echo "<div id=\"TargetList\" class=\"bodybox\">";
 			
-				ListUserTargets($_COOKIE[user]);
+				ListUserTargets($_COOKIE['user']);
 				
 			echo "</div>";
 			
@@ -603,6 +605,8 @@ function ListContacts($listorder,$startletter,$desc_order,$listbegin,$listmax) {
 
 				
 					$contact_id = $array['contact_id'];
+					$contact_added = $array['contact_added'];
+					$contact_added_by = $array['contact_added_by'];
 					$contact_prefix = $array['contact_prefix'];
 					$contact_namefirst = $array['contact_namefirst'];
 					$contact_namesecond = $array['contact_namesecond'];
@@ -650,7 +654,7 @@ function ListContacts($listorder,$startletter,$desc_order,$listbegin,$listmax) {
 						echo "<div class=\"bodybox\" id=\"target_" . $contact_id . "\">";
 					}
 					
-					if ($target_user == $_COOKIE[user] OR $target_user == 0) {
+					if ($target_user == $_COOKIE['user'] OR $target_user == 0) {
 					
 						echo "<form><input type=\"checkbox\" class=\"clickbox\" " . $selected . " value=\"" . $contact_id . "\" name=\"target_user\" /></form>";
 					
@@ -690,7 +694,8 @@ function ListContacts($listorder,$startletter,$desc_order,$listbegin,$listmax) {
 					$contact_details_complete = str_replace("|","<br />",$contact_details_complete);
 					
 					if ($contact_details_complete) { echo "<p class=\"minitext\">" . $contact_details_complete . "</p>"; }
-
+						
+					if ($_GET['list_order'] == "date_added") { echo "<p class=\"minitext\">Added: " . TimeFormat($contact_added) . " by " . GetUserNameOnly($contact_added_by) . "</p>"; }
 					
 					echo "</div>";
 

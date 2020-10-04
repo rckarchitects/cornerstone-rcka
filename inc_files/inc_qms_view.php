@@ -32,12 +32,11 @@ function QMSAddHeadingBelow($toc1) {
 	
 }
 
-if (intval($_GET[addafter]) > 0) {
+if (intval($_GET['addafter']) > 0) {
 	
 	QMSAddHeadingBelow($_GET[addafter]);
 	
 }
-
 
 function CreateList($input, $qms_id, $bg) {
 	
@@ -90,9 +89,9 @@ function CreateList($input, $qms_id, $bg) {
 }
 
 
-if ($_GET[s1] == NULL) { $s1 = 0;} else { $s1 = $_GET[s1];}
+if ($_GET['s1'] == NULL) { $s1 = 0;} else { $s1 = $_GET['s1'];}
 
-if ($_GET[s2] == NULL) { $s2 = 1;} else { $s2 = $_GET[s2];}
+if ($_GET['s2'] == NULL) { $s2 = 1;} else { $s2 = $_GET['s2'];}
 
 $s1 = intval ($s1);
 
@@ -104,7 +103,10 @@ $s2 = intval ($s2);
 	
 	$beginweek = BeginWeek(time());
 	
+	echo "<div class=\"menu_bar\">";
+	
 	echo "<form action=\"index2.php\" method=\"get\">";
+	
 	
 	echo "<p><input type=\"hidden\" name=\"page\" value=\"qms_view\" />";
 	
@@ -137,9 +139,11 @@ $s2 = intval ($s2);
 		echo "</select>";
 	
 	}
-	echo "</form></p>";
+	echo "</p></form>";
 	
-if ($_GET[s1] != NULL) { echo "<div class=\"page\">"; }
+	echo "</div>";
+	
+if ($_GET['s1'] != NULL) { echo "<div class=\"page\">"; }
 
 
 if ($s1 == 0) {
@@ -149,7 +153,7 @@ if ($s1 == 0) {
 			$result_contents = mysql_query($sql_contents, $conn) or die(mysql_error());
 			
 			
-			echo "<table>";
+			echo "<div class=\"page\"><table>";
 			
 			while ($array_contents = mysql_fetch_array($result_contents)) {
 				
@@ -164,15 +168,15 @@ if ($s1 == 0) {
 
 					//elseif ($qms_toc2 > 0) { echo "<tr><td style=\"width: 20px;\"></td><td colspan=\"2\">" . $qms_toc1. "." . $qms_toc2 . "</td><td>$qms_text</td><td><a href=\"pdf_qms.php?s1=$qms_toc1&amp;s2=$qms_toc2\"><img src=\"images/button_pdf.png\" alt=\"PDF\" /></a></td></tr>"; }
 
-					if ($qms_toc1 > 0) { echo "<tr><td>" . $qms_toc1 . "</td><td>$qms_text</td><td style=\"text-align: right;\"><a href=\"pdf_qms.php?s1=$qms_toc1\"><img src=\"images/button_pdf.png\" alt=\"PDF\" /></a>";
+					if ($qms_toc1 > 0) { echo "<tr><td>" . $qms_toc1 . "</td><td>$qms_text</td><td style=\"text-align: right;\"><a href=\"pdf_qms.php?s1=$qms_toc1\"><img src=\"images/button_pdf.png\" alt=\"PDF\" class=\"button\" /></a>";
 					
-						if ($user_usertype_current > 3) { echo "&nbsp;<a href=\"index2.php?page=qms_view&amp;addafter=" .$qms_toc1 . "\" onclick=\"if(!confirm('Are you sure you want to add a new heading below item " . $qms_toc1 . "?')){return false;}\">&darr;</a>"; }
+						if ($user_usertype_current > 3) { echo "&nbsp;<a href=\"index2.php?page=qms_view&amp;addafter=" .$qms_toc1 . "\" onclick=\"if(!confirm('Are you sure you want to add a new heading below item " . $qms_toc1 . "?')){return false;}\"><span class=\"button\">&darr;</span></a>"; }
 					
 					echo "</td></tr>"; }
 				
 			}
 			
-			echo "</table>";
+			echo "</table></div>";
 	
 	
 } else {
@@ -199,10 +203,10 @@ if ($s1 == 0) {
 					$qms_text = ClauseCrossReference($qms_text);
 					
 					if ($user_usertype_current > 4) {
-						$edit_clause = "<a href=\"index2.php?page=qms_edit&amp;s1=" . $qms_toc1 . "&amp;s2=" . $qms_toc2 . "\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a>&nbsp;";
+						$edit_clause = "<a href=\"index2.php?page=qms_edit&amp;s1=" . $qms_toc1 . "&amp;s2=" . $qms_toc2 . "\"><img src=\"images/button_edit.png\" alt=\"Edit\" class=\"button\" /></a>&nbsp;";
 					} else { unset($edit_clause); }
 					
-					$edit_clause = $edit_clause ."<a href=\"pdf_qms.php?s1=$qms_toc1&amp;s2=$qms_toc2\"><img src=\"images/button_pdf.png\" alt=\"PDF\" /></a>";
+					$edit_clause = $edit_clause ."<a href=\"pdf_qms.php?s1=$qms_toc1&amp;s2=$qms_toc2\"><img src=\"images/button_pdf.png\" alt=\"PDF\" class=\"button\" /></a>";
 					
 					if ($qms_id == $_GET[qms_id]) { $bg = " style=\"background: rgba(20, 201, 201, 0.25); padding: 6px 6px 6px 6px;\" "; } else { unset($bg); }
 
@@ -248,4 +252,4 @@ if ($s1 == 0) {
 }
 
 
-if ($_GET[s1] != NULL) { echo "</div>"; }
+if ($_GET['s1'] != NULL) { echo "</div>"; }

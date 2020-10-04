@@ -1,6 +1,6 @@
 <?php
 
-$sql_drawing = "SELECT * FROM intranet_drawings WHERE drawing_id = '$_GET[drawing_id]' LIMIT 1";
+$sql_drawing = "SELECT * FROM intranet_drawings WHERE drawing_id = '" . intval($_GET['drawing_id']) . "' LIMIT 1";
 $result_drawing = mysql_query($sql_drawing, $conn) or die(mysql_error());
 		
 		$array_drawings = mysql_fetch_array($result_drawing);
@@ -10,22 +10,22 @@ $result_drawing = mysql_query($sql_drawing, $conn) or die(mysql_error());
 
 if ($_GET[revision_id] > 0) {
 	
-		$revision_id = intval ($_GET[revision_id]);
+		$revision_id = intval ($_GET['revision_id']);
 
-		$sql_revision = "SELECT * FROM intranet_drawings_revision WHERE revision_id = $revision_id LIMIT 1";
+		$sql_revision = "SELECT * FROM intranet_drawings_revision WHERE revision_id = " . $revision_id . " LIMIT 1";
 		$result_revision = mysql_query($sql_revision, $conn) or die(mysql_error());
 		$array_revision = mysql_fetch_array($result_revision);
 		$revision_letter = $array_revision['revision_letter'];
 		$revision_desc = $array_revision['revision_desc'];
 		$revision_author = $array_revision['revision_author'];
 		
-		echo "<h2>Edit Drawing Revision for $drawing_number</h2>";
+		echo "<h2>Edit Drawing Revision for " . $drawing_number . "</h2>";
 		
 		$add_or_edit = "edit";
 	
 } else {
 		
-		$sql_revision = "SELECT * FROM intranet_drawings_revision WHERE revision_drawing = $drawing_id ORDER BY revision_letter DESC";
+		$sql_revision = "SELECT * FROM intranet_drawings_revision WHERE revision_drawing = " . $drawing_id . " ORDER BY revision_letter DESC";
 		$result_revision = mysql_query($sql_revision, $conn) or die(mysql_error());
 		$array_revision = mysql_fetch_array($result_revision);
 		$revision_letter = $array_revision['revision_letter'];
@@ -39,19 +39,19 @@ if ($_GET[revision_id] > 0) {
 		$add_or_edit = "add";
 }
 
-$revision_letters = array("","-","a","b","c","d","e","f","g","h","j","k","l","m","n","p","q","r","s","t","u","v","w","x","y","z","aa","ab","ac","ad","ae","af","ag","ah","aj","ak","al","am","an","ap","aq","ar","as","at","au","av","aw","ax","ay","az","*","","p1","p2","p3","p4","p5","p6","p7","p8","p9","p10");
-$revision_code = array("Standard Revisions","First Issue","Alpha","Bravo","Charlie","Delta","Echo","Foxtrot","Golf","Hotel","Juliet","Kilo","Lima","Mike","November","Papa","Quebec","Romeo","Sierra","Tango","Uniform","Victor","Whisky","X-Ray","Yankee","Zulu","Alpha Alpha","Alpha Brava","Alpha Charlie","Alpha Delta","Alpha Echo","Alpha Foxtrot","Alpha Golf","Alpha Hotel","Alpha Juliet","Alpha Kilo","Alpha Lima","Alpha Mike","Alpha November","Alpha Papa","Alpha Quebec","Alpha Romeo","Alpha Sierra","Alpha Tango","Alpha Uniform","Alpha Victor","Alpha Whisky","Alpha X-Ray","Alpha Yankee","Alpha Zulu","Obsolete","BS 1192.2007","Revision 1","Revision 2","Revision 3","Revision 4","Revision 5","Revision 6","Revision 7","Revision 8","Revision 9","Revision 10");
+$revision_letters = array("","-","a","b","c","d","e","f","g","h","j","k","l","m","n","p","q","r","s","t","u","v","w","x","y","z","aa","ab","ac","ad","ae","af","ag","ah","aj","ak","al","am","an","ap","aq","ar","as","at","au","av","aw","ax","ay","az","*","","p1","p2","p3","p4","p5","p6","p7","p8","p9","p10","p11","p12","p13","p14","p15","p16","p17","p18","p19","p20","p21","p22","p23","p24","p25");
+$revision_code = array("Standard Revisions","First Issue","Alpha","Bravo","Charlie","Delta","Echo","Foxtrot","Golf","Hotel","Juliet","Kilo","Lima","Mike","November","Papa","Quebec","Romeo","Sierra","Tango","Uniform","Victor","Whisky","X-Ray","Yankee","Zulu","Alpha Alpha","Alpha Brava","Alpha Charlie","Alpha Delta","Alpha Echo","Alpha Foxtrot","Alpha Golf","Alpha Hotel","Alpha Juliet","Alpha Kilo","Alpha Lima","Alpha Mike","Alpha November","Alpha Papa","Alpha Quebec","Alpha Romeo","Alpha Sierra","Alpha Tango","Alpha Uniform","Alpha Victor","Alpha Whisky","Alpha X-Ray","Alpha Yankee","Alpha Zulu","Obsolete","BS 1192.2007","Revision 1","Revision 2","Revision 3","Revision 4","Revision 5","Revision 6","Revision 7","Revision 8","Revision 9","Revision 10","Revision 11","Revision 12","Revision 13","Revision 14","Revision 15","Revision 16","Revision 17","Revision 18","Revision 19","Revision 20","Revision 21","Revision 22","Revision 23","Revision 24","Revision 25");
 
 
 
-print "<form method=\"post\" action=\"index2.php?page=drawings_detailed&amp;drawing_id=$_GET[drawing_id]&amp;proj_id=$_GET[proj_id]\">";
+print "<form method=\"post\" action=\"index2.php?page=drawings_detailed&amp;drawing_id=" . $_GET['drawing_id'] . "&amp;proj_id=" . $_GET['proj_id'] . "\">";
 
 
 
 $rev_count = array_keys($revision_letters, $revision_letter);
 
 if ($user_usertype_current <= 3 ) {
-	if ($_GET[revision_id] > 0) { $rev_begin = $rev_count[0]; } else { $rev_begin = $rev_count[0] + 1; }
+	if ($_GET['revision_id'] > 0) { $rev_begin = $rev_count[0]; } else { $rev_begin = $rev_count[0] + 1; }
 } else {
 	$rev_begin = 0;
 }
@@ -66,9 +66,9 @@ while ($rev_begin < $rev_total) {
 	elseif ($revision_letter == $revision_letters[$rev_begin] && $add_or_edit == "edit") { $selected = " selected=\"selected\" "; }
 	else { unset($selected); }
 	if ($revision_letters[$rev_begin] == "") {
-		echo "<option value=\"\" disabled=\"disabled\" style=\"font-weight: bold;\">$revision_code[$rev_begin]</option>";
+		echo "<option value=\"\" disabled=\"disabled\" style=\"font-weight: bold;\">" . $revision_code[$rev_begin] . "</option>";
 	} else {
-		echo "<option value=\"$revision_letters[$rev_begin]\" $selected >" . strtoupper($revision_letters[$rev_begin]) . " (" . ($revision_code[$rev_begin]) . ")</option>";
+		echo "<option value=\"" . $revision_letters[$rev_begin] . "\" " . $selected . " >" . strtoupper($revision_letters[$rev_begin]) . " (" . ($revision_code[$rev_begin]) . ")</option>";
 	}
 		
 	$rev_begin++;
@@ -95,7 +95,7 @@ if ($revision_date != NULL) { $revision_date_year = date("Y", $revision_date); }
 
 $revision_date_value = $revision_date_year . "-" . $revision_date_month . "-" . $revision_date_day;
 
-echo "<input type=\"date\" value=\"$revision_date_value\" name=\"revision_date_value\" />";
+echo "<input type=\"date\" value=\"" . $revision_date_value . "\" name=\"revision_date_value\" />";
 
 print "</p>";
 
@@ -104,9 +104,9 @@ print "<input type=\"submit\" />";
 print "<input type=\"hidden\" name=\"action\" value=\"revision_edit\"  />";
 
 if ($revision_id > 0) {
-	print "<input type=\"hidden\" name=\"revision_id\" value=\"$revision_id\"  />";
+	print "<input type=\"hidden\" name=\"revision_id\" value=\"" . $revision_id . "\"  />";
 }
 
-print "<input type=\"hidden\" name=\"revision_drawing\" value=\"$drawing_id\"  />";
+print "<input type=\"hidden\" name=\"revision_drawing\" value=\"" . $drawing_id . "\"  />";
 
 print "</form>";

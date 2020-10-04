@@ -978,7 +978,7 @@ function ListFeeStages($group_id) {
 				
 				if ($array['book_id'] > 0) {
 					
-					echo "<tr id=\"" . $array['group_id'] . "\" class=item_" . $group_id . "  ><td $highlight class=\"HideHeader\">" . $array['group_code'] . "</td><td $highlight class=\"HideHeader\"><a href=\"#" . $array['group_id'] ."\" onclick=\"HideItem('item_" . $array['group_id'] . "')\">" . $array['group_description'] . "</a></td><td $highlight class=\"HideHeader\"><a href=\"index2.php?page=user_view&amp;user_id="  . $array['user_id'] . "\">" . $array['user_name_first'] . " " . $array['user_name_second'] . "</a></td><td $highlight>";
+					echo "<tr id=\"" . $array['group_id'] . "\" class=item_" . $group_id . "  ><td $highlight class=\"HideHeader\">" . $array['group_code'] . "</td><td " . $highlight . " class=\"HideHeader\"><a href=\"#" . $array['group_id'] ."\" onclick=\"HideItem('item_" . $array['group_id'] . "')\">" . $array['group_description'] . "</a></td><td " . $highlight . " class=\"HideHeader\"><a href=\"index2.php?page=user_view&amp;user_id="  . $array['user_id'] . "\">" . $array['user_name_first'] . " " . $array['user_name_second'] . "</a></td><td " . $highlight . ">";
 					
 					if ($user_usertype_current > 3 OR intval($_COOKIE[user]) == $array['group_leader']) { echo "<a href=\"\"><img src=\"images/button_edit.png\" alt=\"Edit\" class=\"button\" /></a><a href=\"\">"; }
 					
@@ -986,7 +986,7 @@ function ListFeeStages($group_id) {
 					
 				} else {
 	
-					echo "<tr id=\"" . $array['group_id'] . "\"><td $highlight>" . $array['group_code'] . "</td><td $highlight>" . $array['group_description'] . "</td><td $highlight><a href=\"index2.php?page=user_view&amp;user_id="  . $array['user_id'] . "\">" . $array['user_name_first'] . " " . $array['user_name_second'] . "</a></td><td $highlight>";
+					echo "<tr id=\"" . $array['group_id'] . "\"><td " . $highlight . ">" . $array['group_code'] . "</td><td " . $highlight . ">" . $array['group_description'] . "</td><td " . $highlight . "><a href=\"index2.php?page=user_view&amp;user_id="  . $array['user_id'] . "\">" . $array['user_name_first'] . " " . $array['user_name_second'] . "</a></td><td " . $highlight . ">";
 					
 					if ($user_usertype_current > 3 OR intval($_COOKIE[user]) == $array['group_leader']) { echo "<a href=\"\"><img src=\"images/button_edit.png\" class=\"button\" alt=\"Edit\" /></a>"; }		
 					
@@ -1048,24 +1048,24 @@ function ListFeeStageItems($group_id, $group_leader) {
 		global $user_usertype_current;
 
 		
-		$sql = "SELECT * FROM intranet_timesheet_group_jobbook LEFT JOIN intranet_timesheet_group ON group_id = book_stage WHERE book_stage = $group_id ORDER BY book_order";
+		$sql = "SELECT * FROM intranet_timesheet_group_jobbook LEFT JOIN intranet_timesheet_group ON group_id = book_stage WHERE book_stage = " . $group_id . " ORDER BY book_order";
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		$rows = mysql_num_rows($result);
 		if ($rows > 0) {
 			
-			if (intval($_GET[group_id] == $group_id)) { $display = "style=\"display: table-row;\""; } else { $display = "style=\"display: none;\""; }
+			if (intval($_GET['group_id'] == $group_id)) { $display = "style=\"display: table-row;\""; } else { $display = "style=\"display: none;\""; }
 			
 			$counter = 0;
 
 			while ($array = mysql_fetch_array($result)) {
 				
-				if ($counter == 0) { echo "<tr $display class=\"item_" . $group_id . " HideLine\"><td></td><td>Core Objective</td><td $highlight>" . $array['group_notes'] . "</td><td>";
+				if ($counter == 0) { echo "<tr " . $display . " class=\"item_" . $group_id . " HideLine\"><td></td><td>Core Objective</td><td " . $highlight . ">" . $array['group_notes'] . "</td><td>";
 				
 				if ($user_usertype_current > 3 OR intval($_COOKIE[user]) == $group_leader) { echo "<a href=\"index2.php?page=timesheet_fee_list&amp;item=fee_group&amp;stage_id=" . $array['book_stage'] . "\"><img src=\"images/button_new.png\" class=\"button\" alt=\"Add\" /></a>"; }
 				
 				echo "</td></tr>"; $counter++; }
 				
-				echo "<tr $display class=\"item_" . $group_id . " HideLine\"><td></td><td>" . $array['book_order'] . ". " . $array['book_title'] . "</td><td>" . $array['book_description'] . "</a></td><td>";
+				echo "<tr " . $display . " class=\"item_" . $group_id . " HideLine\"><td></td><td>" . $array['book_order'] . ". " . $array['book_title'] . "</td><td>" . $array['book_description'] . "</a></td><td>";
 				
 				if ($user_usertype_current > 3 OR intval($_COOKIE[user]) == $group_leader) { echo "<a href=\"index2.php?page=timesheet_fee_list&amp;item=fee_group&amp;book_id=" . $array['book_id'] . "\"><img src=\"images/button_edit.png\" alt=\"Edit\" class=\"button\" /></a>"; }
 				
@@ -1085,7 +1085,7 @@ function EditFeeGroup($book_id) {
 	global $conn;
 	$book_id = intval($book_id);
 	
-	$sql = "SELECT * FROM intranet_timesheet_group_jobbook WHERE book_id = $book_id";
+	$sql = "SELECT * FROM intranet_timesheet_group_jobbook WHERE book_id = " . $book_id;
 	$result = mysql_query($sql, $conn) or die(mysql_error());
 	$array = mysql_fetch_array($result);
 	
@@ -1108,7 +1108,7 @@ function EditFeeGroup($book_id) {
 	
 	echo "<div>";
 	
-	if (intval($array['book_stage']) > 0) { $book_stage_select = intval($array['book_stage']); } elseif (intval($_GET[stage_id]) > 0) { $book_stage_select = intval($_GET[stage_id]); }
+	if (intval($array['book_stage']) > 0) { $book_stage_select = intval($array['book_stage']); } elseif (intval($_GET['stage_id']) > 0) { $book_stage_select = intval($_GET['stage_id']); }
 	
 		DropDownFeeStage("book_stage", $book_stage_select);
 		

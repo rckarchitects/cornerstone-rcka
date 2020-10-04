@@ -1,18 +1,20 @@
 <?php
 
+include_once("functions_general.php");
+
 function CheckUserStatus() {
 	
 	global $conn;
 	
-		$user_id = intval($_COOKIE[user]);
+		$user_id = intval($_COOKIE['user']);
 
-		$sql_ipcheck = "SELECT user_password, user_usertype, user_timesheet_hours, user_id FROM intranet_user_details WHERE user_password = '" . $_COOKIE[password] . "' AND user_id = $user_id LIMIT 1";
+		$sql_ipcheck = "SELECT user_password, user_usertype, user_timesheet_hours, user_id FROM intranet_user_details WHERE user_password = '" . $_COOKIE['password'] . "' AND user_id = " . $user_id . " LIMIT 1";
 		$result_ipcheck = mysql_query($sql_ipcheck, $conn) or die(mysql_error());
 
 		$array_ipcheck = mysql_fetch_array($result_ipcheck);
 		$array_ipcheck['user_password'];
 
-		if ($array_ipcheck['user_password'] != $_COOKIE[password] ) {
+		if ($array_ipcheck['user_password'] != $_COOKIE['password'] ) {
 			
 			header("location: index.php");
 			
@@ -31,7 +33,7 @@ date_default_timezone_set ( 'Europe/London ' );
 
 // Establish the functions we require based on the modules loaded
 
-			if ($_GET[time] != NULL) { $time = intval($_GET[time]); setcookie("lastdayview", $time);  } else { $time = time(); }
+			if ($_GET['time'] != NULL) { $time = intval($_GET['time']); setcookie("lastdayview", $time);  } else { $time = time(); }
 
 			$ip_current = getenv("REMOTE_ADDR"); // get the ip number of the user
 
@@ -102,7 +104,7 @@ $user_id_current = $user_details_array[1];
 $user_timesheet_hours = $user_details_array[2];
 
 
-include_once("functions_general.php");
+
 include_once("functions_menus.php");
 if (intval($module_timesheets) == 1) {  include_once("functions_timesheet.php"); }
 if (intval($module_contacts) == 1) { include_once("functions_contacts.php"); }

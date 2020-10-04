@@ -1,10 +1,10 @@
 <?php
 
-if ($_GET[proj_id] > 0 OR $_POST[proj_id] > 0) {
+if ($_GET['proj_id'] > 0 OR $_POST['proj_id'] > 0) {
 
 	//	if ($_GET[proj_id] > 0) { $proj_id = $_GET[proj_id] } elseif ($_POST[proj_id] > 0) { $proj_id = $_POST[proj_id];	}
 		
-$invoice_selected_id = $_GET[invoice_id];
+$invoice_selected_id = $_GET['invoice_id'];
 
 // Determine whether we are adding a new invoice or editing an existing one
 
@@ -31,12 +31,12 @@ if ($_GET[invoice_item_id] != NULL) {
 		$nowtime = time();
 		$thentime = $nowtime + $invoice_time_by;
 
-		$invoice_item_invoice = $_POST[invoice_item_invoice];
-		$invoice_item_stage = $_POST[invoice_item_stage];
-		$invoice_item_desc = $_POST[invoice_item_desc];
-		$invoice_item_novat = $_POST[invoice_item_novat];
-		$invoice_item_vat = $_POST[invoice_item_vat];
-		$invoice_item_stage = $_POST[invoice_item_stage];
+		$invoice_item_invoice = $_POST['invoice_item_invoice'];
+		$invoice_item_stage = $_POST['invoice_item_stage'];
+		$invoice_item_desc = $_POST['invoice_item_desc'];
+		$invoice_item_novat = $_POST['invoice_item_novat'];
+		$invoice_item_vat = $_POST['invoice_item_vat'];
+		$invoice_item_stage = $_POST['invoice_item_stage'];
 	
 	echo "<h2>Add Invoice Item</h2>";
 	ProjectSubMenu($proj_id,$user_usertype_current,"invoice_admin",1);
@@ -55,7 +55,7 @@ if ($_GET[invoice_item_id] != NULL) {
 	echo "<tr><td>Invoice</td><td colspan=\"2\">";
 
 		echo "<select name=\"invoice_item_invoice\">";
-		$sql = "SELECT * FROM intranet_timesheet_invoice WHERE invoice_project = '$proj_id' order by invoice_ref DESC";
+		$sql = "SELECT * FROM intranet_timesheet_invoice WHERE invoice_project = " . intval($proj_id) . " order by invoice_ref DESC";
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 		echo "<option value=\"\" class=\"inputbox\">-- None --</option>";
 		while ($array = mysql_fetch_array($result)) {
@@ -94,7 +94,7 @@ if ($_GET[invoice_item_id] != NULL) {
 	echo "<tr><td>Fee Stage</td><td colspan=\"2\">";
 
 		echo "<select name=\"invoice_item_stage\">";
-		$sql = "SELECT ts_fee_id, ts_fee_stage, ts_fee_text FROM intranet_timesheet_fees WHERE ts_fee_project = '$proj_id' order by ts_fee_time_begin";
+		$sql = "SELECT ts_fee_id, ts_fee_stage, ts_fee_text FROM intranet_timesheet_fees WHERE ts_fee_project = '$proj_id' order by ts_fee_commence";
 		$result = mysql_query($sql, $conn) or die(mysql_error());
 
 			if ($invoice_fee_stage == NULL) { echo "<option value=\"\""; echo " selected"; echo ">-- None --</option>"; }

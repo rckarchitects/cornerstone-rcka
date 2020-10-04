@@ -2,10 +2,10 @@
 
 echo "<h1>Invoices</h1>";
 
-if ($_POST[invoice_item_invoice] > 0) { $invoice_id = $_POST[invoice_item_invoice];
-} elseif ($_GET[invoice_id] > 0) { $invoice_id = $_GET[invoice_id]; }
+if ($_POST['invoice_item_invoice'] > 0) { $invoice_id = intval($_POST['invoice_item_invoice']);
+} elseif ($_GET['invoice_id'] > 0) { $invoice_id = intval($_GET['invoice_id']); }
 
-if ($_POST[invoice_ref_find] != NULL) {
+if ($_POST['invoice_ref_find'] != NULL) {
 
 $invoice_ref_find = CleanUp($invoice_ref_find);
 

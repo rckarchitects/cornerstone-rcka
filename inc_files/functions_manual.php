@@ -158,7 +158,7 @@ function ManualPageView($manual_id) {
 	
 	if (!$array['manual_section']) { $manual_section = "General"; } else { $manual_section = $array['manual_section']; }
 	
-	echo "<h3>" . $manual_section . "</h3>";
+	echo "<h4>Section: " . $manual_section . "</h4>";
 	
 	
 	

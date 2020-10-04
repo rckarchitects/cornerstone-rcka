@@ -260,14 +260,14 @@ function DrawingRevisionHistory($drawing_id) {
 				echo "<h3>Revision History</h3>";
 				
 				
-				$sql_rev = "SELECT * FROM intranet_drawings_revision, intranet_user_details WHERE revision_drawing = " . $drawing_id . " AND revision_author = user_id ORDER BY revision_letter DESC";
+				$sql_rev = "SELECT * FROM intranet_drawings_revision, intranet_user_details WHERE revision_drawing = " . $drawing_id . " AND revision_author = user_id ORDER BY revision_date DESC";
 				$result_rev = mysql_query($sql_rev, $conn) or die(mysql_error());
 				
 				if (mysql_num_rows($result_rev) > 0) {
 					
 					
 
-				echo "<table desc=\"Revision list for drawing $drawing_number\">
+				echo "<table desc=\"Revision list for drawing " . $drawing_number . "\">
 				<tr><th>Rev.</th><th>Date</th><th>Description</th><th>Author</th></tr>";
 				
 				while ($array_rev = mysql_fetch_array($result_rev)) {

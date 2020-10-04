@@ -135,7 +135,7 @@ while ($counter_time < $beginnning_of_next_year) {
 	// This checks that an additional line is not added if the last day of the year falls on a Saturday
 		if (date("w", $counter_time) == 6 && date("Y", $counter_time + 172800) == $year) {
 		$background = " style=\"background: rgba(200,200,200,0); height: 40px; color: #999\"";
-		echo "</tr><tr id=\"Week" . date("W", $counter_time + 604800) . "\"><td $background>" . date("W", $counter_time + 604800). "</td>";
+		echo "</tr><tr id=\"Week" . date("W", $counter_time + 604800) . "\"><td " . $background . ">" . date("W", $counter_time + 604800). "</td>";
 		}
 		
 		$counter_time = $counter_time + 86400;

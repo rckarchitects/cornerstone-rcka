@@ -13,6 +13,24 @@ ini_set("upload_max_filesize","10M");
 
 $backup_path = "backups/";
 
+function GetDatabaseAccess() {
+	
+	global $conn;
+	
+			$database_read = file_get_contents("../secure/database.inc");
+			$database_read_array = explode("\n", $database_read);
+			$database_location = $database_read_array[0];
+			$database_username = $database_read_array[1];
+			$database_password = $database_read_array[2];
+			$database_name = $database_read_array[3];
+
+			return array($database_name,$database_location,$database_username,$database_password);
+			
+}
+
+$db_connect = GetDatabaseAccess();
+$conn = mysql_connect($db_connect[1],$db_connect[2],$db_connect[3]);
+mysql_select_db($db_connect[0], $conn);
 
 function PinnedJournalEntries($user_usertype_current) {
 		
@@ -1596,7 +1614,7 @@ function UserHolidaysArray($user_id,$year,$working_days) {
 	
 	GLOBAL $conn;
 
-			$sql_user = "SELECT user_user_added, user_user_ended, user_holidays, user_name_first, user_name_second FROM intranet_user_details WHERE user_id = $user_id LIMIT 1";
+			$sql_user = "SELECT user_user_added, user_user_ended, user_holidays, user_name_first, user_name_second FROM intranet_user_details WHERE user_id = " . intval($user_id) . " LIMIT 1";
 			$result_user = mysql_query($sql_user, $conn);
 			$array_user = mysql_fetch_array($result_user);
 			$user_user_added = $array_user['user_user_added'];
@@ -1615,7 +1633,7 @@ function UserHolidaysArray($user_id,$year,$working_days) {
 			if ($user_user_ended == NULL OR $user_user_ended == 0) { $user_user_ended = mktime(0,0,0,1,1,$nextyear); $listend = "-"; } else { $listend = date ( "d M Y", $user_user_ended ); }
 			
 	
-							$sql_count = "SELECT * FROM intranet_user_holidays WHERE holiday_user = $user_id AND holiday_assigned = $year ORDER BY holiday_timestamp";
+							$sql_count = "SELECT * FROM intranet_user_holidays WHERE holiday_user = " . intval($user_id) . " AND holiday_assigned = " . $year . " ORDER BY holiday_timestamp";
 							$result_count = mysql_query($sql_count, $conn);
 							while ($array_count = mysql_fetch_array($result_count)) {
 							
@@ -1647,6 +1665,8 @@ function UserHolidaysArray($user_id,$year,$working_days) {
 											elseif ($holiday_paid == 3) { $jury_service_total = $jury_service_total + $holiday_length; }
 											elseif ($holiday_paid == 4) { $toil_service_total = $toil_service_total + $holiday_length; $holiday_paid_total = $holiday_paid_total - $holiday_length;  }
 											elseif ($holiday_paid == 5) {   }
+											elseif ($holiday_paid == 6) {   }
+											elseif ($holiday_paid == 7) {   }
 											else { $holiday_unpaid_total = $holiday_unpaid_total + $holiday_length; }
 											
 											
@@ -1688,7 +1708,7 @@ function WorkingDays($year) {
 	
 	$year = intval($year);
 	
-	$sql = "SELECT COUNT(bankholidays_id) FROM intranet_user_holidays_bank WHERE bankholidays_year = $year";
+	$sql = "SELECT COUNT(bankholidays_id) FROM intranet_user_holidays_bank WHERE bankholidays_year = " . $year;
 	$result = mysql_query($sql, $conn);
 	$array = mysql_fetch_array($result);
 	$bankholidays = $array['COUNT(bankholidays_id)'];
@@ -1714,17 +1734,17 @@ function HolidaySchedule($year,$user_usertype_current,$working_days,$beginnning_
 
 GLOBAL $conn;
 
-						echo "<h3 id=\"holidaysthisyear\">Holidays in $year</h3>";
+						echo "<h3 id=\"holidaysthisyear\">Holidays in " . $year . "</h3>";
 
-						echo "<p>There were $working_days working days in $year.</p>";
+						echo "<p>There were " . $working_days . " working days in " . $year . ".</p>";
 
-						if ($user_usertype_current < 3) { $limit = "AND user_id = $user_id"; } else { unset( $limit );}
+						if ($user_usertype_current < 3) { $limit = "AND user_id = " . $user_id; } else { unset( $limit );}
 
 						$sql_users = "SELECT user_id, user_name_first, user_name_second FROM intranet_user_details WHERE (
-						(user_user_added BETWEEN $beginnning_of_this_year AND $beginnning_of_next_year)
-						OR (user_user_ended BETWEEN $beginnning_of_this_year AND $beginnning_of_next_year)
-						OR (user_user_added < $beginnning_of_this_year AND (user_user_ended = 0 OR user_user_ended IS NULL))
-						) $limit ORDER BY user_name_second";
+						(user_user_added BETWEEN " . $beginnning_of_this_year . " AND " . $beginnning_of_next_year . ")
+						OR (user_user_ended BETWEEN " . $beginnning_of_this_year . " AND " . $beginnning_of_next_year . ")
+						OR (user_user_added < " . $beginnning_of_this_year . " AND (user_user_ended = 0 OR user_user_ended IS NULL))
+						) " . $limit . " ORDER BY user_name_second";
 
 
 						$result_users = mysql_query($sql_users, $conn);
@@ -1787,34 +1807,33 @@ GLOBAL $conn;
 								
 							echo "
 							<tr>
-							<td style=\"$bg\"><a href=\"index2.php?page=holiday_approval&amp;showuser=$user_id&year=$_GET[year]#holidaysthisyear\">$user_name_first $user_name_second</a></td>
+							<td style=\"$bg\"><a href=\"index2.php?page=holiday_approval&amp;showuser=$user_id&year=$_GET[year]#holidaysthisyear\">" . $user_name_first . " " . $user_name_second . "</a></td>
 							<td style=\"$bg\">" . $listadd . "</td>
 							<td style=\"$bg\">" . $listend . "</td>
-							<td style=\"text-align:right; $bg\">$length</td>
-							<td style=\"text-align:right; $bg\">$user_holidays</td>
-							<td style=\"text-align:right; $bg\">$holiday_allowance</td>
-							<td style=\"text-align:right; $bg\">$holiday_allowance_thisyear</td>
-							<td style=\"text-align:right; $bg\">$holiday_paid_total</td>
-							<td style=\"text-align:right; $bg\">$holiday_unpaid_total</td>
-							<td style=\"text-align:right; $bg\">$study_leave_total</td>
-							<td style=\"text-align:right; $bg\">$jury_service_total</td>
-							<td style=\"text-align:right; $bg\">$toil_service_total</td>
-							<td style=\"text-align:right; $bg\">$holiday_year_remaining</td>
+							<td style=\"text-align:right; $bg\">" . $length . "</td>
+							<td style=\"text-align:right; $bg\">" . $user_holidays . "</td>
+							<td style=\"text-align:right; $bg\">" . $holiday_allowance . "</td>
+							<td style=\"text-align:right; $bg\">" . $holiday_allowance_thisyear . "</td>
+							<td style=\"text-align:right; $bg\">" . $holiday_paid_total . "</td>
+							<td style=\"text-align:right; $bg\">" . $holiday_unpaid_total . "</td>
+							<td style=\"text-align:right; $bg\">" . $study_leave_total . "</td>
+							<td style=\"text-align:right; $bg\">" . $jury_service_total . "</td>
+							<td style=\"text-align:right; $bg\">" . $toil_service_total . "</td>
+							<td style=\"text-align:right; $bg\">" . $holiday_year_remaining. "</td>
 							</tr>";
 							
-							if ($_GET[showuser] == $user_id) {
+							if ($_GET['showuser'] == $user_id) {
 							
 									$bg = "; background: rgba(100,100,150,0.1)\"";
 							
-										if ($unpaid_adjustment < 1 && $_GET[showuser] == $user_id) {
-											echo "<tr><td colspan=\"13\" style=\"font-style: italic; $bg\">
-											$user_name_first took $holiday_unpaid_total unpaid holidays during $year, from a total of $working_days possible working days. Available holiday has therefore been reduced to " . round (100 *  $unpaid_adjustment ) . "% of the total allowance for this year.
-											</td></tr>";
+										if ($unpaid_adjustment < 1 && $_GET['showuser'] == $user_id) {
+											echo "<tr><td colspan=\"13\" style=\"font-style: italic; $bg\">" .
+											$user_name_first . " took " . $holiday_unpaid_total . " unpaid holidays during " . $year . ", from a total of " . $working_days . " possible working days. Available holiday has therefore been reduced to " . round (100 *  $unpaid_adjustment ) . "% of the total allowance for this year. That equates to a total allowance of " . ceil($unpaid_adjustment * $holiday_allowance_thisyear) . " paid holidays for the year (ie. " . $holiday_allowance_thisyear. " x " . number_format($unpaid_adjustment * 100) . "%).</td></tr>";
 										}
 							
 									$bg = "; background: rgba(100,100,150,0.2)\"";
 								
-									$sql_totalhols = "SELECT holiday_timestamp, holiday_length, holiday_paid, holiday_assigned FROM intranet_user_holidays WHERE holiday_user = $user_id AND holiday_assigned = $year ORDER BY holiday_timestamp";
+									$sql_totalhols = "SELECT holiday_timestamp, holiday_length, holiday_paid, holiday_assigned FROM intranet_user_holidays WHERE holiday_user = " . $user_id . " AND holiday_assigned = " . $year . " ORDER BY holiday_timestamp";
 									$result_totalhols = mysql_query($sql_totalhols, $conn);
 
 										if (mysql_num_rows($result_totalhols) > 0) {
@@ -1833,17 +1852,19 @@ GLOBAL $conn;
 												elseif ($array_totalhols['holiday_paid'] == 2 ) { $holiday_type = "Study Leave";  }
 												elseif ($array_totalhols['holiday_paid'] == 3 ) { $holiday_type = "Jury Service"; }
 												elseif ($array_totalhols['holiday_paid'] == 4 ) { $holiday_type = "TOIL"; }
-												elseif ($array_totalhols['holiday_paid'] == 5 ) { $holiday_type = "Compassionate eave"; }
+												elseif ($array_totalhols['holiday_paid'] == 5 ) { $holiday_type = "Compassionate Leave"; }
+												elseif ($array_totalhols['holiday_paid'] == 6 ) { $holiday_type = "Maternity / Paternity Leave"; }
+												elseif ($array_totalhols['holiday_paid'] == 7 ) { $holiday_type = "Furloughed"; }
 												else { $holiday_type = "Standard"; $totalhols_count = $totalhols_count + $holiday_length; }
 												
 												if ($holiday_length == 0.5) { $holiday_type = $holiday_type . " (half day)"; }
 
 													echo "<tr><td colspan=\"4\" style=\"$bg\">" . date ( "l, j F Y", $array_totalhols['holiday_timestamp'] ) . "</td>";
-													echo "<td colspan=\"3\" style=\"$bg\">$holiday_type</td>";
+													echo "<td colspan=\"3\" style=\"$bg\">" . $holiday_type . "</td>";
 														
 														
 														echo "
-														<td style=\"text-align: right; $bg\">$totalhols_count</td>
+														<td style=\"text-align: right; $bg\">" . $totalhols_count . "</td>
 														<td style=\"$bg\" colspan=\"5\"></td>
 														";
 													
@@ -1851,14 +1872,14 @@ GLOBAL $conn;
 												
 												}
 												
-												if ($_GET[showuser] == $user_id) { $bg = "; background: rgba(100,100,150,0.35)\""; } else { unset($bg); }
+												if ($_GET['showuser'] == $user_id) { $bg = "; background: rgba(100,100,150,0.35)\""; } else { unset($bg); }
 												
 												echo "<tr><td colspan=\"7\" style=\"$bg\"><strong>Total</strong></td><td style=\"text-align: right; $bg\"><strong>$totalhols_count</strong></td><td colspan=\"5\" style=\"$bg\"></th></tr>";
 											
 											
 										} else {
 										
-												echo "<tr><td></td><td colspan=\"12\">No holidays found for $year</td></tr>";
+												echo "<tr><td></td><td colspan=\"12\">No holidays found for " . $year . "</td></tr>";
 										
 										}
 										
@@ -2759,11 +2780,11 @@ function UsersList($active) {
 				unset($showactive);
 			}
 
-			$sql = "SELECT * FROM intranet_user_details $showactive ORDER BY user_active DESC, user_name_second";
+			$sql = "SELECT * FROM intranet_user_details " . $showactive . " ORDER BY user_active DESC, user_name_second";
 			$result = mysql_query($sql, $conn);
 			
 			
-			echo "<table><tr><th>Name</th><th>Initials</th><th>Date Started</th><th>Date Ended</th><th>Mobile</th><th>Email</th><th colspan=\"2\">User Type</th><th style=\"text-align: right;\">Hourly Rate (Cost)</th><th style=\"text-align: right;\">Weekly Hours</th><th style=\"text-align: right;\">Target Fee-Earning Hours</tr><tr><th colspan=\"11\" style=\"text-align: right;\"><span class=\"minitext\">Equivalent Hourly Rate<br />Total Weekly Rate</span></th></tr>";
+			echo "<table><tr><th>Name</th><th>Initials</th><th>Team</th><th>Date Started</th><th>Date Ended</th><th>Mobile</th><th>Email</th><th colspan=\"2\">User Type</th><th style=\"text-align: right;\">Hourly Rate (Cost)</th><th style=\"text-align: right;\">Weekly Hours</th><th style=\"text-align: right;\">Target Fee-Earning Hours</tr><tr><th colspan=\"11\" style=\"text-align: right;\"><span class=\"minitext\">Equivalent Hourly Rate<br />Total Weekly Rate</span></th></tr>";
 			
 			$cost_per_hour_total = 0;
 			$cost_per_week_total = 0;
@@ -2810,20 +2831,20 @@ function UsersList($active) {
 					
 					if ($user_active == "1") { $user_active_print = "Active Users"; } else { $user_active_print = "Inactive Users"; }
 					
-					if ($current_active != $user_active) { echo "<tr><td colspan=\"12\"><strong>$user_active_print</strong></td></tr>"; $current_active = $user_active;  }
+					if ($current_active != $user_active) { echo "<tr><td colspan=\"12\"><strong>" . $user_active_print . "</strong></td></tr>"; $current_active = $user_active;  }
 					
-					echo "<tr><td><a href=\"index2.php?page=user_view&amp;user_id=$user_id\">$user_name_first $user_name_second</a>&nbsp;<a href=\"index2.php?page=user_edit&amp;status=edit&user_id=$user_id\"><img src=\"images/button_edit.png\" class=\"button\" alt=\"Edit\" /></a></td><td>$user_initials</td><td>$user_user_added</td><td>$user_user_ended</td><td>$user_num_mob</td><td>$user_email</td><td>$user_usertype</td><td style=\"text-align: right;\">$user_user_rate</td><td style=\"text-align: right;\">$user_timesheet_hours</td><td style=\"text-align: right;\">" . $fee_earning_hours_per_week . "<span class=\"minitext\"><br />&pound;" . number_format($cost_per_hour,2) . "<br />&pound;" . number_format($cost_per_week,2) . "</span>
+					echo "<tr><td><a href=\"index2.php?page=user_view&amp;user_id=" . $user_id . "\">" . $user_name_first . " " . $user_name_second . "</a>&nbsp;<a href=\"index2.php?page=user_edit&amp;status=edit&user_id=" . $user_id . "\"><img src=\"images/button_edit.png\" class=\"button\" alt=\"Edit\" /></a></td><td>" . $user_initials . "</td><td>" . $team_name . "</td><td>" . $user_user_added . "</td><td>" . $user_user_ended . "</td><td>" . $user_num_mob . "</td><td>" . $user_email . "</td><td>" . $user_usertype . "</td><td style=\"text-align: right;\">" . $user_user_rate . "</td><td style=\"text-align: right;\">" . $user_timesheet_hours . "</td><td style=\"text-align: right;\">" . $fee_earning_hours_per_week . "<span class=\"minitext\"><br />&pound;" . number_format($cost_per_hour,2) . "<br />&pound;" . number_format($cost_per_week,2) . "</span>
 					</td></tr>";
 
 								
 			}
 			
-			echo "<tr><td>Total Fee Hours</td><td colspan=\"10\" style=\"text-align: right;\">" . number_format ( $total_hours_week ) . "</td><td></td></tr>";
-			echo "<tr><td>Total Hourly Fee</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat($cost_per_hour_total) . "</td></tr>";
-			echo "<tr><td>Total Weekly Fee</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat($cost_per_week_total) . "</td></tr>";
-			echo "<tr><td>Total Fee Earners</td><td colspan=\"10\" style=\"text-align: right;\">" . number_format ($total_people) . "</td></tr>";
-			echo "<tr><td>Average Hourly Fee</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat($total_hourly_cost / $total_people) . "</td></tr>";
-			echo "<tr><td>Average Weekly Cost</td><td colspan=\"10\" style=\"text-align: right;\">" . MoneyFormat(($total_hourly_cost / $total_people) * 40) . "</td></tr>";
+			echo "<tr><td>Total Fee Hours</td><td colspan=\"11\" style=\"text-align: right;\">" . number_format ( $total_hours_week ) . "</td><td></td></tr>";
+			echo "<tr><td>Total Hourly Fee</td><td colspan=\"11\" style=\"text-align: right;\">" . MoneyFormat($cost_per_hour_total) . "</td></tr>";
+			echo "<tr><td>Total Weekly Fee</td><td colspan=\"11\" style=\"text-align: right;\">" . MoneyFormat($cost_per_week_total) . "</td></tr>";
+			echo "<tr><td>Total Fee Earners</td><td colspan=\"11\" style=\"text-align: right;\">" . number_format ($total_people) . "</td></tr>";
+			echo "<tr><td>Average Hourly Fee</td><td colspan=\"11\" style=\"text-align: right;\">" . MoneyFormat($total_hourly_cost / $total_people) . "</td></tr>";
+			echo "<tr><td>Average Weekly Cost</td><td colspan=\"11\" style=\"text-align: right;\">" . MoneyFormat(($total_hourly_cost / $total_people) * 40) . "</td></tr>";
 			echo "</table>";
 		
 						
@@ -3069,7 +3090,7 @@ function InvoiceLineItems ($ts_fee_id, $highlight, $stage_fee) {
 							<td style=\"" . $highlight . "\" colspan=\"2\"></td>
 							<td style=\"" . $highlight . "\"><a href=\"index2.php?page=timesheet_invoice_view&amp;invoice_id=$invoice_id\">" . $invoice_ref . "</a>";
 					
-					if (!$invoice_date_paid) { echo "&nbsp;<a href=\"index2.php?page=timesheet_invoice_items_edit&amp;proj_id=" . $invoice_project . "&amp;invoice_item_id=" . $invoice_item_id . "\"><img src=\"images/button_edit.png\" alt=\"Edit\" />"; }
+					if (!$invoice_date_paid) { echo "&nbsp;<a href=\"index2.php?page=timesheet_invoice_items_edit&amp;proj_id=" . $invoice_project . "&amp;invoice_item_id=" . $invoice_item_id . "\"><img src=\"images/button_edit.png\" alt=\"Edit\" class=\"button\" />"; }
 					
 					echo "</td>
 							<td style=\"" . $highlight . "\">" . TimeFormat($invoice_date) . "</td>
@@ -3131,13 +3152,13 @@ function ProjectFees($proj_id) {
 
 				if ($_POST[fee_stage_current] > 0) { 
 
-					$fee_stage_current = CleanNumber($_POST[fee_stage_current]);
-					$sql_update = "UPDATE intranet_projects SET proj_riba = '$fee_stage_current' WHERE proj_id = '$proj_id' LIMIT 1";
+					$fee_stage_current = CleanNumber($_POST['fee_stage_current']);
+					$sql_update = "UPDATE intranet_projects SET proj_riba = " . intval($fee_stage_current) . " WHERE proj_id = " . $proj_id . " LIMIT 1";
 					$result_update = mysql_query($sql_update, $conn) or die(mysql_error());
 					
 					$alert_message = "<p>The active fee stage for  " . GetProjectName($proj_id) .  " has been updated to " . $fee_stage_current . ".</p>";
 					
-					AlertBoxInsert($_COOKIE[user],"Project Fees",$alert_message,$fee_stage_current,4,0,$proj_id);
+					AlertBoxInsert($_COOKIE['user'],"Project Fees",$alert_message,$fee_stage_current,4,0,$proj_id);
 
 				}
 
@@ -3147,7 +3168,7 @@ function ProjectFees($proj_id) {
 
 						if (mysql_num_rows($result) > 0) {
 							
-						echo "<form method=\"post\" action=\"index2.php?page=project_fees&amp;proj_id=$proj_id\">";
+						echo "<form method=\"post\" action=\"index2.php?page=project_fees&amp;proj_id=" . $proj_id . "\">";
 							
 						echo "<table summary=\"Lists the fees for the selected project\">";
 						
@@ -3267,9 +3288,9 @@ function ProjectFees($proj_id) {
 												$ts_fee_prospect = $ts_fee_likelihood . "&nbsp;(" . $ts_fee_prospect . "%)";
 												
 												
-												echo "<tr id=\"stage_$ts_fee_id\"><td style=\"$highlight\"><input type=\"radio\" name=\"fee_stage_current\" value=\"$ts_fee_id\" $ts_fee_id_selected /> </td><td style=\"$highlight\">$group_code<br /><span class=\"minitext\">[$ts_fee_id]</span></td><td style=\"$highlight\">$ts_fee_text</td><td style=\"$highlight\">".$prog_begin_print."</td><td style=\"$highlight\">".$prog_end_print."</td><td style=\"$highlight\">".$ts_fee_prospect."</td><td  style=\"$highlight; text-align: right;\">".MoneyFormat($ts_fee_calc) . $fee_target ."</td>\n";
+												echo "<tr id=\"stage_$ts_fee_id\"><td style=\"$highlight\"><input type=\"radio\" name=\"fee_stage_current\" value=\"$ts_fee_id\" class=\"HideThis\" $ts_fee_id_selected /> </td><td style=\"$highlight\">$group_code<br /><span class=\"minitext\">[$ts_fee_id]</span></td><td style=\"$highlight\">$ts_fee_text</td><td style=\"$highlight\">".$prog_begin_print."</td><td style=\"$highlight\">".$prog_end_print."</td><td style=\"$highlight\">".$ts_fee_prospect."</td><td  style=\"$highlight; text-align: right;\">".MoneyFormat($ts_fee_calc) . $fee_target ."</td>\n";
 												echo "<td style=\"$highlight\">".$proj_duration_print."</td>";
-												if ($user_usertype_current > 2) { echo "<td style=\"$highlight ;min-width: 30px;\"><a href=\"index2.php?page=timesheet_fees_edit&amp;ts_fee_id=$ts_fee_id\"><img src=\"images/button_edit.png\" alt=\"Edit\" /></a></td>"; }
+												if ($user_usertype_current > 2) { echo "<td style=\"$highlight ;min-width: 30px;\"><a href=\"index2.php?page=timesheet_fees_edit&amp;ts_fee_id=$ts_fee_id\"><img src=\"images/button_edit.png\" alt=\"Edit\" class=\"button\" /></a></td>"; }
 												echo "</tr>";
 												
 												$totals_array = InvoiceLineItems($ts_fee_id,$highlight,$ts_fee_calc);
@@ -4179,6 +4200,7 @@ function UserForm ($user_id) {
 	$user_prop_target = $array['user_prop_target'];
 	$user_timesheet_hours = $array['user_timesheet_hours'];
 	$user_notes = $array['user_notes'];
+	$user_team = $array['user_team'];
 	
 	echo "<form method=\"post\" action=\"index2.php?page=user_list\" autocomplete=\"off\">";
 	
@@ -4194,7 +4216,10 @@ function UserForm ($user_id) {
 		echo "<p>Initials<br /><input type=\"text\" name=\"user_initials\" value=\"$user_initials\" maxlength=\"12\" size=\"32\" /></p>";
 		echo "<p>Email<br /><input type=\"text\" name=\"user_email\" value=\"$user_email\" maxlength=\"50\" size=\"32\" type=\"email\" /></p>";
 		
+		echo "<p>Team<br />"; UserTeamSelect('user_team',$user_team); echo "</p>";
+		
 	echo "</div>";
+	
 	
 	echo "<div><h3>Home Address</h3>";
 	
@@ -4329,7 +4354,7 @@ function FileUploadChecklist($media_title,$media_project,$media_category,$fileNa
     $uploadDirectory = "/uploads/";
 	
 
-    $fileExtensions = ['jpeg','jpg','png','pdf']; // Get all the file extensions
+    $fileExtensions = array('jpeg','jpg','png','pdf'); // Get all the file extensions
 
    // $fileName = $_FILES[$checklist_upload]['name'];
     //$fileSize = $_FILES[$checklist_upload]['size'];
@@ -4493,6 +4518,8 @@ function UserLocationList($prefs_nonworking) {
 		UserLocationConfirm($array['user_id'],$confirmed);
 		echo "</div>";
 	
+	} else {
+		echo GetNextDay();
 	}
 }
 
@@ -4510,13 +4537,16 @@ function UserLocationConfirm($user_id,$confirmed) {
 		
 			echo "<span style=\"\white-space: pre; float: left; padding: 8px 15px 8px 10px; margin: 8px 8px 0 0; background: #eee; border-radius: 15px;\"><input type=\"radio\" value=\"" . $type . "\" name=\"location_type\"";
 				if ($confirmed == $type) { echo " checked=\"checked\" "; }
-			echo "onchange=\"this.form.submit()\" id=\"" . $type . "\" />&nbsp;";
+			echo "onclick=\"this.form.submit()\" id=\"" . $type . "\" />&nbsp;";
 			echo "<label for=\"" . $type . "\">" . $type . "</label></span>";
 		
 		}
 		
+		if (CheckAnyNextDay($_COOKIE['user']) == 1) { $color = "#aaa"; } else { $color = "rgba(255,0,0,0.5)"; }
+			
+		echo "<span style=\"\white-space: pre; float: left; padding: 8px 15px 8px 10px; margin: 8px 8px 0 0; background: " . $color . "; border-radius: 15px;\"><input type=\"checkbox\" value=\"1\" name=\"location_nextday\" id=\"location_nextday\" /><label for=\"location_nextday\">&nbsp;Next Working Day?</label></span>";
 		echo "<input type=\"hidden\" value=\"user_location_add\" name=\"action\" />";
-		echo "</form></div></div>";
+		echo "</form></div>" . GetNextDay() . "</div>";
 		
 	
 }
@@ -4548,7 +4578,7 @@ function UserLocationAlertBox($user_id) {
 					
 					$alert = 1;
 					
-				} 
+				}
 				
 			}
 		
@@ -4612,6 +4642,129 @@ function UserLocationCategory($location_type) {
 	elseif ($location_type == "Furloughed") { return "Unavailable"; }
 	elseif ($location_type == "Compassionate leave") { return "Unavailable"; }
 	else { return ""; }
+	
+}
+
+function NextWorkingDay() {
+	
+	global $conn;
+	
+	$sql1 = "SELECT bankholidays_datestamp FROM intranet_user_holidays_bank WHERE bankholidays_datestamp > '" . date("Y-m-d",time()) . "' LIMIT 1";
+	$result1 = mysql_query($sql1, $conn);
+	$array1 = mysql_fetch_array($result1);
+	
+	$nextday_array = array();
+	
+	$nextday_array[] = $array1['bankholidays_datestamp'];
+	
+	$sql2 = "SELECT holiday_datestamp FROM intranet_user_holidays WHERE holiday_datestamp > '" . date("Y-m-d",time()) . "' AND holiday_user = " . intval($_COOKIE['user']);
+		
+	$result2 = mysql_query($sql2, $conn);
+	
+	while ($array2 = mysql_fetch_array($result2)) {
+		
+		$nextday_array[] = $array2['holiday_datestamp'];
+				
+	}
+	
+	$thisday = time() + 86400;
+	
+	while (in_array($nextday_array) OR date("w",$thisday) == 6 OR date("w",$thisday) == 0) {
+
+		$thisday = $thisday + 86400;
+		
+	}
+		
+	return $thisday;
+	
+}
+
+function CheckAnyNextDay($user_id) {
+	
+	global $conn;
+	$sql = "SELECT location_id FROM intranet_user_location WHERE location_date > '" . date("Y-m-d",time()) . "' AND location_user = " . intval($user_id) . " LIMIT 1";
+	$result = mysql_query($sql, $conn);
+	$array = mysql_fetch_array($result);
+	
+	//echo "<P>" . $sql . "</p>";
+	
+	if ($array['location_id'] > 1) { return 1; } else { return 0; }
+	
+}
+
+function GetNextDay($time) {
+	
+	global $conn;
+	
+	if (intval($time)) { $time = intval($time); } else { $time = time(); }
+	
+	$time = $time + 86400;
+	
+	$sql1 = "SELECT * FROM intranet_user_location WHERE location_date > '" . date("Y-m-d",time()) . "' AND location_user = " . intval($_COOKIE['user']) . " ORDER BY location_date ASC LIMIT 1";
+	$result1 = mysql_query($sql1, $conn);
+	$array1 = mysql_fetch_array($result1);
+	
+	$sql2 = "SELECT user_name_first, user_name_second FROM intranet_user_location LEFT JOIN intranet_user_details ON user_id WHERE location_date = '" . date("Y-m-d",$time) . "' AND location_user != " . intval($_COOKIE['user']) . " AND location_type = 'In the studio' AND user_id = location_user";
+	
+	//echo "<P>" . $sql2 . "</p>";
+	
+	$result2 = mysql_query($sql2, $conn);
+	
+	$in_the_studio = mysql_num_rows($result2);
+	
+	$people_in_the_studio = array();
+	
+	while ($array2 = mysql_fetch_array($result2)) {
+		
+		$people_in_the_studio[] = $array2['user_name_first'] . " " . $array2['user_name_second'];
+		
+	}
+	
+	$nextworkingdate = NextWorkingDay();
+	
+	if (date("Y-m-d",$time) == $array1['location_date']) { $next_day_text = "Tomorrow"; } else { $next_day_text = "On " . date("l", $nextworkingdate); }
+	
+	if ($array1['location_id'] == "In the studio" && $in_the_studio == 0) { $output =  "<br /><p>" . $next_day_text . ", I will be " . strtolower($array1['location_type']) . " alone."; }
+	elseif ($array1['location_id'] == "In the studio" && $in_the_studio == 1) { $output =  "<br /><p>" . $next_day_text . ", I will be " . strtolower($array1['location_type']) . " with one other."; }
+	elseif ($array1['location_id'] == "In the studio" && $in_the_studio > 1) { $output =  "<br /><p>" . $next_day_text . ", I will be " . strtolower($array1['location_type']) . " with " . $array2['in_the_studio'] .  "others."; }
+	elseif ($array1['location_id'] && $in_the_studio == 0) { $output =  "<br /><p>" . $next_day_text . ", I will be " . strtolower($array1['location_type']) . "."; }
+	elseif ($array1['location_id'] && $in_the_studio == 1) { $output =  "<br /><p>" . $next_day_text . ", I will be " . strtolower($array1['location_type']) . ". There will be 1 person in the studio."; }
+	elseif ($array1['location_id'] && $in_the_studio > 1) { $output =  "<br /><p>" . $next_day_text . ", I will be " . strtolower($array1['location_type']) . ". There will be " . $in_the_studio . " people in the studio: " . join(", ",$people_in_the_studio) . "."; }
+		
+	return $output;
+	
+}
+
+function UserTeamSelect($field_name, $team_id) {
+	
+	global $conn;
+	
+	$sql = "SELECT * FROM intranet_team WHERE team_active = 1 ORDER BY team_name";
+	$result = mysql_query($sql, $conn);
+	
+	if (mysql_num_rows($result) > 0) {
+		
+		echo "<select name=\"" . $field_name . "\">";
+		
+		echo "<option value=\"\">- None -</option>";
+	
+			while ($array = mysql_fetch_array($result)) {
+				
+				if ($team_id == $array['team_id']) {
+					
+					echo "<option value=\"" . $array['team_id'] . "\" selected=\"selected\">" . $array['team_name'] . "</option>";
+					
+				} else {
+					
+					echo "<option value=\"" . $array['team_id'] . "\">" . $array['team_name'] . "</option>";
+					
+				}
+				
+			}
+		
+		echo "</select>";
+	
+	} else { echo "<p>No teams found.</p>"; }
 	
 }
 

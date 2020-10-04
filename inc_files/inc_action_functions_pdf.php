@@ -649,7 +649,7 @@ function PDF_Fee_Drawdown ($proj_id, $confirmed) {
 		
 		if (intval($confirmed) != 1) { $confirmed_only = " AND ts_fee_prospect > 0"; } else { $confirmed_only = "AND ts_fee_prospect = 100"; }
 		
-		if (intval($_GET['future']) == 1) { $future_only = " AND ts_fee_commence > '" . date("Y-m-d",time()) . "'" ; } else { unset($future_only); }
+		if (intval($_GET['future']) == 1) { $future_only = " AND (UNIX_TIMESTAMP(ts_fee_commence) + ts_fee_time_end > " . time() . ")" ; } else { unset($future_only); }
 		
 		$proj_id = intval($proj_id);
 		
