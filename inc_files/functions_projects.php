@@ -1,7 +1,5 @@
 <?php
 
-
-
 function ListAllProjects($team_id,$active) {
 	
 	global $conn;
@@ -11,7 +9,13 @@ function ListAllProjects($team_id,$active) {
 	
 	if (intval($team_id) > 0) { $filter_array[] = "proj_team =" . intval($team_id) ; $title = GetTeamName(intval($team_id)); } else { $title = "All Projects"; }
 	
-	if (!$active OR intval($active) == 1) { $filter_array[] = "proj_active = 1"; $filter_array[] = "proj_fee_track = 1"; $filter_array[] = "ts_fee_prospect = 100"; $filter_array[] = "ts_fee_commence <= '" . date("Y-m-d",time()) . "'"; $filter_array[] = "(ts_fee_time_end + UNIX_TIMESTAMP(ts_fee_commence) >= " . time() . ")"; } else { $filter_array[] = "proj_active = 0"; }
+	if ((!$active OR intval($active) == 1) AND intval($team_id) == 0) {
+		$filter_array[] = "proj_active = 1"; $filter_array[] = "proj_fee_track = 1"; $filter_array[] = "ts_fee_prospect = 100"; $filter_array[] = "ts_fee_commence <= '" . date("Y-m-d",time()) . "'"; // $filter_array[] = "(ts_fee_time_end + UNIX_TIMESTAMP(ts_fee_commence) >= " . time() . ")";
+	} elseif ((!$active OR intval($active) == 1) AND intval($team_id) > 0) {
+		$filter_array[] = "proj_active = 1"; $filter_array[] = "proj_fee_track = 1"; $filter_array[] = "ts_fee_prospect = 100"; $filter_array[] = "ts_fee_commence <= '" . date("Y-m-d",time()) . "'"; $filter_array[] = "(ts_fee_time_end + UNIX_TIMESTAMP(ts_fee_commence) >= " . time() . ")";
+	} else {
+		$filter_array[] = "proj_active = 0";
+	}
 	
 	$filter = "WHERE " . implode(" AND ",$filter_array);
 
@@ -28,12 +32,16 @@ function ListAllProjects($team_id,$active) {
 		$today = TimeFormat(time());
 
 
-		echo "<h1>Projects</h1><h2>" . $title . "</h2>";
+		echo "<h2>" . $title . "</h2>";
 		
 		ProjectSubMenu(NULL,$user_usertype_current,"project_list",1);
 		ProjectSubMenu(NULL,$user_usertype_current,"project_list",2);
 		
+		UserListTeams($team_id);
+		
 		echo "<div class=\"page\">";
+		
+		//if (intval($team_id) > 0) { UserListTeams($team_id); }
 
 		if (mysql_num_rows($result) > 0) {
 
@@ -76,6 +84,12 @@ function ListAllProjects($team_id,$active) {
 				
 				echo "</td><td>";
 				
+				if ($array['ts_fee_commence']) {
+					echo TimeFormat(CreateDays($array['ts_fee_commence'])) . " - " . TimeFormat(CreateDays($array['ts_fee_commence']) + $array['ts_fee_time_end']);
+				}
+				
+				echo "</td><td>";
+				
 				if ($array['proj_rep_black']) {
 					echo GetUserNameOnly($array['proj_rep_black']);
 				} else {
@@ -85,7 +99,7 @@ function ListAllProjects($team_id,$active) {
 				echo "</td><td>";
 				
 				if ($array['team_id']) {
-					echo "<a href=\"index2.php?page=project_all&amp;team=" . $array['team_id'] . "\">" . $array['team_name'] . "</a>";
+					echo "<a href=\"index2.php?page=project_all&amp;team_id=" . $array['team_id'] . "\">" . $array['team_name'] . "</a>";
 				} else {
 					echo "- Not assigned -";
 				}

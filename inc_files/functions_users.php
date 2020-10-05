@@ -762,3 +762,27 @@ function UserLocationCategory($location_type) {
 	else { return ""; }
 	
 }
+
+function UserListTeams($team_id) {
+	
+	global $conn;
+	
+	$team_array = array();
+	
+	$sql = "SELECT * FROM intranet_team LEFT JOIN intranet_user_details ON user_team = team_id WHERE team_id = " . intval($team_id) . " ORDER BY user_name_second";
+	
+	$result = mysql_query($sql, $conn);
+	
+		if (mysql_num_rows($result) > 0) {
+		
+		while ($array = mysql_fetch_array($result)) {
+			
+			$team_array[] = "<a href=\"index2.php?page=user_view&amp;user_id=" . $array['user_id'] . "\">" . $array['user_name_first'] . " " . $array['user_name_second'] . "</a>";
+			
+		}
+		
+		echo "Team Members: " . implode(", ",$team_array);
+	
+	}
+	
+}
